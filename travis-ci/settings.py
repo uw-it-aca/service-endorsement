@@ -35,8 +35,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'south', 'compressor', 'restclients', 'templatetag_handlebars',
-    'service-endorsement', 'userservice', 'django_client_logger',
+    'south',
+    'compressor',
+    'restclients',
+    'templatetag_handlebars',
+    'endorsement',
+    'userservice',
+    'supporttools',
+    'django_client_logger',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -48,6 +54,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'userservice.user.UserServiceMiddleware'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -97,7 +104,13 @@ STATICFILES_FINDERS = (
 )
 
 COMPRESS_ENABLED = False
+COMPRESS_OFFLINE = False
 
 # Test the memcached cache code
 RESTCLIENTS_TEST_MEMCACHED = True
 RESTCLIENTS_MEMCACHED_SERVERS = ('localhost:11211', )
+
+AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.all_ok.AllOK'
+USERSERVICE_ADMIN_GROUP=''
+RESTCLIENTS_ADMIN_GROUP=''
+RESTCLIENTS_SWS_USE_V5 = True
