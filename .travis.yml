@@ -18,8 +18,8 @@ before_script:
   - python manage.py syncdb --noinput
 script:
   - pep8 endorsement/ --exclude=migrations,endorsement/static
-  - jshint endorsement/static/js/  --verbose
-  - mocha endorsement/static/js/test/ --recursive
+#  - jshint endorsement/static/js/  --verbose
+#  - mocha endorsement/static/js/test/ --recursive
   - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
 after_script:
   - coveralls
