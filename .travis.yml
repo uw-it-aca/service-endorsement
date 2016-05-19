@@ -1,0 +1,29 @@
+sudo: false
+language: python
+services:
+  - memcached
+python:
+  - "2.7"
+
+install: pip install -r requirements.txt
+before_script:
+  - pip install coverage
+  - pip install python-coveralls
+  - pip install pep8
+  - npm install jshint
+  - npm install mocha
+  - npm install jquery
+  - npm install jsdom@3
+  - cp travis-ci/manage.py manage.py
+  - python manage.py syncdb --noinput
+script:
+  - pep8 endorsement/ --exclude=migrations,endorsement/static
+  - jshint endorsement/static/js/  --verbose
+  - mocha endorsement/static/js/test/ --recursive
+  - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
+after_script:
+  - coveralls
+notifications:
+  webhooks:
+      urls:
+        - https://yarn.cac.washington.edu/rest/botalyst/v1/travis-ci
