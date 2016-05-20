@@ -11,7 +11,7 @@ def log_session(logger, session_key):
 
     session_hash = hashlib.md5(session_key).hexdigest()
     log_entry = get_user_affiliations()
-    log_entry['session_key'] =session_hash
+    log_entry['session_key'] = session_hash
     logger.info(json.dumps(log_entry))
 
 
