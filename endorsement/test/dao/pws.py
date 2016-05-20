@@ -24,8 +24,13 @@ class TestPwsDao(TestCase):
     def test_get_person(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FDAO_PWS):
             staff_person = pws.get_person_by_netid('jstaff')
+            self.assertTrue(staff_person.is_staff)
+            self.assertFalse(staff_person.is_faculty)
             self.assertEquals(staff_person.uwregid,
                               "10000000000000000000000000000001")
+
             faculty_person = pws.get_person_by_netid('jfaculty')
+            self.assertTrue(faculty_person.is_faculty)
+            self.assertFalse(faculty_person.is_staff)
             self.assertEquals(faculty_person.uwregid,
                               "10000000000000000000000000000002")

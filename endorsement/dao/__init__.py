@@ -1,6 +1,6 @@
 from restclients.dao import PWS_DAO
 from endorsement.models.user import User
-from endorsement.dao.pws import get_netid_of_current_user
+from endorsement.dao.user import get_netid_of_current_user
 
 
 def get_user_model():
