@@ -1,7 +1,5 @@
 from django.test import TestCase
-from restclients.exceptions import DataFailureException
-from restclients.exceptions import InvalidNetID
-from endorsement.dao.pws import pws
+from endorsement.dao.pws import _get_person, get_regid, is_valid_endorsee
 
 
 FDAO_PWS = 'restclients.dao_implementation.pws.File'
@@ -9,28 +7,21 @@ FDAO_PWS = 'restclients.dao_implementation.pws.File'
 
 class TestPwsDao(TestCase):
 
-    def test_not_in_pws_netid(self):
+    def test_invalid_netid(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FDAO_PWS):
-            self.assertRaises(InvalidNetID,
-                              pws.get_person_by_netid,
-                              "notarealnetid")
+            self.assertFalse(is_valid_endorsee("notarealnetid"))
 
-    def test_pws_err(self):
+    def test_err_case(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FDAO_PWS):
-            self.assertRaises(DataFailureException,
-                              pws.get_person_by_netid,
-                              "nomockid")
+            self.assertFalse(is_valid_endorsee("nomockid"))
 
-    def test_get_person(self):
+    def test_normal_case(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FDAO_PWS):
-            staff_person = pws.get_person_by_netid('jstaff')
-            self.assertTrue(staff_person.is_staff)
-            self.assertFalse(staff_person.is_faculty)
-            self.assertEquals(staff_person.uwregid,
+
+            self.assertTrue(is_valid_endorsee('jstaff'))
+            self.assertTrue(is_valid_endorsee('jfaculty'))
+
+            self.assertEquals(get_regid('jstaff'),
                               "10000000000000000000000000000001")
-
-            faculty_person = pws.get_person_by_netid('jfaculty')
-            self.assertTrue(faculty_person.is_faculty)
-            self.assertFalse(faculty_person.is_staff)
-            self.assertEquals(faculty_person.uwregid,
+            self.assertEquals(get_regid('jfaculty'),
                               "10000000000000000000000000000002")
