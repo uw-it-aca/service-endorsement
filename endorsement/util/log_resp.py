@@ -1,7 +1,7 @@
 import logging
 import json
 import hashlib
-from restclients.util.log import log_info, log_err
+from restclients.util.log import log_info
 from endorsement.dao.uwnetid_subscription_60 import get_user_affiliations
 
 
@@ -15,28 +15,15 @@ def log_session(logger, session_key):
     logger.info(json.dumps(log_entry))
 
 
-def add_user_info(message):
+def _add_user_info(message):
     try:
         return "%s - %s" % (get_user_affiliations(), message)
     except Exception:
         return message
 
 
-def log_exception(logger, message, exc_info):
-    """
-    exc_info is a string containing
-    the full stack trace, the exception type and value
-    """
-    logger.error("%s => %s",
-                 add_user_info(message), exc_info.splitlines())
-
-
-def log_exception_with_timer(logger, timer, exc_info):
-    log_err(logger, add_user_info(exc_info.splitlines()), timer)
-
-
 def log_resp_time(logger, message, timer):
-    log_info(logger, add_user_info(message), timer)
+    log_info(logger, _add_user_info(message), timer)
 
 
 def log_success_resp(logger, timer):

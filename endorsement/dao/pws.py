@@ -9,7 +9,7 @@ import traceback
 from restclients.pws import PWS
 from restclients.exceptions import InvalidNetID
 from restclients.exceptions import DataFailureException
-from endorsement.util.logger import log_exception
+from endorsement.util.log_err import log_exception
 
 
 logger = logging.getLogger(__name__)
