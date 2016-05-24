@@ -1,33 +1,37 @@
 import logging
 from endorsement.models.user import Endorser, Endorsee
-from endorsement.dao import get_netid_of_current_user
 from endorsement.dao.pws import get_regid
-from endorsement.dao.uwnetid_subscription_60 import is_staff, is_faculty
+from endorsement.dao.uwnetid_subscription_60 import is_current_staff,\
+    is_current_faculty
 
 
 logger = logging.getLogger(__name__)
 
 
-def get_endorser_model():
-    user_netid = get_netid_of_current_user()
-
+def get_endorser_model(uwnetid):
+    """
+    return an Endorser object
+    @exception: DataFailureException
+    """
     user, created = Endorser.objects.get_or_create(
-        uwnetid=user_netid,
-        uwregid=get_regid(user_netid),
-        is_staff=is_staff(user_netid),
-        is_faculty=is_faculty(user_netid),
-        defaults={'last_visit': timezone.now()}
+        netid=uwnetid,
+        regid=get_regid(uwnetid),
+        is_staff=is_current_staff(uwnetid),
+        is_faculty=is_current_faculty(uwnetid),
+        defaults={'last_visit': timezone.now()},
         )
 
     return user
 
 
-def get_endorsee_model(user_netid):
-    user_regid = get_regid(user_netid)
-
+def get_endorsee_model(uwnetid):
+    """
+    return an Endorsee object
+    @exception: DataFailureException
+    """
     user, created = Endorsee.objects.get_or_create(
-        uwnetid=user_netid,
-        uwregid=user_regid
+        netid=user_netid,
+        regid=get_regid(uwnetid),
         )
 
     return user

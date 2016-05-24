@@ -1,0 +1,34 @@
+<h3>General</h3>
+<ul>
+    {% url 'userservice.views.support' as user_override_url %}
+    {% if user_override_url %}
+    <li><a href="{{ user_override_url }}">{{ userservice_link|default:"User Override" }}</a></li>
+    {% endif %}
+</ul>
+
+<h3>Web Services</h3>
+<ul>
+    {% url 'restclients.views.proxy' 'pws' 'identity/v1' as pws_url %}
+    {% if pws_url %}
+    <li><a href="{{ pws_url }}">{{ restclients_pws_link|default:"Browse Person Web Service" }}</a></li>
+    {% endif %}
+</ul>
+
+{% url 'restclients.views.proxy' 'uwnetid' '/nws/v1/uwnetid' as url %}
+{% if url %}
+    <h4>Netid Web Service:</h4>
+    <script>
+        function direct_to_netid_service() {
+            var netid = document.getElementById("netid_service_input").value;
+            window.location.href = "{% url 'restclients.views.proxy' 'uwnetid' '/nws/v1/uwnetid' %}/" + netid + "/subscription/60";
+            return false;
+        }
+    </script>
+
+    <form onsubmit="return direct_to_netid_service()">
+        <div class="form-group">
+            <input type="text" id="netid_service_input" class="form-control">&nbsp;<input type="submit" value="Go" class="btn btn-primary btn-sm" />
+        </div>
+    </form>
+
+{% endif %}

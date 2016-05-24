@@ -17,7 +17,7 @@ before_script:
   - cp travis-ci/manage.py manage.py
   - python manage.py syncdb --noinput
 script:
-  - pep8 endorsement/ --exclude=migrations,endorsement/static
+  - pep8 endorsement/ --exclude=migrations,endorsement/static/vendor
 #  - jshint endorsement/static/js/  --verbose
 #  - mocha endorsement/static/js/test/ --recursive
   - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement

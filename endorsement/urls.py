@@ -1,7 +1,5 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.decorators import login_required
-from myuw.views.logger import log_interaction
-from myuw.views.page import index
 
 
 urlpatterns = patterns(
@@ -10,5 +8,5 @@ urlpatterns = patterns(
         ),
     url(r'^logout', 'page.logout', name="myuw_logout"
         ),
-    url(r'.*', 'page.index', name="myuw_home"),
+    url(r'.*', 'page.index', name="home"),
 )

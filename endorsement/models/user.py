@@ -9,21 +9,29 @@ def datetime_to_str(d_obj):
 
 
 class Endorser(models.Model):
-    uwnetid = models.SlugField(max_length=16,
-                               db_index=True,
-                               unique=True)
-    uwregid = models.CharField(max_length=32,
-                               null=True,
-                               db_index=True,
-                               unique=True)
+    netid = models.SlugField(max_length=16,
+                             db_index=True,
+                             unique=True)
+    regid = models.CharField(max_length=32,
+                             null=True,
+                             db_index=True,
+                             unique=True)
     is_faculty = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     last_visit = models.DateTimeField(default=timezone.now())
 
+    def __str__(self):
+        return "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s}" % (
+            "netid", self.netid,
+            "regid", self.regid,
+            "is_faculty", self.is_faculty,
+            "is_staff", self.is_staff,
+            "last_visit", datetime_to_str(self.last_visit))
+
     def json_data(self):
         return {
-            "uwnetid": self.uwnetid,
-            "uwregid": self.uwregid,
+            "netid": self.netid,
+            "regid": self.regid,
             "is_faculty": self.is_faculty,
             "is_staff": self.is_staff,
             "last_visit": datetime_to_str(self.last_visit)
@@ -34,18 +42,23 @@ class Endorser(models.Model):
 
 
 class Endorsee(models.Model):
-    uwnetid = models.SlugField(max_length=16,
-                               db_index=True,
-                               unique=True)
-    uwregid = models.CharField(max_length=32,
-                               null=True,
-                               db_index=True,
-                               unique=True)
+    netid = models.SlugField(max_length=16,
+                             db_index=True,
+                             unique=True)
+    regid = models.CharField(max_length=32,
+                             null=True,
+                             db_index=True,
+                             unique=True)
+
+    def __str__(self):
+        return "{%s: %s, %s: %s}" % (
+            "netid", self.netid,
+            "regid", self.regid)
 
     def json_data(self):
         return {
-            "uwnetid": self.uwnetid,
-            "uwregid": self.uwregid
+            "netid": self.netid,
+            "regid": self.regid
             }
 
     class Meta:

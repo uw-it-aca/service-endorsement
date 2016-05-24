@@ -1,1 +1,3 @@
-endorsement/static/**
+endorsement/static/vendor/**
+endorsement/static/images/**
+endorsement/static/fonts/**

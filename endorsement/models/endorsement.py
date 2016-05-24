@@ -12,8 +12,8 @@ class Endorsement(models.Model):
 
     def json_data(self):
         data = {
-            "endorser_uwnetid": self.endorser.uwnetid,
-            "endorsee_uwnetid": self.endorsee.uwnetid,
+            "endorser_netid": self.endorser.netid,
+            "endorsee_netid": self.endorsee.netid,
             "datetime_endorsed": datetime_to_str(self.datetime_endorsed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired)
