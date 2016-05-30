@@ -1,19 +1,11 @@
 """
-Django settings for project project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.7/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.7/ref/settings/
+Django 1.9 settings for travis_ci project
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
+
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
@@ -21,14 +13,14 @@ SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,13 +30,13 @@ INSTALLED_APPS = (
     'compressor',
     'restclients',
     'templatetag_handlebars',
-    'endorsement',
     'userservice',
     'supporttools',
     'django_client_logger',
-)
+    'endorsement',
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -54,7 +46,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'userservice.user.UserServiceMiddleware',
-)
+]
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.RemoteUserBackend',
@@ -63,21 +55,16 @@ AUTHENTICATION_BACKENDS = (
 
 ROOT_URLCONF = 'travis-ci.urls'
 
-WSGI_APPLICATION = 'travis-ci.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-# Internationalization
-# https://docs.djangoproject.com/en/1.7/topics/i18n/
+DEFAULT_INDEX_TABLESPACE = ''
+MIGRATION_MODULES = {
+    'endorsement': 'endorsement.db_migrations'
+    }
 
 LANGUAGE_CODE = 'en-us'
 
@@ -89,11 +76,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.7/howto/static-files/
-
+MEDIA_URL = 'http://localhost:8000/media/'
+MEDIA_ROOT = ''
 STATIC_URL = '/static/'
+STATIC_ROOT = ''
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -101,6 +87,25 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
+
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'travis-ci.wsgi.application'
 
 COMPRESS_ENABLED = False
 COMPRESS_OFFLINE = False
