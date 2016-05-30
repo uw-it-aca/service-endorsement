@@ -22,7 +22,7 @@ class Endorser(models.Model):
             self.regid == other.regid
 
     def __str__(self):
-        return "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s}" % (
+        return "{%s: %s, %s: %s, %s: %s, %s: %s}" % (
             "netid", self.netid,
             "regid", self.regid,
             "is_valid", self.is_valid,

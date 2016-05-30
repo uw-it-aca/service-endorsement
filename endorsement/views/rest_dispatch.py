@@ -3,12 +3,12 @@ import json
 import sys
 from django.http import HttpResponse
 from django.conf import settings
-from endorsement.views import get_netid_of_current_user
+from userservice.user import UserService
 from restclients.exceptions import DataFailureException,\
     InvalidNetID, InvalidRegID
 from endorsement.util.log import log_exception_with_timer,\
     log_data_not_found_response, log_data_error_response,\
-    log_invalid_netid_response, log_invalid_identity_response
+    log_invalid_netid_response, log_invalid_endorser_response
 
 
 class RESTDispatch:
@@ -19,7 +19,7 @@ class RESTDispatch:
     def run(self, *args, **named_args):
         request = args[0]
 
-        netid = get_netid_of_current_user()
+        netid = UserService().get_user()
         if not netid:
             return invalid_session()
 
@@ -77,7 +77,7 @@ def invalid_session(logger, timer):
 
 
 def invalid_endorser(logger, timer):
-    log_invalid_identity_response(logger, timer)
+    log_invalid_endorser_response(logger, timer)
     return _make_response(401, "Invalid endorser")
 
 
