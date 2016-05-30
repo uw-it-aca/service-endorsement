@@ -17,35 +17,36 @@ from endorsement.views.rest_dispatch import invalid_session,\
     invalid_endorser, handle_exception
 
 
-logger = logging.getLogger(__name__)
 LOGOUT_URL = "/user_logout"
+logger = logging.getLogger(__name__)
 
 
-@login_required
-@cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
+#@login_required
+#@cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
 def index(request):
     timer = Timer()
-    netid = get_netid_of_current_user()
-    if not netid:
-        return invalid_session(logger, timer)
-
     try:
-        if not is_valid_endorser(netid):
-            return invalid_endorser(logger, timer)
-    except DataFailureException as ex:
-        if ex.status == 404:
-            return invalid_endorser(logger, timer)
-    except Exception:
-        raise
+        netid = get_netid_of_current_user()
+        if not netid:
+            return invalid_session(logger, timer)
 
-    try:
+        try:
+            if not is_valid_endorser(netid):
+                return invalid_endorser(logger, timer)
+        except DataFailureException as ex:
+            if ex.status == 404:
+                return invalid_endorser(logger, timer)
+            raise
+
         session_key = request.session.session_key
-        log_session(logger, session_key)
-        user = get_endorser_model(netid)
+        if not HttpRequest.session['netid']:
+            HttpRequest.session['netid'] = netid
+            log_session(logger, session_key)
+            user = get_endorser_model(netid)
 
         context = {"home_url": "/",
                    "err": None,
-                   "user": user.json_data(),
+                   "user": {'netid': netid},
                    }
         context["user"]["session_key"] = session_key
         log_resp_time(logger, timer, context)

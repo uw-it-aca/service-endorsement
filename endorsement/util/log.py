@@ -33,8 +33,8 @@ def _add_user_netid(message):
 
 def log_exception(logger, message, exc_info):
     """
-    exc_info is a string containing
-    the full stack trace, the exception type and value
+    exc_info is a string containing the full stack trace,
+    including the exception type and value
     """
     logger.error("%s => %s",
                  _add_user_netid(message), exc_info.splitlines())

@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 
 def datetime_to_str(d_obj):
@@ -13,27 +12,27 @@ class Endorser(models.Model):
                              db_index=True,
                              unique=True)
     regid = models.CharField(max_length=32,
-                             null=True,
                              db_index=True,
                              unique=True)
-    is_faculty = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
-    last_visit = models.DateTimeField(default=timezone.now())
+    is_valid = models.BooleanField()
+    last_visit = models.DateTimeField()
+
+    def __eq__(self, other):
+        return other is not None and\
+            self.regid == other.regid
 
     def __str__(self):
         return "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s}" % (
             "netid", self.netid,
             "regid", self.regid,
-            "is_faculty", self.is_faculty,
-            "is_staff", self.is_staff,
+            "is_valid", self.is_valid,
             "last_visit", datetime_to_str(self.last_visit))
 
     def json_data(self):
         return {
             "netid": self.netid,
             "regid": self.regid,
-            "is_faculty": self.is_faculty,
-            "is_staff": self.is_staff,
+            "is_valid": self.is_valid,
             "last_visit": datetime_to_str(self.last_visit)
             }
 
@@ -46,9 +45,14 @@ class Endorsee(models.Model):
                              db_index=True,
                              unique=True)
     regid = models.CharField(max_length=32,
-                             null=True,
                              db_index=True,
                              unique=True)
+    # lastname = models.CharField(max_length=64,
+    #                             null=True)
+
+    def __eq__(self, other):
+        return other is not None and\
+            self.regid == other.regid
 
     def __str__(self):
         return "{%s: %s, %s: %s}" % (

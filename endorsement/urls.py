@@ -4,9 +4,7 @@ from django.contrib.auth.decorators import login_required
 
 urlpatterns = patterns(
     'endorsement.views',
-    url(r'^logger/(?P<interaction_type>\w+)$', 'logger.log_interaction'
-        ),
-    url(r'^logout', 'page.logout', name="myuw_logout"
-        ),
+    url(r'^logger/(?P<interaction_type>\w+)$', 'logger.log_interaction'),
+    url(r'^logout', 'page.logout', name="logout"),
     url(r'.*', 'page.index', name="home"),
 )

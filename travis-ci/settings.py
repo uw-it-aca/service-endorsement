@@ -35,7 +35,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'south',
     'compressor',
     'restclients',
     'templatetag_handlebars',
@@ -54,7 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'userservice.user.UserServiceMiddleware'
+    'userservice.user.UserServiceMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -113,4 +112,3 @@ RESTCLIENTS_MEMCACHED_SERVERS = ('localhost:11211', )
 AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.all_ok.AllOK'
 USERSERVICE_ADMIN_GROUP=''
 RESTCLIENTS_ADMIN_GROUP=''
-RESTCLIENTS_SWS_USE_V5 = True
