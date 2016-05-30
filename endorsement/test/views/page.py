@@ -23,18 +23,18 @@ AUTH_GROUP = 'authz_group.authz_implementation.all_ok.AllOK'
 
 
 @override_settings(
-    AUTHENTICATION_BACKENDS = (AUTH_BACKEND,),
-    USERSERVICE_ADMIN_GROUP = "x",
-    AUTHZ_GROUP_BACKEND = AUTH_GROUP,
-    MIDDLEWARE_CLASSES = (Session,
-                          Common,
-                          CsrfView,
-                          Auth,
-                          RemoteUser,
-                          Message,
-                          XFrame,
-                          UserService,
-                          ),
+    AUTHENTICATION_BACKENDS=(AUTH_BACKEND,),
+    USERSERVICE_ADMIN_GROUP="x",
+    AUTHZ_GROUP_BACKEND=AUTH_GROUP,
+    MIDDLEWARE_CLASSES=(Session,
+                        Common,
+                        CsrfView,
+                        Auth,
+                        RemoteUser,
+                        Message,
+                        XFrame,
+                        UserService,
+                        ),
     )
 class TestPage(TestCase):
 
