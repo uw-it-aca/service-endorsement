@@ -1,0 +1,43 @@
+{
+    "subscriptionList": [
+        {
+            "actions": [
+                "Show"
+            ],
+            "dataField": "KPW",
+            "permits": [
+                {
+                    "categoryCode": 4,
+                    "categoryName": "Staff",
+                    "mode": "implicit",
+                    "statusCode": 1,
+                    "statusName": "current",
+                    "type": "permit"
+                },
+                {
+                    "categoryCode": 28,
+                    "categoryName": "Development Affiliate",
+                    "mode": "implicit",
+                    "statusCode": 1,
+                    "statusName": "current",
+                    "type": "permit"
+                },
+                {
+                    "categoryCode": 49,
+                    "categoryName": "UW Exchange User",
+                    "mode": "implicit",
+                    "statusCode": 1,
+                    "statusName": "current",
+                    "type": "permit"
+                }
+            ],
+            "permitted": true,
+            "statusCode": 20,
+            "statusName": "Active",
+            "subscriptionCode": 60,
+            "subscriptionName": "A Kerberos Principal"
+        }
+    ],
+    "timeStamp": "Fri, 20 May 2016 13:11:03 -0700",
+    "uwNetID": "jstaff"
+}
