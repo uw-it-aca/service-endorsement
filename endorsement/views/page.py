@@ -21,8 +21,8 @@ LOGOUT_URL = "/user_logout"
 logger = logging.getLogger(__name__)
 
 
-#@login_required
-#@cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
+@login_required
+@cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
 def index(request):
     timer = Timer()
     try:

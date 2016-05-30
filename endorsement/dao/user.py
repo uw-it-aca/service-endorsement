@@ -15,10 +15,10 @@ def get_endorser_model(uwnetid):
     @exception: DataFailureException
     """
     uwregid = get_regid(uwnetid)
-    updated_values={'netid': uwnetid,
-                    'is_valid': is_valid_endorser(uwnetid),
-                    'last_visit': timezone.now()
-                    }
+    updated_values = {'netid': uwnetid,
+                      'is_valid': is_valid_endorser(uwnetid),
+                      'last_visit': timezone.now()
+                      }
     user, created = Endorser.objects.update_or_create(
         regid=uwregid,
         defaults=updated_values)
