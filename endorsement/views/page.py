@@ -1,7 +1,7 @@
 import logging
 import traceback
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
 from django.template import RequestContext
@@ -47,9 +47,7 @@ def index(request):
                 },
             }
         log_resp_time(logger, "index.html", timer)
-        return render_to_response("index.html",
-                                  context,
-                                  context_instance=RequestContext(request))
+        return render(request, "index.html", context)
     except Exception:
         handle_exception(logger, timer, traceback)
 
