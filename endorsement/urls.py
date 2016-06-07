@@ -6,7 +6,7 @@ from endorsement.views import page
 
 
 urlpatterns = [
-    url(r'^logger/(?P<interaction_type>\w+)$', log_interaction),
+    url(r'^logger/(?P<interaction_type>\w+)$', log_interaction, name='logger'),
     url(r'^logout', page.logout, name='logout'),
     url(r'.*', page.index, name='home'),
 ]

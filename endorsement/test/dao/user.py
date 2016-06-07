@@ -1,5 +1,4 @@
 from django.test import TestCase, TransactionTestCase
-from django.conf import settings
 from endorsement.models.user import Endorser
 from endorsement.dao.user import get_endorser_model
 
