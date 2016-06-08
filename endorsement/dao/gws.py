@@ -38,6 +38,7 @@ def get_endorsees_by_endorser(endorser_uwnetid):
                     ret_list.append(mem.name)
     return ret_list
 
+
 def get_msca_endorsement_groups():
     """
     Returns a list of restclients.models.gws.GroupReference objects
