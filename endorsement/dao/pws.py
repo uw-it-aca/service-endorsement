@@ -4,12 +4,9 @@ provides Person information of the current user
 """
 
 import logging
-import sys
 import traceback
 from restclients.pws import PWS
-from restclients.exceptions import InvalidNetID
-from restclients.exceptions import DataFailureException
-from endorsement.util.log import log_exception
+from endorsement.dao import handel_err
 
 
 logger = logging.getLogger(__name__)
@@ -34,13 +31,6 @@ def is_valid_endorsee(uwnetid):
     try:
         return _get_person(uwnetid) is not None
     except Exception:
-        log_exception(logger,
-                      '%s is_valid_endorsee ' % uwnetid,
-                      traceback.format_exc())
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        if isinstance(exc_value, InvalidNetID):
-            return False
-        if isinstance(exc_value, DataFailureException) and\
-                exc_value.status == 404:
-            return False
-        raise
+        return handel_err(logger,
+                          '%s pws.get_person_by_netid ' % uwnetid,
+                          traceback.format_exc())

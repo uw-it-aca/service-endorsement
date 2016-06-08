@@ -4,6 +4,7 @@ provides access to the existing endorsement groups
 """
 
 import logging
+import re
 import sys
 import traceback
 from restclients.exceptions import InvalidNetID
@@ -20,9 +21,26 @@ ENDORSER_GROUP = "uw_employee"
 gws = GWS()
 
 
+def get_endorsees_by_endorser(endorser_uwnetid):
+    """
+    Returns a list of netids of the endorsees currently
+    endorsed by the given endorser_uwnetid on uw Group Service.
+    """
+    ret_list = []
+    for gr in get_msca_endorsement_groups():
+        pattern = r"^%s%s$" % (NAME_PREFIX[:-1], endorser_uwnetid)
+        if re.match(pattern, gr.name):
+            members = gws.get_effective_members(gr.name)
+            if members is None:
+                return ret_list
+            for mem in members:
+                if mem.is_uwnetid():
+                    ret_list.append(mem.name)
+    return ret_list
+
 def get_msca_endorsement_groups():
     """
-    Returns a list of restclients.GroupReference objects
+    Returns a list of restclients.models.gws.GroupReference objects
     """
     action = 'search groups with name=%s' % NAME_PREFIX
     timer = Timer()
