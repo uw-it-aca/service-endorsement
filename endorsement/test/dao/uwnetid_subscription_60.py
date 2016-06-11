@@ -21,24 +21,19 @@ class TestNetidSubs60Dao(TestDao):
         self.assertTrue(is_valid_endorsee('endorsee4'))
         self.assertFalse(is_valid_endorsee('endorsee5'))
 
-
     def test_get_kerberos_subs_status(self):
         status_name, permitted = get_kerberos_subs_status('endorsee1')
-        self.assertEqual(status_name,
-                          "Active")
+        self.assertEqual(status_name, "Active")
         self.assertTrue(permitted)
 
         status_name, permitted = get_kerberos_subs_status('endorsee5')
-        self.assertEqual(status_name,
-                          "Inactive")
+        self.assertEqual(status_name, "Inactive")
         self.assertTrue(permitted)
 
         status_name, permitted = get_kerberos_subs_status('none')
-        self.assertEqual(status_name,
-                          "Unpermitted")
+        self.assertEqual(status_name, "Unpermitted")
         self.assertFalse(permitted)
 
         status_name, permitted = get_kerberos_subs_status('none1')
-        self.assertEqual(status_name,
-                          "Active")
+        self.assertEqual(status_name, "Active")
         self.assertFalse(permitted)

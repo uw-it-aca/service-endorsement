@@ -10,7 +10,7 @@ class TestUserDao(TransactionTestCase):
         user = get_endorser_model('jstaff')
         self.assertIsNotNone(user)
         self.assertEqual(user.regid,
-                          '10000000000000000000000000000001')
+                         '10000000000000000000000000000001')
         self.assertTrue(user.is_valid)
 
         qset = Endorser.objects.filter(netid='jstaff')
