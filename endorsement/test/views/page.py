@@ -7,14 +7,14 @@ class TestPage(TestViewApi):
 
     def test_err_cases(self):
         request = self.get_request('/', 'jnone')
-        self.assertEquals(get_original_user(request), 'jnone')
+        self.assertEqual(get_original_user(request), 'jnone')
 
         response = self.get_response("home")
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
     def test_normal_cases(self):
         request = self.get_request('/', 'jstaff')
-        self.assertEquals(get_original_user(request), 'jstaff')
+        self.assertEqual(get_original_user(request), 'jstaff')
 
         response = self.get_response("home")
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)

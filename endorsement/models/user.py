@@ -8,7 +8,7 @@ def datetime_to_str(d_obj):
 
 
 class Endorser(models.Model):
-    netid = models.SlugField(max_length=16,
+    netid = models.SlugField(max_length=32,
                              db_index=True,
                              unique=True)
     regid = models.CharField(max_length=32,
@@ -41,28 +41,34 @@ class Endorser(models.Model):
 
 
 class Endorsee(models.Model):
-    netid = models.SlugField(max_length=16,
+    netid = models.SlugField(max_length=32,
                              db_index=True,
                              unique=True)
     regid = models.CharField(max_length=32,
                              db_index=True,
                              unique=True)
-    # lastname = models.CharField(max_length=64,
-    #                             null=True)
+    display_name = models.CharField(max_length=64,
+                                    null=True)
+    kerberos_active_permitted = models.BooleanField()
 
     def __eq__(self, other):
         return other is not None and\
             self.regid == other.regid
 
     def __str__(self):
-        return "{%s: %s, %s: %s}" % (
+        return "{%s: %s, %s: %s, %s: %s, %s: %s}" % (
             "netid", self.netid,
-            "regid", self.regid)
+            "regid", self.regid,
+            "name", self.display_name,
+            "is_valid", self.kerberos_active_permitted,
+            )
 
     def json_data(self):
         return {
             "netid": self.netid,
-            "regid": self.regid
+            "regid": self.regid,
+            "name": self.display_name,
+            "is_valid": self.kerberos_active_permitted
             }
 
     class Meta:

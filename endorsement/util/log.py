@@ -1,4 +1,3 @@
-import hashlib
 import json
 import logging
 from restclients.util.log import log_err, log_info
@@ -13,15 +12,6 @@ def _get_user():
     if override_userid:
         log_userid['override-as'] = override_userid
     return log_userid
-
-
-def log_session(logger, session_key):
-    if session_key is None:
-        session_key = ''
-    session_hash = hashlib.md5(session_key).hexdigest()
-    log_entry = _get_user()
-    log_entry['session_key'] = session_hash
-    logger.info(json.dumps(log_entry))
 
 
 def add_user_info(message):

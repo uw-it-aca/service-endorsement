@@ -36,14 +36,6 @@ def get_user_pass(netid):
     return 'pass'
 
 
-Session = 'django.contrib.sessions.middleware.SessionMiddleware'
-Common = 'django.middleware.common.CommonMiddleware'
-CsrfView = 'django.middleware.csrf.CsrfViewMiddleware'
-Auth = 'django.contrib.auth.middleware.AuthenticationMiddleware'
-RemoteUser = 'django.contrib.auth.middleware.RemoteUserMiddleware'
-Message = 'django.contrib.messages.middleware.MessageMiddleware'
-XFrame = 'django.middleware.clickjacking.XFrameOptionsMiddleware'
-UserService = 'userservice.user.UserServiceMiddleware'
 AUTH_BACKEND = 'django.contrib.auth.backends.ModelBackend'
 AUTH_GROUP = 'authz_group.authz_implementation.all_ok.AllOK'
 
@@ -52,15 +44,20 @@ view_test_override = override_settings(
     AUTHENTICATION_BACKENDS=(AUTH_BACKEND,),
     AUTHZ_GROUP_BACKEND=AUTH_GROUP,
     USERSERVICE_ADMIN_GROUP="x",
-    MIDDLEWARE_CLASSES=(Session,
-                        Common,
-                        CsrfView,
-                        Auth,
-                        RemoteUser,
-                        Message,
-                        XFrame,
-                        UserService,
-                        ),
+    MIDDLEWARE_CLASSES=(
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.locale.LocaleMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.auth.middleware.PersistentRemoteUserMiddleware',
+        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'django_mobileesp.middleware.UserAgentDetectionMiddleware',
+        'userservice.user.UserServiceMiddleware',
+        ),
     )
 
 
@@ -70,13 +67,13 @@ class TestViewApi(TestCase):
     def setUp(self):
         self.client = Client(HTTP_USER_AGENT='Mozilla/5.0')
 
-    def set_user(self, netid):
+    def _set_user(self, netid):
         get_user(netid)
         self.client.login(username=netid,
                           password=get_user_pass(netid))
 
     def get_request(self, url, netid):
-        self.set_user(netid)
+        self._set_user(netid)
         request = RequestFactory().get(url)
         request.user = get_user(netid)
         request.session = self.client.session

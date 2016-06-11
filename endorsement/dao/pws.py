@@ -6,31 +6,50 @@ provides Person information of the current user
 import logging
 import traceback
 from restclients.pws import PWS
-from endorsement.dao import handel_err
+from restclients.exceptions import DataFailureException
+from endorsement.util.log import log_exception
 
 
 logger = logging.getLogger(__name__)
 pws = PWS()
 
 
-def _get_person(uwnetid):
+def get_entity(uwnetid):
     """
-    Retrieve the person data using the given netid
+    Retrieve the Entity object for the given netid
+    """
+    return pws.get_entity_by_netid(uwnetid)
+
+
+def get_person(uwnetid):
+    """
+    Retrieve the Person object for the given netid
     """
     return pws.get_person_by_netid(uwnetid)
 
 
-def get_regid(uwnetid):
-    return _get_person(uwnetid).uwregid
+def get_endorsee_data(uwnetid):
+    """
+    Return uwregid, display_anme retrieved from PWS/Entity for the
+    given uwnetid.
+    """
+    entity = get_entity(uwnetid)
+    return entity.uwregid, entity.display_name
 
 
-def is_valid_endorsee(uwnetid):
+def get_endorser_regid(uwnetid):
     """
-    Return True if the user is in PersonReg currently
+    Get from PWS/person, make sure it is a valid personal uwnetid
     """
+    return get_person(uwnetid).uwregid
+
+
+def is_renamed_uwnetid(uwnetid):
     try:
-        return _get_person(uwnetid) is not None
-    except Exception:
-        return handel_err(logger,
-                          '%s pws.get_person_by_netid ' % uwnetid,
-                          traceback.format_exc())
+        en = get_entity(uwnetid)
+        return False
+    except DataFailureException as ex:
+        log_exception(logger,
+                      '%s get_entity ' % uwnetid,
+                      traceback.format_exc())
+        return ex.status == 301

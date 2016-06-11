@@ -1,25 +1,43 @@
-from endorsement.dao.pws import _get_person, get_regid, is_valid_endorsee
+from restclients.exceptions import InvalidNetID
+from restclients.exceptions import DataFailureException
+from endorsement.dao.pws import is_renamed_uwnetid,\
+    get_endorser_regid, get_endorsee_data
 from endorsement.test.dao import TestDao
 
 
 class TestPwsDao(TestDao):
 
-    def test_invalid_netid(self):
-        self.assertFalse(is_valid_endorsee("notarealnetid"))
+    def test_is_renamed_uwnetid(self):
+        self.assertRaises(InvalidNetID,
+                          get_endorsee_data,
+                          "notareal_uwnetid")
+        self.assertFalse(is_renamed_uwnetid("nomockid"))
+        self.assertFalse(is_renamed_uwnetid("endorsee1"))
+        self.assertFalse(is_renamed_uwnetid("endorsee2"))
+        self.assertFalse(is_renamed_uwnetid("endorsee3"))
+        self.assertFalse(is_renamed_uwnetid("endorsee4"))
+        self.assertTrue(is_renamed_uwnetid("endorsee5"))
 
-    def test_err_case(self):
-        self.assertFalse(is_valid_endorsee("nomockid"))
-        self.assertFalse(is_valid_endorsee("endorsee1"))
-        self.assertFalse(is_valid_endorsee("endorsee3"))
-        self.assertFalse(is_valid_endorsee("endorsee4"))
-        self.assertFalse(is_valid_endorsee("endorsee5"))
+    def test_get_endorsee_data(self):
+        uwregid, display_anme = get_endorsee_data("endorsee1")
+        self.assertEqual(uwregid, "50000000000000000000000000000001")
+        self.assertEqual(display_anme, "Endorsee I")
 
-    def test_normal_case(self):
-        self.assertFalse(is_valid_endorsee("endorsee2"))
-        self.assertTrue(is_valid_endorsee('jstaff'))
-        self.assertTrue(is_valid_endorsee('jfaculty'))
+        self.assertRaises(InvalidNetID,
+                          get_endorsee_data,
+                          "notareal_uwnetid")
+        self.assertRaises(DataFailureException,
+                          get_endorsee_data,
+                          "nomockid")
 
-        self.assertEquals(get_regid('jstaff'),
-                          "10000000000000000000000000000001")
-        self.assertEquals(get_regid('jfaculty'),
-                          "10000000000000000000000000000002")
+    def test_get_endorser_regid(self):
+        self.assertEqual(get_endorser_regid('jstaff'),
+                         "10000000000000000000000000000001")
+        self.assertEqual(get_endorser_regid('jfaculty'),
+                         "10000000000000000000000000000002")
+        self.assertRaises(InvalidNetID,
+                          get_endorser_regid,
+                          "notareal_uwnetid")
+        self.assertRaises(DataFailureException,
+                          get_endorser_regid,
+                          "nomockid")
