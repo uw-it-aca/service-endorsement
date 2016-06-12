@@ -10,6 +10,6 @@ def store_endorsement(endorser, endorsee):
     en, created = EndorsementRecord.objects.update_or_create(
         endorser=endorser,
         endorsee=endorsee,
-        defaults = {'datetime_endorsed': timezone.now()}
+        defaults={'datetime_endorsed': timezone.now()}
         )
     return en, created

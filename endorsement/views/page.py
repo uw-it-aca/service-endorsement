@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 OGOUT_URL = "/user_logout"
 
 
-#@login_required
+# @login_required
 @cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
 def index(request):
     timer = Timer()
