@@ -9,7 +9,6 @@ import sys
 import traceback
 from restclients.exceptions import InvalidNetID
 from restclients.exceptions import DataFailureException
-from restclients.models.gws import Group, GroupReference, GroupUser
 from restclients.gws import GWS
 from endorsement.util.log import log_exception, log_resp_time
 from endorsement.util.time_helper import Timer
@@ -17,25 +16,30 @@ from endorsement.util.time_helper import Timer
 
 logger = logging.getLogger(__name__)
 NAME_PREFIX = "u_msca_endorse_splync_*"
+GROUP_NAME_PATTERN = r"^u_msca_endorse_splync_(.+)$"
 ENDORSER_GROUP = "uw_employee"
 gws = GWS()
 
 
-def get_endorsees_by_endorser(endorser_uwnetid):
+def get_endorser_endorsees():
     """
-    Returns a list of netids of the endorsees currently
-    endorsed by the given endorser_uwnetid on uw Group Service.
+    Returns a list of {'endorser': uwnetid, 'endorsees': [uwnetid]}
+    of the msca_endorsement_groups on uw Group Service.
     """
     ret_list = []
     for gr in get_msca_endorsement_groups():
-        pattern = r"^%s%s$" % (NAME_PREFIX[:-1], endorser_uwnetid)
-        if re.match(pattern, gr.name):
+        match  = re.search(GROUP_NAME_PATTERN, gr.name)
+        if match:
+            endorser_uwnetid = match.group(1)
+            endorsees = []
             members = gws.get_effective_members(gr.name)
-            if members is None:
-                return ret_list
-            for mem in members:
-                if mem.is_uwnetid():
-                    ret_list.append(mem.name)
+            if members is not None:
+                for mem in members:
+                    if mem.is_uwnetid():
+                        endorsees.append(mem.name)
+            ret_list.append({'endorser': endorser_uwnetid,
+                             'endorsees': endorsees})
+
     return ret_list
 
 
