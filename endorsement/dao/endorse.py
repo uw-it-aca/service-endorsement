@@ -16,6 +16,7 @@ def store_endorsement(endorser, endorsee):
         )
     return en, created
 
+
 def get_office_365_endorsements_endorsed_by(endorser):
     return EndorsementRecord.objects.filter(
         endorser=endorser,
