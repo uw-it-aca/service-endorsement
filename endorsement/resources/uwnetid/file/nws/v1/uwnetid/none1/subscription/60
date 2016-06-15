@@ -1,0 +1,18 @@
+{
+  "uwNetID" : "none1",
+  "subscriptionList" : [
+    {
+      "subscriptionCode" : 60,
+      "subscriptionName" : "A Kerberos Principal",
+      "permitted" : false,
+      "statusCode" : 20,
+      "statusName" : "Active",
+      "actions" : [
+        "Show"
+      ],
+      "expiration" : "2016-08-22",
+      "dataField" : "KPW"
+    }
+  ],
+  "timeStamp" : "Thu, 09 Jun 2016 15:45:36 -0700"
+}
