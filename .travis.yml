@@ -17,7 +17,7 @@ before_script:
   - cp travis-ci/manage.py manage.py
   - python manage.py migrate --run-syncdb
 script:
-  - pep8 endorsement/ --exclude=migrations,endorsement/static/vendor
+  - pep8 endorsement/ --exclude=migrations,endorsement/static/vendor,endorsement/static/images,endorsement/static/fonts
 #  - jshint endorsement/static/js/  --verbose
 #  - mocha endorsement/static/js/test/ --recursive
   - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
