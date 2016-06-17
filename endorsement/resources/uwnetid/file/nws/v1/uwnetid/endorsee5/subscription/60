@@ -1,0 +1,27 @@
+{
+    "uwNetID": "endorsee5",
+    "subscriptionList": [
+     {
+      "subscriptionCode" : 60,
+      "subscriptionName" : "A Kerberos Principal",
+      "permitted" : true,
+      "statusCode" : 24,
+      "statusName" : "Inactive",
+      "actions" : [
+        "Show"
+      ],
+      "dataField" : "KPW",
+      "permits": [
+                {
+                    "categoryCode": 11,
+                    "categoryName": "Department",
+                    "mode": "implicit",
+                    "statusCode": 1,
+                    "statusName": "current",
+                    "type": "permit"
+                }
+            ]
+     }
+    ],
+    "timeStamp": "Tue, 07 Jun 2016 14:47:07 -0700"
+}

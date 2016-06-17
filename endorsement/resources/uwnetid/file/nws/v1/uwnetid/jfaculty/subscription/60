@@ -1,0 +1,59 @@
+{
+    "subscriptionList": [
+        {
+            "actions": [
+                "Show"
+            ],
+            "dataField": "KPW",
+            "permits": [
+                {
+                    "categoryCode": 2,
+                    "categoryName": "Graduate",
+                    "mode": "implicit",
+                    "statusCode": 3,
+                    "statusName": "former",
+                    "type": "permit"
+                },
+                {
+                    "categoryCode": 5,
+                    "categoryName": "Faculty",
+                    "mode": "implicit",
+                    "statusCode": 1,
+                    "statusName": "current",
+                    "type": "permit"
+                },
+                {
+                    "categoryCode": 16,
+                    "categoryName": "Alumni",
+                    "mode": "implicit",
+                    "statusCode": 1,
+                    "statusName": "current",
+                    "type": "permit"
+                },
+                {
+                    "categoryCode": 16,
+                    "categoryName": "Alumni",
+                    "mode": "implicit",
+                    "statusCode": 3,
+                    "statusName": "former",
+                    "type": "permit"
+                },
+                {
+                    "categoryCode": 28,
+                    "categoryName": "Development Affiliate",
+                    "mode": "implicit",
+                    "statusCode": 1,
+                    "statusName": "current",
+                    "type": "permit"
+                }
+            ],
+            "permitted": true,
+            "statusCode": 20,
+            "statusName": "Active",
+            "subscriptionCode": 60,
+            "subscriptionName": "A Kerberos Principal"
+        }
+    ],
+    "timeStamp": "Fri, 20 May 2016 14:30:37 -0700",
+    "uwNetID": "jfaculty"
+}

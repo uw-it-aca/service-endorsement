@@ -1,0 +1,62 @@
+{% load hashing_tag %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Service Endorsement</title>
+    <meta name="viewport"
+          content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    {% load compress %}
+
+    {% load static %}
+
+    {% compress css %}
+      <!-- styles -->
+      <link href="{% static 'vendor/css/bootstrap-3.3.5.min.css' %}" rel="stylesheet">
+      <link href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}" rel="stylesheet">
+      <link href="{% static 'vendor/css/user-fonts.css' %}" rel="stylesheet">
+      <!-- <link href="{% static 'css/base.less' %}" rel="stylesheet" type="text/less"> -->
+
+    {% endcompress %}
+
+    {% load templatetag_handlebars %}
+  </head>
+
+  <body>
+    {% csrf_token %}
+
+    <div id="app_header">
+        <div class="header-bar" role="navigation" title="Home">
+            <div class="container clearfix">
+                <div class="pull-left header-myuw"><a href="/" title="Go to Service Endorsement Home"><h1 id="main_header">Service Endorsement</h1></a></div>
+                </div>
+        </div>
+    </div>
+
+    <div id="app_content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div id="app_footer">
+    </div>
+
+    <!-- do not compress - lack of trailing semicolons breaks concatenation -->
+    <script src="{% static 'vendor/js/jquery-1.11.0.min.js' %}"></script>
+    <script src="{% static 'vendor/js/bootstrap-3.1.1.min.js' %}"></script>
+    <script src="{% static 'vendor/js/jquery.cookie-1.4.1.min.js' %}"></script>
+    <script src="{% static 'vendor/js/ios-orientationchange-fix.min.js' %}"></script>
+    <script src="{% static 'vendor/js/handlebars-v2.0.0.js' %}"></script>
+    <script src="{% static 'vendor/js/jquery.history-1.8.0.min.js' %}"></script>
+    <script src="{% static 'vendor/js/jquery.ba-dotimeout-1.0.js' %}"></script>
+    <script src="{% static 'vendor/js/moment.2.8.3.min.js' %}"></script>
+    <script src="{% static 'vendor/js/moment-timezone-2010-2020v0.3.0.min.js' %}"></script>
+
+    {% if not has_less_compiled %}
+      <script src="{% static 'vendor/js/less-2.0.0.min.js' %}" type="text/javascript"></script>
+    {% endif %}
+
+    {% include 'logger.html' %}
+  </body>
+</html>
