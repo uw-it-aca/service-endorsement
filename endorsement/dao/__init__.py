@@ -1,9 +1,7 @@
-import logging
 import sys
-from django.utils import timezone
-from restclients.dao import PWS_DAO
-from restclients.exceptions import InvalidNetID
-from restclients.exceptions import DataFailureException
+from uw_pws.dao import PWS_DAO
+from restclients_core.exceptions import (
+    DataFailureException, InvalidNetID)
 from endorsement.util.log import log_exception
 
 

@@ -1,6 +1,5 @@
-from django.test import TestCase, TransactionTestCase
-from restclients.exceptions import DataFailureException
-from endorsement.models.core import Endorsee, Endorser, EndorsementRecord
+from django.test import TransactionTestCase
+from endorsement.models.core import Endorser, EndorsementRecord
 from endorsement.dao.migration import migrate_msca_endorsements
 
 

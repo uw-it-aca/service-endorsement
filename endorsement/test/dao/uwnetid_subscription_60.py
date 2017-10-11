@@ -1,4 +1,3 @@
-from restclients.models.uwnetid import Subscription
 from endorsement.dao.uwnetid_subscription_60 import is_valid_endorsee,\
     get_kerberos_subs_status
 from endorsement.test.dao import TestDao

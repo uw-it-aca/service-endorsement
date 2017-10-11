@@ -1,5 +1,3 @@
-from restclients.exceptions import DataFailureException
-from restclients.exceptions import InvalidNetID
 from endorsement.dao.gws import is_valid_endorser,\
     get_endorser_endorsees
 from endorsement.test.dao import TestDao

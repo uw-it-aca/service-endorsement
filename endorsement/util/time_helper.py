@@ -1,7 +1,19 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime
 import pytz
-from django.utils import timezone
-from restclients.util.timer import Timer
+
+
+class Timer:
+    def __init__(self):
+        """ Start the timer """
+        self.start = self._now()
+
+    def _now(self):
+        return datetime.utcnow()
+
+    def get_elapsed(self):
+        """ Return the time spent in milliseconds """
+        delta = self._now() - self.start
+        return delta.microseconds / 1000.0
 
 
 def get_datetime_now(tz_aware=False):

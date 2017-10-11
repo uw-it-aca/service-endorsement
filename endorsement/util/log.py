@@ -1,7 +1,9 @@
 import json
-import logging
-from restclients.util.log import log_err, log_info
+from logging import getLogger
 from userservice.user import UserService
+
+
+logger = getLogger
 
 
 def _get_user():
@@ -31,11 +33,11 @@ def log_exception(logger, message, exc_info):
 
 
 def log_invalid_netid_response(logger, timer):
-    log_err(logger, 'Invalid netid, abort', timer)
+    logger.error('Invalid netid, abort', timer)
 
 
 def log_err_with_netid(logger, timer, message):
-    log_err(logger, add_user_info(message), timer)
+    logger.error(add_user_info(message), timer)
 
 
 def log_exception_with_timer(logger, timer, exc_info):
@@ -56,7 +58,7 @@ def log_data_error_response(logger, timer):
 
 
 def log_resp_time(logger, message, timer):
-    log_info(logger, add_user_info(message), timer)
+    logger.info(logger, add_user_info(message), timer)
 
 
 def log_data_not_found_response(logger, timer):

@@ -1,5 +1,5 @@
-from django.test import TestCase, TransactionTestCase
-from restclients.exceptions import DataFailureException
+from django.test import TransactionTestCase
+from restclients_core.exceptions import DataFailureException
 from endorsement.models.core import Endorser, Endorsee
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 

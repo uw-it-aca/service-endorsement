@@ -7,7 +7,7 @@ from django.views.decorators.cache import cache_control
 from django.contrib.auth import logout as django_logout
 from django.template import RequestContext
 from django.contrib.auth.models import User
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from userservice.user import UserService
 from endorsement.dao.user import get_endorser_model
 from endorsement.dao.gws import is_valid_endorser
