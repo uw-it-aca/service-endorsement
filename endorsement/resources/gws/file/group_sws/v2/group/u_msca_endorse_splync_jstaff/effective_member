@@ -13,12 +13,10 @@
     <br/>
     <ul class="members">
      <li>
-       <a rel="memberlink" class="effective_member" type="uwnetid"
-          href="/group_sws/v2/group/u_msca_endorse_splync_jstaff/effective_member/endorsee1">endorsee1</a>
+       <a rel="memberlink" class="effective_member" type="uwnetid" href="/group_sws/v2/group/u_msca_endorse_splync_jstaff/effective_member/endorsee1">endorsee1</a>
      </li>
      <li>
-       <a rel="memberlink" class="effective_member" type="uwnetid"
-          href="/group_sws/v2/group/u_msca_endorse_splync_jstaff/effective_member/endorsee2">endorsee2</a>
+       <a rel="memberlink" class="effective_member" type="uwnetid" href="/group_sws/v2/group/u_msca_endorse_splync_jstaff/effective_member/endorsee2">endorsee2</a>
      </li>
     </ul>
   </div>

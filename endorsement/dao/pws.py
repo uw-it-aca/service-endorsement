@@ -30,7 +30,7 @@ def get_person(uwnetid):
 
 def get_endorsee_data(uwnetid):
     """
-    Return uwregid, display_anme retrieved from PWS/Entity for the
+    Return uwregid, display_name retrieved from PWS/Entity for the
     given uwnetid.
     """
     entity = get_entity(uwnetid)

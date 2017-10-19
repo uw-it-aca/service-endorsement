@@ -8,8 +8,8 @@
             "dataField": "KPW",
             "permits": [
                 {
-                    "categoryCode": 11,
-                    "categoryName": "Department",
+                    "categoryCode": 5,
+                    "categoryName": "UW Faculty",
                     "mode": "implicit",
                     "statusCode": 1,
                     "statusName": "current",
