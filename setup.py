@@ -38,6 +38,7 @@ setup(
         'UW-RestClients-GWS<1.0',
         'UW-RestClients-UWNetID<1.0',
         'django-userservice==1.2.1',
+        'django-pyscss',
         'django_mobileesp',
         'Django-SupportTools',
         'django_client_logger',

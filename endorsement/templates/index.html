@@ -2,10 +2,39 @@
 
 {% block content %}
 
-<script>
-    window.user = {
-        "netid": "{{ user.netid }}"
-    };
-</script>
+<div class="container">
+
+    <h3>Select service for endorsement</h3>
+
+    <div class="endorsement-group">
+      <div>
+        <label>
+          <input type="checkbox" name="Office365" id="endorse_o365" value="office365" />
+          Endorse users for Office365
+        </label>
+      </div>
+      <div>
+        <label>
+          <input type="checkbox" name="GoogleApps" id="endorse_google" value="googleapps" />
+          Endorse users for UW Google Apps
+        </label>
+      </div>
+    </div>
+
+
+  <div class="form-group" id="uwnetids">
+    <h3>Enter UW Netids to endorse</h3>
+
+  Add UW Netids below for endorsement and click Validate to preview before adding endorsement.
+    <textarea id="netidlist"  rows="15" cols="60" class="form-control">
+    </textarea>
+    <br />
+    <input type="button" name="ValidateUWNetids" id="validate" value="Check Eligibility" class="btn btn-primary" />
+  </div>
+
+  <div class="form-group" id="uwnetids-validated" style="display: none;">
+  </div>
+</div>
+
 
 {% endblock %}
