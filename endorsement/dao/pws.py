@@ -1,12 +1,12 @@
 """
-This module encapsulates the interactions with the restclients.pws,
+This module encapsulates the interactions with the uw_pws,
 provides Person information of the current user
 """
 
 import logging
 import traceback
-from restclients.pws import PWS
-from restclients.exceptions import DataFailureException
+from uw_pws import PWS
+from restclients_core.exceptions import DataFailureException
 from endorsement.util.log import log_exception
 
 
