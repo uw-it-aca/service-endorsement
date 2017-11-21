@@ -5,8 +5,8 @@ the UW NeTID Subscription code 60
 
 import logging
 import traceback
-from uw_uwnetid.subscription_60 import (
-    get_kerberos_subs, get_kerberos_subs_permits)
+from uw_uwnetid.models import SubscriptionPermit
+from uw_uwnetid.subscription_60 import get_kerberos_subs
 from endorsement.dao import handel_err
 
 
@@ -24,15 +24,22 @@ def get_kerberos_subs_status(netid):
 
 
 def is_valid_endorsee(uwnetid):
+    AFFILIATE_C_CODE = 15
+    DEPARTMENT_C_CODE = 11
+    valid_codes = [
+        AFFILIATE_C_CODE,
+        DEPARTMENT_C_CODE,
+        SubscriptionPermit.STAFF_C_CODE,
+        SubscriptionPermit.FACULTY_C_CODE,
+        SubscriptionPermit.CLINICIAN_C_CODE]
     try:
-        permits = get_kerberos_subs_permits(uwnetid)
-        if permits is None:
+        subs = get_kerberos_subs(uwnetid)
+        if subs is None or subs.permits is None or subs.is_status_inactive():
             return False
-        for permit in permits:
-            if ((permit.is_category_staff() or
-                 permit.is_category_faculty() or
-                 permit.is_status_current())
-                    and permit.is_status_current()):
+
+        for permit in subs.permits:
+            if (permit.category_code in valid_codes and
+                    permit.is_status_current()):
                 return True
 
     except Exception:

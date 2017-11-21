@@ -28,11 +28,12 @@ def get_endorser_endorsees():
     """
     ret_list = []
     for gr in get_msca_endorsement_groups():
-        match = re.search(GROUP_NAME_PATTERN, gr.name)
+        group_name = ''.join(gr.name)
+        match = re.search(GROUP_NAME_PATTERN, group_name)
         if match:
             endorser_uwnetid = match.group(1)
             endorsees = []
-            members = gws.get_effective_members(gr.name)
+            members = gws.get_effective_members(group_name)
             if members is not None:
                 for mem in members:
                     if mem.is_uwnetid():
