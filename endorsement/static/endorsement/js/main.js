@@ -4,6 +4,11 @@ $(window.document).ready(function() {
 	$("span.warning").popover({'trigger':'hover'});
     displayPageHeader();
     enableCheckEligibility();
+    registerEvents();
+});
+
+
+var registerEvents = function() {
 
     $('#app_content').on('click', 'input[type="button"]', function(e) {
         switch (e.target.id) {
@@ -24,17 +29,12 @@ $(window.document).ready(function() {
             break;
         default: break;
         }
-    });
-
-    $('#app_content').on('change', '#endorse_o365, #endorse_google, #netid_list',  function(e) {
+    }).on('change', '#endorse_o365, #endorse_google, #netid_list',  function(e) {
+        enableCheckEligibility();
+    }).on('input', '#netid_list', function () {
         enableCheckEligibility();
     });
-
-    $('#app_content').on('keypress', '#netid_list', function () {
-        enableCheckEligibility();
-    });
-
-});
+}
 
 var enableCheckEligibility = function() {
     var netids = getNetidList();
@@ -153,11 +153,11 @@ var endorseUWNetids = function(to_endorse) {
                     endorsement: {
                         o365: {
                             endorsed: endorsed_o365,
-                            comment: endorsed_o365 ? '' : 'Endorsement Failed'
+                            comment: endorsed_o365 ? '' : 'Some made up reason for failure'
                         },
                         google: {
                             endorsed: endorsed_google,
-                            comment: endorsed_google ? '' : 'Endorsement Failed'
+                            comment: endorsed_google ? '' : 'Some made up reason for failure'
                         }
                     }
                 })
