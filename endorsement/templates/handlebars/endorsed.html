@@ -1,0 +1,31 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "endorsed-list" %}
+
+<h3>Endorsed UW Netids</h3>
+
+  The following UW Netids have been endorsed.
+<div class="form-group">
+<table class="table table-striped">
+  <thead><tr><th>NetId</th><th>Name</th>{{#if endorse_o365}}<th>Office365 Enabled</th>{{/if}}{{#if endorse_google}}<th>Google Enabled</th>{{/if}}</tr></thead>
+  {{#each endorsed}}
+  <tr>
+    <td>{{netid}}</td>
+    <td>{{name}}</td>
+    {{#if ../endorse_o365}}
+    <td class="result-status">{{#if endorsement.o365.endorsed}}<i class="fa fa-check fa-2x success"></i>{{else}}<i class="fa fa-minus-circle fa-2x failure"></i>{{/if}}{{#if endorsement.o365.comment}} - {{endorsement.o365.comment}}{{/if}}</td>
+    {{/if}}
+    {{#if ../endorse_google}}
+    <td class="result-status">{{#if endorsement.google.endorsed}}<i class="fa fa-check fa-2x success"></i>{{else}}<i class="fa fa-minus-circle fa-2x failure"></i>{{/if}}{{#if endorsement.google.comment}} - {{endorsement.google.comment}}{{/if}}</td>
+    {{/if}}
+  </tr>
+  {{/each}}
+
+</table>
+</div>
+<div>
+  <input type="button" name="BackToUWNetids" id="new_netid_input" value="Add More Endorsed UW Netids" class="btn btn-normal" />
+</div>
+
+
+{% endtplhandlebars %}
+

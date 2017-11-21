@@ -187,6 +187,7 @@ a {
     }
 }
 
+
 .userinfo {
     position: absolute;
     top: .5rem;
@@ -209,6 +210,9 @@ a {
 .invalid-netid {
     color: #c00f0f;
 }
+
+.result-status .success { color: green; }
+.result-status .failure { color: #c00f0f; }
 
 .page-wrap {
 	content: "";

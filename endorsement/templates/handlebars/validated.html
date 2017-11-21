@@ -19,10 +19,10 @@
     <td>{{name}}</td>
     <td>{{email}}</td>
     {{#if ../../endorse_o365}}
-    <td>{{#if endorsement.o365.eligible}}<span class="text-success">Yes</span>{{else}}<span class="text-danger">No</span>{{/if}}{{#if endorsement.o365.comment}} - {{endorsement.o365.comment}}{{/if}}</td>
+    <td class="result-status">{{#if endorsement.o365.eligible}}<i class="fa fa-thumbs-up success"></i>{{else}}<i class="fa fa-thumbs-down failure"></i>{{/if}}{{#if endorsement.o365.comment}} - {{endorsement.o365.comment}}{{/if}}</td>
     {{/if}}
     {{#if ../../endorse_google}}
-    <td>{{#if endorsement.google.eligible}}<span class="text-success">Yes</span>{{else}}<span class="text-danger">No</span>{{/if}}{{#if endorsement.google.comment}} - {{endorsement.google.comment}}{{/if}}</td>
+    <td class="result-status">{{#if endorsement.google.eligible}}<i class="fa fa-thumbs-up success"></i>{{else}}<i class="fa fa-thumbs-down failure"></i>{{/if}}{{#if endorsement.google.comment}} - {{endorsement.google.comment}}{{/if}}</td>
     {{/if}}
   </tr>
   {{else}}
@@ -40,7 +40,7 @@
 </div>
 <div>
   <input type="button" name="BackToUWNetids" id="netid_input" value="Edit Eligiblity List" class="btn btn-normal" />
-  <input type="button" name="Endorse" value="Endorse Selected UW Netids" class="btn btn-primary" />
+  <input type="button" name="Endorse" id="endorse" value="Endorse Selected UW Netids" class="btn btn-primary" />
 </div>
 
 
