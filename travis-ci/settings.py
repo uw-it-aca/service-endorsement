@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'compressor',
     'templatetag_handlebars',
     'userservice',
-    'supporttools',
     'django_client_logger',
     'supporttools',
     'endorsement',
