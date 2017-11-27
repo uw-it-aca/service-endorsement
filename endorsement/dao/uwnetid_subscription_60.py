@@ -24,22 +24,17 @@ def get_kerberos_subs_status(netid):
 
 
 def is_valid_endorsee(uwnetid):
-    AFFILIATE_C_CODE = 15
-    DEPARTMENT_C_CODE = 11
-    valid_codes = [
-        AFFILIATE_C_CODE,
-        DEPARTMENT_C_CODE,
-        SubscriptionPermit.STAFF_C_CODE,
-        SubscriptionPermit.FACULTY_C_CODE,
-        SubscriptionPermit.CLINICIAN_C_CODE]
     try:
         subs = get_kerberos_subs(uwnetid)
         if subs is None or subs.permits is None or subs.is_status_inactive():
             return False
 
         for permit in subs.permits:
-            if (permit.category_code in valid_codes and
-                    permit.is_status_current()):
+            if (permit.is_status_current() and
+                (permit.is_category_staff() or
+                 permit.is_category_faculty() or
+                 permit.is_category_affiliate_employee() or
+                 permit.is_category_department())):
                 return True
 
     except Exception:
