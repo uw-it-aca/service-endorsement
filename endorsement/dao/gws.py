@@ -1,5 +1,5 @@
 """
-This module encapsulates the interactions with the restclients.gws,
+This module encapsulates the interactions with the uw_gws,
 provides access to the existing endorsement groups
 """
 
@@ -7,9 +7,9 @@ import logging
 import re
 import sys
 import traceback
-from restclients.exceptions import InvalidNetID
-from restclients.exceptions import DataFailureException
-from restclients.gws import GWS
+from restclients_core.exceptions import InvalidNetID
+from restclients_core.exceptions import DataFailureException
+from uw_gws import GWS
 from endorsement.util.log import log_exception, log_resp_time
 from endorsement.util.time_helper import Timer
 
@@ -28,11 +28,12 @@ def get_endorser_endorsees():
     """
     ret_list = []
     for gr in get_msca_endorsement_groups():
-        match = re.search(GROUP_NAME_PATTERN, gr.name)
+        group_name = ''.join(gr.name)
+        match = re.search(GROUP_NAME_PATTERN, group_name)
         if match:
             endorser_uwnetid = match.group(1)
             endorsees = []
-            members = gws.get_effective_members(gr.name)
+            members = gws.get_effective_members(group_name)
             if members is not None:
                 for mem in members:
                     if mem.is_uwnetid():
@@ -45,7 +46,7 @@ def get_endorser_endorsees():
 
 def get_msca_endorsement_groups():
     """
-    Returns a list of restclients.models.gws.GroupReference objects
+    Returns a list of uw_gws.GroupReference objects
     """
     action = 'search groups with name=%s' % NAME_PREFIX
     timer = Timer()

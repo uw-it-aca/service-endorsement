@@ -28,11 +28,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'compressor',
-    'restclients',
     'templatetag_handlebars',
     'userservice',
-    'supporttools',
     'django_client_logger',
+    'supporttools',
     'endorsement',
 ]
 
@@ -110,10 +109,6 @@ WSGI_APPLICATION = 'travis-ci.wsgi.application'
 
 COMPRESS_ENABLED = False
 COMPRESS_OFFLINE = False
-
-# Test the memcached cache code
-RESTCLIENTS_TEST_MEMCACHED = True
-RESTCLIENTS_MEMCACHED_SERVERS = ('localhost:11211', )
 
 AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.all_ok.AllOK'
 USERSERVICE_ADMIN_GROUP=''

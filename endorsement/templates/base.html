@@ -12,21 +12,77 @@
 
     {% load static %}
 
-    {% compress css %}
-      <!-- styles -->
-      <link href="{% static 'vendor/css/bootstrap-3.3.5.min.css' %}" rel="stylesheet">
-      <link href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}" rel="stylesheet">
-      <link href="{% static 'vendor/css/user-fonts.css' %}" rel="stylesheet">
-      <link href="{% static 'css/base.less' %}" rel="stylesheet" type="text/less">
 
+    <!-- stylesheets -->
+    <!-- critical (above the fold styles) -->
+{% if request.is_mobile %}
+    {% compress css inline %}
+    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap-3.3.7.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/css/ionicons-2.0.1.min.css' %}">
+    <link rel="stylesheet" href="{% static 'endorsement/css/loading.scss' %}" type="text/x-scss">
+    <link rel="stylesheet" href="{% static 'endorsement/css/critical.scss' %}" type="text/x-scss">
+    {% endcompress %}
+    <!-- async (mobile) -->
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'endorsement/css/mobile.scss' %}" type="text/x-scss">
+    {% endcompress %}
+{% endif %}
+
+
+{% if request.is_tablet %}
+    <!-- critical (above the fold styles) -->
+    {% compress css inline %}
+    <!-- inline -->
+    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap-3.3.7.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/css/ionicons-2.0.1.min.css' %}">
+    <link rel="stylesheet" href="{% static 'endorsement/css/loading.scss' %}" type="text/x-scss">
+    <link rel="stylesheet" href="{% static 'endorsement/css/critical.scss' %}" type="text/x-scss">
+    {% endcompress %}
+    <!-- async (mobile + tablet) -->
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'endorsement/css/mobile.scss' %}" type="text/x-scss">
+    <link rel="stylesheet" href="{% static 'endorsement/css/tablet.scss' %}" type="text/x-scss">
+    {% endcompress %}
+{% endif %}
+
+{% if is_desktop %}
+    <!-- critical (above the fold styles) -->
+    {% compress css inline %}
+    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap-3.3.7.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/css/ionicons-2.0.1.min.css' %}">
+    <link rel="stylesheet" href="{% static 'endorsement/css/loading.scss' %}" type="text/x-scss">
+    <link rel="stylesheet" href="{% static 'endorsement/css/critical.scss' %}" type="text/x-scss">
+    <link rel="stylesheet" href="{% static 'endorsement/css/mobile.scss' %}" type="text/x-scss">
+    <link rel="stylesheet" href="{% static 'endorsement/css/tablet.scss' %}" type="text/x-scss">
+    <link rel="stylesheet" href="{% static 'endorsement/css/desktop.scss' %}" type="text/x-scss">
     {% endcompress %}
 
-    {% load templatetag_handlebars %}
+    <!-- async (mobile + tablet + desktop) -->
+    {% compress css %}
+    {% endcompress %}
+{% endif %}
+
+<!-- Google Fonts -->
+<link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
+<link rel="shortcut icon" href="{% static 'endorsement/img/favicon.ico' %}" type="image/x-icon">
+
   </head>
 
   <body>
     {% csrf_token %}
-
+    <script>
+      window.user = {
+        "netid": "{{ user.netid }}"
+      };
+    </script>
+    <div class="page-wrap"> <!-- another wrap to make a sticky footer -->
+        <div id="top_banner" class='no-padding'> <!-- username and logout goes here, handlebars/page-top.html -->
+        </div>
+<!--
     <div id="app_header">
         <div class="header-bar" role="navigation" title="Home">
             <div class="container clearfix">
@@ -34,29 +90,40 @@
                 </div>
         </div>
     </div>
+ -->
 
     <div id="app_content">
         {% block content %}{% endblock %}
     </div>
 
-    <div id="app_footer">
-    </div>
+	<footer id="app_footer" role="contentinfo">
+		<div class="footer-bar">
+            <div class="container footer-links">
+                <ul class="footer-links-list">
+                    <li class="footer-links-list-item"><a href="mailto://help.uw.edu" title="Contact help@uw.edu"><i class="ion-android-mail" role="presentation"></i> Contact</a></li>
+                    <li class="footer-links-list-item"><a href="//www.washington.edu/online/terms/" title="University of Washington Website Terms and Conditions of Use">Terms</a></li>
+                    <li class="footer-links-list-item"><a href="//www.washington.edu/online/privacy/" title="University of Washington Online Privacy Statement">Privacy</a></li>
+               </ul>
+                <div style="clear:both;">&copy; {% now "Y" %} University of Washington</div>
+            </div>
+		</div><!-- end of footer content -->
+	</footer>
 
     <!-- do not compress - lack of trailing semicolons breaks concatenation -->
-    <script src="{% static 'vendor/js/jquery-1.11.0.min.js' %}"></script>
-    <script src="{% static 'vendor/js/bootstrap-3.1.1.min.js' %}"></script>
-    <script src="{% static 'vendor/js/jquery.cookie-1.4.1.min.js' %}"></script>
+    <script src="{% static 'vendor/js/jquery-2.1.0.min.js' %}"></script>
+    <script src="{% static 'vendor/js/bootstrap-3.3.7.min.js' %}"></script>
     <script src="{% static 'vendor/js/ios-orientationchange-fix.min.js' %}"></script>
     <script src="{% static 'vendor/js/handlebars-v2.0.0.js' %}"></script>
-    <script src="{% static 'vendor/js/jquery.history-1.8.0.min.js' %}"></script>
-    <script src="{% static 'vendor/js/jquery.ba-dotimeout-1.0.js' %}"></script>
-    <script src="{% static 'vendor/js/moment.2.8.3.min.js' %}"></script>
-    <script src="{% static 'vendor/js/moment-timezone-2010-2020v0.3.0.min.js' %}"></script>
 
     {% if not has_less_compiled %}
       <script src="{% static 'vendor/js/less-2.0.0.min.js' %}" type="text/javascript"></script>
     {% endif %}
 
-    {% include 'logger.html' %}
+    {% include "handlebars/page-top.html" %}
+    {% include "handlebars/validated.html" %}
+    {% include "handlebars/endorsed.html" %}
+    <script src="{% static "endorsement/js/main.js" %}"></script>
+    <script src="{% static "endorsement/js/handlebars-helpers.js" %}"></script>
+
   </body>
 </html>

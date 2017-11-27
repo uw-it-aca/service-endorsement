@@ -4,10 +4,9 @@ the UW NeTID Subscription code 60
 """
 
 import logging
-import json
 import traceback
-from restclients.uwnetid.subscription_60 import has_active_kerberos_subs,\
-    get_kerberos_subs
+from uw_uwnetid.models import SubscriptionPermit
+from uw_uwnetid.subscription_60 import get_kerberos_subs
 from endorsement.dao import handel_err
 
 
@@ -26,7 +25,18 @@ def get_kerberos_subs_status(netid):
 
 def is_valid_endorsee(uwnetid):
     try:
-        return has_active_kerberos_subs(uwnetid)
+        subs = get_kerberos_subs(uwnetid)
+        if subs is None or subs.permits is None or subs.is_status_inactive():
+            return False
+
+        for permit in subs.permits:
+            if (permit.is_status_current() and
+                (permit.is_category_staff() or
+                 permit.is_category_faculty() or
+                 permit.is_category_affiliate_employee() or
+                 permit.is_category_department())):
+                return True
+
     except Exception:
         return handel_err(logger,
                           '%s subs_60.has_active_kerberos_subs ' % uwnetid,

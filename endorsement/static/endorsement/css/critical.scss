@@ -1,0 +1,319 @@
+
+
+/* ==========================================================================
+   MAIN STYLE
+   ========================================================================== */
+
+/* ++++++++++++++++++++++++++ Mixins ++++++++++++++++++++++++++ */
+$uwpurple: #4b2e83;
+$gold: #b7a57a;
+$lightgold: #e8e3d3;
+$metgold: #85754d;
+$link_focus: #b5754d;
+
+
+/*********** Development Style (clear out before production deploy ***********/
+
+
+.dummy {
+    //color: red;
+    //font-weight: bold;
+}
+
+a.dummy {
+    text-decoration: underline;
+}
+
+
+
+/*********** Global Reset ***********/
+
+html, body {
+    font-family: 'Open Sans', Helvetica, arial, san-serif;
+    padding:0;
+    margin:0;
+    height: 100%;
+    color:#333;
+}
+
+.col { flex: 1 0 50%; }
+
+article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section {
+  display: block;
+} 
+img {
+   border: 0;
+   max-width: 100%;
+   height: auto;
+}
+
+.visually-hidden{
+	position: absolute;
+	left:-999px;
+	top:-999px;	
+}
+
+/*********** Spacing ***********/
+
+.clear {
+    clear:both;
+}
+
+.pull-left {
+    float:left;
+}
+
+.pull-right {
+    float:right;
+}
+
+/* align center */
+.center {
+	margin: auto;
+	text-align: center;
+}
+
+.no-btm-margin {
+	margin-bottom: 0px;
+}
+
+.inline {display:inline;}
+/* Text structure */
+
+h1, h2, h3, h4 { font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif; font-weight: bold; /*color: $uwpurple;*/ }   
+
+h3 {
+    font-size: 1.4rem; 
+}
+
+h4 {
+    padding-top:16px;
+    font-size:1.2rem;
+     &.list-header {
+        border-bottom: 1px solid;
+        padding-bottom: 4px;
+    }
+}
+
+/* Hyperlink style:*/
+a {
+	color:#0077c2;
+	&:focus, &:hover {
+        color: $link_focus;
+	}
+}
+
+.sitename{
+	font-size: 2em;
+	margin: 38px 10px 0 110px;
+	font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif;
+	font-weight: 400;
+	color: white;
+}
+
+
+
+/**************** Main stuff *************/
+.no-wrap {white-space: nowrap;}
+
+
+.topbanner-bg {background-color: $uwpurple; /*height: 76px;*/ color: white;
+    .uw-logo {
+      display: block;
+      text-indent: -9999px;
+      width: 80px;
+      height: 60px;
+      position: absolute;
+      top: 19px;
+      left: 0;
+      z-index: 1;
+    }
+    select {
+        font-size:.8em;
+    }
+}
+
+
+.endorsement-thin-bar {
+    background: #452a78;
+    line-height: 40px;
+    height: 40px;
+    font-size: 14px;
+    a {
+        color: #fff;
+        display: inline-block;
+        min-width: 30px;
+        height: 40px;
+        background: none;
+        border: none;
+        i {padding-right: 4px;font-size:15px;}
+    }
+    .endorsement-netid {
+        display: inline-block;
+        span {
+            //font-size: 16px;
+            //padding-left: 4px;
+        }
+    }
+    .endorsement-search-links {
+        display: inline-block;
+        float: right;
+        color: #fff;
+        margin-right: -3px;
+        //font-size: 16px;
+    }
+}
+
+.endorsement-navigation {
+    background: #4b2e83;
+    height: 65px;
+    .endorsement-wrapper {
+        background-repeat: no-repeat;
+        background-size: 45px;
+        background-position: right 20px;
+        height: 65px;
+        .endorsement-title {
+            display: inline-block;
+            color: #fff;
+            font-size: 26px;
+            font-weight: 400;
+            line-height: 65px;
+            height: 65px;
+            a, .endorsement-navigation .endorsement-title a:hover, .endorsement-navigation .endorsement-title a:focus, .endorsement-navigation .endorsement-title a:visited {
+                color: #fff;
+            }
+            i {font-size: 1.4rem;}
+        }
+    }
+}
+
+
+.userinfo {
+    position: absolute;
+    top: .5rem;
+    right: 1rem;
+}
+
+.main-content {
+	margin: 40px 0px;
+	min-height: 100%;
+}
+
+.page-title {
+	padding-bottom:20px;
+}
+
+.data-section {
+    //margin-top:25px;
+}
+
+.invalid-netid {
+    color: #c00f0f;
+}
+
+.result-status .success { color: green; }
+.result-status .failure { color: #c00f0f; }
+
+.page-wrap {
+	content: "";
+	display: block;
+	width: 100%;
+	/* min-width: 500px;  prevent the nav menu wrapping */
+}
+
+.site-footer, .page-wrap:after {
+  /* .push must be the same height as footer */
+	height: 160px;
+}
+
+/* footer  Stuff*/
+
+
+#app_footer {
+    .footer-bar {
+        padding: 16px 0 !important;
+    }
+}
+
+// footer bar
+.footer-bar { background:#333; padding: 10px 0;
+    .footer-links { position:relative; color: #aaa; font-size: 11px; 
+    	a, button {color: #fff}
+        .footer-links-list { padding: 0; margin-bottom: .5em; line-height: 11px; list-style: none;
+            .footer-links-list-item { display: inline-block; padding-right: 5px; margin-right: 3px; border-right: solid 1px #aaa; color: #222;
+			}
+        }
+    }
+}
+
+/*
+footer {
+	border-top: #eee 1px solid;
+	padding-top: 20px;
+	margin-top: 50px;
+}
+
+.site-footer {
+	background: #eee;
+}
+
+
+.footer-links ul {
+    list-style: outside none none;
+    margin-bottom: 0.5em;
+    padding: 0;
+}
+
+.footer-links ul li {
+    border-right: 1px solid #bdc3c7;
+    display: inline-block;
+    margin-right: 5px;
+    padding-right: 10px;
+
+}
+
+footer .footer-links ul li:last-child {
+	    border: 0px;
+    margin-right:0px;
+    padding-right:0px;
+}*/
+
+
+/***** EVERYTHING ELSE *****/
+
+
+/* may not be needed once Bootstrap is in use */
+#boxplots {
+    clear:both;
+}
+
+/* modify Bootstrap grid styles */
+.row.no-gutters {
+  margin-right: 0;
+  margin-left: 0;
+}
+.row.no-gutters > [class^="col-"],
+.row.no-gutters > [class*=" col-"] {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+
+ /* ==========================================================================
+   SMALL SCREEN: need to revisit for SCSS
+   ========================================================================== */
+
+ /* Small devices (tablets, 768px and up) */
+
+
+
+ 
+@media (max-width: 768px) {
+	.hide-sm {
+	position: absolute;
+	left:-999px;
+	top:-999px;	
+	}
+	.sitename{
+	font-size: 1.5em;}
+}

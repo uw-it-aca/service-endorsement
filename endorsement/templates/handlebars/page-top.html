@@ -1,0 +1,27 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "page-top" %}
+{% load staticfiles %}
+
+        <header class="topbanner-bg" role="banner">
+            <div aria-labelledby="endorsement_banner">
+                <a href="#maincontent" id="shortcut" class="visually-hidden">skip to main content</a>
+                <div class="endorsement-thin-bar">
+                    <div class="endorsement-wrapper container">
+                        <div class="endorsement-netid">
+                            <i class="ion-person" aria-hidden="true"></i><span><span class="visually-hidden">Logged in as: </span> {{netid}}</span>
+                        </div>
+                        <div class="endorsement-search-links">
+                            <a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> <span>Sign Out</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="endorsement-navigation container">
+                    <div class="endorsement-wrapper" style="background-image: url({% static 'img/w-logo-white.png' %})">
+                        <h1 id="endorsement_banner"><div class="endorsement-title">Service Endorsement</div></h1>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+
+{% endtplhandlebars %}

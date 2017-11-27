@@ -4,7 +4,7 @@ import sys
 from django.http import HttpResponse
 from django.conf import settings
 from userservice.user import UserService
-from restclients.exceptions import DataFailureException,\
+from restclients_core.exceptions import DataFailureException,\
     InvalidNetID, InvalidRegID
 from endorsement.util.log import log_exception_with_timer,\
     log_data_not_found_response, log_data_error_response,\

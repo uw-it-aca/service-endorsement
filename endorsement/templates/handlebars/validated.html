@@ -1,0 +1,48 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "validated-list" %}
+
+<h3>Verify UW Netids for Endorsement</h3>
+
+  Verify that the UW Netids below are intended for endorsement.
+<div class="form-group">
+<table class="table table-striped">
+  <thead><tr><th></th><th>NetId</th><th>Name</th><th>Email</th>{{#if endorse_o365}}<th>Office365 Eligibility</th>{{/if}}{{#if endorse_google}}<th>Google Eligiblity</th>{{/if}}</tr></thead>
+  {{#each netids}}
+  {{#if valid_netid}}
+  <tr>
+    <td>
+      <label>
+        <input type="checkbox" name="picked" value="{{netid}}" {{checked_or_disabled ../../endorse_o365 ../../endorse_google}} />
+      </label>
+    </td>
+    <td>{{netid}}{{#unless valid_netid}} <i class="fa fa-warning text-danger"></i>{{/unless}}</td>
+    <td>{{name}}</td>
+    <td>{{email}}</td>
+    {{#if ../../endorse_o365}}
+    <td class="result-status">{{#if endorsement.o365.eligible}}<i class="fa fa-thumbs-up success"></i>{{else}}<i class="fa fa-thumbs-down failure"></i>{{/if}}{{#if endorsement.o365.comment}} - {{endorsement.o365.comment}}{{/if}}</td>
+    {{/if}}
+    {{#if ../../endorse_google}}
+    <td class="result-status">{{#if endorsement.google.eligible}}<i class="fa fa-thumbs-up success"></i>{{else}}<i class="fa fa-thumbs-down failure"></i>{{/if}}{{#if endorsement.google.comment}} - {{endorsement.google.comment}}{{/if}}</td>
+    {{/if}}
+  </tr>
+  {{else}}
+  <tr class="invalid-netid">
+    <td>
+      <i class="fa fa-minus-circle"></i>
+    </td>
+    <td>{{netid}}</td>
+    <td colspan="{{invalid_netid_columns this ../endorse_o365 ../endorse_google}}">[ Unrecognized NetID ]</td>
+  </tr>
+  {{/if}}
+  {{/each}}
+
+</table>
+</div>
+<div>
+  <input type="button" name="BackToUWNetids" id="netid_input" value="Edit Eligiblity List" class="btn btn-normal" />
+  <input type="button" name="Endorse" id="endorse" value="Endorse Selected UW Netids" class="btn btn-primary" />
+</div>
+
+
+{% endtplhandlebars %}
+
