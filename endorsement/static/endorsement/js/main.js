@@ -34,7 +34,7 @@ var registerEvents = function() {
     }).on('input', '#netid_list', function () {
         enableCheckEligibility();
     });
-}
+};
 
 var enableCheckEligibility = function() {
     var netids = getNetidList();
@@ -44,15 +44,15 @@ var enableCheckEligibility = function() {
     } else {
         $('#validate').attr('disabled', 'disabled');
     }
-}
+};
 
 var endorseGoogle = function () {
     return $("#endorse_google").is(':checked');
-}
+};
 
 var endorseOffice365 = function () {
     return $("#endorse_o365").is(':checked');
-}
+};
 
 var displayPageHeader = function() {
     var source = $("#page-top").html();
@@ -60,7 +60,7 @@ var displayPageHeader = function() {
     $("#top_banner").html(template({
         netid: window.user.netid
     }));
-}
+};
 
 var validationStep = function() {
     var source = $("#validated-list").html();
@@ -70,13 +70,13 @@ var validationStep = function() {
         endorse_o365: endorseOffice365(),
         endorse_google: endorseGoogle(),
         netids: validateUWNetids(getNetidList())
-    }
+    };
 
     $('#uwnetids-validated').html(template(context));
         
     $endorsement_group.attr('disabled', true);
     showValidationStep();
-}
+};
 
 
 var validateUWNetids = function(netids) {
@@ -86,10 +86,10 @@ var validateUWNetids = function(netids) {
 
 
         /// FAKE WEB SERVICE RESPONSES
-        var can_o365 = Math.random() > .3;
-        var can_google = Math.random() > .3;
-        var valid_netid = Math.random() > .15;
-        var do_comment = Math.random() < .25;
+        var can_o365 = Math.random() > 0.3;
+        var can_google = Math.random() > 0.3;
+        var valid_netid = Math.random() > 0.15;
+        var do_comment = Math.random() < 0.25;
 
 
 
@@ -116,7 +116,7 @@ var validateUWNetids = function(netids) {
     window.endorsement.validated = validated;
 
     return validated;
-}
+};
 
 
 var endorsementStep = function() {
@@ -126,11 +126,11 @@ var endorsementStep = function() {
         endorse_o365: endorseOffice365(),
         endorse_google: endorseGoogle(),
         endorsed: endorseUWNetids(getValidNetidList())
-    }
+    };
 
     $('#uwnetids-endorsed').html(template(context));
     showEndorsedStep();
-}
+};
 
 
 var endorseUWNetids = function(to_endorse) {
@@ -139,9 +139,9 @@ var endorseUWNetids = function(to_endorse) {
     $.each(to_endorse, function (i, endorsee) {
 
         /// FAKE WEB SERVICE RESPONSES
-        var endorsed_o365 = Math.random() > .25;
-        var endorsed_google = Math.random() > .25;
-        var do_comment = Math.random() < .25;
+        var endorsed_o365 = Math.random() > 0.25;
+        var endorsed_google = Math.random() > 0.25;
+        var do_comment = Math.random() < 0.25;
 
 
 
@@ -160,7 +160,7 @@ var endorseUWNetids = function(to_endorse) {
                             comment: endorsed_google ? '' : 'Some made up reason for failure'
                         }
                     }
-                })
+                });
 
                 return false;
             }
@@ -168,7 +168,7 @@ var endorseUWNetids = function(to_endorse) {
     });
 
     return endorsed;
-}
+};
 
 var getValidNetidList = function () {
     var to_endorse = [];
@@ -200,37 +200,37 @@ var getValidNetidList = function () {
     });
 
     return to_endorse;
-}
+};
 
 
 var showInputStep = function () {
     $('.endorsement-group input').removeAttr('disabled');
-    $(['input.endorse_o365', 'input.endorse_google'])
+    $(['input.endorse_o365', 'input.endorse_google']);
     $('#uwnetids-validated').hide();
     $('#uwnetids-endorsed').hide();
     $('#uwnetids-input').show();
-}
+};
 
 var showValidationStep = function () {
     $('.endorsement-group input').attr('disabled', true);
     $('#uwnetids-input').hide();
     $('#uwnetids-endorsed').hide();
     $('#uwnetids-validated').show();
-}
+};
 
 var showEndorsedStep = function () {
     $('.endorsement-group input').attr('disabled', true);
     $('#uwnetids-input').hide();
     $('#uwnetids-validated').hide();
     $('#uwnetids-endorsed').show();
-}
+};
 
 var getNetidList = function () {
-    return unique($('#netid_list').val().replace(/\n/g, ' ').split(/[ ,]+/))
-}
+    return unique($('#netid_list').val().replace(/\n/g, ' ').split(/[ ,]+/));
+};
 
 var unique = function(array) {
     return $.grep(array, function(el, i) {
         return el.length > 0 && i === $.inArray(el, array);
     });
-}
+};

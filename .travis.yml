@@ -19,16 +19,14 @@ before_script:
   - npm install jsdom
   - npm install sinon
   - npm install coveralls
-  - gem install coveralls-lcov
   - cp travis-ci/manage.py manage.py
   - python manage.py migrate
 
 script:
   - pep8 endorsement/ --exclude=migrations,endorsement/static/vendor,endorsement/static/images,endorsement/static/fonts
-#  - jshint endorsement/static/js/  --verbose
+  - jshint endorsement/static/endorsement/js/ --verbose
 #  - mocha endorsement/static/js/test/ --recursive
   - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
-  - coveralls-lcov -v -n coverage/lcov.info > js-coverage.json
 after_script:
   - coveralls --merge=js-coverage.json
 notifications:
