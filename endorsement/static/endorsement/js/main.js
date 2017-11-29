@@ -114,10 +114,10 @@ var validateUWNetids = function(netids) {
         if (o365_active && Math.random() > 0.3) {
             o365_by_you = o365_active ? Math.random() < 0.5 : false;
             o365_endorsers = [o365_by_you ? 'you' : 'mumble'];
-            if (Math.random() < .5) {
+            if (Math.random() < 0.5) {
                     o365_endorsers.push('garble');
             }
-            if (Math.random() < .5) {
+            if (Math.random() < 0.5) {
                     o365_endorsers.push('marble');
             }
         }
@@ -129,10 +129,10 @@ var validateUWNetids = function(netids) {
         if (google_active && Math.random() > 0.3) {
             google_by_you = google_active ? Math.random() < 0.5 : false;
             google_endorsers = [google_by_you ? 'you' : 'mumble'];
-            if (Math.random() < .5) {
+            if (Math.random() < 0.5) {
                     google_endorsers.push('garble');
             }
-            if (Math.random() < .5) {
+            if (Math.random() < 0.5) {
                     google_endorsers.push('marble');
             }
         }
@@ -241,7 +241,7 @@ var getValidNetidList = function () {
                     } else {
                         to_endorse[this.netid] = {
                             o365: true
-                        }
+                        };
                     }
                 }
 
@@ -261,7 +261,7 @@ var getValidNetidList = function () {
                     } else {
                         to_endorse[this.netid] = {
                             o365: false
-                        }
+                        };
                     }
                 }
 
@@ -281,7 +281,7 @@ var getValidNetidList = function () {
                     } else {
                         to_endorse[this.netid] = {
                             google: true
-                        }
+                        };
                     }
                 }
 
@@ -301,7 +301,7 @@ var getValidNetidList = function () {
                     } else {
                         to_endorse[netid] = {
                             google: false
-                        }
+                        };
                     }
                 }
 
