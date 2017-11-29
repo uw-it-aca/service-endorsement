@@ -69,8 +69,27 @@ var validationStep = function() {
     var context = {
         endorse_o365: endorseOffice365(),
         endorse_google: endorseGoogle(),
+        google_endorsable: false,
+        o365_endorsable: false,
+        google_revokable: false,
+        o365_revokable: false,
         netids: validateUWNetids(getNetidList())
     };
+
+    $.each(context.netids, function () {
+        if (this.subscription.google.eligible) {
+            context.google_endorsable = true;
+        }
+        if (this.subscription.o365.eligible) {
+            context.o365_endorsable = true;
+        }
+        if (this.subscription.google.self_endorsed) {
+            context.google_revokable = true;
+        }
+        if (this.subscription.o365.self_endorsed) {
+            context.o365_revokable = true;
+        }
+    });
 
     $('#uwnetids-validated').html(template(context));
         
@@ -86,10 +105,38 @@ var validateUWNetids = function(netids) {
 
 
         /// FAKE WEB SERVICE RESPONSES
-        var can_o365 = Math.random() > 0.3;
-        var can_google = Math.random() > 0.3;
         var valid_netid = Math.random() > 0.15;
-        var do_comment = Math.random() < 0.25;
+        var eligible_netid = valid_netid ? Math.random() > 0.1 : false;
+
+        var o365_active = eligible_netid ? Math.random() < 0.3 : false;
+        var o365_endorsers = null;
+        var o365_by_you = false;
+        if (o365_active && Math.random() > 0.3) {
+            o365_by_you = o365_active ? Math.random() < 0.5 : false;
+            o365_endorsers = [o365_by_you ? 'you' : 'mumble'];
+            if (Math.random() < .5) {
+                    o365_endorsers.push('garble');
+            }
+            if (Math.random() < .5) {
+                    o365_endorsers.push('marble');
+            }
+        }
+
+
+        var google_active = eligible_netid ? Math.random() < 0.3 : false;
+        var google_endorsers = null;
+        var google_by_you = false;
+        if (google_active && Math.random() > 0.3) {
+            google_by_you = google_active ? Math.random() < 0.5 : false;
+            google_endorsers = [google_by_you ? 'you' : 'mumble'];
+            if (Math.random() < .5) {
+                    google_endorsers.push('garble');
+            }
+            if (Math.random() < .5) {
+                    google_endorsers.push('marble');
+            }
+        }
+        //// end of web service fakery
 
 
 
@@ -99,14 +146,20 @@ var validateUWNetids = function(netids) {
             valid_netid: valid_netid,
             name: netid + '. Lastname',
             email: netid + '@uw.edu',
-            endorsement: {
+            subscription: {
                 google: {
-                    eligible: can_google,
-                    comment: can_google ? (do_comment ? 'already endorsed by mumble': null): "not a valid netid"
+                    eligible: eligible_netid,
+                    active: google_active,
+                    endorsers: google_endorsers,
+                    self_endorsed: google_by_you,
+                    error: null
                 },
                 o365: {
-                    eligible: can_o365,
-                    comment: can_o365 ? (do_comment ? 'already endorsed by mumble': null): "not a valid netid"
+                    eligible: eligible_netid,
+                    active: o365_active,
+                    endorsers: o365_endorsers,
+                    self_endorsed: o365_by_you,
+                    error: null
                 }
             }
         });
@@ -136,27 +189,24 @@ var endorsementStep = function() {
 var endorseUWNetids = function(to_endorse) {
     var endorsed = [];
 
-    $.each(to_endorse, function (i, endorsee) {
+    $.each(to_endorse, function (netid, endorsements) {
 
         /// FAKE WEB SERVICE RESPONSES
-        var endorsed_o365 = Math.random() > 0.25;
-        var endorsed_google = Math.random() > 0.25;
-        var do_comment = Math.random() < 0.25;
-
-
+        var endorsed_o365 = Math.random() > 0.15;
+        var endorsed_google = Math.random() > 0.15;
 
         $.each(window.endorsement.validated, function () {
-            if (this.netid == endorsee.netid) {
+            if (this.netid == netid) {
                 endorsed.push({
-                    netid: endorsee.netid,
+                    netid: netid,
                     name: this.name,
                     endorsement: {
                         o365: {
-                            endorsed: endorsed_o365,
+                            endorsed: endorsements.o365,
                             comment: endorsed_o365 ? '' : 'Some made up reason for failure'
                         },
                         google: {
-                            endorsed: endorsed_google,
+                            endorsed: endorsements.google,
                             comment: endorsed_google ? '' : 'Some made up reason for failure'
                         }
                     }
@@ -171,32 +221,87 @@ var endorseUWNetids = function(to_endorse) {
 };
 
 var getValidNetidList = function () {
-    var to_endorse = [];
+    var to_endorse = {};
     var validated = [];
 
-    $('input[name="picked"]:checked').each(function (e) {
-        validated.push($(this).val());
+    $('input[name="endorse_google"]:checked').each(function (e) {
+        var netid = $(this).val();
+        $.each(window.endorsement.validated, function () {
+            if (netid == this.netid) {
+                if (this.subscription.google &&
+                    this.subscription.google.eligible) {
+                    if (netid in to_endorse) {
+                        to_endorse[this.netid].google = true;
+                    } else {
+                        to_endorse[this.netid] = {
+                            google: true
+                        }
+                    }
+                }
+
+                return false;
+            }
+        });
     });
 
-    $.each(window.endorsement.validated, function () {
-        if (validated.indexOf(this.netid) >= 0) {
-            var endorsement = {
-                netid: this.netid,
-                service: {}
-            };
+    $('input[name="endorse_o365"]:checked').each(function (e) {
+        var netid = $(this).val();
+        $.each(window.endorsement.validated, function () {
+            if (netid == this.netid) {
+                if (this.subscription.o365 &&
+                    this.subscription.o365.eligible) {
+                    if (netid in to_endorse) {
+                        to_endorse[this.netid].o365 = true;
+                    } else {
+                        to_endorse[this.netid] = {
+                            o365: true
+                        }
+                    }
+                }
 
-            if (this.endorsement.o365 &&
-                this.endorsement.google.eligible) {
-                endorsement.service.o365 = true;
+                return false;
             }
+        });
+    });
 
-            if (this.endorsement.google &&
-                this.endorsement.google.eligible) {
-                endorsement.service.google = true;
+    $('input[name="revoke_google"]:checked').each(function (e) {
+        var netid = $(this).val();
+        $.each(window.endorsement.validated, function () {
+            if (netid == this.netid) {
+                if (this.subscription.google &&
+                    this.subscription.google.eligible) {
+                    if (netid in to_endorse) {
+                        to_endorse[this.netid].google = false;
+                    } else {
+                        to_endorse[this.netid] = {
+                            google: true
+                        }
+                    }
+                }
+
+                return false;
             }
+        });
+    });
 
-            to_endorse.push(endorsement);
-        }
+    $('input[name="revoke_o365"]:checked').each(function (e) {
+        var netid = $(this).val();
+        $.each(window.endorsement.validated, function () {
+            if (netid == this.netid) {
+                if (this.subscription.o365e &&
+                    this.subscription.o365.eligible) {
+                    if (netid in to_endorse) {
+                        to_endorse[this.netid].o365 = false;
+                    } else {
+                        to_endorse[this.netid] = {
+                            o365: true
+                        }
+                    }
+                }
+
+                return false;
+            }
+        });
     });
 
     return to_endorse;

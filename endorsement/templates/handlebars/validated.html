@@ -4,34 +4,40 @@
 <h3>Verify UW Netids for Endorsement</h3>
 
   Verify that the UW Netids below are intended for endorsement.
-<div class="form-group">
+<div class="form-group validation">
 <table class="table table-striped">
-  <thead><tr><th></th><th>NetId</th><th>Name</th><th>Email</th>{{#if endorse_o365}}<th>Office365 Eligibility</th>{{/if}}{{#if endorse_google}}<th>Google Eligiblity</th>{{/if}}</tr></thead>
+  <thead><tr><th colspan="3"></th>{{#if endorse_o365}}<th colspan="3">Office365 Endorsement</th>{{/if}}{{#if endorse_google}}<th colspan="3">Google Endorsement</th>{{/if}}</tr><tr><th>NetId</th><th>Name</th><th>Email</th>{{#if endorse_o365}}<th class="centered">{{#if o365_endorsable}}Endorse{{/if}}</th><th class="centered">{{#if o365_revokable}}Revoke{{/if}}</th><th>Comment</th>{{/if}}{{#if endorse_google}}<th class="centered">{{#if google_endorsable}}Endorse{{/if}}</th><th class="centered">{{#if google_revokable}}Revoke{{/if}}</th><th>Comment</th>{{/if}}</tr></thead>
   {{#each netids}}
   {{#if valid_netid}}
   <tr>
-    <td>
-      <label>
-        <input type="checkbox" name="picked" value="{{netid}}" {{checked_or_disabled ../../endorse_o365 ../../endorse_google}} />
-      </label>
-    </td>
-    <td>{{netid}}{{#unless valid_netid}} <i class="fa fa-warning text-danger"></i>{{/unless}}</td>
+    <td>{{netid}}</td>
     <td>{{name}}</td>
     <td>{{email}}</td>
     {{#if ../../endorse_o365}}
-    <td class="result-status">{{#if endorsement.o365.eligible}}<i class="fa fa-thumbs-up success"></i>{{else}}<i class="fa fa-thumbs-down failure"></i>{{/if}}{{#if endorsement.o365.comment}} - {{endorsement.o365.comment}}{{/if}}</td>
+     {{#with (subscription_context subscription.o365 netid ../../../o365_endorsable ../../../o365_revokable 'o365') }}
+        {{> validation_partial .}}
+     {{/with}}
     {{/if}}
     {{#if ../../endorse_google}}
-    <td class="result-status">{{#if endorsement.google.eligible}}<i class="fa fa-thumbs-up success"></i>{{else}}<i class="fa fa-thumbs-down failure"></i>{{/if}}{{#if endorsement.google.comment}} - {{endorsement.google.comment}}{{/if}}</td>
+     {{#with (subscription_context subscription.google netid ../../../google_endorsable ../../../google_revokable 'google') }}
+        {{> validation_partial .}}
+     {{/with}}
     {{/if}}
   </tr>
   {{else}}
   <tr class="invalid-netid">
-    <td>
-      <i class="fa fa-minus-circle"></i>
-    </td>
     <td>{{netid}}</td>
-    <td colspan="{{invalid_netid_columns this ../endorse_o365 ../endorse_google}}">[ Unrecognized NetID ]</td>
+    <td class="centered" colspan="2">[ Unrecognized NetID ]</td>
+    {{#if ../../endorse_o365}}
+    <td class="centered">{{#if ../../../o365_endorsable}}<i class="fa fa-minus-circle">{{/if}}</i></td>
+    <td class="centered">{{#if ../../../o365_revokable}}<i class="fa fa-minus-circle"></i>{{/if}}</td>
+    <td></td>
+    {{/if}}
+    {{#if ../../endorse_google}}
+    <td class="centered">{{#if ../../../google_endorsable}}<i class="fa fa-minus-circle"></i>{{/if}}</td>
+    <td class="centered">{{#if ../../../google_revokable}}<i class="fa fa-minus-circle"></i>{{/if}}</td>
+    <td></td>
+    {{/if}}
   </tr>
   {{/if}}
   {{/each}}
@@ -40,7 +46,7 @@
 </div>
 <div>
   <input type="button" name="BackToUWNetids" id="netid_input" value="Edit Eligiblity List" class="btn btn-normal" />
-  <input type="button" name="Endorse" id="endorse" value="Endorse Selected UW Netids" class="btn btn-primary" />
+  <input type="button" name="Endorse" id="endorse" value="Update Service Endorsements" class="btn btn-primary" />
 </div>
 
 
