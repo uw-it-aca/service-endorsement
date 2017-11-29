@@ -189,60 +189,46 @@ var endorsementStep = function() {
 var endorseUWNetids = function(to_endorse) {
     var endorsed = [];
 
-    $.each(to_endorse, function (netid, endorsements) {
+    $.each(window.endorsement.validated, function () {
+        var endorsement = to_endorse[this.netid];
+        if (endorsement !== undefined) {
 
-        /// FAKE WEB SERVICE RESPONSES
-        var endorsed_o365 = Math.random() > 0.15;
-        var endorsed_google = Math.random() > 0.15;
+            /// FAKE WEB SERVICE RESPONSES
+            var endorsed_o365 = Math.random() > 0.20;
+            var endorsed_google = Math.random() > 0.20;
 
-        $.each(window.endorsement.validated, function () {
-            if (this.netid == netid) {
-                endorsed.push({
-                    netid: netid,
-                    name: this.name,
-                    endorsement: {
-                        o365: {
-                            endorsed: endorsements.o365,
-                            comment: endorsed_o365 ? '' : 'Some made up reason for failure'
-                        },
-                        google: {
-                            endorsed: endorsements.google,
-                            comment: endorsed_google ? '' : 'Some made up reason for failure'
-                        }
-                    }
-                });
 
-                return false;
+            var e = {
+                netid: this.netid,
+                name: this.name,
+                endorsement: {}
+            };
+
+            if (endorsement.o365 !== undefined) {
+                e.endorsement.o365 = {
+                    endorse: endorsement.o365,
+                    comment: endorsed_o365 ? '' : 'Some made up reason for failure'
+                };
             }
-        });
+
+            if (endorsement.google !== undefined) {
+                e.endorsement.google = {
+                    endorse: endorsement.google,
+                    comment: endorsed_google ? '' : 'Some made up reason for failure'
+                };
+            }
+
+            endorsed.push(e);
+        }
     });
 
     return endorsed;
 };
 
+
 var getValidNetidList = function () {
     var to_endorse = {};
     var validated = [];
-
-    $('input[name="endorse_google"]:checked').each(function (e) {
-        var netid = $(this).val();
-        $.each(window.endorsement.validated, function () {
-            if (netid == this.netid) {
-                if (this.subscription.google &&
-                    this.subscription.google.eligible) {
-                    if (netid in to_endorse) {
-                        to_endorse[this.netid].google = true;
-                    } else {
-                        to_endorse[this.netid] = {
-                            google: true
-                        }
-                    }
-                }
-
-                return false;
-            }
-        });
-    });
 
     $('input[name="endorse_o365"]:checked').each(function (e) {
         var netid = $(this).val();
@@ -264,14 +250,34 @@ var getValidNetidList = function () {
         });
     });
 
-    $('input[name="revoke_google"]:checked').each(function (e) {
+    $('input[name="revoke_o365"]:checked').each(function (e) {
+        var netid = $(this).val();
+        $.each(window.endorsement.validated, function () {
+            if (netid == this.netid) {
+                if (this.subscription.o365 &&
+                    this.subscription.o365.eligible) {
+                    if (netid in to_endorse) {
+                        to_endorse[this.netid].o365 = false;
+                    } else {
+                        to_endorse[this.netid] = {
+                            o365: false
+                        }
+                    }
+                }
+
+                return false;
+            }
+        });
+    });
+
+    $('input[name="endorse_google"]:checked').each(function (e) {
         var netid = $(this).val();
         $.each(window.endorsement.validated, function () {
             if (netid == this.netid) {
                 if (this.subscription.google &&
                     this.subscription.google.eligible) {
                     if (netid in to_endorse) {
-                        to_endorse[this.netid].google = false;
+                        to_endorse[this.netid].google = true;
                     } else {
                         to_endorse[this.netid] = {
                             google: true
@@ -284,17 +290,17 @@ var getValidNetidList = function () {
         });
     });
 
-    $('input[name="revoke_o365"]:checked').each(function (e) {
+    $('input[name="revoke_google"]:checked').each(function (e) {
         var netid = $(this).val();
         $.each(window.endorsement.validated, function () {
             if (netid == this.netid) {
-                if (this.subscription.o365e &&
-                    this.subscription.o365.eligible) {
+                if (this.subscription.google &&
+                    this.subscription.google.eligible) {
                     if (netid in to_endorse) {
-                        to_endorse[this.netid].o365 = false;
+                        to_endorse[netid].google = false;
                     } else {
-                        to_endorse[this.netid] = {
-                            o365: true
+                        to_endorse[netid] = {
+                            google: false
                         }
                     }
                 }
