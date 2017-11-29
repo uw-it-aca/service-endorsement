@@ -33,6 +33,13 @@ var registerEvents = function() {
         enableCheckEligibility();
     }).on('input', '#netid_list', function () {
         enableCheckEligibility();
+    }).on('click', 'input[name^="revoke_"]', function (e) {
+        $target = $(e.target);
+        if ($target.is(':checked')) {
+            $target.parent().prev().find('i').hide();
+        } else {
+            $target.parent().prev().find('i').show();
+        }
     });
 };
 
@@ -186,11 +193,11 @@ var endorsementStep = function() {
 };
 
 
-var endorseUWNetids = function(to_endorse) {
+var endorseUWNetids = function(endorsees) {
     var endorsed = [];
 
     $.each(window.endorsement.validated, function () {
-        var endorsement = to_endorse[this.netid];
+        var endorsement = endorsees[this.netid];
         if (endorsement !== undefined) {
 
             /// FAKE WEB SERVICE RESPONSES
