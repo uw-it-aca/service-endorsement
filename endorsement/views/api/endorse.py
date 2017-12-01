@@ -33,6 +33,8 @@ class Endorse(RESTDispatch):
         # fake setting the endorsements
         from random import uniform
 
+        import pdb; pdb.set_trace()
+
         endorsed = []
         for endorsee, to_endorse in endorsees.iteritems():
             endorse_result = {
