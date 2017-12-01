@@ -30,10 +30,8 @@ class Endorse(RESTDispatch):
         if not netid:
             return invalid_session(logger, timer)
 
-
         # fake setting the endorsements
         from random import uniform
-
 
         endorsed = []
         for endorsee, to_endorse in endorsees.iteritems():

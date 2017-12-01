@@ -11,9 +11,8 @@ def store_endorsement(endorser, endorsee):
         endorser=endorser,
         subscription_code=EndorsementRecord.OFFICE_365,
         endorsee=endorsee,
-        defaults={'datetime_endorsed': timezone.now()
-                  }
-        )
+        defaults={'datetime_endorsed': timezone.now()})
+
     return en, created
 
 
