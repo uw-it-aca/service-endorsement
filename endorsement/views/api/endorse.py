@@ -30,6 +30,46 @@ class Endorse(RESTDispatch):
         if not netid:
             return invalid_session(logger, timer)
 
-        # fake setting the endorsements
 
-        return self.json_response(endorsees)
+        # fake setting the endorsements
+        from random import uniform
+
+
+        endorsed = []
+        for endorsee, to_endorse in endorsees.iteritems():
+            endorse_result = {
+                'netid': endorsee,
+                'endorsement': {}
+            }
+
+            if 'o365' in to_endorse:
+                if uniform(0, 1) < 0.1:
+                    endorse_result['endorsement']['o365'] = {
+                        'error': 'server is down'
+                    }
+                elif to_endorse['o365']:
+                    endorse_result['endorsement']['o365'] = {
+                        'endorsed': True
+                    }
+                else:
+                    endorse_result['endorsement']['o365'] = {
+                        'endorsed': False
+                    }
+
+            if 'google' in to_endorse:
+                if uniform(0, 1) < 0.1:
+                    endorse_result['endorsement']['google'] = {
+                        'error': 'server is down'
+                    }
+                elif to_endorse['google']:
+                    endorse_result['endorsement']['google'] = {
+                        'endorsed': True
+                    }
+                else:
+                    endorse_result['endorsement']['google'] = {
+                        'endorsed': False
+                    }
+
+            endorsed.append(endorse_result)
+
+        return self.json_response(endorsed)

@@ -131,10 +131,7 @@ var validateUWNetids = function(netids) {
             "X-CSRFToken": csrf_token
         },
         success: function(results) {
-            window.endorsement = {
-                validated: results
-            };
-
+            window.endorsement = { validated: results };
             $(document).trigger('endorse:UWNetIDsValidated', [results]);
         },
         error: function(xhr, status, error) {
@@ -144,7 +141,7 @@ var validateUWNetids = function(netids) {
 
 
 var endorsementStep = function() {
-    endorseUWNetIDs(getValidNetidList())
+    endorseUWNetIDs(getValidNetidList());
 };
 
 
@@ -157,6 +154,17 @@ var displayEndorsedUWNetIDs = function(endorsed) {
         endorsed: endorsed
     };
 
+    // bind names back to netid
+    $.each(endorsed, function () {
+        var e = this;
+        $.each(window.endorsement.validated, function () {
+            if (e.netid === this.netid) {
+                e.name = this.name;
+                return false;
+            }
+        });
+    });
+
     $('#uwnetids-endorsed').html(template(context));
     showEndorsedStep();
 };
@@ -164,38 +172,21 @@ var displayEndorsedUWNetIDs = function(endorsed) {
 
 var endorseUWNetIDs = function(endorsees) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
-    var endorsed = [];
+    var endorsed = {};
 
     $.each(window.endorsement.validated, function () {
         var endorsement = endorsees[this.netid];
         if (endorsement !== undefined) {
-
-            /// FAKE WEB SERVICE RESPONSES
-            var endorsed_o365 = Math.random() > 0.20;
-            var endorsed_google = Math.random() > 0.20;
-
-
-            var e = {
-                netid: this.netid,
-                name: this.name,
-                endorsement: {}
-            };
+            endorsed[this.netid] = {};
 
             if (endorsement.o365 !== undefined) {
-                e.endorsement.o365 = {
-                    endorse: endorsement.o365,
-                    comment: endorsed_o365 ? '' : 'Some made up reason for failure'
-                };
+                endorsed[this.netid].o365 = endorsement.o365;
             }
 
             if (endorsement.google !== undefined) {
-                e.endorsement.google = {
-                    endorse: endorsement.google,
-                    comment: endorsed_google ? '' : 'Some made up reason for failure'
-                };
+                endorsed[this.netid].google = endorsement.google;
             }
 
-            endorsed.push(e);
         }
     });
 
@@ -209,10 +200,6 @@ var endorseUWNetIDs = function(endorsees) {
             "X-CSRFToken": csrf_token
         },
         success: function(results) {
-            window.endorsement = {
-                endorsed: results
-            };
-
             $(document).trigger('endorse:UWNetIDsEndorsed', [results]);
         },
         error: function(xhr, status, error) {

@@ -30,8 +30,12 @@ class Validate(RESTDispatch):
 
         # fake validating netids for endorsement
         netids = json.loads(request.read())
+
+
         # fake setting the endorsements
         from random import uniform
+
+
         validated = []
         for netid in netids:
 
