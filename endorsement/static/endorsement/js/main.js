@@ -10,7 +10,7 @@ $(window.document).ready(function() {
 
 var registerEvents = function() {
     $('#app_content').on('click', 'button[type="button"]', function(e) {
-        var $this = $(this)
+        var $this = $(this);
 
         switch (e.target.id) {
         case 'validate':
@@ -46,12 +46,12 @@ var registerEvents = function() {
     });
 
     $(document).on('endorse:UWNetIDsValidated', function (e, validated) {
-        $('button#validate').button('reset')
+        $('button#validate').button('reset');
         displayValidatedUWNetIDs(validated);
     });
 
     $(document).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
-        $('button#endorse').button('reset')
+        $('button#endorse').button('reset');
         displayEndorsedUWNetIDs(endorsed);
     });
 };
@@ -316,7 +316,7 @@ var showValidationStep = function () {
 };
 
 var showEndorsedStep = function () {
-    $('.endorsement-group input').attr('disabled', true)
+    $('.endorsement-group input').attr('disabled', true);
     $('#uwnetids-input').hide();
     $('#uwnetids-validated').hide();
     $('#uwnetids-endorsed').show();
