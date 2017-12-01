@@ -9,13 +9,16 @@ $(window.document).ready(function() {
 
 
 var registerEvents = function() {
+    $('#app_content').on('click', 'button[type="button"]', function(e) {
+        var $this = $(this);
 
-    $('#app_content').on('click', 'input[type="button"]', function(e) {
         switch (e.target.id) {
         case 'validate':
+            $this.button('loading');
             validationStep();
             break;
         case 'endorse':
+            $this.button('loading');
             endorsementStep();
             break;
         case 'netid_input':
@@ -43,10 +46,12 @@ var registerEvents = function() {
     });
 
     $(document).on('endorse:UWNetIDsValidated', function (e, validated) {
+        $('button#validate').button('reset');
         displayValidatedUWNetIDs(validated);
     });
 
     $(document).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
+        $('button#endorse').button('reset');
         displayEndorsedUWNetIDs(endorsed);
     });
 };
@@ -298,7 +303,6 @@ var getValidNetidList = function () {
 
 var showInputStep = function () {
     $('.endorsement-group input').removeAttr('disabled');
-    $(['input.endorse_o365', 'input.endorse_google']);
     $('#uwnetids-validated').hide();
     $('#uwnetids-endorsed').hide();
     $('#uwnetids-input').show();
