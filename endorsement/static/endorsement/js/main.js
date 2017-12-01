@@ -41,6 +41,14 @@ var registerEvents = function() {
             $target.parent().prev().find('i').show();
         }
     });
+
+    $(document).on('endorse:UWNetIDsValidated', function (e, validated) {
+        displayValidatedUWNetIDs(validated);
+    });
+
+    $(document).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
+        displayEndorsedUWNetIDs(endorsed);
+    });
 };
 
 var enableCheckEligibility = function() {
@@ -69,7 +77,13 @@ var displayPageHeader = function() {
     }));
 };
 
+
 var validationStep = function() {
+    validateUWNetids(getNetidList());
+};
+
+
+var displayValidatedUWNetIDs = function(validated) {
     var source = $("#validated-list").html();
     var template = Handlebars.compile(source);
     var $endorsement_group = $('.endorsement-group input[type="checkbox"]');
@@ -80,7 +94,7 @@ var validationStep = function() {
         o365_endorsable: false,
         google_revokable: false,
         o365_revokable: false,
-        netids: validateUWNetids(getNetidList())
+        netids: validated
     };
 
     $.each(context.netids, function () {
@@ -99,137 +113,98 @@ var validationStep = function() {
     });
 
     $('#uwnetids-validated').html(template(context));
-        
+
     $endorsement_group.attr('disabled', true);
     showValidationStep();
 };
 
 
 var validateUWNetids = function(netids) {
-    var validated = [];
-
-    $.each(netids, function (i, netid) {
-
-
-        /// FAKE WEB SERVICE RESPONSES
-        var valid_netid = Math.random() > 0.15;
-        var eligible_netid = valid_netid ? Math.random() > 0.1 : false;
-
-        var o365_active = eligible_netid ? Math.random() < 0.3 : false;
-        var o365_endorsers = null;
-        var o365_by_you = false;
-        if (o365_active && Math.random() > 0.3) {
-            o365_by_you = o365_active ? Math.random() < 0.5 : false;
-            o365_endorsers = [o365_by_you ? 'you' : 'mumble'];
-            if (Math.random() < 0.5) {
-                    o365_endorsers.push('garble');
-            }
-            if (Math.random() < 0.5) {
-                    o365_endorsers.push('marble');
-            }
+    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+    $.ajax({
+        url: "/api/v1/validate/",
+        dataType: "JSON",
+        data: JSON.stringify(netids),
+        type: "POST",
+        accepts: {html: "application/json"},
+        headers: {
+            "X-CSRFToken": csrf_token
+        },
+        success: function(results) {
+            window.endorsement = { validated: results };
+            $(document).trigger('endorse:UWNetIDsValidated', [results]);
+        },
+        error: function(xhr, status, error) {
         }
-
-
-        var google_active = eligible_netid ? Math.random() < 0.3 : false;
-        var google_endorsers = null;
-        var google_by_you = false;
-        if (google_active && Math.random() > 0.3) {
-            google_by_you = google_active ? Math.random() < 0.5 : false;
-            google_endorsers = [google_by_you ? 'you' : 'mumble'];
-            if (Math.random() < 0.5) {
-                    google_endorsers.push('garble');
-            }
-            if (Math.random() < 0.5) {
-                    google_endorsers.push('marble');
-            }
-        }
-        //// end of web service fakery
-
-
-
-
-        validated.push({
-            netid: netid,
-            valid_netid: valid_netid,
-            name: netid + '. Lastname',
-            email: netid + '@uw.edu',
-            subscription: {
-                google: {
-                    eligible: eligible_netid,
-                    active: google_active,
-                    endorsers: google_endorsers,
-                    self_endorsed: google_by_you,
-                    error: null
-                },
-                o365: {
-                    eligible: eligible_netid,
-                    active: o365_active,
-                    endorsers: o365_endorsers,
-                    self_endorsed: o365_by_you,
-                    error: null
-                }
-            }
-        });
     });
-
-    window.endorsement = {};
-    window.endorsement.validated = validated;
-
-    return validated;
 };
 
 
 var endorsementStep = function() {
+    endorseUWNetIDs(getValidNetidList());
+};
+
+
+var displayEndorsedUWNetIDs = function(endorsed) {
     var source = $("#endorsed-list").html();
     var template = Handlebars.compile(source);
     var context = {
         endorse_o365: endorseOffice365(),
         endorse_google: endorseGoogle(),
-        endorsed: endorseUWNetids(getValidNetidList())
+        endorsed: endorsed
     };
+
+    // bind names back to netid
+    $.each(endorsed, function () {
+        var e = this;
+        $.each(window.endorsement.validated, function () {
+            if (e.netid === this.netid) {
+                e.name = this.name;
+                return false;
+            }
+        });
+    });
 
     $('#uwnetids-endorsed').html(template(context));
     showEndorsedStep();
 };
 
 
-var endorseUWNetids = function(endorsees) {
-    var endorsed = [];
+var endorseUWNetIDs = function(endorsees) {
+    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+    var endorsed = {};
 
     $.each(window.endorsement.validated, function () {
         var endorsement = endorsees[this.netid];
         if (endorsement !== undefined) {
-
-            /// FAKE WEB SERVICE RESPONSES
-            var endorsed_o365 = Math.random() > 0.20;
-            var endorsed_google = Math.random() > 0.20;
-
-
-            var e = {
-                netid: this.netid,
-                name: this.name,
-                endorsement: {}
-            };
+            endorsed[this.netid] = {};
 
             if (endorsement.o365 !== undefined) {
-                e.endorsement.o365 = {
-                    endorse: endorsement.o365,
-                    comment: endorsed_o365 ? '' : 'Some made up reason for failure'
-                };
+                endorsed[this.netid].o365 = endorsement.o365;
             }
 
             if (endorsement.google !== undefined) {
-                e.endorsement.google = {
-                    endorse: endorsement.google,
-                    comment: endorsed_google ? '' : 'Some made up reason for failure'
-                };
+                endorsed[this.netid].google = endorsement.google;
             }
 
-            endorsed.push(e);
         }
     });
 
-    return endorsed;
+    $.ajax({
+        url: "/api/v1/endorse/",
+        dataType: "JSON",
+        data: JSON.stringify(endorsed),
+        type: "POST",
+        accepts: {html: "application/json"},
+        headers: {
+            "X-CSRFToken": csrf_token
+        },
+        success: function(results) {
+            $(document).trigger('endorse:UWNetIDsEndorsed', [results]);
+        },
+        error: function(xhr, status, error) {
+        }
+    });
 };
 
 
