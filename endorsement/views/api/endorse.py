@@ -10,7 +10,7 @@ from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time
 from endorsement.views.session import log_session_key
 from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session)
+    RESTDispatch, invalid_session, invalid_endorser)
 
 
 logger = logging.getLogger(__name__)
@@ -29,6 +29,9 @@ class Endorse(RESTDispatch):
         netid = UserService().get_user()
         if not netid:
             return invalid_session(logger, timer)
+
+        if not is_valid_endorser(netid):
+            return invalid_endorser(logger, timer)
 
         # fake setting the endorsements
         from random import uniform

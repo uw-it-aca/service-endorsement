@@ -1,0 +1,23 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "endorsed-partial" %}
+
+<div class="form-group">
+<table class="table table-striped">
+  <thead><tr><th>NetId</th><th>Name</th>{{#if endorse_o365}}<th>Office365 Endorsement</th>{{/if}}{{#if endorse_google}}<th>Google Endorsement</th>{{/if}}</tr></thead>
+  {{#each endorsed}}
+  <tr>
+    <td>{{netid}}</td>
+    <td>{{name}}</td>
+    {{#if ../endorse_o365}}
+    <td class="result-status">{{#if endorsement.o365}}{{#if endorsement.o365.error}}{{endorsement.o365.error}}{{else}}{{#if endorsement.o365.endorsed}}<i class="fa fa-check fa-2x success"></i>{{else}}<i class="fa fa-minus-circle fa-2x failure"></i>{{/if}}{{/if}}{{/if}}</td>
+    {{/if}}
+    {{#if ../endorse_google}}
+    <td class="result-status">{{#if endorsement.google}}{{#if endorsement.google.error}}{{endorsement.google.error}}{{else}}{{#if endorsement.google.endorsed}}<i class="fa fa-check fa-2x success"></i>{{else}}<i class="fa fa-minus-circle fa-2x failure"></i>{{/if}}{{/if}}{{/if}}</td>
+    {{/if}}
+  </tr>
+  {{/each}}
+</table>
+</div>
+
+{% endtplhandlebars %}
+

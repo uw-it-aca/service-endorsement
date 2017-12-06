@@ -45,9 +45,21 @@ var registerEvents = function() {
         }
     });
 
+    $('a[href="#endorse"]').on('shown.bs.tab', function () {
+    });
+
+    $('a[href="#endorsed"]').on('shown.bs.tab', function () {
+        getEndorsedUWNetIDs();
+    });
+
     $(document).on('endorse:UWNetIDsValidated', function (e, validated) {
         $('button#validate').button('reset');
         displayValidatedUWNetIDs(validated);
+    });
+
+    $(document).on('endorse:UWNetIDsEndorseStatus', function (e, endorsed) {
+        $('button#endorse').button('reset');
+        displayEndorseResult(endorsed);
     });
 
     $(document).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
@@ -126,6 +138,7 @@ var displayValidatedUWNetIDs = function(validated) {
 
 var validateUWNetids = function(netids) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+
     $.ajax({
         url: "/api/v1/validate/",
         dataType: "JSON",
@@ -150,8 +163,8 @@ var endorsementStep = function() {
 };
 
 
-var displayEndorsedUWNetIDs = function(endorsed) {
-    var source = $("#endorsed-list").html();
+var displayEndorseResult = function(endorsed) {
+    var source = $("#endorse-result").html();
     var template = Handlebars.compile(source);
     var context = {
         endorse_o365: endorseOffice365(),
@@ -205,7 +218,7 @@ var endorseUWNetIDs = function(endorsees) {
             "X-CSRFToken": csrf_token
         },
         success: function(results) {
-            $(document).trigger('endorse:UWNetIDsEndorsed', [results]);
+            $(document).trigger('endorse:UWNetIDsEndorseStatus', [results]);
         },
         error: function(xhr, status, error) {
         }
@@ -298,6 +311,50 @@ var getValidNetidList = function () {
     });
 
     return to_endorse;
+};
+
+
+var displayEndorsedUWNetIDs = function(endorsed) {
+    var source = $("#endorsed-netids").html();
+    var template = Handlebars.compile(source);
+    var context = {
+        endorse_o365: endorseOffice365(),
+        endorse_google: endorseGoogle(),
+        endorsed: endorsed
+    };
+
+    // bind names back to netid
+    $.each(endorsed, function () {
+        var e = this;
+        $.each(window.endorsement.validated, function () {
+            if (e.netid === this.netid) {
+                e.name = this.name;
+                return false;
+            }
+        });
+    });
+
+    $('div.tab-pane#endorsed').html(template(context));
+};
+
+
+var getEndorsedUWNetIDs = function() {
+    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+
+    $.ajax({
+        url: "/api/v1/endorsed/",
+        dataType: "JSON",
+        type: "GET",
+        accepts: {html: "application/json"},
+        headers: {
+            "X-CSRFToken": csrf_token
+        },
+        success: function(results) {
+            $(document).trigger('endorse:UWNetIDsEndorsed', [results]);
+        },
+        error: function(xhr, status, error) {
+        }
+    });
 };
 
 
