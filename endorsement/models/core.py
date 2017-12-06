@@ -78,18 +78,23 @@ class Endorsee(models.Model):
 
 
 class EndorsementRecord(models.Model):
+    OFFICE_365 = Subscription.SUBS_CODE_OFFICE_365
+    OFFICE_365_TEST = Subscription.SUBS_CODE_OFFICE_365_TEST
+    GOOGLE_APPS = Subscription.SUBS_CODE_GOOGLE_APPS
+    GOOGLE_APPS_TEST = Subscription.SUBS_CODE_GOOGLE_APPS_TEST
+    PROJECT_SERVER_ONLINE_USER_ACCESS =\
+        Subscription.SUBS_CODE_PROJECT_SERVER_ONLINE_USER_ACCESS
+    PROJECT_SERVER_ONLINE_USER_ACCESS_TEST =\
+        Subscription.SUBS_CODE_PROJECT_SERVER_ONLINE_USER_ACCESS_TEST
+
     SUBSCRIPTION_CODE_CHOICES = (
-        (Subscription.SUBS_CODE_OFFICE_365,
-         "UW Office 365 Education"),
-        (Subscription.SUBS_CODE_OFFICE_365_TEST,
-         "UW Office 365 Education Dogfood"),
-        (Subscription.SUBS_CODE_GOOGLE_APPS,
-         "Google Apps"),
-        (Subscription.SUBS_CODE_GOOGLE_APPS_TEST,
-         "Google Apps Test"),
-        (Subscription.SUBS_CODE_PROJECT_SERVER_ONLINE_USER_ACCESS,
+        (OFFICE_365, "UW Office 365 Education"),
+        (OFFICE_365_TEST, "UW Office 365 Education Dogfood"),
+        (GOOGLE_APPS, "Google Apps"),
+        (GOOGLE_APPS_TEST, "Google Apps Test"),
+        (PROJECT_SERVER_ONLINE_USER_ACCESS,
          "UW Project Server Online user access"),
-        (Subscription.SUBS_CODE_PROJECT_SERVER_ONLINE_USER_ACCESS_TEST,
+        (PROJECT_SERVER_ONLINE_USER_ACCESS_TEST,
          "UW Project Server Online user access Dogfood"),
         )
 
