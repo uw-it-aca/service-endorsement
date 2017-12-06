@@ -211,6 +211,10 @@ a {
     color: #c00f0f;
 }
 
+.nav-tabs {
+    margin-top: 12px;
+}
+
 .validation {
     table {
        .centered {
@@ -225,6 +229,17 @@ a {
            li:last-child:after { content: ""; }
        }
     }
+}
+
+.no-endorsements {
+    height: 8em;
+    line-height: 8em;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 24px;
+
 }
 
 .success { color: green; }
