@@ -15,6 +15,7 @@ from endorsement.views.session import log_session_key
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import InvalidNetID, UnrecognizedUWNetid
+from restclients_core.exceptions import DataFailureException
 
 
 logger = logging.getLogger(__name__)
@@ -93,6 +94,11 @@ class Validate(RESTDispatch):
                     }
 
             except (InvalidNetID, UnrecognizedUWNetid) as ex:
+                valid = {
+                    'netid': endorse_netid,
+                    'error': '%s' % (ex)
+                }
+            except DataFailureException as ex:
                 valid = {
                     'netid': endorse_netid,
                     'error': '%s' % (ex)

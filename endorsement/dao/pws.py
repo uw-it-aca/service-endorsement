@@ -24,10 +24,11 @@ def get_entity(uwnetid):
     except DataFailureException as ex:
         if ex.status == 404:
             raise UnrecognizedUWNetid(uwnetid)
+
         log_exception(logger,
                       '%s get_entity ' % uwnetid,
                       traceback.format_exc())
-        return ex.status == 301
+        raise
 
 
 def get_person(uwnetid):
@@ -55,7 +56,9 @@ def get_endorser_regid(uwnetid):
 
 def is_renamed_uwnetid(uwnetid):
     try:
-        en = get_entity(uwnetid)
+        get_entity(uwnetid)
+        return False
+    except UnrecognizedUWNetid:
         return False
     except DataFailureException as ex:
         log_exception(logger,
