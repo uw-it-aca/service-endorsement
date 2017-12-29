@@ -24,7 +24,10 @@ def get_endorser_model(uwnetid):
     user, created = Endorser.objects.update_or_create(
         regid=uwregid, defaults=updated_values)
 
-    return user, created
+    if created:
+        logger.info("Create endorser: %s" % user)
+
+    return user
 
 
 def get_endorsee_model(uwnetid):
@@ -41,4 +44,7 @@ def get_endorsee_model(uwnetid):
             'display_name': display_anme,
             'kerberos_active_permitted': kerberos_active_permitted})
 
-    return user, created
+    if created:
+        logger.info("Create endorsee: %s" % user)
+
+    return user

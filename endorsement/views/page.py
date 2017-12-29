@@ -30,16 +30,14 @@ def index(request):
             return invalid_endorser(logger, timer)
         session_key = log_session_key(request)
 
-        user, created = get_endorser_model(netid)
-
         context = {
             "home_url": "/",
             "err": None,
             "user": {
                 "netid": netid,
                 "session_key": session_key,
-                },
             }
+        }
         try:
             log_resp_time(logger, "index.html", timer)
             return render(request, "index.html", context)

@@ -1,14 +1,20 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "endorsed-netids" %}
 
+<div class="form-group" id="uwnetids-input">
 <h3>Endorsed UW NetIDs</h3>
 
-  {{#if endorsed}}
+  {{#if has_endorsed}}
   You have endorsed these UW Netids for the indicated service.
   {{> endorsed_partial .}}
+  <button type="button" name="Revoke" id="revoke" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Services">Revoke Endorsements</button>
   {{else}}
   <div class="no-endorsements">Hmmm.  We couldn't find any UWNetIDs that you've endorsed.</dev>
   {{/if}}
+
+
+
+</div>
 
 
 {% endtplhandlebars %}

@@ -4,13 +4,16 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from userservice.user import UserService
-from endorsement.dao.user import get_endorser_model
+from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.gws import is_valid_endorser
+from endorsement.dao.endorse import (
+    store_office365_endorsement, clear_office365_endorsement,
+    store_google_endorsement, clear_google_endorsement)
 from endorsement.util.time_helper import Timer
-from endorsement.util.log import log_resp_time
 from endorsement.views.session import log_session_key
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
+from endorsement.exceptions import InvalidNetID, UnrecognizedUWNetid
 
 
 logger = logging.getLogger(__name__)
@@ -33,44 +36,54 @@ class Endorse(RESTDispatch):
         if not is_valid_endorser(netid):
             return invalid_endorser(logger, timer)
 
-        # fake setting the endorsements
-        from random import uniform
+        endorser = get_endorser_model(netid)
 
-        endorsed = []
-        for endorsee, to_endorse in endorsees.iteritems():
-            endorse_result = {
-                'netid': endorsee,
-                'endorsement': {}
-            }
+        endorsed = {
+            'endorser': endorser.json_data(),
+            'endorsed': {}
+        }
 
-            if 'o365' in to_endorse:
-                if uniform(0, 1) < 0.1:
-                    endorse_result['endorsement']['o365'] = {
-                        'error': 'server is down'
-                    }
-                elif to_endorse['o365']:
-                    endorse_result['endorsement']['o365'] = {
-                        'endorsed': True
-                    }
-                else:
-                    endorse_result['endorsement']['o365'] = {
-                        'endorsed': False
-                    }
+        for endorsee_netid, to_endorse in endorsees.iteritems():
+            try:
+                endorsee = get_endorsee_model(endorsee_netid)
+                endorsements = {}
 
-            if 'google' in to_endorse:
-                if uniform(0, 1) < 0.1:
-                    endorse_result['endorsement']['google'] = {
-                        'error': 'server is down'
-                    }
-                elif to_endorse['google']:
-                    endorse_result['endorsement']['google'] = {
-                        'endorsed': True
-                    }
-                else:
-                    endorse_result['endorsement']['google'] = {
-                        'endorsed': False
-                    }
+                if 'o365' in to_endorse:
+                    try:
+                        if to_endorse['o365']:
+                            e = store_office365_endorsement(endorser, endorsee)
+                            endorsements['o365'] = e.json_data()
+                            endorsements['o365']['endorsed'] = True
+                        else:
+                            clear_office365_endorsement(endorser, endorsee)
+                            endorsements['o365'] = {
+                                'endorsed': False
+                            }
+                    except Exception as ex:
+                        raise
 
-            endorsed.append(endorse_result)
+                if 'google' in to_endorse:
+                    try:
+                        if to_endorse['google']:
+                            e = store_google_endorsement(endorser, endorsee)
+                            endorsements['google'] = e.json_data()
+                            endorsements['google']['endorsed'] = True
+                        else:
+                            clear_google_endorsement(endorser, endorsee)
+                            endorsements['google'] = {
+                                'endorser': endorser.json_data(),
+                                'endorsee': endorsee.json_data(),
+                                'endorsed': False
+                            }
+                    except Exception as ex:
+                        raise
+
+            except (InvalidNetID, UnrecognizedUWNetid) as ex:
+                endorsements = {
+                    'endorsee': endorsee.json_data(),
+                    'error': '%s' % (ex)
+                }
+
+            endorsed['endorsed'][endorsee.netid] = endorsements
 
         return self.json_response(endorsed)

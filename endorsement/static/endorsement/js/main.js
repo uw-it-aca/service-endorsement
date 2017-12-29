@@ -15,11 +15,15 @@ var registerEvents = function() {
         switch (e.target.id) {
         case 'validate':
             $this.button('loading');
-            validationStep();
+            validateUWNetids(getNetidList());
             break;
         case 'endorse':
             $this.button('loading');
-            endorsementStep();
+            endorseUWNetIDs(getEndorseNetids());
+            break;
+        case 'revoke':
+            $this.button('loading');
+            revokeUWNetIDs(getRevokedNetids());
             break;
         case 'netid_input':
             showInputStep();
@@ -37,15 +41,14 @@ var registerEvents = function() {
     }).on('input', '#netid_list', function () {
         enableCheckEligibility();
     }).on('click', 'input[name^="revoke_"]', function (e) {
-        $target = $(e.target);
-        if ($target.is(':checked')) {
-            $target.parent().prev().find('i').hide();
-        } else {
-            $target.parent().prev().find('i').show();
-        }
-    });
+//        $target = $(e.target);
+//        if ($target.is(':checked')) {
+//            $target.parent().prev().find('i').hide();
+//        } else {
+//            $target.parent().prev().find('i').show();
+//        }
 
-    $('a[href="#endorse"]').on('shown.bs.tab', function () {
+        enableRevocability();
     });
 
     $('a[href="#endorsed"]').on('shown.bs.tab', function () {
@@ -62,9 +65,15 @@ var registerEvents = function() {
         displayEndorseResult(endorsed);
     });
 
+    $(document).on('endorse:UWNetIDsRevokeStatus', function (e, endorsed) {
+        $('button#revoke').button('reset');
+        getEndorsedUWNetIDs();
+    });
+
     $(document).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
         $('button#endorse').button('reset');
         displayEndorsedUWNetIDs(endorsed);
+        enableRevocability();
     });
 };
 
@@ -75,6 +84,16 @@ var enableCheckEligibility = function() {
         $('#validate').removeAttr('disabled');
     } else {
         $('#validate').attr('disabled', 'disabled');
+    }
+};
+
+var enableRevocability = function() {
+    var netids = getRevokedNetids();
+
+    if (Object.keys(netids).length) {
+        $('#revoke').removeAttr('disabled');
+    } else {
+        $('#revoke').attr('disabled', 'disabled');
     }
 };
 
@@ -94,12 +113,6 @@ var displayPageHeader = function() {
     }));
 };
 
-
-var validationStep = function() {
-    validateUWNetids(getNetidList());
-};
-
-
 var displayValidatedUWNetIDs = function(validated) {
     var source = $("#validated-list").html();
     var template = Handlebars.compile(source);
@@ -109,23 +122,19 @@ var displayValidatedUWNetIDs = function(validated) {
         endorse_google: endorseGoogle(),
         google_endorsable: false,
         o365_endorsable: false,
-        google_revokable: false,
-        o365_revokable: false,
-        netids: validated
+        netids: validated.validated
     };
 
     $.each(context.netids, function () {
-        if (this.subscription.google.eligible) {
+        this.valid_netid = (this.error === undefined);
+
+        if (this.google && this.google.error == undefined) {
             context.google_endorsable = true;
+            this.google.eligible = true;
         }
-        if (this.subscription.o365.eligible) {
+        if (this.o365 && this.o365.error == undefined) {
             context.o365_endorsable = true;
-        }
-        if (this.subscription.google.self_endorsed) {
-            context.google_revokable = true;
-        }
-        if (this.subscription.o365.self_endorsed) {
-            context.o365_revokable = true;
+            this.o365.eligible = true;
         }
     });
 
@@ -134,7 +143,6 @@ var displayValidatedUWNetIDs = function(validated) {
     $endorsement_group.attr('disabled', true);
     showValidationStep();
 };
-
 
 var validateUWNetids = function(netids) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
@@ -149,7 +157,7 @@ var validateUWNetids = function(netids) {
             "X-CSRFToken": csrf_token
         },
         success: function(results) {
-            window.endorsement = { validated: results };
+            window.endorsement = { validation: results };
             $(document).trigger('endorse:UWNetIDsValidated', [results]);
         },
         error: function(xhr, status, error) {
@@ -157,42 +165,25 @@ var validateUWNetids = function(netids) {
     });
 };
 
-
-var endorsementStep = function() {
-    endorseUWNetIDs(getValidNetidList());
-};
-
-
 var displayEndorseResult = function(endorsed) {
     var source = $("#endorse-result").html();
     var template = Handlebars.compile(source);
     var context = {
         endorse_o365: endorseOffice365(),
         endorse_google: endorseGoogle(),
+        has_endorsed: (endorsed && Object.keys(endorsed.endorsed).length > 0),
         endorsed: endorsed
     };
-
-    // bind names back to netid
-    $.each(endorsed, function () {
-        var e = this;
-        $.each(window.endorsement.validated, function () {
-            if (e.netid === this.netid) {
-                e.name = this.name;
-                return false;
-            }
-        });
-    });
 
     $('#uwnetids-endorsed').html(template(context));
     showEndorsedStep();
 };
 
-
 var endorseUWNetIDs = function(endorsees) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
     var endorsed = {};
 
-    $.each(window.endorsement.validated, function () {
+    $.each(window.endorsement.validation.validated, function () {
         var endorsement = endorsees[this.netid];
         if (endorsement !== undefined) {
             endorsed[this.netid] = {};
@@ -225,17 +216,35 @@ var endorseUWNetIDs = function(endorsees) {
     });
 };
 
+var revokeUWNetIDs = function(revokees) {
+    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
-var getValidNetidList = function () {
+    $.ajax({
+        url: "/api/v1/endorse/",
+        dataType: "JSON",
+        data: JSON.stringify(revokees),
+        type: "POST",
+        accepts: {html: "application/json"},
+        headers: {
+            "X-CSRFToken": csrf_token
+        },
+        success: function(results) {
+            $(document).trigger('endorse:UWNetIDsRevokeStatus', [results]);
+        },
+        error: function(xhr, status, error) {
+        }
+    });
+};
+
+var getEndorseNetids = function () {
     var to_endorse = {};
     var validated = [];
 
     $('input[name="endorse_o365"]:checked').each(function (e) {
         var netid = $(this).val();
-        $.each(window.endorsement.validated, function () {
+        $.each(window.endorsement.validation.validated, function () {
             if (netid == this.netid) {
-                if (this.subscription.o365 &&
-                    this.subscription.o365.eligible) {
+                if (this.o365 && this.o365.eligible) {
                     if (netid in to_endorse) {
                         to_endorse[this.netid].o365 = true;
                     } else {
@@ -250,32 +259,11 @@ var getValidNetidList = function () {
         });
     });
 
-    $('input[name="revoke_o365"]:checked').each(function (e) {
-        var netid = $(this).val();
-        $.each(window.endorsement.validated, function () {
-            if (netid == this.netid) {
-                if (this.subscription.o365 &&
-                    this.subscription.o365.eligible) {
-                    if (netid in to_endorse) {
-                        to_endorse[this.netid].o365 = false;
-                    } else {
-                        to_endorse[this.netid] = {
-                            o365: false
-                        };
-                    }
-                }
-
-                return false;
-            }
-        });
-    });
-
     $('input[name="endorse_google"]:checked').each(function (e) {
         var netid = $(this).val();
-        $.each(window.endorsement.validated, function () {
+        $.each(window.endorsement.validation.validated, function () {
             if (netid == this.netid) {
-                if (this.subscription.google &&
-                    this.subscription.google.eligible) {
+                if (this.google && this.google.eligible) {
                     if (netid in to_endorse) {
                         to_endorse[this.netid].google = true;
                     } else {
@@ -290,53 +278,45 @@ var getValidNetidList = function () {
         });
     });
 
-    $('input[name="revoke_google"]:checked').each(function (e) {
-        var netid = $(this).val();
-        $.each(window.endorsement.validated, function () {
-            if (netid == this.netid) {
-                if (this.subscription.google &&
-                    this.subscription.google.eligible) {
-                    if (netid in to_endorse) {
-                        to_endorse[netid].google = false;
-                    } else {
-                        to_endorse[netid] = {
-                            google: false
-                        };
-                    }
-                }
-
-                return false;
-            }
-        });
-    });
-
     return to_endorse;
 };
 
+var getRevokedNetids = function () {
+    var to_revoke = {};
+    var validated = [];
+
+    $('input[name="revoke_o365"]:checked').each(function () {
+        addRevocation($(this).val(), 'o365', to_revoke);
+    });
+
+    $('input[name="revoke_google"]:checked').each(function () {
+        addRevocation($(this).val(), 'google', to_revoke);
+    });
+
+    return to_revoke;
+};
+
+var addRevocation = function (netid, service, to_revoke) {
+    if (!(netid in to_revoke)) {
+        to_revoke[netid] = {};
+    }
+
+    to_revoke[netid][service] = false;
+};
 
 var displayEndorsedUWNetIDs = function(endorsed) {
     var source = $("#endorsed-netids").html();
     var template = Handlebars.compile(source);
     var context = {
-        endorse_o365: endorseOffice365(),
-        endorse_google: endorseGoogle(),
+        endorse_o365: true,
+        endorse_google: true,
+        can_revoke: true,
+        has_endorsed: (endorsed && Object.keys(endorsed.endorsed).length > 0),
         endorsed: endorsed
     };
 
-    // bind names back to netid
-    $.each(endorsed, function () {
-        var e = this;
-        $.each(window.endorsement.validated, function () {
-            if (e.netid === this.netid) {
-                e.name = this.name;
-                return false;
-            }
-        });
-    });
-
     $('div.tab-pane#endorsed').html(template(context));
 };
-
 
 var getEndorsedUWNetIDs = function() {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
@@ -356,7 +336,6 @@ var getEndorsedUWNetIDs = function() {
         }
     });
 };
-
 
 var showInputStep = function () {
     $('.endorsement-group input').removeAttr('disabled');
