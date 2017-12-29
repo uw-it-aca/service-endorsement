@@ -7,9 +7,12 @@ import logging
 import re
 import sys
 import traceback
+from django.conf import settings
 from restclients_core.exceptions import InvalidNetID
 from restclients_core.exceptions import DataFailureException
+from userservice.user import UserService
 from uw_gws import GWS
+from authz_group import Group
 from endorsement.util.log import log_exception, log_resp_time
 from endorsement.util.time_helper import Timer
 
@@ -77,3 +80,21 @@ def is_valid_endorser(uwnetid):
         raise
     finally:
         log_resp_time(logger, action, timer)
+
+
+def is_in_admin_group(group_key):
+    user_service = UserService()
+    user_service.get_user()
+
+    if not hasattr(settings, group_key):
+        print "You must have a group defined as your admin group."
+        print 'Configure that using %s="foo_group"' % group_key
+        raise Exception("Missing %s in settings" % group_key)
+
+    actual_user = user_service.get_original_user()
+    if not actual_user:
+        raise Exception("No user in session")
+
+    g = Group()
+    group_name = getattr(settings, group_key)
+    return g.is_member_of_group(actual_user, group_name)

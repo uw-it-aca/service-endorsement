@@ -7,17 +7,9 @@
                <td class="centered">
                  <i class="fa fa-check success"></i>
                </td>
-               <td class="centered">
-                 <input type="checkbox" name="revoke_{{svc}}" value="{{netid}}" />
-               </td>
             {{else}}
                <td class="centered">
                  <input type="checkbox" name="endorse_{{svc}}" value="{{netid}}" />
-               </td>
-               <td class="centered">
-                 {{#if revokable}}
-                 <input type="checkbox" name="revoke_{{svc}}" value="{{netid}}" disabled="1" />
-                 {{/if}}
                </td>
             {{/if}}
             <td>
@@ -38,16 +30,10 @@
              <input type="checkbox" name="endorse_{{svc}}" value="{{netid}}" checked="checked" />
              {{/if}}
            </td>
-           <td class="centered">
-             {{#if revokable}}
-             <input type="checkbox" name="revoke_{{svc}}" value="{{netid}}" disabled="1" />
-             {{/if}}
-           </td>
            <td></td>
          {{/if}}
       {{else}}
         <td class="invalid-netid centered">{{#if endorsable}}<i class="fa fa-minus-circle"></i>{{/if}}</td>
-        <td class="invalid-netid centered">{{#if revokable}}<i class="fa fa-minus-circle"></i>{{/if}}</td>
         <td>
           NetID Ineligible
         </td>

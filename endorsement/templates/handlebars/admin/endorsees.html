@@ -1,0 +1,22 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "admin-endorsee-search-result" %}
+
+<h3>Endorsements and Endorsers for {{endorsee}}</h3>
+<table id="endorsee-table" class="endorsee-table table table-striped">
+  <thead>
+    <tr>
+      <th>Service</th>
+      <th>Endorser</th>
+      <th>Endorsement Date</th>
+    </tr>
+  </thead>
+  <tbody class="scrollable">
+    {{#each endorsements.endorsements}}
+    <tr><td>{{subscription_name}} ({{subscriptoin_code}})</td><td>{{endorser.netid}}</td><td>{{datetime_endorsed}}</td></tr>
+    {{/each}}
+</tbody>
+</table>
+
+
+{% endtplhandlebars %}
+

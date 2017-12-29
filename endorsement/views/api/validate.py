@@ -1,16 +1,20 @@
 import logging
 import json
-import traceback
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from userservice.user import UserService
-from endorsement.dao.user import get_endorser_model
+from endorsement.models import EndorsementRecord
+from endorsement.dao.user import get_endorser_model, get_endorsee_model
+from endorsement.dao.endorse import (
+    is_office365_permitted, is_google_permitted,
+    get_endorsements_for_endorsee)
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time
 from endorsement.views.session import log_session_key
 from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session)
+    RESTDispatch, invalid_session, invalid_endorser)
+from endorsement.exceptions import InvalidNetID, UnrecognizedUWNetid
 
 
 logger = logging.getLogger(__name__)
@@ -28,61 +32,72 @@ class Validate(RESTDispatch):
         if not netid:
             return invalid_session(logger, timer)
 
-        # fake validating netids for endorsement
+        if not is_valid_endorser(netid):
+            return invalid_endorser(logger, timer)
+
+        endorser = get_endorser_model(netid)
+
         netids = json.loads(request.read())
+        validated = {
+            'endorser': endorser.json_data(),
+            'validated': []
+        }
 
-        # fake setting the endorsements
-        from random import uniform
-
-        validated = []
-        for netid in netids:
-
-            valid_netid = uniform(0, 1) > 0.15
-            eligible_netid = valid_netid and uniform(0, 1) > 0.1
-
-            o365_active = eligible_netid and (uniform(0, 1) > 0.25)
-            o365_endorsers = None
-            o365_by_you = False
-            if (o365_active and uniform(0, 1) > 0.3):
-                o365_by_you = o365_active and uniform(0, 1) < 0.5
-                o365_endorsers = ['you' if o365_by_you else 'mumble']
-                if uniform(0, 1) < 0.5:
-                    o365_endorsers.append('garble')
-                if uniform(0, 1) < 0.5:
-                    o365_endorsers.append('marble')
-
-            google_active = eligible_netid and (uniform(0, 1) > 0.25)
-            google_endorsers = None
-            google_by_you = False
-            if (google_active and uniform(0, 1) > 0.3):
-                google_by_you = google_active and uniform(0, 1) < 0.5
-                google_endorsers = ['you' if google_by_you else 'mumble']
-                if uniform(0, 1) < 0.5:
-                    google_endorsers.append('garble')
-                if uniform(0, 1) < 0.5:
-                    google_endorsers.append('marble')
-
-            validated.append({
-                'netid': netid,
-                'valid_netid': valid_netid,
-                'name': netid + '. Lastname',
-                'email': netid + '@uw.edu',
-                'subscription': {
-                    'google': {
-                        'eligible': eligible_netid,
-                        'active': google_active,
-                        'endorsers': google_endorsers,
-                        'self_endorsed': google_by_you,
-                        'error': None
-                    },
-                    'o365': {
-                        'eligible': eligible_netid,
-                        'active': o365_active,
-                        'endorsers': o365_endorsers,
-                        'self_endorsed': o365_by_you,
-                        'error': None
-                    }
+        for endorse_netid in netids:
+            try:
+                endorsee = get_endorsee_model(endorse_netid)
+                endorsements = get_endorsements_for_endorsee(endorsee)
+                active = False
+                valid = {
+                    'netid': endorse_netid,
+                    'name': endorsee.display_name,
+                    'email': ''
                 }
-            })
+
+                try:
+                    active, endorsed = is_office365_permitted(
+                        endorser, endorsee)
+                    valid['o365'] = {
+                        'active': active,
+                        'endorsers': [],
+                        'self_endorsed': endorsed
+                    }
+
+                    for e in endorsements:
+                        if e.subscription_code == EndorsementRecord.OFFICE_365:
+                            valid['o365']['endorsers'].append(e.endorser.netid)
+
+                except Exception as ex:
+                    valid['o365'] = {
+                        'error': "%s" % ex
+                    }
+
+                try:
+                    active, endorsed = is_google_permitted(
+                        endorser, endorsee)
+                    valid['google'] = {
+                        'active': active,
+                        'endorsers': [],
+                        'self_endorsed': endorsed
+                    }
+
+                    for e in endorsements:
+                        if e.subscription_code ==\
+                           EndorsementRecord.GOOGLE_APPS:
+                            valid['google']['endorsers'].append(
+                                e.endorser.netid)
+
+                except Exception as ex:
+                    valid['google'] = {
+                        'error': "%s" % ex
+                    }
+
+            except (InvalidNetID, UnrecognizedUWNetid) as ex:
+                valid = {
+                    'netid': endorse_netid,
+                    'error': '%s' % (ex)
+                }
+
+            validated['validated'].append(valid)
 
         return self.json_response(validated)

@@ -7,6 +7,7 @@ import logging
 import traceback
 from uw_pws import PWS
 from restclients_core.exceptions import DataFailureException
+from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.util.log import log_exception
 
 
@@ -18,7 +19,15 @@ def get_entity(uwnetid):
     """
     Retrieve the Entity object for the given netid
     """
-    return pws.get_entity_by_netid(uwnetid)
+    try:
+        return pws.get_entity_by_netid(uwnetid)
+    except DataFailureException as ex:
+        if ex.status == 404:
+            raise UnrecognizedUWNetid(uwnetid)
+        log_exception(logger,
+                      '%s get_entity ' % uwnetid,
+                      traceback.format_exc())
+        return ex.status == 301
 
 
 def get_person(uwnetid):
