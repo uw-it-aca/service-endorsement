@@ -15,15 +15,19 @@ def get_endorser_model(uwnetid):
     @exception: DataFailureException
     """
     uwregid = get_endorser_regid(uwnetid)
-    updated_values = {'netid': uwnetid,
-                      'is_valid': is_valid_endorser(uwnetid),
-                      'last_visit': timezone.now()
-                      }
-    user, created = Endorser.objects.update_or_create(
-        regid=uwregid,
-        defaults=updated_values)
+    updated_values = {
+        'netid': uwnetid,
+        'is_valid': is_valid_endorser(uwnetid),
+        'last_visit': timezone.now()
+    }
 
-    return user, created
+    user, created = Endorser.objects.update_or_create(
+        regid=uwregid, defaults=updated_values)
+
+    if created:
+        logger.info("Create endorser: %s" % user)
+
+    return user
 
 
 def get_endorsee_model(uwnetid):
@@ -35,9 +39,12 @@ def get_endorsee_model(uwnetid):
     kerberos_active_permitted = is_valid_endorsee(uwnetid)
     user, created = Endorsee.objects.update_or_create(
         regid=uwregid,
-        defaults={'netid': uwnetid,
-                  'display_name': display_anme,
-                  'kerberos_active_permitted': kerberos_active_permitted},
-        )
+        defaults={
+            'netid': uwnetid,
+            'display_name': display_anme,
+            'kerberos_active_permitted': kerberos_active_permitted})
 
-    return user, created
+    if created:
+        logger.info("Create endorsee: %s" % user)
+
+    return user

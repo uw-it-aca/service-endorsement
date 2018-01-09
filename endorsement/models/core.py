@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils import timezone
+from uw_uwnetid.models import Subscription
 
 
 def datetime_to_str(d_obj):
@@ -15,7 +15,7 @@ class Endorser(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
                              unique=True)
-    is_valid = models.BooleanField(null=True)
+    is_valid = models.BooleanField()
     last_visit = models.DateTimeField(null=True)
 
     def __eq__(self, other):
@@ -51,7 +51,7 @@ class Endorsee(models.Model):
                              unique=True)
     display_name = models.CharField(max_length=64,
                                     null=True)
-    kerberos_active_permitted = models.BooleanField(null=True)
+    kerberos_active_permitted = models.BooleanField()
 
     def __eq__(self, other):
         return other is not None and\
@@ -78,12 +78,14 @@ class Endorsee(models.Model):
 
 
 class EndorsementRecord(models.Model):
-    OFFICE_365 = 233
-    OFFICE_365_TEST = 234
-    GOOGLE_APPS = 144
-    GOOGLE_APPS_TEST = 145
-    PROJECT_SERVER_ONLINE_USER_ACCESS = 237
-    PROJECT_SERVER_ONLINE_USER_ACCESS_TEST = 238
+    OFFICE_365 = Subscription.SUBS_CODE_OFFICE_365
+    OFFICE_365_TEST = Subscription.SUBS_CODE_OFFICE_365_TEST
+    GOOGLE_APPS = Subscription.SUBS_CODE_GOOGLE_APPS
+    GOOGLE_APPS_TEST = Subscription.SUBS_CODE_GOOGLE_APPS_TEST
+    PROJECT_SERVER_ONLINE_USER_ACCESS =\
+        Subscription.SUBS_CODE_PROJECT_SERVER_ONLINE_USER_ACCESS
+    PROJECT_SERVER_ONLINE_USER_ACCESS_TEST =\
+        Subscription.SUBS_CODE_PROJECT_SERVER_ONLINE_USER_ACCESS_TEST
 
     SUBSCRIPTION_CODE_CHOICES = (
         (OFFICE_365, "UW Office 365 Education"),

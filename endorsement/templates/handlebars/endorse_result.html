@@ -1,0 +1,14 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "endorse-result" %}
+
+<h3>UW Netid Endorsement Status</h3>
+
+  The following UW Netids service endorsements have been updated.
+  {{> endorsed_partial .}}
+
+<div>
+  <button type="button" name="BackToUWNetids" id="new_netid_input" class="btn btn-normal">Add More Endorsed UW Netids</button>
+</div>
+
+{% endtplhandlebars %}
+

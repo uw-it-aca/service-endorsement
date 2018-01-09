@@ -1,0 +1,73 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "endorsed-partial" %}
+
+<div class="form-group">
+<table class="table table-striped">
+  <thead><tr><th>NetId</th><th>Name</th>{{#if endorse_o365}}<th>Office365</th><th>{{#if can_revoke}}Revoke Office365{{/if}}</th>{{/if}}{{#if endorse_google}}<th>Google</th><th>{{#if can_revoke}}Revoke Google{{/if}}</th>{{/if}}</tr></thead>
+  {{#each endorsed.endorsed}}
+  <tr>
+    <td>{{@key}}</td>
+    <td>{{endorsee.name}}</td>
+    {{#if ../endorse_o365}}
+    <td class="result-status">
+      {{#if o365}}
+        {{#if o365.error}}
+          {{o365.error}}
+        {{else}}
+          {{#if o365.endorsed}}
+            <i class="fa fa-check fa-2x success"></i>
+          {{else}}
+            <i class="fa fa-minus-circle fa-2x failure"></i>
+          {{/if}}
+        {{/if}}
+      {{else}}
+        {{#if ../../../can_revoke}}
+          <i class="fa fa-minus-circle fa-2x failure"></i>
+        {{/if}}
+      {{/if}}
+    </td>
+    <td>
+      {{#if ../../can_revoke}}
+        {{#if o365}}
+          {{#if o365.endorsed}}
+            <input type="checkbox" name="revoke_o365" value="{{@key}}" />
+         {{/if}}
+        {{/if}}
+      {{/if}}
+    </td>
+    {{/if}}
+    {{#if ../endorse_google}}
+    <td class="result-status">
+      {{#if google}}
+        {{#if google.error}}
+          {{google.error}}
+        {{else}}
+          {{#if google.endorsed}}
+            <i class="fa fa-check fa-2x success"></i>
+          {{else}}
+            <i class="fa fa-minus-circle fa-2x failure"></i>
+          {{/if}}
+        {{/if}}
+      {{else}}
+        {{#if ../../../can_revoke}}
+          <i class="fa fa-minus-circle fa-2x failure"></i>
+        {{/if}}
+      {{/if}}
+    </td>
+    <td>
+      {{#if ../../can_revoke}}
+        {{#if google}}
+          {{#if google.endorsed}}
+            <input type="checkbox" name="revoke_google" value="{{@key}}" />
+         {{/if}}
+        {{/if}}
+      {{/if}}
+    </td>
+    {{/if}}
+  </tr>
+  {{/each}}
+</table>
+</div>
+
+{% endtplhandlebars %}
+

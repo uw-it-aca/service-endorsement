@@ -2,6 +2,7 @@ from restclients_core.exceptions import (
     DataFailureException, InvalidNetID)
 from endorsement.dao.pws import is_renamed_uwnetid,\
     get_endorser_regid, get_endorsee_data
+from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.test.dao import TestDao
 
 
@@ -26,7 +27,7 @@ class TestPwsDao(TestDao):
         self.assertRaises(InvalidNetID,
                           get_endorsee_data,
                           "notareal_uwnetid")
-        self.assertRaises(DataFailureException,
+        self.assertRaises(UnrecognizedUWNetid,
                           get_endorsee_data,
                           "nomockid")
 
