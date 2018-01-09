@@ -4,32 +4,33 @@
 
 <div class="container">
 
+  <p style="padding: 10px;">This tool allows you to manage non-employees' ability to use select UW-IT services. Use this to vouch that an ineligible individual or account that has a UW NetID is eligible to use these services because of an established working relationship with UW.</p>
+
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#endorse" data-toggle="tab">Endorse NetIDs</a></li>
-    <li><a href="#endorsed" data-toggle="tab" class="previous-endorsement">View Endorsed NetIDs</a></li>
+    <li class="active"><a href="#endorse" data-toggle="tab"><h2>Endorse new UW NetIDs</h2></a></li>
+    <li><a href="#endorsed" data-toggle="tab" class="previous-endorsement"><h2>View your endorsements</h2></a></li>
   </ul>
 
   <div class="tab-content">
     <div class="tab-pane active" id="endorse">
-      <h3>Select service for endorsement</h3>
+      <h3>For which service are you endorsing them?</h3>
 
       <div class="endorsement-group">
         <div>
           <label>
             <input type="checkbox" name="Office365" id="endorse_o365" value="office365" />
-            Endorse users for Office365
+            Office 365
           </label>
         </div>
         <div>
           <label>
             <input type="checkbox" name="GoogleApps" id="endorse_google" value="googleapps" />
-            Endorse users for UW Google Apps
+            UW Google Apps
           </label>
         </div>
       </div>
 
-
-      <div class="form-group" id="uwnetids-input">
+       <div class="form-group" id="uwnetids-input">
         <h3>Enter UW Netids to endorse</h3>
 
         Add UW Netids below for endorsement and click Validate to preview before adding endorsement.
