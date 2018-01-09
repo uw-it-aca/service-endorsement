@@ -1,3 +1,10 @@
 $green: #5cb85c;
 $red: #d9534f;
 
+.tab-content { padding-top: 20px; }
+
+.nav-tabs li a { padding: 5px 10px; }
+.nav-tabs li.active h2 { font-weight: bold; }
+.nav-tabs li h2 { font-size: 20px; margin: 10px auto; font-weight: normal; }
+
+legend { border-bottom: 0; font-size: 16px; font-weight: bold; margin-bottom: 10px; }
