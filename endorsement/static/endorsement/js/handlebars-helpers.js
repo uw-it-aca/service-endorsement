@@ -20,10 +20,9 @@ Handlebars.registerHelper('revokable', function(o365, google) {
 });
 
 
-Handlebars.registerHelper('subscription_context', function(context, netid, endorsable, svc) {
+Handlebars.registerHelper('subscription_context', function(context, netid, svc) {
     var new_context = context;
     new_context.netid = netid;
-    new_context.endorsable = endorsable;
     new_context.svc = svc;
     return new_context;
 });

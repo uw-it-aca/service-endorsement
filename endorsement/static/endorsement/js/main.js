@@ -18,7 +18,8 @@ var registerEvents = function() {
             validateUWNetids(getNetidList());
             break;
         case 'endorse':
-            $this.button('loading');
+            $('#responsibility_modal').modal('toggle');
+            $('#confirm_endorsements').button('loading');
             endorseUWNetIDs(getEndorseNetids());
             break;
         case 'revoke':
@@ -36,19 +37,20 @@ var registerEvents = function() {
             break;
         default: break;
         }
-    }).on('change', '#endorse_o365, #endorse_google, #netid_list',  function(e) {
+    }).on('change', '#netid_list',  function(e) {
         enableCheckEligibility();
     }).on('input', '#netid_list', function () {
         enableCheckEligibility();
+    }).on('click', 'input[name^="endorse_"]', function (e) {
+        enableEndorsability();
     }).on('click', 'input[name^="revoke_"]', function (e) {
-//        $target = $(e.target);
-//        if ($target.is(':checked')) {
-//            $target.parent().prev().find('i').hide();
-//        } else {
-//            $target.parent().prev().find('i').show();
-//        }
-
         enableRevocability();
+    }).on('change', '#accept_responsibility',  function(e) {
+        if (this.checked) {
+            $('button#endorse').removeAttr('disabled');
+        } else {
+            $('button#endorse').attr('disabled', 'disabled');
+        }
     });
 
     $('a[href="#endorsed"]').on('shown.bs.tab', function () {
@@ -61,7 +63,7 @@ var registerEvents = function() {
     });
 
     $(document).on('endorse:UWNetIDsEndorseStatus', function (e, endorsed) {
-        $('button#endorse').button('reset');
+        $('button#confirm_endorsements').button('reset');
         displayEndorseResult(endorsed);
     });
 
@@ -71,19 +73,35 @@ var registerEvents = function() {
     });
 
     $(document).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
-        $('button#endorse').button('reset');
+        $('button#confirm_endorsements').button('reset');
         displayEndorsedUWNetIDs(endorsed);
         enableRevocability();
+    });
+
+    $(document).on('show.bs.modal', function (event) {
+        var _modal = $(this);
+        _modal.find('input#accept_responsibility').attr('checked', false);
+        _modal.find('button#endorse').attr('disabled', 'disabled');
     });
 };
 
 var enableCheckEligibility = function() {
     var netids = getNetidList();
 
-    if (netids.length > 0 && (endorseOffice365() || endorseGoogle())) {
+    if (netids.length > 0) {
         $('#validate').removeAttr('disabled');
     } else {
         $('#validate').attr('disabled', 'disabled');
+    }
+};
+
+var enableEndorsability = function() {
+    var netids = getEndorseNetids();
+
+    if (Object.keys(netids).length) {
+        $('button#confirm_endorsements').removeAttr('disabled');
+    } else {
+        $('button#confirm_endorsements').attr('disabled', 'disabled');
     }
 };
 
@@ -95,14 +113,6 @@ var enableRevocability = function() {
     } else {
         $('#revoke').attr('disabled', 'disabled');
     }
-};
-
-var endorseGoogle = function () {
-    return $("#endorse_google").is(':checked');
-};
-
-var endorseOffice365 = function () {
-    return $("#endorse_o365").is(':checked');
 };
 
 var displayPageHeader = function() {
@@ -118,10 +128,6 @@ var displayValidatedUWNetIDs = function(validated) {
     var template = Handlebars.compile(source);
     var $endorsement_group = $('.endorsement-group input[type="checkbox"]');
     var context = {
-        endorse_o365: endorseOffice365(),
-        endorse_google: endorseGoogle(),
-        google_endorsable: false,
-        o365_endorsable: false,
         netids: validated.validated
     };
 
@@ -142,6 +148,7 @@ var displayValidatedUWNetIDs = function(validated) {
 
     $endorsement_group.attr('disabled', true);
     showValidationStep();
+    enableEndorsability();
 };
 
 var validateUWNetids = function(netids) {
@@ -169,8 +176,7 @@ var displayEndorseResult = function(endorsed) {
     var source = $("#endorse-result").html();
     var template = Handlebars.compile(source);
     var context = {
-        endorse_o365: endorseOffice365(),
-        endorse_google: endorseGoogle(),
+        can_revoke: false,
         has_endorsed: (endorsed && Object.keys(endorsed.endorsed).length > 0),
         endorsed: endorsed
     };
@@ -308,8 +314,6 @@ var displayEndorsedUWNetIDs = function(endorsed) {
     var source = $("#endorsed-netids").html();
     var template = Handlebars.compile(source);
     var context = {
-        endorse_o365: true,
-        endorse_google: true,
         can_revoke: true,
         has_endorsed: (endorsed && Object.keys(endorsed.endorsed).length > 0),
         endorsed: endorsed
