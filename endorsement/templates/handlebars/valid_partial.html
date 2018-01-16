@@ -3,15 +3,13 @@
 
       {{#if eligible}}
          {{#if active}}
+            <td class="centered">
             {{#if self_endorsed}}
-               <td class="centered">
-                 <i class="fa fa-check success"></i>
-               </td>
+               <i class="fa fa-check success"></i>
             {{else}}
-               <td class="centered">
-                 <input type="checkbox" name="endorse_{{svc}}" value="{{netid}}" />
-               </td>
+               <input type="checkbox" name="endorse_{{svc}}" value="{{netid}}" />
             {{/if}}
+            </td>
             <td>
               {{#if endorsers}}
               Endorsed by 
@@ -26,14 +24,12 @@
             </td>
          {{else}}
            <td class="centered">
-             {{#if endorsable}}
              <input type="checkbox" name="endorse_{{svc}}" value="{{netid}}" checked="checked" />
-             {{/if}}
            </td>
            <td></td>
          {{/if}}
       {{else}}
-        <td class="invalid-netid centered">{{#if endorsable}}<i class="fa fa-minus-circle"></i>{{/if}}</td>
+        <td class="invalid-netid centered"><i class="fa fa-minus-circle"></i></td>
         <td>
           NetID Ineligible
         </td>
