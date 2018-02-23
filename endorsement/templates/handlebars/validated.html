@@ -12,7 +12,14 @@
   <tr>
     <td>{{netid}}</td>
     <td>{{name}}</td>
-    <td>{{email}}</td>
+    <td>
+      <div class="editing-email visually-hidden">
+        <input type=input class="email-editor" placeholder="Enter Email Address"> <a href="javascript:void(0);" class="finish-edit-email" value="{{email}}"><i class="fa fa-minus-circle failure"></i></a>
+      </div>
+      <div class="displaying-email">
+        <span class="shown-email">{{email}}</span> <a href="javascript:void(0);" class="edit-email pull-right"><i class="fa fa-edit"></i></a>
+      </div>
+    </td>
      {{#with (subscription_context o365 netid 'o365') }}
         {{> validation_partial .}}
      {{/with}}
