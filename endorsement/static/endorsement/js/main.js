@@ -131,7 +131,7 @@ var finishEmailEdit = function($editor) {
     }
 
     enableEndorsability();
-}
+};
 
 var validEmailAddresses = function() {
     var valid = true;
@@ -143,12 +143,12 @@ var validEmailAddresses = function() {
     });
 
     return valid;
-}
+};
 
 var validEmailAddress = function(email_address) {
     var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
     return pattern.test(email_address);
-}
+};
 
 var enableCheckEligibility = function() {
     var netids = getNetidList();
@@ -199,11 +199,11 @@ var displayValidatedUWNetIDs = function(validated) {
     $.each(context.netids, function () {
         this.valid_netid = (this.error === undefined);
 
-        if (this.google && this.google.error == undefined) {
+        if (this.google && this.google.error === undefined) {
             context.google_endorsable = true;
             this.google.eligible = true;
         }
-        if (this.o365 && this.o365.error == undefined) {
+        if (this.o365 && this.o365.error === undefined) {
             context.o365_endorsable = true;
             this.o365.eligible = true;
         }
