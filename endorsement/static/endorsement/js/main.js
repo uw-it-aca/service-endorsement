@@ -57,7 +57,7 @@ var registerEvents = function() {
         var $row = $(e.target).closest('tr');
 
         finishEmailEdit($('.email-editor', $row));
-    }).on('blur', '.email-editor', function (e) {
+    }).on('focusout', '.email-editor', function (e) {
         finishEmailEdit($(e.target));
     }).on('change', '#accept_responsibility',  function(e) {
         if (this.checked) {
@@ -109,9 +109,9 @@ var finishEmailEdit = function($editor) {
     var email = $.trim($editor.val()),
         $row = $editor.closest('tr');
 
+    $('.shown-email', $row).html(email);
     if (email.length && validEmailAddress(email)) {
         // hide editor
-        $('.shown-email', $row).html(email);
         $('.editing-email', $row).addClass('visually-hidden');
         $('.displaying-email', $row).removeClass('visually-hidden');
 
