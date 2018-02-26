@@ -3,12 +3,21 @@
 
 <div class="form-group">
 <table class="table table-striped">
-  <thead><tr><th>NetId</th><th>Name</th><th>Office365</th><th>{{#if can_revoke}}Revoke Office365{{/if}}</th><th>Google</th><th>{{#if can_revoke}}Revoke Google{{/if}}</th></tr></thead>
+  <thead>
+    <tr>
+      <th>UW NetID</th>
+      <th>Name</th>
+      <th class="col-border-left">Office365</th>
+      <th>{{#if can_revoke}}Revoke Office365{{/if}}</th>
+      <th class="col-border-left">Google</th>
+      <th>{{#if can_revoke}}Revoke Google{{/if}}</th>
+    </tr>
+  </thead>
   {{#each endorsed.endorsed}}
   <tr>
     <td>{{@key}}</td>
     <td>{{endorsee.name}}</td>
-    <td class="result-status">
+    <td class="result-status col-border-left">
       {{#if o365}}
         {{#if o365.error}}
           {{o365.error}}
@@ -34,7 +43,7 @@
         {{/if}}
       {{/if}}
     </td>
-    <td class="result-status">
+    <td class="result-status col-border-left">
       {{#if google}}
         {{#if google.error}}
           {{google.error}}
