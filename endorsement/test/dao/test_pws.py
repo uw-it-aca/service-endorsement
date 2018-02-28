@@ -20,9 +20,10 @@ class TestPwsDao(TestDao):
         self.assertTrue(is_renamed_uwnetid("endorsee5"))
 
     def test_get_endorsee_data(self):
-        uwregid, display_anme = get_endorsee_data("endorsee1")
-        self.assertEqual(uwregid, "50000000000000000000000000000001")
-        self.assertEqual(display_anme, "Endorsee I")
+        uwregid, display_anme, email = get_endorsee_data("endorsee2")
+        self.assertEqual(uwregid, "BE43A1115A014E5595703379511536E1")
+        self.assertEqual(display_anme, "SIMON ENDORSEE2")
+        self.assertEqual(email, "endorsee2@uw.edu")
 
         self.assertRaises(InvalidNetID,
                           get_endorsee_data,

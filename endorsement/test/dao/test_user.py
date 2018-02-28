@@ -19,15 +19,15 @@ class TestUserDao(TransactionTestCase):
         self.assertIsNotNone(Endorser.objects.get(netid='jstaff'))
 
     def test_get_endorsee_model(self):
-        user = get_endorsee_model('endorsee1')
+        user = get_endorsee_model('endorsee2')
         self.assertIsNotNone(user)
-        self.assertEqual(user.display_name, "Endorsee I")
+        self.assertEqual(user.display_name, "SIMON ENDORSEE2")
         self.assertTrue(user.kerberos_active_permitted)
 
-        qset = Endorsee.objects.filter(netid='endorsee1')
+        qset = Endorsee.objects.filter(netid='endorsee2')
         self.assertEqual(len(qset), 1)
 
-        self.assertIsNotNone(Endorsee.objects.get(netid='endorsee1'))
+        self.assertIsNotNone(Endorsee.objects.get(netid='endorsee2'))
 
         self.assertRaises(DataFailureException,
                           get_endorsee_model,
