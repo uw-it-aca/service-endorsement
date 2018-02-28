@@ -15,7 +15,7 @@ class Endorser(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
                              unique=True)
-    is_valid = models.BooleanField()
+    is_valid = models.NullBooleanField()
     last_visit = models.DateTimeField(null=True)
 
     def __eq__(self, other):
@@ -51,7 +51,7 @@ class Endorsee(models.Model):
                              unique=True)
     display_name = models.CharField(max_length=64,
                                     null=True)
-    kerberos_active_permitted = models.BooleanField()
+    kerberos_active_permitted = models.NullBooleanField(default=False)
 
     def __eq__(self, other):
         return other is not None and\
@@ -75,6 +75,26 @@ class Endorsee(models.Model):
 
     class Meta:
         db_table = 'uw_service_endorsement_endorsee'
+
+
+class EndorseeEmail(models.Model):
+    """
+    Distinct from Endorsee model in that endorsee could be person
+    which includes email, or entity (shared, etc) netid without email
+    """
+    endorsee = models.ForeignKey(Endorsee,
+                                 on_delete=models.PROTECT)
+    email = models.CharField(max_length=128,
+                             null=True)
+
+    def json_data(self):
+        return {
+            "netid": self.endorsee.netid,
+            "email": self.email
+            }
+
+    class Meta:
+        db_table = 'uw_service_endorsement_endorsee_email'
 
 
 class EndorsementRecord(models.Model):
@@ -105,6 +125,7 @@ class EndorsementRecord(models.Model):
     subscription_code = models.SmallIntegerField(
         choices=SUBSCRIPTION_CODE_CHOICES)
     datetime_endorsed = models.DateTimeField(null=True)
+    datetime_emailed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
 

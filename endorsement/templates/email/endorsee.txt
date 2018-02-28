@@ -1,0 +1,51 @@
+{{ endorser_name }} has granted you access to {%if o365_endorsed %}UW Microsoft {% endif %}{%if both_endorsed %}and {% endif %}{%if google_endorsed %}Google {% endif %}tools
+provided by the University of Washington.
+
+Learn how to activate these tools here:
+  {%if google_endorsed %}
+  - UW Google Tools (G Suite): https://itconnect.uw.edu/connect/email/google-apps/
+  {% endif %}
+  {%if o365_endorsed %}
+  - UW Microsoft Tools (Office 365): https://login.microsoftonline.com
+  {% endif %}
+
+By using these tools, you agree to comply with all relevant state and federal
+laws in addition to UW policies. These are summarized on the IT Connect
+Appropriate Use page at http://itconnect.uw.edu/work/appropriate-use/.
+
+UW NetID policies also apply:
+
+Many laws and policies regulate your use of UW computing resources and services
+such as email, internet access, mailing lists, newsgroups, computer hardware
+and software, etc. Please read carefully to ensure that you understand.
+
+UW policy or laws prohibit the following:
+
+  - Sharing your UW NetID password with anyone;
+  - Using UW computing resources and services for commercial or political use
+  - Using licensed or copyrighted software, images, or files without proper
+    authorization;
+  - Using someone else's UW NetID;
+  - Accessing files belonging to others without permission;
+  - Violating the privacy of "personally identifiable information" of anyone
+    associated with the UW;
+  - Invading or harming UW computers.
+
+UW employees and healthcare workforce members must comply with these additional
+policies:
+
+  - Understand that state law forbids the use of UW computing resources and
+    services provided by the UW for your work to be used for personal use.
+  - Acknowledge that any records you create in the process of doing UW business
+    are subject to public records requests.
+  - Understand and comply with the special restrictions about the use of UW
+    Confidential Data, such as Protected Health Information (PHI), Personally
+    Identifiable Information (PII), or Export-controlled data.
+  - Report any inappropriate use of data or violation of policy immediately 
+    upon discovery.
+  - Acknowledge that UW data is the property of the University and that you 
+    will return, upon request, any UW data that you place in a cloud service
+    or other external repository.
+
+Please contact the UW-IT Help Center at https://itconnect.uw.edu/help/ with
+any questions.

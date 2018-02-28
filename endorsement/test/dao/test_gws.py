@@ -19,8 +19,8 @@ class TestGwsDao(TestDao):
         self.assertEqual(endorse_list[0].get("endorser"), 'jstaff')
         endorsee_list = endorse_list[0].get("endorsees")
         self.assertEqual(len(endorsee_list), 2)
-        self.assertEqual(endorsee_list[0], 'endorsee1')
-        self.assertEqual(endorsee_list[1], 'endorsee2')
+        self.assertEqual(endorsee_list[0], 'endorsee2')
+        self.assertEqual(endorsee_list[1], 'endorsee6')
 
         self.assertEqual(endorse_list[1].get("endorser"), 'jfaculty')
         self.assertEqual(len(endorse_list[1].get("endorsees")), 0)

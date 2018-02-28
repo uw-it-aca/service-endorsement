@@ -40,11 +40,20 @@ def get_person(uwnetid):
 
 def get_endorsee_data(uwnetid):
     """
-    Return uwregid, display_anme retrieved from PWS/Entity for the
-    given uwnetid.
+    Return uwregid, display_name and email1 retrieved from PWS/Person for the
+    given uwnetid.  Failing that, fetch entity
     """
-    entity = get_entity(uwnetid)
-    return entity.uwregid, entity.display_name
+    try:
+        person = get_person(uwnetid)
+        return person.uwregid, person.display_name, person.email1
+    except DataFailureException as ex:
+        if ex.status == 404:
+            # v0.1 does not endorse non-person/shared uwnetids
+            #     entity = get_entity(uwnetid)
+            #     return entity.uwregid, entity.display_name, None
+            raise UnrecognizedUWNetid(uwnetid)
+
+        raise
 
 
 def get_endorser_regid(uwnetid):

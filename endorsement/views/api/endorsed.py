@@ -50,6 +50,7 @@ class Endorsed(RESTDispatch):
                 endorsed[er.endorsee.netid][endorsement_type] = er.json_data()
             else:
                 endorsed[er.endorsee.netid] = {
+                    'name': er.endorsee.display_name,
                     endorsement_type: er.json_data()
                 }
 
