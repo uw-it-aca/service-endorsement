@@ -48,9 +48,9 @@ def get_endorsee_data(uwnetid):
         return person.uwregid, person.display_name, person.email1
     except DataFailureException as ex:
         if ex.status == 404:
-        # v0.1 does not endorse non-person/shared uwnetids
-        #     entity = get_entity(uwnetid)
-        #     return entity.uwregid, entity.display_name, None
+            # v0.1 does not endorse non-person/shared uwnetids
+            #     entity = get_entity(uwnetid)
+            #     return entity.uwregid, entity.display_name, None
             raise UnrecognizedUWNetid(uwnetid)
 
         raise

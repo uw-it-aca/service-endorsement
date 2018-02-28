@@ -38,7 +38,7 @@ def create_endorsee_message(endorser, endorsement):
         pass
 
     params['both_endorsed'] = (params['google_endorsed'] and
-                      params['o365_endorsed'])
+                               params['o365_endorsed'])
 
     subject = "Your new access to %s tools" % (services)
 
@@ -63,11 +63,7 @@ def notify_endorsees(endorser, endorsements):
 
         (subject, text_body, html_body) = create_endorsee_message(
             endorser, endorsement)
-### delete below
-        print "HTML: %s" % (html_body)
-        print "TEXT: %s" % (text_body)
-        continue
-### delete above
+
         recipients = [endorsement['email']]
 
         message = EmailMultiAlternatives(
