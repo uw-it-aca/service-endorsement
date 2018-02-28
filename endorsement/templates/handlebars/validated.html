@@ -1,12 +1,31 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "validated-list" %}
 
-<h3>Verify UW Netids for Endorsement</h3>
+<h3>Review and confirm your endorsements</h3>
 
 <!--  Verify that the UW Netids below are intended for endorsement. -->
 <div class="form-group validation">
+
+  <p>You can endorse these UW NetIDs for access to UW Office 365 and/or UW G Suite (Google).</p>
+  <p>Choose one or both services for each UW NetID, and ensure that a valid email address is present. The new endorsee will receive an email with terms and conditions and instructions on how to access the services.</p>
+
 <table class="table table-striped">
-  <thead><tr><th colspan="3">User Information</th><th colspan="3">Office365 Endorsement</th><th colspan="3">Google Endorsement</th></tr><tr><th>NetId</th><th>Name</th><th>Email</th><th class="centered">{{#if o365_endorsable}}Endorse{{/if}}</th><th>Comment</th><th class="centered">{{#if google_endorsable}}Endorse{{/if}}</th><th>Comment</th></tr></thead>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+      <th colspan="2" class="col-border-left">UW Microsoft Office 365 Endorsement</th>
+      <th colspan="2" class="col-border-left">UW G Suite (Google) Endorsement</th>
+    </tr>
+    <tr>
+      <th>UW NetID</th>
+      <th>Name</th>
+      <th>Email address (required)</th>
+      <th class="col-border-left" style="width: 135px;">{{#if o365_endorsable}}Endorse for O365{{/if}}</th>
+      <th>Comment</th>
+      <th class="col-border-left" style="width: 150px;">{{#if google_endorsable}}Endorse for G Suite{{/if}}</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
   {{#each netids}}
   {{#if valid_netid}}
   <tr>
@@ -14,7 +33,7 @@
     <td><span class="endorsed_name">{{name}}</span></td>
     <td>
       <div class="editing-email visually-hidden">
-        <input type=input class="email-editor" placeholder="Enter Email Address" value="{{email}}"> <a href="javascript:void(0);" class="finish-edit-email"><i class="fa fa-minus-circle failure"></i></a>
+        <input type=input class="email-editor" placeholder="Enter email address" value="{{email}}"> <a href="javascript:void(0);" class="finish-edit-email"><i class="fa fa-minus-circle failure"></i></a>
       </div>
       <div class="displaying-email">
         <span class="shown-email">{{email}}</span> <a href="javascript:void(0);" class="edit-email pull-right"><i class="fa fa-edit"></i></a>
@@ -30,10 +49,10 @@
   {{else}}
   <tr class="invalid-netid">
     <td>{{netid}}</td>
-    <td class="centered" colspan="2">[ Unrecognized NetID ]</td>
-    <td class="centered"><i class="fa fa-minus-circle"></i></td>
+    <td colspan="2">Not a valid UW NetID</td>
+    <td class="centered col-border-left">n/a</td>
     <td></td>
-    <td class="centered"><i class="fa fa-minus-circle"></i></td>
+    <td class="centered col-border-left">n/a</td>
     <td></td>
   </tr>
   {{/if}}
@@ -42,18 +61,16 @@
 </table>
 </div>
 <div>
-  <button type="button" name="BackToUWNetids" id="netid_input" class="btn btn-normal">Edit Eligiblity List</button>
+  <button type="button" name="BackToUWNetids" id="netid_input" class="btn btn-normal">Back to list of UW NetIDs</button>
 
 <!--
   <button type="button" name="Endorse" id="endorse" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Updating Services">Update Service Endorsements</button>
 -->
 
 <!-- Button trigger modal -->
-<button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Updating Service Endorsements" data-target="#responsibility_modal">
-Update Service Endorsements
-</button>
 
-</div>
+      <button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Endorsing..." data-target="#responsibility_modal">Endorse these UW NetIDs</button>
+  </div>
 
 <!-- Responsiblity Modal -->
 <div class="modal fade" id="responsibility_modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -82,8 +99,8 @@ Update Service Endorsements
         </label>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Not Yet</button>
-        <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Confirm and endorse NetIDs</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel endorsement</button>
+        <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Endorse these UW NetIDs</button>
       </div>
     </div>
   </div>

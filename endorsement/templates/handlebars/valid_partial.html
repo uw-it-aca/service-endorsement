@@ -3,7 +3,7 @@
 
       {{#if eligible}}
          {{#if active}}
-            <td class="centered">
+            <td class="col-border-left centered">
             {{#if self_endorsed}}
                <i class="fa fa-check success"></i>
             {{else}}
@@ -19,11 +19,11 @@
                 {{/each}}
               </ul>
               {{else}}
-              Service active, unendorsed
+              Already eligible for this service (not endorsed)
               {{/if}}
             </td>
          {{else}}
-           <td class="centered">
+           <td  class="col-border-left centered">
              <input type="checkbox" name="endorse_{{svc}}" value="{{netid}}" checked="checked" />
            </td>
            <td></td>
@@ -31,7 +31,7 @@
       {{else}}
         <td class="invalid-netid centered"><i class="fa fa-minus-circle"></i></td>
         <td>
-          NetID Ineligible
+          Not eligible to be endorsed for this service
         </td>
       {{/if}}
 
