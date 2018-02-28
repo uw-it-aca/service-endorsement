@@ -56,9 +56,9 @@ def notify_endorsees(endorser, endorsements):
     for netid, endorsement in endorsements.items():
         if 'error' in endorsement or not (
                 ('o365' in endorsement and
-                 endorsement['o365']['endorsed'])
-                or ('google' in endorsement and
-                    endorsement['google']['endorsed'])):
+                 endorsement['o365']['endorsed']) or
+                ('google' in endorsement and
+                 endorsement['google']['endorsed'])):
             continue
 
         (subject, text_body, html_body) = create_endorsee_message(

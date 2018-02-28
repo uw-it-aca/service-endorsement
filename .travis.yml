@@ -10,7 +10,7 @@ install:
 before_script:
   - pip install coverage
   - pip install python-coveralls
-  - pip install pep8
+  - pip install pycodestyle
   - pip install MySQL-python
   - pip install pytz
   - npm install jquery
@@ -24,7 +24,7 @@ before_script:
   - python manage.py migrate
 
 script:
-  - pep8 endorsement/ --exclude=migrations,endorsement/static/vendor,endorsement/static/images,endorsement/static/fonts
+  - pycodestyle endorsement/ --exclude=migrations,endorsement/static/vendor,endorsement/static/images,endorsement/static/fonts
   - jshint endorsement/static/endorsement/js/ --verbose
 #  - mocha endorsement/static/js/test/ --recursive
   - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
