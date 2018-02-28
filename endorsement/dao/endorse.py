@@ -3,9 +3,11 @@ from django.utils import timezone
 from django.conf import settings
 from uw_uwnetid.subscription import (
     get_netid_subscriptions, update_subscription)
-from endorsement.models.core import EndorsementRecord
+from endorsement.dao.user import get_endorsee_model
+from endorsement.models import EndorsementRecord
 from endorsement.exceptions import NoEndorsementException
 from restclients_core.exceptions import DataFailureException
+from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -149,3 +151,18 @@ def is_google_permitted(endorser, endorsee):
 
 def is_google_test_permitted(endorser, endorsee):
     return is_permitted(endorser, endorsee, EndorsementRecord.GOOGLE_APPS_TEST)
+
+
+def record_mail_sent(endorser, endorsement):
+    if endorsement['o365']['endorsed']:
+        subscription_code = EndorsementRecord.OFFICE_365
+        endorsee_netid = endorsement['o365']['endorsee']['netid']
+    elif endorsement['google']['endorsed']:
+        subscription_code = EndorsementRecord.GOOGLE_APPS
+        endorsee_netid = endorsement['google']['endorsee']['netid']
+
+    EndorsementRecord.objects.filter(
+        subscription_code=subscription_code,
+        endorser=endorser,
+        endorsee=get_endorsee_model(endorsee_netid)).update(
+            datetime_emailed=timezone.now())

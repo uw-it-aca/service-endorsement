@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from endorsement.dao.pws import get_person
+from endorsement.dao.endorse import record_mail_sent
 from endorsement.dao import display_datetime
 from datetime import datetime
 import logging
@@ -72,6 +73,7 @@ def notify_endorsees(endorser, endorsements):
 
         try:
             message.send()
+            record_mail_sent(endorser, endorsement)
             log_message = "Submission email sent"
         except Exception as ex:
             log_message = "Submission email failed: %s" % ex
