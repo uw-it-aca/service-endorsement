@@ -19,7 +19,7 @@ class TestPwsDao(TestDao):
         self.assertTrue(is_renamed_uwnetid("endorsee5"))
 
     def test_get_endorsee_data(self):
-        uwregid, display_anme = get_endorsee_data("endorsee1")
+        uwregid, display_anme, email = get_endorsee_data("endorsee1")
         self.assertEqual(uwregid, "50000000000000000000000000000001")
         self.assertEqual(display_anme, "Endorsee I")
 

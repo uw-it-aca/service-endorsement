@@ -10,11 +10,11 @@
   {{#each netids}}
   {{#if valid_netid}}
   <tr>
-    <td>{{netid}}</td>
-    <td>{{name}}</td>
+    <td><span class="endorsed_netid">{{netid}}</span></td>
+    <td><span class="endorsed_name">{{name}}</span></td>
     <td>
       <div class="editing-email visually-hidden">
-        <input type=input class="email-editor" placeholder="Enter Email Address"> <a href="javascript:void(0);" class="finish-edit-email" value="{{email}}"><i class="fa fa-minus-circle failure"></i></a>
+        <input type=input class="email-editor" placeholder="Enter Email Address" value="{{email}}"> <a href="javascript:void(0);" class="finish-edit-email"><i class="fa fa-minus-circle failure"></i></a>
       </div>
       <div class="displaying-email">
         <span class="shown-email">{{email}}</span> <a href="javascript:void(0);" class="edit-email pull-right"><i class="fa fa-edit"></i></a>
@@ -60,24 +60,30 @@ Update Service Endorsements
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <span>Endorse NetIDs</span>
+        <span>Acknowledge NetID Endorsement{{plural netid_count '' 's'}}</span>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <h4>Endorsement Acknowledgement</h4>
-        <p>
-        Endorse responsibly.
-        </p>
+        By endorsing {{plural netid_count 'this' 'these'}} UW 
+        NetID{{plural netid_count '' 's'}}, 
+        you confirm that, to the best of your knowledge:
+        <br />
+        <br />
+        <ul>
+          <li>{{plural netid_count "The" "Each"}} UW NetID you {{plural netid_count "are endorsing" "endorse"}} belongs to a person (not a shared UW NetID or other non-personal UW NetID);</li>
+          <li>{{plural netid_count "The" "Each"}} person is who they represent themselves to be; and</li>
+          <li>{{plural netid_count "The" "Each"}} person is conducting official UW business that requires use of the tool(s) for which you are endorsing them.</li>
+        </ul>
         <label>
           <input type="checkbox" id="accept_responsibility"  />
-          I understand and accept these terms
+          I understand and accept these terms.
         </label>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Not Yet</button>
-        <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Endorse NetIDs</button>
+        <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Confirm and endorse NetIDs</button>
       </div>
     </div>
   </div>

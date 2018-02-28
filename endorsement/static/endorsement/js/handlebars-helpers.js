@@ -19,10 +19,17 @@ Handlebars.registerHelper('revokable', function(o365, google) {
     }
 });
 
-
 Handlebars.registerHelper('subscription_context', function(context, netid, svc) {
     var new_context = context;
     new_context.netid = netid;
     new_context.svc = svc;
     return new_context;
+});
+
+Handlebars.registerHelper('plural', function(n, singular, plural) {
+    if (n === 1) { 
+        return singular;
+    }
+
+    return plural;
 });

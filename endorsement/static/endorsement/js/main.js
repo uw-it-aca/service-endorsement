@@ -107,9 +107,21 @@ var registerEvents = function() {
 
 var finishEmailEdit = function($editor) {
     var email = $.trim($editor.val()),
-        $row = $editor.closest('tr');
+        $row = $editor.closest('tr'),
+        netid = $('.endorsed_netid', $row).html(),
+        name = $('.endorsed_name', $row).html();
 
+    // update shown email
     $('.shown-email', $row).html(email);
+
+    // update email in validated list
+    $.each(window.endorsement.validation.validated, function () {
+        if (netid == this.netid) {
+            this.email = email;
+            return false;
+        }
+    });
+
     if (email.length && validEmailAddress(email)) {
         // hide editor
         $('.editing-email', $row).addClass('visually-hidden');
@@ -135,10 +147,16 @@ var finishEmailEdit = function($editor) {
 
 var validEmailAddresses = function() {
     var valid = true;
+
     $('.shown-email').each(function() {
-        if (!validEmailAddress($(this).html())) {
+        var $row = $(this).closest('tr');
+
+        if (!validEmailAddress($(this).html()) && 
+            $('input[type="checkbox"]:checked', $row).length > 0) {
+            $row.addClass('no-endorsement');
             valid = false;
-            return false;
+        } else {
+            $row.removeClass('no-endorsement');
         }
     });
 
@@ -193,7 +211,8 @@ var displayValidatedUWNetIDs = function(validated) {
     var template = Handlebars.compile(source);
     var $endorsement_group = $('.endorsement-group input[type="checkbox"]');
     var context = {
-        netids: validated.validated
+        netids: validated.validated,
+        netid_count: validated.validated.length
     };
 
     $.each(context.netids, function () {
@@ -260,8 +279,12 @@ var endorseUWNetIDs = function(endorsees) {
 
     $.each(window.endorsement.validation.validated, function () {
         var endorsement = endorsees[this.netid];
+
         if (endorsement !== undefined) {
-            endorsed[this.netid] = {};
+            endorsed[this.netid] = {
+                'name': this.name,
+                'email': this.email
+            };
 
             if (endorsement.o365 !== undefined) {
                 endorsed[this.netid].o365 = endorsement.o365;

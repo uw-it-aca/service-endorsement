@@ -4,14 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
+from endorsement.dao.user import (
+    get_endorser_model, get_endorsee_model, get_endorsee_email_model)
 from endorsement.dao.endorse import (
     is_office365_permitted, is_google_permitted,
     get_endorsements_for_endorsee)
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.util.time_helper import Timer
-from endorsement.util.log import log_resp_time
-from endorsement.views.session import log_session_key
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import InvalidNetID, UnrecognizedUWNetid
@@ -52,7 +51,7 @@ class Validate(RESTDispatch):
                 valid = {
                     'netid': endorse_netid,
                     'name': endorsee.display_name,
-                    'email': ''
+                    'email': get_endorsee_email_model(endorsee).email
                 }
 
                 try:
@@ -98,7 +97,7 @@ class Validate(RESTDispatch):
                     'netid': endorse_netid,
                     'error': '%s' % (ex)
                 }
-            except DataFailureException as ex:
+            except Exception as ex:
                 valid = {
                     'netid': endorse_netid,
                     'error': '%s' % (ex)

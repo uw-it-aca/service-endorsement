@@ -1,16 +1,17 @@
 import logging
-import traceback
 import json
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from userservice.user import UserService
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
+from endorsement.dao.user import (
+    get_endorser_model, get_endorsee_model, get_endorsee_email_model)
 from endorsement.dao.gws import is_valid_endorser
+from endorsement.dao.pws import get_person
 from endorsement.dao.endorse import (
     store_office365_endorsement, clear_office365_endorsement,
     store_google_endorsement, clear_google_endorsement)
+from endorsement.dao.notification import notify_endorsees
 from endorsement.util.time_helper import Timer
-from endorsement.views.session import log_session_key
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import InvalidNetID, UnrecognizedUWNetid
@@ -37,16 +38,25 @@ class Endorse(RESTDispatch):
             return invalid_endorser(logger, timer)
 
         endorser = get_endorser_model(netid)
+        endorser_pws = get_person(netid)
 
         endorsed = {
             'endorser': endorser.json_data(),
+            'endorser_name': endorser_pws.display_name,
+            'endorser_email': endorser_pws.email1,
             'endorsed': {}
         }
 
         for endorsee_netid, to_endorse in endorsees.iteritems():
             try:
                 endorsee = get_endorsee_model(endorsee_netid)
-                endorsements = {}
+                endorsements = {
+                    'name': endorsee.display_name
+                }
+
+                if 'email' in to_endorse:
+                    endorsements['email'] = get_endorsee_email_model(
+                        endorsee, email=to_endorse['email']).email
 
                 if 'o365' in to_endorse:
                     try:
@@ -78,12 +88,14 @@ class Endorse(RESTDispatch):
                     except Exception as ex:
                         raise
 
-            except (InvalidNetID, UnrecognizedUWNetid) as ex:
+            except (KeyError, InvalidNetID, UnrecognizedUWNetid) as ex:
                 endorsements = {
                     'endorsee': endorsee.json_data(),
                     'error': '%s' % (ex)
                 }
 
             endorsed['endorsed'][endorsee.netid] = endorsements
+
+        notify_endorsees(endorser, endorsed['endorsed'])
 
         return self.json_response(endorsed)
