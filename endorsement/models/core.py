@@ -1,5 +1,5 @@
 from django.db import models
-from uw_uwnetid.models import Subscription
+from uw_uwnetid.models import Category
 
 
 def datetime_to_str(d_obj):
@@ -98,32 +98,20 @@ class EndorseeEmail(models.Model):
 
 
 class EndorsementRecord(models.Model):
-    OFFICE_365 = Subscription.SUBS_CODE_OFFICE_365
-    OFFICE_365_TEST = Subscription.SUBS_CODE_OFFICE_365_TEST
-    GOOGLE_APPS = Subscription.SUBS_CODE_GOOGLE_APPS
-    GOOGLE_APPS_TEST = Subscription.SUBS_CODE_GOOGLE_APPS_TEST
-    PROJECT_SERVER_ONLINE_USER_ACCESS =\
-        Subscription.SUBS_CODE_PROJECT_SERVER_ONLINE_USER_ACCESS
-    PROJECT_SERVER_ONLINE_USER_ACCESS_TEST =\
-        Subscription.SUBS_CODE_PROJECT_SERVER_ONLINE_USER_ACCESS_TEST
+    GOOGLE_SUITE_ENDORSEE = Category.GOOGLE_SUITE_ENDORSEE
+    OFFICE_365_ENDORSEE = Category.OFFICE_365_ENDORSEE
 
-    SUBSCRIPTION_CODE_CHOICES = (
-        (OFFICE_365, "UW Office 365 Education"),
-        (OFFICE_365_TEST, "UW Office 365 Education Dogfood"),
-        (GOOGLE_APPS, "Google Apps"),
-        (GOOGLE_APPS_TEST, "Google Apps Test"),
-        (PROJECT_SERVER_ONLINE_USER_ACCESS,
-         "UW Project Server Online user access"),
-        (PROJECT_SERVER_ONLINE_USER_ACCESS_TEST,
-         "UW Project Server Online user access Dogfood"),
-        )
+    CATEGORY_CODE_CHOICES = (
+        (OFFICE_365_ENDORSEE, "UW Office 365 Education"),
+        (GOOGLE_SUITE_ENDORSEE, "UW Office 365 Education"),
+    )
 
     endorser = models.ForeignKey(Endorser,
                                  on_delete=models.PROTECT)
     endorsee = models.ForeignKey(Endorsee,
                                  on_delete=models.PROTECT)
-    subscription_code = models.SmallIntegerField(
-        choices=SUBSCRIPTION_CODE_CHOICES)
+    category_code = models.SmallIntegerField(
+        choices=CATEGORY_CODE_CHOICES)
     datetime_endorsed = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
@@ -138,8 +126,8 @@ class EndorsementRecord(models.Model):
         return "{%s: %s, %s: %s, %s: %d, %s: %s, %s: %s, %s: %s, %s: %s}" % (
             "endorser", self.endorser,
             "endorsee", self.endorsee,
-            "subscription_code", self.subscription_code,
-            "subscription_name", self.get_subscription_code_display(),
+            "category_code", self.category_code,
+            "category_name", self.get_category_code_display(),
             "datetime_endorsed", datetime_to_str(self.datetime_endorsed),
             "datetime_renewed", datetime_to_str(self.datetime_renewed),
             "datetime_expired", datetime_to_str(self.datetime_expired),
@@ -149,8 +137,8 @@ class EndorsementRecord(models.Model):
         data = {
             "endorser": self.endorser.json_data(),
             "endorsee": self.endorsee.json_data(),
-            "subscription_code": self.subscription_code,
-            "subscription_name": self.get_subscription_code_display(),
+            "category_code": self.category_code,
+            "category_name": self.get_category_code_display(),
             "datetime_endorsed": datetime_to_str(self.datetime_endorsed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired)
@@ -158,5 +146,5 @@ class EndorsementRecord(models.Model):
         return data
 
     class Meta:
-        unique_together = (("endorser", "subscription_code", "endorsee"),)
+        unique_together = (("endorser", "category_code", "endorsee"),)
         db_table = 'uw_service_endorsement_endorsement'

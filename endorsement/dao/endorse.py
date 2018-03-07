@@ -1,67 +1,49 @@
 import logging
 from django.utils import timezone
 from django.conf import settings
+from uw_uwnetid.models import Subscription, Category
+from uw_uwnetid.category import update_catagory
 from uw_uwnetid.subscription import (
     get_netid_subscriptions, update_subscription)
 from endorsement.dao.user import get_endorsee_model
 from endorsement.models import EndorsementRecord
-from endorsement.exceptions import NoEndorsementException
+from endorsement.exceptions import (
+    NoEndorsementException, CategoryFailureException,
+    SubscriptionFailureException)
 from restclients_core.exceptions import DataFailureException
-from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
 
 
-def store_endorsement(endorser, endorsee, subscription_code):
-    update_subscription(
-        endorsee.netid, 'permit', subscription_code,
-        data_field={
-            "expires": "<yyyy-mm-dd>",
-            "category": 0,
-            "dataValue": "Permit from endorsement.uw.edu",
-            "replace": True,
-            "sponsor": endorser.netid,
-            "status": 0
-        })
-
-    logger.info('endorse %s for %s by %s' % (
-        subscription_code, endorsee.netid, endorser.netid))
+def store_endorsement(endorser, endorsee, category_code):
+    logger.info('activate category %s for %s by %s' % (
+        category_code, endorsee.netid, endorser.netid))
 
     en, created = EndorsementRecord.objects.update_or_create(
         endorser=endorser,
-        subscription_code=subscription_code,
+        category_code=category_code,
         endorsee=endorsee,
         defaults={'datetime_endorsed': timezone.now()})
 
     return en
 
 
-def clear_endorsement(endorser, endorsee, subscription_code):
-    updated = update_subscription(
-        endorsee.netid, 'unpermit', subscription_code,
-        data_field={
-            "category": 0,
-            "dataValue": "Permit from endorsement.uw.edu",
-            "replace": True,
-            "sponsor": endorser.netid,
-            "status": 0
-        })
-
-    logger.info('endorse %s for %s by %s' % (
-        subscription_code, endorsee.netid, endorser.netid))
+def clear_endorsement(endorser, endorsee, category_code):
+    logger.info('former category %s for %s by %s' % (
+        category_code, endorsee.netid, endorser.netid))
 
     EndorsementRecord.objects.filter(
         endorser=endorser,
-        subscription_code=subscription_code,
+        category_code=category_code,
         endorsee=endorsee).delete()
 
 
-def get_endorsement(endorser, endorsee, subscription_code):
+def get_endorsement(endorser, endorsee, category_code):
     try:
         return EndorsementRecord.objects.get(
             endorser=endorser, endorsee=endorsee,
-            subscription_code=subscription_code)
+            category_code=category_code)
     except EndorsementRecord.DoesNotExist:
         raise NoEndorsementException()
 
@@ -75,94 +57,158 @@ def get_endorsements_for_endorsee(endorsee):
 
 
 def store_office365_endorsement(endorser, endorsee):
-    return store_endorsement(
-        endorser, endorsee, EndorsementRecord.OFFICE_365)
+    """
+    To endorse O365, the tools should:
+      *  Add category 235, status 1 for given endorsee
+      *  Activate subscription 59 Office 365 Pilot
+      *  Activate subscription 251 Office 365 Addee
+    """
+    _activate_category(endorsee.netid, Category.OFFICE_365_ENDORSEE)
+    _activate_subscriptions(endorsee.netid, endorser.netid,
+                            [
+                                Subscription.SUBS_OFFICE_356_PILOT,
+                                Subscription.SUBS_CODE_OFFICE_365_ADDEE,
+                            ])
 
-
-def store_office365_test_endorsement(endorser, endorsee):
     return store_endorsement(
-        endorser, endorsee, EndorsementRecord.OFFICE_365_TEST)
+        endorser, endorsee, EndorsementRecord.OFFICE_365_ENDORSEE)
 
 
 def store_google_endorsement(endorser, endorsee):
+    """
+    The expected life cycle for a UW G Suite endorsement would be:
+      *  Add category 234, status 1 record for given endorsee
+      *  Activate subscription 144 for endorsee
+    """
+    _activate_category(endorsee.netid, Category.GOOGLE_SUITE_ENDORSEE)
+    _activate_subscriptions(endorsee.netid, endorser.netid,
+                            [Subscription.SUBS_CODE_GOOGLE_APPS])
     return store_endorsement(endorser, endorsee,
-                             EndorsementRecord.GOOGLE_APPS)
-
-
-def store_google_test_endorsement(endorser, endorsee):
-    return store_endorsement(endorser, endorsee,
-                             EndorsementRecord.GOOGLE_APPS_TEST)
+                             EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
 
 def clear_office365_endorsement(endorser, endorsee):
-    return clear_endorsement(
-        endorser, endorsee, EndorsementRecord.OFFICE_365)
-
-
-def clear_office365_test_endorsement(endorser, endorsee):
-    return clear_endorsement(
-        endorser, endorsee, EndorsementRecord.OFFICE_365_TEST)
+    """
+    Upon failure to renew, the endorsement tools should:
+      *  mark category 235 it former (status 3).
+    """
+    _former_category(endorsee.netid, Category.OFFICE_365_ENDORSEE)
+    clear_endorsement(
+        endorser, endorsee, EndorsementRecord.OFFICE_365_ENDORSEE)
 
 
 def clear_google_endorsement(endorser, endorsee):
-    return clear_endorsement(
-        endorser, endorsee, EndorsementRecord.GOOGLE_APPS)
+    """
+    Upon failure to renew, the endorsement tools should:
+      *  mark category 234 it former (status 3).
+    """
+    _former_category(endorsee.netid, Category.GOOGLE_SUITE_ENDORSEE)
+    clear_endorsement(
+        endorser, endorsee, EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
 
-def clear_google_test_endorsement(endorser, endorsee):
-    return clear_endorsement(
-        endorser, endorsee, EndorsementRecord.GOOGLE_APPS_TEST)
-
-
-def is_permitted(endorser, endorsee, subscription_code):
+def is_permitted(endorser, endorsee, subscription_codes):
     active = False
-    endorsed = False
     try:
-        get_endorsement(endorser, endorsee, subscription_code)
-        active = True
-        endorsed = True
-    except NoEndorsementException:
-        endorsed = False
-        try:
-            get_netid_subscriptions(endorsee.netid, [subscription_code])
-        except DataFailureException as ex:
-            if ex.status == 404:
-                active = False
-                if settings.DEBUG:
-                    e = EndorsementRecord.objects.filter(endorsee=endorsee)
-                    active = len(e) < 0
-            else:
-                raise
+        response = get_netid_subscriptions(endorsee.netid, subscription_codes)
+        for sub in response:
+            if sub.subscription_code in subscription_codes:
+                subscription_codes.remove(sub.subscription_code)
 
-    return active, endorsed
+        active = len(subscription_codes) == 0
+    except DataFailureException as ex:
+        if ex.status == 404:
+            active = False
+            # weirdness for testing with mock data
+            if getattr(settings, "RESTCLIENTS_DAO_CLASS", 'File') == 'File':
+                e = EndorsementRecord.objects.filter(endorsee=endorsee)
+                active = len(e) < 0
+        else:
+            raise
+
+    return active
 
 
 def is_office365_permitted(endorser, endorsee):
-    return is_permitted(endorser, endorsee, EndorsementRecord.OFFICE_365)
-
-
-def is_office365_test_permitted(endorser, endorsee):
-    return is_permitted(endorser, endorsee, EndorsementRecord.OFFICE_365_TEST)
+    try:
+        get_endorsement(endorser, endorsee,
+                        EndorsementRecord.OFFICE_365_ENDORSEE)
+        return True, True
+    except NoEndorsementException:
+        return is_permitted(
+            endorser, endorsee, [
+                Subscription.SUBS_CODE_OFFICE_365
+            ]), False
 
 
 def is_google_permitted(endorser, endorsee):
-    return is_permitted(endorser, endorsee, EndorsementRecord.GOOGLE_APPS)
+    try:
+        get_endorsement(endorser, endorsee,
+                        EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
+        return True, True
+    except NoEndorsementException:
+        return is_permitted(
+            endorser, endorsee, [
+                Subscription.SUBS_CODE_GOOGLE_APPS
+            ]), False
 
 
-def is_google_test_permitted(endorser, endorsee):
-    return is_permitted(endorser, endorsee, EndorsementRecord.GOOGLE_APPS_TEST)
+def _activate_category(netid, category_code):
+    """
+    return with given netid activated in category_code
+    """
+    _update_category(netid, category_code, Category.STATUS_ACTIVE)
+
+
+def _former_category(netid, category_code):
+    """
+    return with given netid activated in category_code
+    """
+    _update_category(netid, category_code, Category.STATUS_FORMER)
+
+
+def _update_category(netid, category_code, status):
+    try:
+        response = update_catagory(netid, category_code, status)
+        if response['responseList'][0]['result'].lower() != "success":
+            raise CategoryFailureException(
+                '%s' % response['responseList'][0]['result'])
+    except (KeyError, DataFailureException) as ex:
+        raise CategoryFailureException('%s' % ex)
+
+
+def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
+    try:
+        response = update_subscription(
+            endorsee_netid, 'Modify', subscriptions,
+            data_field={
+                "status": Subscription.STATUS_ACTIVE,
+                "dataValue": "Activate from endorsement.uw.edu",
+                "replace": True,
+                "sponsor": endorser_netid,
+            })
+
+        for sub in response:
+            if sub.subscription_code in subscriptions:
+                subscriptions.remove(sub.subscription_code)
+
+        if len(subscriptions) > 0:
+            raise SubscriptionFailureException(
+                'Invalid Subscription Response')
+    except DataFailureException as ex:
+        raise SubscriptionFailureException('%s' % ex)
 
 
 def record_mail_sent(endorser, endorsement):
     if endorsement['o365']['endorsed']:
-        subscription_code = EndorsementRecord.OFFICE_365
+        category_code = EndorsementRecord.OFFICE_365_ENDORSEE
         endorsee_netid = endorsement['o365']['endorsee']['netid']
     elif endorsement['google']['endorsed']:
-        subscription_code = EndorsementRecord.GOOGLE_APPS
+        category_code = EndorsementRecord.GOOGLE_SUITE_ENDORSEE
         endorsee_netid = endorsement['google']['endorsee']['netid']
 
     EndorsementRecord.objects.filter(
-        subscription_code=subscription_code,
+        category_code=category_code,
         endorser=endorser,
         endorsee=get_endorsee_model(endorsee_netid)).update(
             datetime_emailed=timezone.now())

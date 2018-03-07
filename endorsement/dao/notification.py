@@ -52,14 +52,19 @@ def create_endorsee_message(endorser, endorsement):
 
 
 def notify_endorsees(endorser, endorsements):
-    sender = getattr(settings, "EMAIL_NOREPLY_ADDRESS")
+    sender = getattr(settings, "EMAIL_NOREPLY_ADDRESS",
+                     "endorsement-noreply@example.com")
 
     for netid, endorsement in endorsements.items():
-        if 'error' in endorsement or not (
-                ('o365' in endorsement and
-                 endorsement['o365']['endorsed']) or
-                ('google' in endorsement and
-                 endorsement['google']['endorsed'])):
+        endorsed = False
+        for e in ['o365', 'google']:
+            try:
+                if endorsement[e]['endorsed']:
+                    endorsed = True
+            except KeyError:
+                pass
+
+        if not endorsed:
             continue
 
         (subject, text_body, html_body) = create_endorsee_message(

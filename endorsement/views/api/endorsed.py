@@ -34,17 +34,11 @@ class Endorsed(RESTDispatch):
         endorser = get_endorser_model(netid)
         endorsed = {}
         for er in get_endorsements_by_endorser(endorser):
-            endorsement_type = 'o365' if (
-                er.subscription_code == EndorsementRecord.OFFICE_365) else\
-                'o365_test' if (
-                    er.subscription_code ==
-                    EndorsementRecord.OFFICE_365_TEST) else\
-                'google' if (
-                    er.subscription_code ==
-                    EndorsementRecord.GOOGLE_APPS) else\
-                'google_test' if (
-                    er.subscription_code ==
-                    EndorsementRecord.GOOGLE_APPS_TEST) else'unknown'
+            endorsement_type = 'unknown'
+            if (er.category_code == EndorsementRecord.OFFICE_365_ENDORSEE):
+                endorsement_type = 'o365'
+            elif er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
+                endorsement_type = 'google'
 
             if er.endorsee.netid in endorsed:
                 endorsed[er.endorsee.netid][endorsement_type] = er.json_data()
@@ -58,7 +52,7 @@ class Endorsed(RESTDispatch):
 
             endorsers = []
             for ee in get_endorsements_for_endorsee(er.endorsee):
-                if er.subscription_code == ee.subscription_code:
+                if er.category_code == ee.category_code:
                     endorsers.append(ee.endorser.json_data())
 
             endorsed[er.endorsee.netid][endorsement_type]['endorsers'] =\

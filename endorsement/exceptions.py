@@ -10,3 +10,11 @@ class UnrecognizedUWNetid(Exception):
 
 class NoEndorsementException(Exception):
     pass
+
+
+class CategoryFailureException(Exception):
+    pass
+
+
+class SubscriptionFailureException(Exception):
+    pass

@@ -14,7 +14,9 @@ from endorsement.dao.notification import notify_endorsees
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
-from endorsement.exceptions import InvalidNetID, UnrecognizedUWNetid
+from endorsement.exceptions import (
+    InvalidNetID, UnrecognizedUWNetid,
+    CategoryFailureException, SubscriptionFailureException)
 
 
 logger = logging.getLogger(__name__)
@@ -69,8 +71,13 @@ class Endorse(RESTDispatch):
                             endorsements['o365'] = {
                                 'endorsed': False
                             }
-                    except Exception as ex:
-                        raise
+                    except (CategoryFailureException,
+                            SubscriptionFailureException) as ex:
+                        endorsements['o365'] = {
+                            'endorser': endorser.json_data(),
+                            'endorsee': endorsee.json_data(),
+                            'error': "%s" % (ex)
+                        }
 
                 if 'google' in to_endorse:
                     try:
@@ -85,12 +92,18 @@ class Endorse(RESTDispatch):
                                 'endorsee': endorsee.json_data(),
                                 'endorsed': False
                             }
-                    except Exception as ex:
-                        raise
+                    except (CategoryFailureException,
+                            SubscriptionFailureException) as ex:
+                        endorsements['google'] = {
+                            'endorser': endorser.json_data(),
+                            'endorsee': endorsee.json_data(),
+                            'error': "%s" % (ex)
+                        }
 
             except (KeyError, InvalidNetID, UnrecognizedUWNetid) as ex:
                 endorsements = {
                     'endorsee': endorsee.json_data(),
+                    'name': endorsee.display_name,
                     'error': '%s' % (ex)
                 }
 
