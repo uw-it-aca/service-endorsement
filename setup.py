@@ -36,7 +36,7 @@ setup(
         'UW-RestClients-Core<1.0,>=0.9.3',
         'UW-RestClients-PWS<1.0,>=0.6',
         'UW-RestClients-GWS<1.0',
-        'UW-RestClients-UWNetID<1.0',
+        'UW-RestClients-UWNetID>=0.5.2,<1.0',
         'Django-Safe-EmailBackend>=0.1,<1.0',
         'django-pyscss',
         'django_mobileesp',
