@@ -7,12 +7,12 @@
 <div class="form-group validation">
 
   <p>You can endorse these UW NetIDs for access to UW Office 365 and/or UW G Suite (Google).</p>
-  <p>Choose one or both services for each UW NetID, and ensure that a valid email address is present. The new endorsee will receive an email with terms and conditions and instructions on how to access the services.</p>
+  <p>Choose one or both services for each UW NetID, ensure that a valid email address is present, and select the reason you are endorsing this UW NetID. Each new endorsee will receive an email with terms and conditions and instructions on how to access the services.</p>
 
 <table class="table table-striped">
   <thead>
     <tr>
-      <th colspan="3"></th>
+      <th colspan="4"></th>
       <th colspan="2" class="col-border-left">UW Microsoft Office 365 Endorsement</th>
       <th colspan="2" class="col-border-left">UW G Suite (Google) Endorsement</th>
     </tr>
@@ -20,6 +20,7 @@
       <th>UW NetID</th>
       <th>Name</th>
       <th>Email address (required)</th>
+      <th>Reason for endorsing (required)</th>
       <th class="col-border-left" style="width: 135px;">{{#if o365_endorsable}}Endorse for O365{{/if}}</th>
       <th>Comment</th>
       <th class="col-border-left" style="width: 150px;">{{#if google_endorsable}}Endorse for G Suite{{/if}}</th>
@@ -33,11 +34,25 @@
     <td><span class="endorsed_name">{{name}}</span></td>
     <td>
       <div class="editing-email visually-hidden">
-        <input type=input class="email-editor" placeholder="Enter email address" value="{{email}}"> <a href="javascript:void(0);" class="finish-edit-email"><i class="fa fa-minus-circle failure"></i></a>
+        <input type=input class="email-editor" placeholder="Email address required" value="{{email}}" style="width: 160px;"> <a href="javascript:void(0);" class="finish-edit-email"><i class="fa fa-minus-circle failure"></i></a>
       </div>
       <div class="displaying-email">
-        <span class="shown-email">{{email}}</span> <a href="javascript:void(0);" class="edit-email pull-right"><i class="fa fa-edit"></i></a>
+        <span class="shown-email">{{email}}</span> <br><a href="javascript:void(0);" class="edit-email"><p style="font-size: small;">Edit</p></a>
       </div>
+    </td>
+    <td>
+        <select required="required" style="width: 150px;">
+            <option disabled selected value></option>
+            <option value="clinical">Clinical work</option>
+            <option value="instructional">Instructional activities</option>
+            <option value="research">Research</option>
+            <option value="mentoring">Student mentoring</option>
+            <option value="consulting">Third-party consulting</option>
+            <option value="advancement">University Advancement support</option>
+            <option value="volunteer">Volunteer work</option>
+            <option value="other">Other (this should generate a text box please)</option>
+        </select>
+        <p style="font-size: small;"><a>Apply to all</a></p>
     </td>
      {{#with (subscription_context o365 netid 'o365') }}
         {{> validation_partial .}}
@@ -49,7 +64,7 @@
   {{else}}
   <tr class="invalid-netid">
     <td>{{netid}}</td>
-    <td colspan="2">Not a valid UW NetID</td>
+    <td colspan="3">Not a valid UW NetID</td>
     <td class="centered col-border-left">n/a</td>
     <td></td>
     <td class="centered col-border-left">n/a</td>
@@ -83,8 +98,8 @@
         </button>
       </div>
       <div class="modal-body">
-        By endorsing {{plural netid_count 'this' 'these'}} UW 
-        NetID{{plural netid_count '' 's'}}, 
+        By endorsing {{plural netid_count 'this' 'these'}} UW
+        NetID{{plural netid_count '' 's'}},
         you confirm that, to the best of your knowledge:
         <br />
         <br />
