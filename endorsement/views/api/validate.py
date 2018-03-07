@@ -64,7 +64,8 @@ class Validate(RESTDispatch):
                     }
 
                     for e in endorsements:
-                        if e.subscription_code == EndorsementRecord.OFFICE_365:
+                        if (e.category_code ==
+                                EndorsementRecord.OFFICE_365_ENDORSEE):
                             valid['o365']['endorsers'].append(e.endorser.netid)
 
                 except Exception as ex:
@@ -82,8 +83,8 @@ class Validate(RESTDispatch):
                     }
 
                     for e in endorsements:
-                        if e.subscription_code ==\
-                           EndorsementRecord.GOOGLE_APPS:
+                        if (e.category_code ==
+                                EndorsementRecord.GOOGLE_SUITE_ENDORSEE):
                             valid['google']['endorsers'].append(
                                 e.endorser.netid)
 
