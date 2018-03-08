@@ -23,12 +23,12 @@ class Endorser(models.Model):
             self.regid == other.regid
 
     def __str__(self):
-        return "{%s: %s, %s: %s, %s: %s, %s: %s}" % (
-            "netid", self.netid,
-            "regid", self.regid,
-            "is_valid", self.is_valid,
-            "last_visit", datetime_to_str(self.last_visit)
-            )
+        return "{%s}" % ', '.join([
+            "netid: %s" % self.netid,
+            "regid: %s" % self.regid,
+            "is_valid: %s" % self.is_valid,
+            "last_visit: %s" % datetime_to_str(self.last_visit)
+        ])
 
     def json_data(self):
         return {
@@ -58,12 +58,12 @@ class Endorsee(models.Model):
             self.regid == other.regid
 
     def __str__(self):
-        return "{%s: %s, %s: %s, %s: %s, %s: %s}" % (
-            "netid", self.netid,
-            "regid", self.regid,
-            "name", self.display_name,
-            "is_valid", self.kerberos_active_permitted,
-            )
+        return "{%s}" % ', '.join([
+            "netid: %s" % self.netid,
+            "regid: %s" % self.regid,
+            "name: %s" % self.display_name,
+            "is_valid: %s" % self.kerberos_active_permitted
+        ])
 
     def json_data(self):
         return {
@@ -112,6 +112,7 @@ class EndorsementRecord(models.Model):
                                  on_delete=models.PROTECT)
     category_code = models.SmallIntegerField(
         choices=CATEGORY_CODE_CHOICES)
+    reason = models.CharField(max_length=64, null=True)
     datetime_endorsed = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
@@ -123,15 +124,19 @@ class EndorsementRecord(models.Model):
             self.endorsee == other.endorsee
 
     def __str__(self):
-        return "{%s: %s, %s: %s, %s: %d, %s: %s, %s: %s, %s: %s, %s: %s}" % (
-            "endorser", self.endorser,
-            "endorsee", self.endorsee,
-            "category_code", self.category_code,
-            "category_name", self.get_category_code_display(),
-            "datetime_endorsed", datetime_to_str(self.datetime_endorsed),
-            "datetime_renewed", datetime_to_str(self.datetime_renewed),
-            "datetime_expired", datetime_to_str(self.datetime_expired),
-            )
+        return "{%s}" % ', '.join([
+            "endorser: %s" % self.endorser,
+            "endorsee: %s" % self.endorsee,
+            "category_code: %s" % self.category_code,
+            "category_name: %s" % self.get_category_code_display(),
+            "reason: %s" % self.reason,
+            "datetime_endorsed: %s" % (
+                datetime_to_str(self.datetime_endorsed)),
+            "datetime_renewed: %s" % (
+                datetime_to_str(self.datetime_renewed)),
+            "datetime_expired: %s" % (
+                datetime_to_str(self.datetime_expired)),
+        ])
 
     def json_data(self):
         data = {
@@ -139,6 +144,7 @@ class EndorsementRecord(models.Model):
             "endorsee": self.endorsee.json_data(),
             "category_code": self.category_code,
             "category_name": self.get_category_code_display(),
+            "reason": self.reason,
             "datetime_endorsed": datetime_to_str(self.datetime_endorsed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired)

@@ -7,6 +7,7 @@
     <tr>
       <th>UW NetID</th>
       <th>Name</th>
+      <th>Reason</th>
       <th class="col-border-left">Office365</th>
       <th>{{#if can_revoke}}Revoke Office365{{/if}}</th>
       <th class="col-border-left">Google</th>
@@ -17,6 +18,7 @@
   <tr>
     <td>{{@key}}</td>
     <td>{{name}}</td>
+    <td>{{reason}}</td>
     <td class="result-status col-border-left">
       {{#if o365}}
         {{#if o365.error}}

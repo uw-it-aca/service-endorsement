@@ -54,6 +54,11 @@ class Validate(RESTDispatch):
                     'email': get_endorsee_email_model(endorsee).email
                 }
 
+                for e in endorsements:
+                    if e.reason and len(e.reason):
+                        valid['reason'] = e.reason
+                        break
+
                 try:
                     active, endorsed = is_office365_permitted(
                         endorser, endorsee)

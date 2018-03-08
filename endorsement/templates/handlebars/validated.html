@@ -41,8 +41,9 @@
       </div>
     </td>
     <td>
+      <div class="displaying-reasons">
         <select required="required" style="width: 150px;">
-            <option disabled selected value></option>
+            <option disabled selected value="none"></option>
             <option value="clinical">Clinical work</option>
             <option value="instructional">Instructional activities</option>
             <option value="research">Research</option>
@@ -50,9 +51,13 @@
             <option value="consulting">Third-party consulting</option>
             <option value="advancement">University Advancement support</option>
             <option value="volunteer">Volunteer work</option>
-            <option value="other">Other (this should generate a text box please)</option>
+            <option value="other">Other...</option>
         </select>
-        <p style="font-size: small;"><a>Apply to all</a></p>
+        </div>
+        <div class="editing-reason visually-hidden">
+          <input type=input class="reason-editor" placeholder="Reason for endorsing" value="" style="width: 180px;"> <a href="javascript:void(0);" class="finish-edit-reason"><i class="fa fa-check success"></i></a>
+        </div>
+        <p style="font-size: small;"><a href="javascript:void(0);" class='apply-all'>Apply to all</a></p>
     </td>
      {{#with (subscription_context o365 netid 'o365') }}
         {{> validation_partial .}}

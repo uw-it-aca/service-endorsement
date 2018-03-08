@@ -42,9 +42,13 @@ class Endorsed(RESTDispatch):
 
             if er.endorsee.netid in endorsed:
                 endorsed[er.endorsee.netid][endorsement_type] = er.json_data()
+                if not endorsed[er.endorsee.netid]['reason']:
+                    endorsed[er.endorsee.netid]['reason'] = er.reason if (
+                        er.reason) else '',
             else:
                 endorsed[er.endorsee.netid] = {
                     'name': er.endorsee.display_name,
+                    'reason': er.reason if er.reason else '',
                     endorsement_type: er.json_data()
                 }
 
