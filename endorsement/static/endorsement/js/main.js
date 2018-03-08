@@ -211,7 +211,7 @@ var finishReasonEdit = function($editor) {
     $('.displaying-reasons', $row).removeClass('visually-hidden');
     $('.apply-all', $row).removeAttr('disabled');
     enableEndorsability();
-}
+};
 
 var enableCheckEligibility = function() {
     var netids = getNetidList();
@@ -387,7 +387,7 @@ var getEndorseNetids = function () {
 
     $('input[name="endorse_o365"]:checked').each(function (e) {
         var netid = $(this).val(),
-            $row = $(this).closest('tr');
+            $row = $(this).closest('tr'),
             email = $('.shown-email', $row).html(),
             reason = $('.displaying-reasons select option:selected', $row).html();
         
@@ -414,7 +414,7 @@ var getEndorseNetids = function () {
 
     $('input[name="endorse_google"]:checked').each(function (e) {
         var netid = $(this).val(),
-            $row = $(this).closest('tr');
+            $row = $(this).closest('tr'),
             email = $('.shown-email', $row).html(),
             reason = $('.displaying-reasons select option:selected', $row).html();
 
