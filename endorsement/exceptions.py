@@ -18,3 +18,7 @@ class CategoryFailureException(Exception):
 
 class SubscriptionFailureException(Exception):
     pass
+
+
+class MissingReasonException(Exception):
+    pass

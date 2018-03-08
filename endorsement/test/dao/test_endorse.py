@@ -10,7 +10,7 @@ class TestEndorseDao(TransactionTestCase):
     def test_store_endorsement(self):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee2')
-        en = store_office365_endorsement(endorser, endorsee)
+        en = store_office365_endorsement(endorser, endorsee, 'because')
         self.assertEqual(en.category_code,
                          EndorsementRecord.OFFICE_365_ENDORSEE)
         self.assertEqual(en.endorser.netid, 'jstaff')
@@ -25,7 +25,7 @@ class TestEndorseDao(TransactionTestCase):
         self.assertEqual(len(qset), 1)
 
         endorsee = get_endorsee_model('endorsee6')
-        en = store_office365_endorsement(endorser, endorsee)
+        en = store_office365_endorsement(endorser, endorsee, 'because')
         self.assertEqual(en.category_code,
                          EndorsementRecord.OFFICE_365_ENDORSEE)
         self.assertEqual(en.endorser.netid, 'jstaff')

@@ -16,13 +16,14 @@ from restclients_core.exceptions import DataFailureException
 logger = logging.getLogger(__name__)
 
 
-def store_endorsement(endorser, endorsee, category_code):
-    logger.info('activate category %s for %s by %s' % (
-        category_code, endorsee.netid, endorser.netid))
+def store_endorsement(endorser, endorsee, reason, category_code):
+    logger.info('activate category %s for %s because %s by %s' % (
+        category_code, endorsee.netid, reason, endorser.netid))
 
     en, created = EndorsementRecord.objects.update_or_create(
         endorser=endorser,
         category_code=category_code,
+        reason=reason,
         endorsee=endorsee,
         defaults={'datetime_endorsed': timezone.now()})
 
@@ -56,7 +57,7 @@ def get_endorsements_for_endorsee(endorsee):
     return EndorsementRecord.objects.filter(endorsee=endorsee)
 
 
-def store_office365_endorsement(endorser, endorsee):
+def store_office365_endorsement(endorser, endorsee, reason):
     """
     To endorse O365, the tools should:
       *  Add category 235, status 1 for given endorsee
@@ -71,10 +72,10 @@ def store_office365_endorsement(endorser, endorsee):
                             ])
 
     return store_endorsement(
-        endorser, endorsee, EndorsementRecord.OFFICE_365_ENDORSEE)
+        endorser, endorsee, reason, EndorsementRecord.OFFICE_365_ENDORSEE)
 
 
-def store_google_endorsement(endorser, endorsee):
+def store_google_endorsement(endorser, endorsee, reason):
     """
     The expected life cycle for a UW G Suite endorsement would be:
       *  Add category 234, status 1 record for given endorsee
@@ -83,7 +84,7 @@ def store_google_endorsement(endorser, endorsee):
     _activate_category(endorsee.netid, Category.GOOGLE_SUITE_ENDORSEE)
     _activate_subscriptions(endorsee.netid, endorser.netid,
                             [Subscription.SUBS_CODE_GOOGLE_APPS])
-    return store_endorsement(endorser, endorsee,
+    return store_endorsement(endorser, endorsee, reason,
                              EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
 
