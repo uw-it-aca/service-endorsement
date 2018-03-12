@@ -49,9 +49,9 @@ var registerEvents = function() {
 
             $editor.val((html === 'Other...') ? '' : html);
 
-            $('.displaying-reasons', $row).addClass('visually-hidden');
+//            $('.displaying-reasons', $row).addClass('visually-hidden');
             $('.editing-reason', $row).removeClass('visually-hidden');
-            $('.apply-all', $row).attr('disabled', 'disabled');
+            $('.apply-all', $row).addClass('visually-hidden');
             $editor.focus();
         }
     }).on('input', '#netid_list', function () {
@@ -208,8 +208,8 @@ var finishReasonEdit = function($editor) {
     }
 
     $('.editing-reason', $row).addClass('visually-hidden');
-    $('.displaying-reasons', $row).removeClass('visually-hidden');
-    $('.apply-all', $row).removeAttr('disabled');
+//    $('.displaying-reasons', $row).removeClass('visually-hidden');
+    $('.apply-all', $row).removeClass('visually-hidden');
     enableEndorsability();
 };
 
