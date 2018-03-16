@@ -44,16 +44,25 @@ var registerEvents = function() {
             $selected = $('option:selected', $(this));
 
         if ($selected.val() === 'other') {
-            var html = $selected.html(),
-                $editor = $('.reason-editor', $row);
+            var $editor = $('.reason-editor', $row),
+                reason = $.trim($editor.val());
 
-            $editor.val((html === 'Other...') ? '' : html);
-
-//            $('.displaying-reasons', $row).addClass('visually-hidden');
             $('.editing-reason', $row).removeClass('visually-hidden');
-            $('.apply-all', $row).addClass('visually-hidden');
-            $editor.focus();
+            if (reason.length) {
+                $('.finish-edit-reason', $row).removeClass('visually-hidden');
+                $('.apply-all', $row).removeClass('visually-hidden');
+            } else {
+                $('.finish-edit-reason', $row).addClass('visually-hidden');
+                $('.apply-all', $row).addClass('visually-hidden');
+            }
+
+            $($editor, $row).focus();
+        } else {
+            $('.editing-reason', $row).addClass('visually-hidden');
+            $('.apply-all', $row).removeClass('visually-hidden');
         }
+
+        enableEndorsability();
     }).on('input', '#netid_list', function () {
         enableCheckEligibility();
     }).on('click', 'input[name^="endorse_"]', function (e) {
@@ -72,10 +81,6 @@ var registerEvents = function() {
         var $row = $(e.target).closest('tr');
 
         finishEmailEdit($('.email-editor', $row));
-    }).on('click', '.finish-edit-reason', function (e) {
-        var $row = $(e.target).closest('tr');
-
-        finishReasonEdit($('.reason-editor', $row));
     }).on('click', '.apply-all', function (e) {
         var $row = $(e.target).closest('tr'),
             $selected = $('option:selected', $row),
@@ -84,14 +89,22 @@ var registerEvents = function() {
         
         $options.prop('selected', true);
         if (value === 'other') {
-            $options.html($selected.html());
+            var $editor = $('.reason-editor', $row),
+                reason = $.trim($editor.val());
+
+            if (reason.length) {
+                $('.reason-editor').val(reason);
+                $('.editing-reason').removeClass('visually-hidden');
+                $('.finish-edit-reason').removeClass('visually-hidden');
+                $('.apply-all').removeClass('visually-hidden');
+            }
+        } else {
+            $('.editing-reason').addClass('visually-hidden');
         }
 
         enableEndorsability();
     }).on('focusout', '.email-editor', function (e) {
         finishEmailEdit($(e.target));
-    }).on('focusout', '.reason-editor', function (e) {
-        finishReasonEdit($(e.target));
     }).on('change', '#accept_responsibility',  function(e) {
         if (this.checked) {
             $('button#endorse').removeAttr('disabled');
@@ -103,8 +116,25 @@ var registerEvents = function() {
     $(document).on('keypress', function (e) {
         if ($(e.target).hasClass('email-editor') && e.which == 13) {
             finishEmailEdit($(e.target));
-        } else if ($(e.target).hasClass('reason-editor') && e.which == 13) {
-            finishReasonEdit($(e.target));
+        }
+    });
+
+    $(document).on('input', function (e) {
+        if ($(e.target).hasClass('reason-editor')) {
+            if (e.which !== 13) {
+                var $row = $(e.target).closest('tr'),
+                    reason = $.trim($(e.target).val());
+
+                if (reason.length) {
+                    $('.finish-edit-reason', $row).removeClass('visually-hidden');
+                    $('.apply-all', $row).removeClass('visually-hidden');
+                } else {
+                    $('.finish-edit-reason', $row).addClass('visually-hidden');
+                    $('.apply-all', $row).addClass('visually-hidden');
+                }
+            }
+
+            enableEndorsability();
         }
     });
 
@@ -195,22 +225,35 @@ var validEmailAddress = function(email_address) {
     return pattern.test(email_address);
 };
 
-var finishReasonEdit = function($editor) {
-    var reason = $.trim($editor.val()),
-        $row = $editor.closest('tr'),
-        $option = $('option[value=other]', $row);
-
-    if (reason.length) {
-        $option.html(reason);
-    } else {
-        $option.html('Other...');
-        $('option[value=none]', $row).prop('selected', true);
+var validReasons = function() {
+    if ($('option[value=none]:selected').length > 0) {
+        return false;
     }
 
-    $('.editing-reason', $row).addClass('visually-hidden');
-//    $('.displaying-reasons', $row).removeClass('visually-hidden');
-    $('.apply-all', $row).removeClass('visually-hidden');
-    enableEndorsability();
+    var $other = $('option[value="other"]:selected');
+    if ($other.length === 0) {
+        return true;
+    }
+
+    var empty = false;
+    $other.each(function () {
+        var $row = $(this).closest('tr'),
+            reason = getReason($row);
+
+        if (reason.length === 0) {
+            empty = true;
+            return false;
+        }
+    });
+
+    return !empty;
+};
+
+var getReason = function ($row) {
+    var $selected = $('.displaying-reasons select option:selected', $row),
+        reason = $selected.val();
+
+    return (reason === 'other') ? $.trim($('.reason-editor', $row).val()) : reason;
 };
 
 var enableCheckEligibility = function() {
@@ -227,8 +270,8 @@ var enableEndorsability = function() {
     var netids = getEndorseNetids();
 
     if (Object.keys(netids).length &&
-        validEmailAddresses() &&
-        $('option[value=none]:selected').length === 0) {
+        validEmailAddresses() && 
+        validReasons()) {
         $('button#confirm_endorsements').removeAttr('disabled');
     } else {
         $('button#confirm_endorsements').attr('disabled', 'disabled');
@@ -389,8 +432,8 @@ var getEndorseNetids = function () {
         var netid = $(this).val(),
             $row = $(this).closest('tr'),
             email = $('.shown-email', $row).html(),
-            reason = $('.displaying-reasons select option:selected', $row).html();
-        
+            reason = getReason($row);
+
         $.each(window.endorsement.validation.validated, function () {
             if (netid == this.netid) {
                 if (this.o365 && this.o365.eligible) {
@@ -416,7 +459,7 @@ var getEndorseNetids = function () {
         var netid = $(this).val(),
             $row = $(this).closest('tr'),
             email = $('.shown-email', $row).html(),
-            reason = $('.displaying-reasons select option:selected', $row).html();
+            reason = getReason($row);
 
         $.each(window.endorsement.validation.validated, function () {
             if (netid == this.netid) {
