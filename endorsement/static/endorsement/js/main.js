@@ -208,12 +208,8 @@ var validEmailAddresses = function() {
     $('.shown-email').each(function() {
         var $row = $(this).closest('tr');
 
-        if (!validEmailAddress($(this).html()) && 
-            $('input[type="checkbox"]:checked', $row).length > 0) {
-            $row.addClass('no-endorsement');
+        if (!validEmailAddress($(this).html())) {
             valid = false;
-        } else {
-            $row.removeClass('no-endorsement');
         }
     });
 
@@ -276,6 +272,16 @@ var enableEndorsability = function() {
     } else {
         $('button#confirm_endorsements').attr('disabled', 'disabled');
     }
+
+    $('.endorsed_netid').each(function () {
+        var $row = $(this).closest('tr');
+
+        if ($('input[type="checkbox"]:checked', $row).length > 0) {
+            $row.removeClass('unchecked');
+        } else {
+            $row.addClass('unchecked');
+        }
+    });
 };
 
 var enableRevocability = function() {
