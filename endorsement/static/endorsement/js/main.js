@@ -225,13 +225,16 @@ var enableCheckEligibility = function() {
 };
 
 var enableEndorsability = function() {
-    var endorsable = false;
+    var endorsable = false,
+        netids = false,
+        $button = $('button#confirm_endorsements');
 
     $('.endorsed_netid').each(function () {
         var $row = $(this).closest('tr');
 
         if ($('input[type="checkbox"]:checked', $row).length > 0) {
             $row.removeClass('unchecked');
+            netids = true;
             if (validEmailAddress($('.shown-email', $row).html())) {
                 var reason = getReason($row);
                 if (reason.length > 0) {
@@ -244,9 +247,15 @@ var enableEndorsability = function() {
     });
 
     if (endorsable) {
-        $('button#confirm_endorsements').removeAttr('disabled');
+        $button.removeAttr('disabled');
     } else {
-        $('button#confirm_endorsements').attr('disabled', 'disabled');
+        $button.attr('disabled', 'disabled');
+    }
+
+    if (netids) {
+        $button.removeClass('no_netids')
+    } else {
+        $button.addClass('no_netids')
     }
 };
 
