@@ -228,6 +228,11 @@ a {
            li:after { content: ", "; }
            li:last-child:after { content: ""; }
        }
+       tr.unchecked {
+         select {
+           pointer-events: none;
+         }
+       }
     }
 }
 
