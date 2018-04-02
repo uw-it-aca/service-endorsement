@@ -23,7 +23,7 @@ setup(
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires=[
-        'Django==1.10.5',
+        'Django<1.11',
         'ordereddict',
         'simplejson',
         'django-compressor',

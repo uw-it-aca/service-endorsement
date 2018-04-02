@@ -43,7 +43,7 @@
     <td>
       <div class="displaying-reasons">
         <select required="required" style="width: 150px;">
-            <option disabled selected value="none"></option>
+            <option disabled selected value=""></option>
             <option value="clinical">Clinical work</option>
             <option value="instructional">Instructional activities</option>
             <option value="research">Research</option>
@@ -89,7 +89,7 @@
 
 <!-- Button trigger modal -->
 
-      <button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Endorsing..." data-target="#responsibility_modal">Endorse selected UW NetIDs</button>
+  <button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Endorsing..." data-target="#responsibility_modal"><span class="has_netids">Endorse selected UW NetIDs</span><span class="no_netids" style="display: none;">No UW NetIDs selected</span></button>
 
   <p style="margin-left: 190px; width: 300px;">Provide a valid email address and reason for endorsement for all selected UW NetIDs.</p>
 

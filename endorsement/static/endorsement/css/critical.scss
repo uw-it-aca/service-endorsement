@@ -215,7 +215,8 @@ a {
     margin-top: 12px;
 }
 
-.validation {
+#uwnetids-validated {
+  .validation {
     table {
        .centered {
          text-align: center;
@@ -228,8 +229,32 @@ a {
            li:after { content: ", "; }
            li:last-child:after { content: ""; }
        }
+       tr.unchecked {
+         select {
+           pointer-events: none;
+         }
+       }
     }
+  }
+
+  button#confirm_endorsements:enabled + p {
+    display: none;
+  }
+
+  button#confirm_endorsements.no_netids + p {
+    display: none !important;
+  }
+
+  button#confirm_endorsements.no_netids {
+    .no_netids {
+      display: inline !important;
+    }
+    .has_netids {
+      display: none;
+    }
+  }
 }
+
 
 .no-endorsements {
     height: 8em;
