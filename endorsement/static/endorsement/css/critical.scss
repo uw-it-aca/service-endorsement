@@ -236,6 +236,12 @@ a {
     }
 }
 
+#uwnetids-validated {
+  button#confirm_endorsements:disabled + p {
+    display: block !important;
+  }
+}
+
 .no-endorsements {
     height: 8em;
     line-height: 8em;
