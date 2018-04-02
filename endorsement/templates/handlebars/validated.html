@@ -81,7 +81,7 @@
 </table>
 </div>
 <div>
-  <button type="button" name="BackToUWNetids" id="netid_input" class="btn btn-normal">Back to list of UW NetIDs</button>
+  <button type="button" name="BackToUWNetids" id="netid_input" class="btn btn-normal button-link">Back to list of UW NetIDs</button>
 
 <!--
   <button type="button" name="Endorse" id="endorse" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Updating Services">Update Service Endorsements</button>
@@ -89,7 +89,10 @@
 
 <!-- Button trigger modal -->
 
-      <button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Endorsing..." data-target="#responsibility_modal">Endorse these UW NetIDs</button>
+      <button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Endorsing..." data-target="#responsibility_modal">Endorse selected UW NetIDs</button>
+
+  <p style="margin-left: 190px; width: 300px;">Provide a valid email address and reason for endorsement for all selected UW NetIDs.</p>
+
   </div>
 
 <!-- Responsiblity Modal -->
@@ -97,7 +100,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <span>Acknowledge NetID Endorsement{{plural netid_count '' 's'}}</span>
+        <span>Acknowledge UW NetID Endorsement{{plural netid_count '' 's'}}</span>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -119,7 +122,7 @@
         </label>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel endorsement</button>
+        <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel endorsement</button>
         <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Endorse these UW NetIDs</button>
       </div>
     </div>
