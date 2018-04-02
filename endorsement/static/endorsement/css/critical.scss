@@ -237,12 +237,21 @@ a {
     }
   }
 
-  button#confirm_endorsements.no_netids .no_netids {
-    display: inline !important;
+  button#confirm_endorsements:enabled + p {
+    display: none;
   }
 
-  button#confirm_endorsements.no_netids .has_netids {
-    display: none;
+  button#confirm_endorsements.no_netids + p {
+    display: none !important;
+  }
+
+  button#confirm_endorsements.no_netids {
+    .no_netids {
+      display: inline !important;
+    }
+    .has_netids {
+      display: none;
+    }
   }
 }
 
