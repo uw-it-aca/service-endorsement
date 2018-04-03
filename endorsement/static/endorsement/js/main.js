@@ -9,34 +9,51 @@ $(window.document).ready(function() {
 
 
 var registerEvents = function() {
-    $('#app_content').on('click', 'button[type="button"]', function(e) {
+    $('#app_content').on('click', 'button#validate', function(e) {
         var $this = $(this);
 
-        switch (e.target.id) {
-        case 'validate':
-            $this.button('loading');
-            validateUWNetids(getNetidList());
-            break;
-        case 'endorse':
-            $('#responsibility_modal').modal('toggle');
-            $('#confirm_endorsements').button('loading');
-            endorseUWNetIDs(getEndorseNetids());
-            break;
-        case 'revoke':
-            $this.button('loading');
-            revokeUWNetIDs(getRevokedNetids());
-            break;
-        case 'netid_input':
-            showInputStep();
-            break;
-        case 'new_netid_input':
-            $('#netid_list').val('');
-            $('.endorsement-group input:checked').prop('checked', false);
-            enableCheckEligibility();
-            showInputStep();
-            break;
-        default: break;
-        }
+        $this.button('loading');
+        validateUWNetids(getNetidList());
+    }).on('click', 'button#endorse', function(e) {
+        var $this = $(this);
+
+        $('#responsibility_modal').modal('toggle');
+        $('#confirm_endorsements').button('loading');
+        endorseUWNetIDs(getEndorseNetids());
+    }).on('click', '.confirm_revoke', function (event) {
+        var $this = $(this),
+            $modal = $('#revoke_modal');
+
+        $('.modal-content', $modal).html(
+            Handlebars.compile($("#revoke_modal_content").html())({
+                netid: $this.attr('data-netid'),
+                service: $this.attr('data-service'),
+                service_name: $this.attr('data-service-name')
+            }));
+
+        $modal.modal({show:true});
+    }).on('click', 'button#revoke', function(e) {
+        var $this = $(this),
+            netid = $this.attr('data-netid'),
+            service = $this.attr('data-service'),
+            to_revoke = {};
+
+        $('#revoke_modal').modal('toggle');
+        $('button[data-netid="' + netid + '"][data-service="' + service + '"]').button('loading');
+        to_revoke[netid] = {};
+        to_revoke[netid][service] = false;
+        revokeUWNetIDs(to_revoke);
+    }).on('click', 'button#netid_input', function(e) {
+        var $this = $(this);
+
+        showInputStep();
+    }).on('click', 'button#new_netid_input', function(e) {
+        var $this = $(this);
+
+        $('#netid_list').val('');
+        $('.endorsement-group input:checked').prop('checked', false);
+        enableCheckEligibility();
+        showInputStep();
     }).on('change', '#netid_list',  function(e) {
         enableCheckEligibility();
     }).on('change', '.displaying-reasons > select',  function(e) {
@@ -67,8 +84,6 @@ var registerEvents = function() {
         enableCheckEligibility();
     }).on('click', 'input[name^="endorse_"]', function (e) {
         enableEndorsability();
-    }).on('click', 'input[name^="revoke_"]', function (e) {
-        enableRevocability();
     }).on('click', '.edit-email', function (e) {
         var $row = $(e.target).closest('tr'),
             $editor = $('.email-editor', $row);
@@ -113,13 +128,12 @@ var registerEvents = function() {
         }
     });
 
+    // broad delegation
     $(document).on('keypress', function (e) {
         if ($(e.target).hasClass('email-editor') && e.which == 13) {
             finishEmailEdit($(e.target));
         }
-    });
-
-    $(document).on('input', function (e) {
+    }).on('input', function (e) {
         if ($(e.target).hasClass('reason-editor')) {
             if (e.which !== 13) {
                 var $row = $(e.target).closest('tr'),
@@ -136,38 +150,36 @@ var registerEvents = function() {
 
             enableEndorsability();
         }
+    }).on('endorse:UWNetIDsValidated', function (e, validated) {
+        $('button#validate').button('reset');
+        displayValidatedUWNetIDs(validated);
+    }).on('endorse:UWNetIDsEndorseStatus', function (e, endorsed) {
+        $('button#confirm_endorsements').button('reset');
+        displayEndorseResult(endorsed);
+    }).on('endorse:UWNetIDsRevokeStatus', function (e, data) {
+        $.each(data.revokees, function (netid, endorsements) {
+            $.each(endorsements, function (endorsement, state) {
+                var id = endorsement + '-' + netid;
+
+                $('.endorsed-' + id).html(
+                    '<i class="fa fa-minus-circle fa-2x failure"></i>');
+                $('.reason-' + id).html('');
+                $('.revoke-' + id).html('');
+            });
+        });
+    }).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
+        $('button#confirm_endorsements').button('reset');
+        displayEndorsedUWNetIDs(endorsed);
+    }).on('show.bs.modal', '#responsibility_modal' ,function (event) {
+        var _modal = $(this);
+        _modal.find('input#accept_responsibility').attr('checked', false);
+        _modal.find('button#endorse').attr('disabled', 'disabled');
     });
 
     $('a[href="#endorsed"]').on('shown.bs.tab', function () {
         getEndorsedUWNetIDs();
     });
 
-    $(document).on('endorse:UWNetIDsValidated', function (e, validated) {
-        $('button#validate').button('reset');
-        displayValidatedUWNetIDs(validated);
-    });
-
-    $(document).on('endorse:UWNetIDsEndorseStatus', function (e, endorsed) {
-        $('button#confirm_endorsements').button('reset');
-        displayEndorseResult(endorsed);
-    });
-
-    $(document).on('endorse:UWNetIDsRevokeStatus', function (e, endorsed) {
-        $('button#revoke').button('reset');
-        getEndorsedUWNetIDs();
-    });
-
-    $(document).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
-        $('button#confirm_endorsements').button('reset');
-        displayEndorsedUWNetIDs(endorsed);
-        enableRevocability();
-    });
-
-    $(document).on('show.bs.modal', function (event) {
-        var _modal = $(this);
-        _modal.find('input#accept_responsibility').attr('checked', false);
-        _modal.find('button#endorse').attr('disabled', 'disabled');
-    });
 };
 
 var finishEmailEdit = function($editor) {
@@ -253,19 +265,9 @@ var enableEndorsability = function() {
     }
 
     if (netids) {
-        $button.removeClass('no_netids')
+        $button.removeClass('no_netids');
     } else {
-        $button.addClass('no_netids')
-    }
-};
-
-var enableRevocability = function() {
-    var netids = getRevokedNetids();
-
-    if (Object.keys(netids).length) {
-        $('#revoke').removeAttr('disabled');
-    } else {
-        $('#revoke').attr('disabled', 'disabled');
+        $button.addClass('no_netids');
     }
 };
 
@@ -398,7 +400,11 @@ var revokeUWNetIDs = function(revokees) {
             "X-CSRFToken": csrf_token
         },
         success: function(results) {
-            $(document).trigger('endorse:UWNetIDsRevokeStatus', [results]);
+            $(document).trigger('endorse:UWNetIDsRevokeStatus', [
+                {
+                    revokees: revokees,
+                    revoked: results
+                }]);
         },
         error: function(xhr, status, error) {
         }
@@ -464,29 +470,6 @@ var getEndorseNetids = function () {
     });
 
     return to_endorse;
-};
-
-var getRevokedNetids = function () {
-    var to_revoke = {};
-    var validated = [];
-
-    $('input[name="revoke_o365"]:checked').each(function () {
-        addRevocation($(this).val(), 'o365', to_revoke);
-    });
-
-    $('input[name="revoke_google"]:checked').each(function () {
-        addRevocation($(this).val(), 'google', to_revoke);
-    });
-
-    return to_revoke;
-};
-
-var addRevocation = function (netid, service, to_revoke) {
-    if (!(netid in to_revoke)) {
-        to_revoke[netid] = {};
-    }
-
-    to_revoke[netid][service] = false;
 };
 
 var displayEndorsedUWNetIDs = function(endorsed) {
