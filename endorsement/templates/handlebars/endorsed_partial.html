@@ -7,19 +7,19 @@
     <tr>
       <th>UW NetID</th>
       <th>Name</th>
-      <th>Reason</th>
       <th class="col-border-left">Office365</th>
-      <th>{{#if can_revoke}}Revoke Office365{{/if}}</th>
+      <th>Reason</th>
+      <th><!-- {{#if can_revoke}}Revoke Office365{{/if}} --></th>
       <th class="col-border-left">Google</th>
-      <th>{{#if can_revoke}}Revoke Google{{/if}}</th>
+      <th>Reason</th>
+      <th><!-- {{#if can_revoke}}Revoke Google{{/if}} --></th>
     </tr>
   </thead>
   {{#each endorsed.endorsed}}
   <tr>
     <td>{{@key}}</td>
     <td>{{name}}</td>
-    <td>{{reason}}</td>
-    <td class="result-status col-border-left">
+    <td class="result-status col-border-left endorsed-o365-{{ @key }}">
       {{#if o365}}
         {{#if o365.error}}
           {{o365.error}}
@@ -36,16 +36,17 @@
         {{/if}}
       {{/if}}
     </td>
-    <td>
+    <td class="reason-o365-{{ @key }}">{{o365.reason}}</td>
+    <td class="revoke-o365-{{ @key }}">
       {{#if ../can_revoke}}
         {{#if o365}}
           {{#if o365.endorsed}}
-            <input type="checkbox" name="revoke_o365" value="{{@key}}" />
+      <button type="button" name="Revoke Office365" class="btn btn-primary confirm_revoke" data-netid="{{ @key }}" data-service="o365" data-service-name="Office365" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Office365">Revoke</button>
          {{/if}}
         {{/if}}
       {{/if}}
     </td>
-    <td class="result-status col-border-left">
+    <td class="result-status col-border-left endorsed-google-{{ @key }}">
       {{#if google}}
         {{#if google.error}}
           {{google.error}}
@@ -62,11 +63,12 @@
         {{/if}}
       {{/if}}
     </td>
-    <td>
+    <td class="reason-google-{{ @key }}">{{google.reason}}</td>
+    <td class="revoke-google-{{ @key }}">
       {{#if ../can_revoke}}
         {{#if google}}
           {{#if google.endorsed}}
-            <input type="checkbox" name="revoke_google" value="{{@key}}" />
+      <button type="button" name="Revoke Google" class="btn btn-primary confirm_revoke" data-netid="{{ @key }}" data-service="google" data-service-name="Google" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Google">Revoke</button>
          {{/if}}
         {{/if}}
       {{/if}}

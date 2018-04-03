@@ -6,7 +6,9 @@
 
   {{#if has_endorsed}}
   {{> endorsed_partial .}}
+<!-- 
   <button type="button" name="Revoke" id="revoke" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Services">Revoke Endorsements</button>
+-->
   {{else}}
   <div class="no-endorsements">You haven't endorsed any UW NetIDs.</dev>
   {{/if}}
@@ -15,6 +17,26 @@
 
 </div>
 
-
+<!-- Revoke Confirmation Modal -->
+<div class="modal fade" id="revoke_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
 {% endtplhandlebars %}
 
+{% tplhandlebars "revoke_modal_content" %}
+<div class="modal-header">
+  <span>Confirm {{ service_name }} Revoke</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  You are removing the {{ service_name }} endorsement for {{ netid }}.  They will no longer have access to {{ service_name }} stuff.
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
+  <button type="button" id="revoke" class="btn btn-primary" data-netid="{{ netid }}" data-service="{{ service }}">Remove</button>
+</div>
+{% endtplhandlebars %}
