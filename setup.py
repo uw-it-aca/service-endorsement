@@ -32,6 +32,7 @@ setup(
         'urllib3==1.10.2',
         'django-templatetag-handlebars',
         'unittest2',
+        'pytz',
         'AuthZ-Group>=1.6',
         'UW-RestClients-Core<1.0,>=0.9.3',
         'UW-RestClients-PWS<1.0,>=0.6',
