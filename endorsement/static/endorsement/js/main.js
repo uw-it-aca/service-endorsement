@@ -161,10 +161,9 @@ var registerEvents = function() {
             $.each(endorsements, function (endorsement, state) {
                 var id = endorsement + '-' + netid;
 
-                $('.endorsed-' + id).html(
-                    '<i class="fa fa-minus-circle fa-2x failure"></i>');
                 $('.reason-' + id).html('');
                 $('.revoke-' + id).html('');
+                $('.endorsed-' + id).html('No longer endorsed by you');
             });
         });
     }).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
@@ -220,10 +219,9 @@ var validEmailAddress = function(email_address) {
 };
 
 var getReason = function ($row) {
-    var $selected = $('.displaying-reasons select option:selected', $row),
-        reason = $selected.val();
+    var $selected = $('.displaying-reasons select option:selected', $row);
 
-    return (reason === 'other') ? $.trim($('.reason-editor', $row).val()) : reason;
+    return ($selected.val() === 'other') ? $.trim($('.reason-editor', $row).val()) : $selected.html();
 };
 
 var enableCheckEligibility = function() {
