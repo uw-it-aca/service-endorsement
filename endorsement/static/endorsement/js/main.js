@@ -88,6 +88,10 @@ var registerEvents = function() {
         var $row = $(e.target).closest('tr'),
             $editor = $('.email-editor', $row);
 
+        if ($row.hasClass('unchecked')) {
+            return false;
+        }
+
         $('.displaying-email', $row).addClass('visually-hidden');
         $('.editing-email', $row).removeClass('visually-hidden');
         $editor.val($('.shown-email', $row).html());
