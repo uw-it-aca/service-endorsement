@@ -25,14 +25,24 @@
           {{o365.error}}
         {{else}}
           {{#if o365.endorsed}}
-            <i class="fa fa-check fa-2x success"></i>
+            {{#if ../../../../can_revoke}}
+              Endorsed by <ul>
+              {{#each o365.endorsers}}
+                <li>{{this.netid}}</li>
+              {{/each}}
+              </ul>
+            {{else}}
+              <i class="fa fa-check fa-2x success"></i>
+            {{/if}}
           {{else}}
-            <i class="fa fa-minus-circle fa-2x failure"></i>
+            Not Endorsed
           {{/if}}
         {{/if}}
       {{else}}
         {{#if ../../can_revoke}}
-          <i class="fa fa-minus-circle fa-2x failure"></i>
+          Not Endorsed
+        {{else}}
+          Endorsements unchanged
         {{/if}}
       {{/if}}
     </td>
@@ -52,14 +62,24 @@
           {{google.error}}
         {{else}}
           {{#if google.endorsed}}
-            <i class="fa fa-check fa-2x success"></i>
+            {{#if ../../../../can_revoke}}
+              Endorsed by <ul>
+              {{#each google.endorsers}}
+                <li>{{this.netid}}</li>
+              {{/each}}
+              </ul>
+            {{else}}
+              <i class="fa fa-check fa-2x success"></i>
+            {{/if}}
           {{else}}
-            <i class="fa fa-minus-circle fa-2x failure"></i>
+            Not Endorsed
           {{/if}}
         {{/if}}
       {{else}}
         {{#if ../../can_revoke}}
-          <i class="fa fa-minus-circle fa-2x failure"></i>
+          Not Endorsed
+        {{else}}
+          Endorsements unchanged
         {{/if}}
       {{/if}}
     </td>
