@@ -12,14 +12,14 @@
             </td>
             <td>
               {{#if endorsers}}
-              Already endorsed by
+              Service already provisioned by
               <ul>
                 {{#each endorsers}}
                 <li>{{this}}</li>
                 {{/each}}
               </ul>
               {{else}}
-              Already eligible for this service (not endorsed)
+              Already eligible for this service (not provisioned)
               {{/if}}
             </td>
          {{else}}
@@ -31,7 +31,7 @@
       {{else}}
         <td class="invalid-netid centered"><i class="fa fa-minus-circle"></i></td>
         <td>
-          Not eligible to be endorsed for this service
+          Not eligible to have this service provisioned
         </td>
       {{/if}}
 

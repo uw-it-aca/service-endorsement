@@ -1,15 +1,16 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "endorse-result" %}
 
-<h3>UW Netid Endorsement Status</h3>
+<h3>Services successfully provisioned</h3>
 
-  You have endorsed these UW NetIDs:
+ <p>These UW NetIDs will receive an email with terms and conditions and instructions on how to access the service(s).</p>
+
+<h4>You provisioned services for:</h4>
   {{> endorsed_partial .}}
 
-  <p>The new endorsee(s) will receive an email with terms and conditions and instructions on how to access the service(s).</p>
 
 <div>
-  <button type="button" name="BackToUWNetids" id="new_netid_input" class="btn btn-normal button-link">Endorse more UW NetIDs</button>
+  <button type="button" name="BackToUWNetids" id="new_netid_input" class="btn btn-primary">Provision services for more UW NetIDs</button>
 </div>
 
 {% endtplhandlebars %}

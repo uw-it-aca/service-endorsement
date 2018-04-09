@@ -1,29 +1,29 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "validated-list" %}
 
-<h3>Review and confirm your endorsements</h3>
+<h3>Review and confirm provisioning services</h3>
 
 <!--  Verify that the UW Netids below are intended for endorsement. -->
 <div class="form-group validation">
 
-  <p>You can endorse these UW NetIDs for access to UW Office 365 and/or UW G Suite (Google).</p>
-  <p>Choose one or both services for each UW NetID, ensure that a valid email address is present, and select the reason you are endorsing this UW NetID. Each new endorsee will receive an email with terms and conditions and instructions on how to access the services.</p>
+  <p>You can provision access to UW Office 365 (O365) and/or UW G Suite (Google) for these UW NetIDs.</p>
+  <p>Choose one or both services for each personal UW NetID, ensure that a valid email address is present, and select the reason you are provisioning the service(s). Each person will receive an email with terms and conditions and instructions on how to access the services.</p>
 
 <table class="table table-striped">
   <thead>
     <tr>
       <th colspan="4"></th>
-      <th colspan="2" class="col-border-left">UW Microsoft Office 365 Endorsement</th>
-      <th colspan="2" class="col-border-left">UW G Suite (Google) Endorsement</th>
+      <th colspan="2" class="col-border-left">UW Microsoft Office 365</th>
+      <th colspan="2" class="col-border-left">UW G Suite (Google)</th>
     </tr>
     <tr>
       <th>UW NetID</th>
       <th>Name</th>
       <th>Email address (required)</th>
-      <th>Reason for endorsing (required)</th>
-      <th class="col-border-left" style="width: 135px;">{{#if o365_endorsable}}Endorse for O365{{/if}}</th>
+      <th>Reason for provisioning services (required)</th>
+      <th class="col-border-left" style="width: 135px;">{{#if o365_endorsable}}Provision O365{{/if}}</th>
       <th>Comment</th>
-      <th class="col-border-left" style="width: 150px;">{{#if google_endorsable}}Endorse for G Suite{{/if}}</th>
+      <th class="col-border-left" style="width: 150px;">{{#if google_endorsable}}Provision G Suite{{/if}}</th>
       <th>Comment</th>
     </tr>
   </thead>
@@ -55,7 +55,7 @@
         </select>
         </div>
         <div class="editing-reason visually-hidden">
-          <input type=input class="reason-editor" placeholder="Reason for endorsing" value="" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
+          <input type=input class="reason-editor" placeholder="Reason for provisioning" value="" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
         </div>
         <p style="font-size: small; {{plural ../../netid_count 'display: none;' ''}}"><a href="javascript:void(0);" class='apply-all'>Apply to all</a></p>
     </td>
@@ -89,9 +89,9 @@
 
 <!-- Button trigger modal -->
 
-  <button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Endorsing..." data-target="#responsibility_modal"><span class="has_netids">Endorse selected UW NetIDs</span><span class="no_netids" style="display: none;">No UW NetIDs selected</span></button>
+  <button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Endorsing..." data-target="#responsibility_modal"><span class="has_netids">Provision services to selected UW NetIDs</span><span class="no_netids" style="display: none;">No UW NetIDs selected</span></button>
 
-  <p style="margin-left: 190px; width: 300px;">Provide a valid email address and reason for endorsement for all selected UW NetIDs.</p>
+  <p style="margin-left: 190px; width: 300px;">Provide a valid email address and reason for provisioning services for all selected UW NetIDs.</p>
 
   </div>
 
@@ -100,13 +100,13 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <span>Acknowledge UW NetID Endorsement{{plural netid_count '' 's'}}</span>
+        <span>Confirm UW NetID provision request{{plural netid_count '' 's'}}</span>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        By endorsing {{plural netid_count 'this' 'these'}} UW
+        By provisioning access to services for {{plural netid_count 'this' 'these'}} UW
         NetID{{plural netid_count '' 's'}},
         you confirm that, to the best of your knowledge:
         <br />
@@ -114,7 +114,7 @@
         <ul>
           <li>{{plural netid_count "The" "Each"}} UW NetID you {{plural netid_count "are endorsing" "endorse"}} belongs to a person (not a shared UW NetID or other non-personal UW NetID);</li>
           <li>{{plural netid_count "The" "Each"}} person is who they represent themselves to be; and</li>
-          <li>{{plural netid_count "The" "Each"}} person is conducting official UW business that requires use of the tool(s) for which you are endorsing them.</li>
+          <li>{{plural netid_count "The" "Each"}} person is conducting official UW business that requires use of the service(s) for which you are provisioning access.</li>
         </ul>
         <label>
           <input type="checkbox" id="accept_responsibility"  />
@@ -122,8 +122,8 @@
         </label>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel endorsement</button>
-        <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Endorse these UW NetIDs</button>
+        <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
+        <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Provision services for these UW NetIDs</button>
       </div>
     </div>
   </div>

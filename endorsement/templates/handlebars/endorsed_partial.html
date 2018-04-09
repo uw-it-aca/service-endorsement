@@ -7,11 +7,11 @@
     <tr>
       <th>UW NetID</th>
       <th>Name</th>
-      <th class="col-border-left">Office365</th>
-      <th>Reason</th>
+      <th class="col-border-left">Office 365</th>
+      <th>Your provision reason</th>
       <th><!-- {{#if can_revoke}}Revoke Office365{{/if}} --></th>
       <th class="col-border-left">Google</th>
-      <th>Reason</th>
+      <th>Your provision reason</th>
       <th><!-- {{#if can_revoke}}Revoke Google{{/if}} --></th>
     </tr>
   </thead>
@@ -26,7 +26,7 @@
         {{else}}
           {{#if o365.endorsed}}
             {{#if ../../../../can_revoke}}
-              Endorsed by <ul>
+              Provisioned by <ul>
               {{#each o365.endorsers}}
                 <li>{{this.netid}}</li>
               {{/each}}
@@ -35,14 +35,14 @@
               <i class="fa fa-check fa-2x success"></i>
             {{/if}}
           {{else}}
-            Not Endorsed
+            Not provisioned
           {{/if}}
         {{/if}}
       {{else}}
         {{#if ../../can_revoke}}
-          Not Endorsed
+          Not provisioned
         {{else}}
-          Endorsements unchanged
+          Provisions unchanged
         {{/if}}
       {{/if}}
     </td>
@@ -63,7 +63,7 @@
         {{else}}
           {{#if google.endorsed}}
             {{#if ../../../../can_revoke}}
-              Endorsed by <ul>
+              Provisioned by <ul>
               {{#each google.endorsers}}
                 <li>{{this.netid}}</li>
               {{/each}}
@@ -72,14 +72,14 @@
               <i class="fa fa-check fa-2x success"></i>
             {{/if}}
           {{else}}
-            Not Endorsed
+            Not provisioned
           {{/if}}
         {{/if}}
       {{else}}
         {{#if ../../can_revoke}}
-          Not Endorsed
+          Not provisioned
         {{else}}
-          Endorsements unchanged
+          Provisions unchanged
         {{/if}}
       {{/if}}
     </td>
