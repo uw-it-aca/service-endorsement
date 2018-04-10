@@ -167,7 +167,7 @@ var registerEvents = function() {
 
                 $('.reason-' + id).html('');
                 $('.revoke-' + id).html('');
-                $('.endorsed-' + id).html('No longer endorsed by you');
+                $('.endorsed-' + id).html($("#unendorsed").html());
             });
         });
     }).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
