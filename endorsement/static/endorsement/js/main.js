@@ -489,6 +489,8 @@ var displayEndorsedUWNetIDs = function(endorsed) {
 var getEndorsedUWNetIDs = function() {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
+    $('#endorsed').prepend($('<div class="spinner"></div>'));
+
     $.ajax({
         url: "/api/v1/endorsed/",
         dataType: "JSON",
