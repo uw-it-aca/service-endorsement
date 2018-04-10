@@ -51,7 +51,7 @@
       {{#if ../can_revoke}}
         {{#if o365}}
           {{#if o365.endorsed}}
-      <button type="button" name="Revoke Office365" class="btn btn-primary confirm_revoke" data-netid="{{ @key }}" data-service="o365" data-service-name="Office365" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Office365">Revoke</button>
+      <button type="button" name="Revoke Office365" class="btn btn-primary confirm_revoke" data-netid="{{ @key }}" data-service="o365" data-service-name="Office 365" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Office365">Revoke</button>
          {{/if}}
         {{/if}}
       {{/if}}
@@ -100,3 +100,6 @@
 
 {% endtplhandlebars %}
 
+{% tplhandlebars "unendorsed" %}
+No longer endorsed by you
+{% endtplhandlebars %}
