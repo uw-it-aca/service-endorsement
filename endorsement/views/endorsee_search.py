@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 @login_required
-@admin_required('ENDORSEMENT_ADMIN_GROUP')
+@admin_required('PROVISION_ADMIN_GROUP')
 def endorsee_search(request):
     context = {}
     set_admin_wrapper_template(context)
