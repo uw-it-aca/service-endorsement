@@ -15,6 +15,9 @@ class ProvisionCache(TimedCache):
     )
 
     def getCache(self, service, url, headers):
+        # no cache until issue with postgresql is worked out
+        return None
+
         cache_time = self.getCacheTime(service, url)
         if cache_time is not None:
             return self._response_from_cache(service, url, headers, cache_time)
@@ -34,6 +37,9 @@ class ProvisionCache(TimedCache):
         return
 
     def processResponse(self, service, url, response):
+        # no cache until issue with postgresql is worked out
+        return None
+
         if self.getCacheTime(service, url) is not None:
             return self._process_response(service, url, response)
         else:
