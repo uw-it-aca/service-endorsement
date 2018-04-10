@@ -26,10 +26,7 @@ def index(request):
         if not netid:
             return invalid_session(logger, timer)
 
-        if not is_valid_endorser(netid):
-            return invalid_endorser(logger, timer)
         session_key = log_session_key(request)
-
         context = {
             "home_url": "/",
             "err": None,
@@ -38,6 +35,11 @@ def index(request):
                 "session_key": session_key,
             }
         }
+
+        if not is_valid_endorser(netid):
+            context["err"] = "Invalid Endorser"
+            return render(request, "invalid_endorser.html", context)
+
         try:
             log_resp_time(logger, "index.html", timer)
             return render(request, "index.html", context)
