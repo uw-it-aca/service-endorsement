@@ -19,7 +19,7 @@
                 {{/each}}
               </ul>
               {{else}}
-              Already eligible for this service (not provisioned)
+              Already eligible for this service ({{#unless active}}not {{/unless}}provisioned)
               {{/if}}
             </td>
          {{else}}
