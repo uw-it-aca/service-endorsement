@@ -181,13 +181,7 @@ def _update_category(netid, category_code, status):
 def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
     try:
         response = update_subscription(
-            endorsee_netid, 'Modify', subscriptions,
-            data_field={
-                "status": Subscription.STATUS_ACTIVE,
-                "dataValue": "Activate from endorsement.uw.edu",
-                "replace": True,
-                "sponsor": endorser_netid,
-            })
+            endorsee_netid, 'activate', subscriptions)
 
         for sub in response:
             if sub.subscription_code in subscriptions:
