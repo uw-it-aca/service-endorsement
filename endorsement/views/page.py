@@ -38,7 +38,7 @@ def index(request):
 
         if not is_valid_endorser(netid):
             context["err"] = "Invalid Endorser"
-            return render(request, "invalid_endorser.html", context)
+            return render(request, "401.html", context, status=401)
 
         try:
             log_resp_time(logger, "index.html", timer)
