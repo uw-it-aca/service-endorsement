@@ -489,7 +489,7 @@ var displayEndorsedUWNetIDs = function(endorsed) {
 var getEndorsedUWNetIDs = function() {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
-    $('#endorsed').prepend($('<div class="spinner"></div>'));
+    $('#endorsed').html($('#endorsed-loading').html());
 
     $.ajax({
         url: "/api/v1/endorsed/",
@@ -503,6 +503,7 @@ var getEndorsedUWNetIDs = function() {
             $(document).trigger('endorse:UWNetIDsEndorsed', [results]);
         },
         error: function(xhr, status, error) {
+            $('#endorsed').html($('#endorsed-failure').html());
         }
     });
 };
