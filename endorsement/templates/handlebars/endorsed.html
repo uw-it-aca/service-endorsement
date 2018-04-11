@@ -41,3 +41,12 @@
   <button type="button" id="revoke" class="btn btn-primary" data-netid="{{ netid }}" data-service="{{ service }}">Revoke your provision</button>
 </div>
 {% endtplhandlebars %}
+
+{% tplhandlebars "endorsed-loading" %}
+<div class="loading"><div></div></div>
+{% endtplhandlebars %}
+
+
+{% tplhandlebars "endorsed-failure" %}
+<div class="no-endorsements">We are unable to determine provisioned services at this time.  Please try again later.</dev>
+{% endtplhandlebars %}
