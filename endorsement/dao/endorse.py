@@ -187,7 +187,7 @@ def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
             sub_code = int(response.query['subscriptionCode'])
             if (response.http_status == 200 and
                 sub_code in subscriptions and
-                response.result.lower() == 'success'):
+                    response.result.lower() == 'success'):
                 subscriptions.remove(sub_code)
 
         if len(subscriptions) > 0:
