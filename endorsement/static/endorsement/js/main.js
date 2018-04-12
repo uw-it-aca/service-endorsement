@@ -353,7 +353,7 @@ var displayEndorseResult = function(endorsed) {
 var endorseUWNetIDs = function(endorsees) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
     var endorsed = {};
-return
+
     $.each(window.endorsement.validation.validated, function () {
         var endorsement = endorsees[this.netid];
 
