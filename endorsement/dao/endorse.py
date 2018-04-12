@@ -180,16 +180,26 @@ def _update_category(netid, category_code, status):
 
 def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
     try:
-        response = update_subscription(
+        response_list = update_subscription(
             endorsee_netid, 'activate', subscriptions)
 
-        for sub in response:
-            if sub.subscription_code in subscriptions:
-                subscriptions.remove(sub.subscription_code)
+        for response in response_list:
+            sub_code = int(response.query['subscriptionCode'])
+            if (response.http_status == 200 and
+                sub_code in subscriptions and
+                    response.result.lower() == 'success'):
+                subscriptions.remove(sub_code)
 
         if len(subscriptions) > 0:
+            for response in response_list:
+                if response.result.lower() != 'success':
+                    logger.error('subscription error: %s: %s - %s' % (
+                            response.query['subscriptionCode'],
+                            response.result, response.more_info))
+
             raise SubscriptionFailureException(
                 'Invalid Subscription Response')
+
     except DataFailureException as ex:
         raise SubscriptionFailureException('%s' % ex)
 
