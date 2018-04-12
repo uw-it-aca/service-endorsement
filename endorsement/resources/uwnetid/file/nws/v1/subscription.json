@@ -1,0 +1,43 @@
+{
+  "responseList": [
+    {
+      "query": {
+        "uwNetID": "javerage",
+        "action": "activate",
+        "subscriptionCode": "144"
+      },
+      "timeStamp": "Wed, 11 Apr 2018 16:01:13 -0700",
+      "uwNetID": "javerage",
+      "action": "Activate",
+      "result": "Success",
+      "httpStatus": 200,
+      "moreInfo": "<p><font color=green><b>Activate javerage</b></font></p>"
+    },
+    {
+      "query": {
+        "uwNetID": "javerage",
+        "action": "activate",
+        "subscriptionCode": "59"
+      },
+      "timeStamp": "Wed, 11 Apr 2018 16:01:13 -0700",
+      "uwNetID": "javerage",
+      "action": "Activate",
+      "result": "Success",
+      "httpStatus": 200,
+      "moreInfo": "<p><font color=green><b>Activate javerage</b></font></p>"
+    },
+    {
+      "query": {
+        "uwNetID": "javerage",
+        "action": "activate",
+        "subscriptionCode": "251"
+      },
+      "timeStamp": "Wed, 11 Apr 2018 16:01:13 -0700",
+      "uwNetID": "javerage",
+      "action": "Activate",
+      "result": "Success",
+      "httpStatus": 200,
+      "moreInfo": "<p><font color=green><b>Activate javerage</b></font></p>"
+    }
+  ]
+}
