@@ -245,6 +245,10 @@ a {
     display: none !important;
   }
 
+  button#confirm_endorsements.loading + p {
+    display: none !important;
+  }
+
   button#confirm_endorsements.no_netids {
     .no_netids {
       display: inline !important;

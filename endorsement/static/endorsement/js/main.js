@@ -18,7 +18,7 @@ var registerEvents = function() {
         var $this = $(this);
 
         $('#responsibility_modal').modal('toggle');
-        $('#confirm_endorsements').button('loading');
+        $('#confirm_endorsements').button('loading').addClass('loading');
         endorseUWNetIDs(getEndorseNetids());
     }).on('click', '.confirm_revoke', function (event) {
         var $this = $(this),
@@ -248,6 +248,7 @@ var enableEndorsability = function() {
 
         if ($('input[type="checkbox"]:checked', $row).length > 0) {
             $row.removeClass('unchecked');
+            $(".email-editor", $row).removeAttr('disabled');
             netids = true;
             if (validEmailAddress($('.shown-email', $row).html())) {
                 var reason = getReason($row);
@@ -257,6 +258,7 @@ var enableEndorsability = function() {
             }
         } else {
             $row.addClass('unchecked');
+            $(".email-editor", $row).attr('disabled', 'disabled');
         }
     });
 
@@ -351,7 +353,7 @@ var displayEndorseResult = function(endorsed) {
 var endorseUWNetIDs = function(endorsees) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
     var endorsed = {};
-
+return
     $.each(window.endorsement.validation.validated, function () {
         var endorsement = endorsees[this.netid];
 
