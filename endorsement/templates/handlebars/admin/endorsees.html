@@ -7,12 +7,13 @@
     <tr>
       <th>Service</th>
       <th>Endorser</th>
+      <th>Reason</th>
       <th>Endorsement Date</th>
     </tr>
   </thead>
   <tbody class="scrollable">
     {{#each endorsements.endorsements}}
-    <tr><td>{{subscription_name}} ({{subscriptoin_code}})</td><td>{{endorser.netid}}</td><td>{{datetime_endorsed}}</td></tr>
+    <tr><td>{{category_name}}</td><td>{{endorser.netid}}</td><td>{{reason}}</td><td>{{datetime_endorsed}}</td></tr>
     {{/each}}
 </tbody>
 </table>
