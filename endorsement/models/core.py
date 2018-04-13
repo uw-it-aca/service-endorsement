@@ -103,7 +103,7 @@ class EndorsementRecord(models.Model):
 
     CATEGORY_CODE_CHOICES = (
         (OFFICE_365_ENDORSEE, "UW Office 365 Education"),
-        (GOOGLE_SUITE_ENDORSEE, "UW Office 365 Education"),
+        (GOOGLE_SUITE_ENDORSEE, "UW Google Suite"),
     )
 
     endorser = models.ForeignKey(Endorser,
