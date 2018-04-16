@@ -205,15 +205,20 @@ def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
 
 
 def record_mail_sent(endorser, endorsement):
-    if endorsement['o365']['endorsed']:
-        category_code = EndorsementRecord.OFFICE_365_ENDORSEE
-        endorsee_netid = endorsement['o365']['endorsee']['netid']
-    elif endorsement['google']['endorsed']:
-        category_code = EndorsementRecord.GOOGLE_SUITE_ENDORSEE
-        endorsee_netid = endorsement['google']['endorsee']['netid']
+    emailed_date = timezone.now()
 
-    EndorsementRecord.objects.filter(
-        category_code=category_code,
-        endorser=endorser,
-        endorsee=get_endorsee_model(endorsee_netid)).update(
-            datetime_emailed=timezone.now())
+    if endorsement['o365']['endorsed']:
+        EndorsementRecord.objects.filter(
+            category_code=EndorsementRecord.OFFICE_365_ENDORSEE,
+            endorser=endorser,
+            endorsee=get_endorsee_model(
+                endorsement['o365']['endorsee']['netid'])).update(
+                    datetime_emailed=emailed_date)
+
+    if endorsement['google']['endorsed']:
+        EndorsementRecord.objects.filter(
+            category_code=EndorsementRecord.GOOGLE_SUITE_ENDORSEE,
+            endorser=endorser,
+            endorsee=get_endorsee_model(
+                endorsement['google']['endorsee']['netid'])).update(
+                    datetime_emailed=emailed_date)
