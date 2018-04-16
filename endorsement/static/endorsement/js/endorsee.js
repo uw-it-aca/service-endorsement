@@ -26,6 +26,19 @@ var displayEndorsedUWNetIDs = function(endorsements) {
 };
 
 
+var utc2local = function (utc_date) {
+    var local = null,
+        utc;
+
+    if (utc_date) {
+        utc = moment.utc(utc_date).toDate();
+        local = moment(utc).local().format('YYYY-MM-DD HH:mm:ss');
+    }
+
+    return local;
+};
+
+
 var searchEndorsee = function () {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
     var netid = $('input#endorsee').val();
@@ -39,7 +52,14 @@ var searchEndorsee = function () {
             "X-CSRFToken": csrf_token
         },
         success: function(results) {
-            
+            // localize date
+            $.each(results.endorsements, function () {
+                this.datetime_endorsed = utc2local(this.datetime_endorsed);
+                this.datetime_emailed = utc2local(this.datetime_emailed);
+                this.datetime_renewed = utc2local(this.datetime_renewed);
+                this.datetime_expired = utc2local(this.datetime_expired);
+            });
+
             $(document).trigger('endorse:UWNetIDsEndorseeResult', [{
                 endorsee: netid,
                 endorsements: results
