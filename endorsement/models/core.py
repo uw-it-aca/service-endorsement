@@ -132,6 +132,8 @@ class EndorsementRecord(models.Model):
             "reason: %s" % self.reason,
             "datetime_endorsed: %s" % (
                 datetime_to_str(self.datetime_endorsed)),
+            "datetime_emailed: %s" % (
+                datetime_to_str(self.datetime_emailed)),
             "datetime_renewed: %s" % (
                 datetime_to_str(self.datetime_renewed)),
             "datetime_expired: %s" % (
@@ -146,6 +148,7 @@ class EndorsementRecord(models.Model):
             "category_name": self.get_category_code_display(),
             "reason": self.reason,
             "datetime_endorsed": datetime_to_str(self.datetime_endorsed),
+            "datetime_emailed": datetime_to_str(self.datetime_emailed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired)
             }

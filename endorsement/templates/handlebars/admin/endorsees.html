@@ -9,11 +9,12 @@
       <th>Provisioner</th>
       <th>Reason</th>
       <th>Request Date</th>
+      <th>Email Date</th>
     </tr>
   </thead>
   <tbody class="scrollable">
     {{#each endorsements.endorsements}}
-    <tr><td>{{category_name}}</td><td>{{endorser.netid}}</td><td>{{reason}}</td><td>{{datetime_endorsed}}</td></tr>
+    <tr><td>{{category_name}}</td><td>{{endorser.netid}}</td><td>{{reason}}</td><td>{{datetime_endorsed}}</td><td>{{datetime_emailed}}</td></tr>
     {{/each}}
 </tbody>
 </table>
