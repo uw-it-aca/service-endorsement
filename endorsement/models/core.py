@@ -1,5 +1,8 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 from uw_uwnetid.models import Category
+import hashlib
+import random
 
 
 def datetime_to_str(d_obj):
@@ -15,6 +18,8 @@ class Endorser(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
                              unique=True)
+    display_name = models.CharField(max_length=64,
+                                    null=True)
     is_valid = models.NullBooleanField()
     last_visit = models.DateTimeField(null=True)
 
@@ -113,15 +118,33 @@ class EndorsementRecord(models.Model):
     category_code = models.SmallIntegerField(
         choices=CATEGORY_CODE_CHOICES)
     reason = models.CharField(max_length=64, null=True)
-    datetime_endorsed = models.DateTimeField(null=True)
+    accept_salt = models.CharField(max_length=32)
+    accept_id = models.CharField(max_length=32, null=True)
+    datetime_created = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
+    datetime_endorsed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
 
     def __eq__(self, other):
         return other is not None and\
             self.endorser == other.endorser and\
-            self.endorsee == other.endorsee
+            self.endorsee == other.endorsee and\
+            self.category_code == other.category_code
+
+    def save(self, *args, **kwargs):
+        self.accept_salt = "".join(
+            ["0123456789abcdef"[random.randint(0, 0xF)] for _ in range(32)])
+        self.accept_id = self._get_accept_id(self.endorsee.netid)
+        super(EndorsementRecord, self).save(*args, **kwargs)
+
+    def valid_endorsee(self, endorsee):
+        return self.accept_id == self._get_accept_id(endorsee)
+
+    def _get_accept_id(self, endorsee):
+        return hashlib.md5("%s%s%s%s" % (
+            self.endorser.netid, self.endorsee.netid,
+            self.category_code, self.accept_salt)).hexdigest()
 
     def __str__(self):
         return "{%s}" % ', '.join([
@@ -130,6 +153,7 @@ class EndorsementRecord(models.Model):
             "category_code: %s" % self.category_code,
             "category_name: %s" % self.get_category_code_display(),
             "reason: %s" % self.reason,
+            "accept_id: %s" % self.accept_id,
             "datetime_endorsed: %s" % (
                 datetime_to_str(self.datetime_endorsed)),
             "datetime_emailed: %s" % (
@@ -147,6 +171,9 @@ class EndorsementRecord(models.Model):
             "category_code": self.category_code,
             "category_name": self.get_category_code_display(),
             "reason": self.reason,
+            "accept_id": self.accept_id,
+            "accept_url": reverse('accept_view',
+                                  kwargs={'accept_id': self.accept_id}),
             "datetime_endorsed": datetime_to_str(self.datetime_endorsed),
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),

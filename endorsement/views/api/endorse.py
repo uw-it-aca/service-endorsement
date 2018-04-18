@@ -8,8 +8,8 @@ from endorsement.dao.user import (
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_person
 from endorsement.dao.endorse import (
-    store_office365_endorsement, clear_office365_endorsement,
-    store_google_endorsement, clear_google_endorsement)
+    initiate_office365_endorsement, clear_office365_endorsement,
+    initiate_google_endorsement, clear_google_endorsement)
 from endorsement.dao.notification import notify_endorsees
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
@@ -64,7 +64,7 @@ class Endorse(RESTDispatch):
                 try:
                     if to_endorse['o365']:
                         reason = to_endorse['reason']
-                        e = store_office365_endorsement(
+                        e = initiate_office365_endorsement(
                             endorser, endorsee, reason)
                         endorsements['o365'] = e.json_data()
                         endorsements['o365']['endorsed'] = True
@@ -88,7 +88,7 @@ class Endorse(RESTDispatch):
                 try:
                     if to_endorse['google']:
                         reason = to_endorse['reason']
-                        e = store_google_endorsement(
+                        e = initiate_google_endorsement(
                             endorser, endorsee, reason)
                         endorsements['google'] = e.json_data()
                         endorsements['google']['endorsed'] = True

@@ -32,7 +32,7 @@
               {{/each}}
               </ul>
             {{else}}
-              <i class="fa fa-check fa-2x success"></i>
+               Pending (<a href="{{ o365.accept_url }}" target="_blank">link sent</a>)
             {{/if}}
           {{else}}
             Not provisioned
@@ -69,7 +69,7 @@
               {{/each}}
               </ul>
             {{else}}
-              <i class="fa fa-check fa-2x success"></i>
+               Pending (<a href="{{ google.accept_url }}" target="_blank">link sent</a>)
             {{/if}}
           {{else}}
             Not provisioned

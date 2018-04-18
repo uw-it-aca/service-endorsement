@@ -2,6 +2,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from userservice.user import UserService
+from endorsement.views.decorators import admin_required
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.user import get_endorsee_model
 from endorsement.dao.endorse import get_endorsements_for_endorsee
@@ -16,9 +17,10 @@ logger = logging.getLogger(__name__)
 
 class Endorsee(RESTDispatch):
     """
-    Validate provided endorsement list
+    Show endorsements for endorsee
     """
     @method_decorator(login_required)
+    @method_decorator(admin_required('PROVISION_ADMIN_GROUP'))
     def get(self, request, *args, **kwargs):
         timer = Timer()
 

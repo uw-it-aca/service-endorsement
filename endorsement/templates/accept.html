@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% load templatetag_handlebars %}
+
+{% block content %}
+
+<script type="text/javascript">
+  window.endorsement = {{ endorsement_record|safe }}
+</script>
+
+<div id="accept" class="container">
+  <div id="accept">
+  </div>
+</div>
+
+{% include "handlebars/accept.html" %}
+{% include "handlebars/accepted.html" %}
+
+{% endblock %}
+
+{% block extra_js%}
+<script src="{% static "endorsement/js/accept.js" %}"></script>
+{% endblock %}

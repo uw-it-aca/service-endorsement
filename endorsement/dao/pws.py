@@ -56,11 +56,21 @@ def get_endorsee_data(uwnetid):
         raise
 
 
-def get_endorser_regid(uwnetid):
+def get_endorser_data(uwnetid):
     """
     Get from PWS/person, make sure it is a valid personal uwnetid
     """
-    return get_person(uwnetid).uwregid
+    try:
+        person = get_person(uwnetid)
+        return person.uwregid, person.display_name
+    except DataFailureException as ex:
+        if ex.status == 404:
+            # v0.1 does not endorse non-person/shared uwnetids
+            #     entity = get_entity(uwnetid)
+            #     return entity.uwregid, entity.display_name, None
+            raise UnrecognizedUWNetid(uwnetid)
+
+        raise
 
 
 def is_renamed_uwnetid(uwnetid):
