@@ -45,12 +45,19 @@ class Accept(RESTDispatch):
 
         record = records[0]
 
-        e = None
-        if record.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
-            e = store_office365_endorsement(
-                record.endorser, record.endorsee, record.reason)
-        elif record.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
-            e = store_google_endorsement(
-                record.endorser, record.endorsee, record.reason)
+        is_o365 = (
+            record.category_code == EndorsementRecord.OFFICE_365_ENDORSEE)
+        is_google = (
+            record.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
-        return self.json_response(e.json_data() if e else {})
+        if is_o365:
+            json_data = store_office365_endorsement(
+                record.endorser, record.endorsee, record.reason).json_data()
+        elif is_google:
+            json_data = store_google_endorsement(
+                record.endorser, record.endorsee, record.reason).json_data()
+
+        json_data['is_o365'] = is_o365
+        json_data['is_google'] = is_google
+
+        return self.json_response(json_data)

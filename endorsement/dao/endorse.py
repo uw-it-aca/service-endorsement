@@ -40,8 +40,7 @@ def store_endorsement(endorser, endorsee, reason, category_code):
         reason=reason,
         endorsee=endorsee,
         defaults={
-            'datetime_endorsed': timezone.now(),
-            'accept_id': None
+            'datetime_endorsed': timezone.now()
         })
 
     return en

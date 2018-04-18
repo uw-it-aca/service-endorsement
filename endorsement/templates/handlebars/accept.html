@@ -1,10 +1,11 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "endorse-accept" %}
-
   
-  <p style="padding: 10px;">The UW faculty or staff person {{ endorser.name }} ({{ endorser.netid }}) has endorsed you for {{ category_name }} because of your {{ reason }}</p>
+<div class="card">
+  <p style="padding: 10px;">The UW employee {{ endorser.name }} with the netid {{ endorser.netid }} has endorsed you for {{ category_name }} because of your {{ reason }}</p>
 
   <br />
   <button type="button" name="AcceptProvisionRequest" id="accept" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Accepting">Accept</button>
+</div>
 
 {% endtplhandlebars %}

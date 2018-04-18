@@ -28,11 +28,13 @@
             {{#if ../../../../can_revoke}}
               Provisioned by <ul>
               {{#each o365.endorsers}}
-                <li>{{this.netid}}</li>
+                <li>
+                  {{this.netid}}{{#if ../o365.accept_url}} (<a href="{{ ../../o365.accept_url }}">Pending</a>){{/if}}
+                </li>
               {{/each}}
               </ul>
             {{else}}
-               Pending (<a href="{{ o365.accept_url }}" target="_blank">link sent</a>)
+               Pending (<a href="{{ ../o365.accept_url }}" target="_blank">link sent</a>)
             {{/if}}
           {{else}}
             Not provisioned
@@ -65,11 +67,13 @@
             {{#if ../../../../can_revoke}}
               Provisioned by <ul>
               {{#each google.endorsers}}
-                <li>{{this.netid}}</li>
+                <li>
+                  {{this.netid}}{{#if ../google.accept_url}} (<a href="{{ ../../google.accept_url }}">Pending</a>){{/if}}
+                </li>
               {{/each}}
               </ul>
             {{else}}
-               Pending (<a href="{{ google.accept_url }}" target="_blank">link sent</a>)
+               Pending (<a href="{{ ../google.accept_url }}" target="_blank">link sent</a>)
             {{/if}}
           {{else}}
             Not provisioned

@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from uw_uwnetid.models import Category
 import hashlib
@@ -133,17 +134,21 @@ class EndorsementRecord(models.Model):
             self.category_code == other.category_code
 
     def save(self, *args, **kwargs):
-        self.accept_salt = "".join(
-            ["0123456789abcdef"[random.randint(0, 0xF)] for _ in range(32)])
-        self.accept_id = self._get_accept_id(self.endorsee.netid)
+        if not self.accept_salt:
+            self.accept_salt = "".join(
+                ["0123456789abcdef"[
+                    random.randint(0, 0xF)] for _ in range(32)])
+
+        if not self.accept_id:
+            self.accept_id = self.get_accept_id(self.endorsee.netid)
         super(EndorsementRecord, self).save(*args, **kwargs)
 
-    def valid_endorsee(self, endorsee):
-        return self.accept_id == self._get_accept_id(endorsee)
+    def valid_endorsee(self, endorsee_netid):
+        return self.accept_id == self.get_accept_id(endorsee_netid)
 
-    def _get_accept_id(self, endorsee):
+    def get_accept_id(self, endorsee_netid):
         return hashlib.md5("%s%s%s%s" % (
-            self.endorser.netid, self.endorsee.netid,
+            self.endorser.netid, endorsee_netid,
             self.category_code, self.accept_salt)).hexdigest()
 
     def __str__(self):
@@ -172,13 +177,18 @@ class EndorsementRecord(models.Model):
             "category_name": self.get_category_code_display(),
             "reason": self.reason,
             "accept_id": self.accept_id,
-            "accept_url": reverse('accept_view',
-                                  kwargs={'accept_id': self.accept_id}),
             "datetime_endorsed": datetime_to_str(self.datetime_endorsed),
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired)
             }
+
+        data['accept_url'] = None if (self.datetime_endorsed) else "%s%s" % (
+            getattr(settings, "APP_SERVER_BASE",
+                    "http://provision-test.uw.edu"),
+            reverse('accept_view',
+                    kwargs={'accept_id': self.accept_id}))
+
         return data
 
     class Meta:
