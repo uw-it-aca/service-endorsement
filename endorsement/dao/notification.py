@@ -23,6 +23,7 @@ def create_endorsee_message(endorser, endorsement):
         if endorsement['o365']['endorsed']:
             services += "UW Microsoft"
             params['o365_endorsed'] = True
+            params['o365_accept_id'] = endorsement['o365']['accept_id']
     except KeyError:
         params['o365_endorsed'] = False
         pass
@@ -34,6 +35,7 @@ def create_endorsee_message(endorser, endorsement):
 
             services += "Google"
             params['google_endorsed'] = True
+            params['google_accept_id'] = endorsement['google']['accept_id']
     except KeyError:
         params['google_endorsed'] = False
         pass
