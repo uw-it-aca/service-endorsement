@@ -532,7 +532,12 @@ var showEndorsedStep = function () {
 };
 
 var getNetidList = function () {
-    return unique($('#netid_list').val().replace(/\n/g, ' ').split(/[ ,]+/));
+    var netid_list = $('#netid_list').val();
+    if (netid_list) {
+        return unique(netid_list.replace(/\n/g, ' ').split(/[ ,]+/));
+    }
+
+    return [];
 };
 
 var unique = function(array) {

@@ -16,6 +16,20 @@ from restclients_core.exceptions import DataFailureException
 logger = logging.getLogger(__name__)
 
 
+def initiate_endorsement(endorser, endorsee, reason, category_code):
+    logger.info('initiate category %s for %s because %s by %s' % (
+        category_code, endorsee.netid, reason, endorser.netid))
+
+    en, created = EndorsementRecord.objects.update_or_create(
+        endorser=endorser,
+        category_code=category_code,
+        reason=reason,
+        endorsee=endorsee,
+        defaults={'datetime_created': timezone.now()})
+
+    return en
+
+
 def store_endorsement(endorser, endorsee, reason, category_code):
     logger.info('activate category %s for %s because %s by %s' % (
         category_code, endorsee.netid, reason, endorser.netid))
@@ -25,7 +39,9 @@ def store_endorsement(endorser, endorsee, reason, category_code):
         category_code=category_code,
         reason=reason,
         endorsee=endorsee,
-        defaults={'datetime_endorsed': timezone.now()})
+        defaults={
+            'datetime_endorsed': timezone.now()
+        })
 
     return en
 
@@ -57,6 +73,14 @@ def get_endorsements_for_endorsee(endorsee):
     return EndorsementRecord.objects.filter(endorsee=endorsee)
 
 
+def initiate_office365_endorsement(endorser, endorsee, reason):
+    """
+    Create record that endorsee requested endorsement for endorsee
+    """
+    return initiate_endorsement(
+        endorser, endorsee, reason, EndorsementRecord.OFFICE_365_ENDORSEE)
+
+
 def store_office365_endorsement(endorser, endorsee, reason):
     """
     To endorse O365, the tools should:
@@ -73,6 +97,14 @@ def store_office365_endorsement(endorser, endorsee, reason):
 
     return store_endorsement(
         endorser, endorsee, reason, EndorsementRecord.OFFICE_365_ENDORSEE)
+
+
+def initiate_google_endorsement(endorser, endorsee, reason):
+    """
+    Create record that endorsee requested endorsement for endorsee
+    """
+    return initiate_endorsement(
+        endorser, endorsee, reason, EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
 
 def store_google_endorsement(endorser, endorsee, reason):

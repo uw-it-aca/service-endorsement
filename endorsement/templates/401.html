@@ -1,11 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}401 Error{% endblock title %}
 
 {% block content %}
-    <script type="application/javascript">
-        Navbar.render_navbar();
-    </script>
 
     <div class="container error-container" role="main" aria-labelledby="sea-404-error">
         <div class="card">
@@ -15,3 +13,7 @@
     </div>
 
 {% endblock content %}
+
+{% block extra_js %}
+<script src="{% static "endorsement/js/main.js" %}"></script>
+{% endblock %}

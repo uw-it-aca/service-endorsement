@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
 from userservice.user import UserService
-from endorsement.dao.user import get_endorser_model
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time

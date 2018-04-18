@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 
@@ -34,5 +35,14 @@
   </div>
 </div>
 
+{% include "handlebars/validated.html" %}
+{% include "handlebars/valid_partial.html" %}
+{% include "handlebars/endorse_result.html" %}
+{% include "handlebars/endorsed.html" %}
+{% include "handlebars/endorsed_partial.html" %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static "endorsement/js/main.js" %}"></script>
 {% endblock %}

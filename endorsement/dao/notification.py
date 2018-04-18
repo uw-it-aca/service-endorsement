@@ -15,7 +15,9 @@ def create_endorsee_message(endorser, endorsement):
     sent_date = datetime.now()
     params = {
         "endorser_name": get_person(endorser.netid).display_name,
-        "endorsed_date": display_datetime(sent_date)
+        "endorsed_date": display_datetime(sent_date),
+        "app_server_base": getattr(settings, "APP_SERVER_BASE",
+                                   "http://provision-test.uw.edu")
     }
 
     services = ""
@@ -23,6 +25,7 @@ def create_endorsee_message(endorser, endorsement):
         if endorsement['o365']['endorsed']:
             services += "UW Microsoft"
             params['o365_endorsed'] = True
+            params['o365_accept_id'] = endorsement['o365']['accept_id']
     except KeyError:
         params['o365_endorsed'] = False
         pass
@@ -34,6 +37,7 @@ def create_endorsee_message(endorser, endorsement):
 
             services += "Google"
             params['google_endorsed'] = True
+            params['google_accept_id'] = endorsement['google']['accept_id']
     except KeyError:
         params['google_endorsed'] = False
         pass
@@ -52,8 +56,8 @@ def create_endorsee_message(endorser, endorsement):
 
 
 def notify_endorsees(endorser, endorsements):
-    sender = getattr(settings, "EMAIL_NOREPLY_ADDRESS",
-                     "endorsement-noreply@example.com")
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
 
     for netid, endorsement in endorsements.items():
         endorsed = False
@@ -73,7 +77,9 @@ def notify_endorsees(endorser, endorsements):
         recipients = [endorsement['email']]
 
         message = EmailMultiAlternatives(
-            subject, text_body, sender, recipients)
+            subject, text_body, sender, recipients,
+            headers={'Precedence': 'bulk'}
+        )
         message.attach_alternative(html_body, "text/html")
 
         try:

@@ -2,7 +2,7 @@ import logging
 from django.utils import timezone
 from endorsement.models.core import Endorser, Endorsee, EndorseeEmail
 from endorsement.dao.gws import is_valid_endorser
-from endorsement.dao.pws import get_endorser_regid, get_endorsee_data
+from endorsement.dao.pws import get_endorser_data, get_endorsee_data
 from endorsement.dao.uwnetid_subscription_60 import is_valid_endorsee
 
 
@@ -14,9 +14,10 @@ def get_endorser_model(uwnetid):
     return an Endorser object
     @exception: DataFailureException
     """
-    uwregid = get_endorser_regid(uwnetid)
+    uwregid, display_name = get_endorser_data(uwnetid)
     updated_values = {
         'netid': uwnetid,
+        'display_name': display_name,
         'is_valid': is_valid_endorser(uwnetid),
         'last_visit': timezone.now()
     }
