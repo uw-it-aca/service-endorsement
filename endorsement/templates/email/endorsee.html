@@ -5,11 +5,11 @@
 Learn how to activate these tools here:
 <ul>
   {%if google_endorsed %}
-  Click <a herf="{% url 'accept_page' {{ google_accept_id }} %}">here</a> to accept access to UW Google Tools (G Suite).
+  Click <a herf="{% url 'accept_view' google_accept_id %}">here</a> to accept access to UW Google Tools (G Suite).
   <li><a href="https://itconnect.uw.edu/connect/email/google-apps/">UW Google Tools (G Suite)</a></li>
   {% endif %}
   {%if o365_endorsed %}
-  Click <a herf="{% url 'accept_page' {{ o365_accept_id }} %}">here</a> to accept access to Office 365.
+  Click <a herf="{% url 'accept_view' o365_accept_id %}">here</a> to accept access to Office 365.
   <li><a href="https://login.microsoftonline.com">UW Microsoft Tools (Office 365)</a></li>
   {% endif %}
 </ul>
