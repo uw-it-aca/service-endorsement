@@ -2,6 +2,7 @@
 
 $(window.document).ready(function() {
     registerEvents();
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 
@@ -12,8 +13,12 @@ var registerEvents = function() {
 
     $(document).on('endorse:UWNetIDsEndorseeResult', function (e, endorsements) {
         displayEndorsedUWNetIDs(endorsements);
-    });
+    }).on('click', '.copy_clipboard', function () {
+        var $txt = $(this).next();
 
+        $txt.select();
+        document.execCommand('copy');
+    });
 };
 
 
@@ -23,6 +28,20 @@ var displayEndorsedUWNetIDs = function(endorsements) {
 
     $('#endorsees').html(template(endorsements));
     $('#endorsee-table').dataTable();
+};
+
+
+var displayEndorsedUWNetIDError = function(json_data) {
+    var source = $("#admin-endorsee-search-error").html(),
+        template = Handlebars.compile(source),
+        context = {
+            error: (json_data) 
+                ? (json_data.hasOwnProperty('error') 
+                   ? json_data.error : json_data)
+                : "Unknown error"
+        };
+
+    $('#endorsees').html(template(context));
 };
 
 
@@ -66,6 +85,7 @@ var searchEndorsee = function () {
             }]);
         },
         error: function(xhr, status, error) {
+            displayEndorsedUWNetIDError(xhr.responseJSON);
         }
     });
 };

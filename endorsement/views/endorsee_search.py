@@ -1,6 +1,6 @@
 from endorsement.views.decorators import admin_required
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from endorsement.views import set_admin_wrapper_template
 import logging
 
