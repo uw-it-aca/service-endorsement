@@ -137,6 +137,11 @@ var registerEvents = function() {
         if ($(e.target).hasClass('email-editor') && e.which == 13) {
             finishEmailEdit($(e.target));
         }
+    }).on('click', '.copy_clipboard', function () {
+        var $txt = $(this).next();
+
+        $txt.select();
+        document.execCommand('copy');
     }).on('input', function (e) {
         if ($(e.target).hasClass('reason-editor')) {
             if (e.which !== 13) {
