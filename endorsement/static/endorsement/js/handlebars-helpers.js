@@ -33,3 +33,7 @@ Handlebars.registerHelper('plural', function(n, singular, plural) {
 
     return plural;
 });
+
+Handlebars.registerHelper('equals', function(a, b, options) {
+    return (a == b) ? options.fn(this) : options.inverse(this);
+});
