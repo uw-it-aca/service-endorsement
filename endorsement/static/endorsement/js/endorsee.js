@@ -35,10 +35,7 @@ var displayEndorsedUWNetIDError = function(json_data) {
     var source = $("#admin-endorsee-search-error").html(),
         template = Handlebars.compile(source),
         context = {
-            error: (json_data) 
-                ? (json_data.hasOwnProperty('error') 
-                   ? json_data.error : json_data)
-                : "Unknown error"
+            error: (json_data) ? (json_data.hasOwnProperty('error') ? json_data.error : json_data) : "Unknown error"
         };
 
     $('#endorsees').html(template(context));
