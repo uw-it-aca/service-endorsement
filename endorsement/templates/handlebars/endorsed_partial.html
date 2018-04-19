@@ -29,7 +29,10 @@
               Provisioned by <ul>
               {{#each o365.endorsers}}
                 <li>
-                  {{this.netid}}{{#if ../o365.accept_url}} (<a href="{{ ../../o365.accept_url }}">Pending</a>){{/if}}
+                  {{this.netid}}
+                  {{#equals this.netid ../../../../o365.endorser.netid}}
+                  (<a href="{{ ../../../o365.accept_url }}">Pending</a>)
+                  {{/equals}}
                 </li>
               {{/each}}
               </ul>
@@ -68,7 +71,12 @@
               Provisioned by <ul>
               {{#each google.endorsers}}
                 <li>
-                  {{this.netid}}{{#if ../google.accept_url}} (<a href="{{ ../../google.accept_url }}">Pending</a>){{/if}}
+                  {{this.netid}}
+                  {{#if ../google.accept_url}}
+                  {{#equals this.netid ../../../../google.endorser.netid}}
+                  (<a href="{{ ../../../google.accept_url }}">Pending</a>)
+                  {{/equals}}
+                  {{/if}}
                 </li>
               {{/each}}
               </ul>
