@@ -30,9 +30,11 @@
               {{#each o365.endorsers}}
                 <li>
                   {{this.netid}}
+                  {{#if ../o365.accept_url}}
                   {{#equals this.netid ../../../../o365.endorser.netid}}
                   (<a href="{{ ../../../o365.accept_url }}">Pending</a>)
                   {{/equals}}
+                  {{/if}}
                 </li>
               {{/each}}
               </ul>
