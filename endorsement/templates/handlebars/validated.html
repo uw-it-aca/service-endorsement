@@ -106,24 +106,24 @@
         </button>
       </div>
       <div class="modal-body">
-        By provisioning access to services for {{plural netid_count 'this' 'these'}} UW
-        NetID{{plural netid_count '' 's'}},
-        you confirm that, to the best of your knowledge:
-        <br />
-        <br />
-        <ul>
-          <li>{{plural netid_count "The" "Each"}} UW NetID you {{plural netid_count "are endorsing" "endorse"}} belongs to a person (not a shared UW NetID or other non-personal UW NetID);</li>
-          <li>{{plural netid_count "The" "Each"}} person is who they represent themselves to be; and</li>
-          <li>{{plural netid_count "The" "Each"}} person is conducting official UW business that requires use of the service(s) for which you are provisioning access.</li>
-        </ul>
-        <label>
-          <input type="checkbox" id="accept_responsibility"  />
-          I understand and accept these terms.
-        </label>
+        <p>By selecting {{plural netid_count 'this' 'these'}} UW
+            NetID{{plural netid_count '' 's'}} to receive the services you have identified, you confirm that:</p>
+          <ol>
+              <li>The provisioning recipient associated with each UW NetID requires use of the service(s) to carry out official UW operations, and</li>
+              <li>You have authority to make this request in accord with the UW-IT <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">guidelines for providing computing services to UW affiliates</a>.</li>
+          </ol>
+
+        <p>
+            <label>
+                <input type="checkbox" id="accept_responsibility"  />
+                I understand and accept these terms.
+            </label>
+        </p>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
-        <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Provision services for these UW NetIDs</button>
+        <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Provision services for {{plural netid_count 'this' 'these'}} UW NetID{{plural netid_count '' 's'}}</button>
       </div>
     </div>
   </div>
