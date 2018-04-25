@@ -24,7 +24,7 @@
         {{datetime_endorsed}}
         {{else}}
         {{#if accept_url}}
-        Pending <a class="copy_clipboard" data-toggle="tooltip" title="Copy acceptance link to clipboard" href="javascript:void(0);"><i class="fa fa-copy"></i></a><textarea style="position: absolute; left: -2000px;">{{accept_url}}</textarea>
+        Pending <a fclass="copy_clipboard" data-toggle="tooltip" data-clipboard-copy="{{accept_url}}" title="Copy acceptance link to clipboard" href="javascript:void(0);"><i class="fa fa-copy"></i></a>
         {{/if}}
         {{/if}}
       </td>

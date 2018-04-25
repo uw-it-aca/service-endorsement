@@ -13,11 +13,18 @@ var registerEvents = function() {
 
     $(document).on('endorse:UWNetIDsEndorseeResult', function (e, endorsements) {
         displayEndorsedUWNetIDs(endorsements);
-    }).on('click', '.copy_clipboard', function () {
-        var $txt = $(this).next();
+    }).on('click', '[data-clipboard]', function () {
+        var url = $(this).attr('data-clipboard'),
+            $txt;
 
+        $txt = $('textarea')
+            .css('position', 'absolute')
+            .css('left', '-2000px')
+            .val(url)
+            .appendTo(document.body);
         $txt.select();
         document.execCommand('copy');
+        $txt.remove();
     });
 };
 

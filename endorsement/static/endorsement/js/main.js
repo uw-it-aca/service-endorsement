@@ -54,6 +54,18 @@ var registerEvents = function() {
         $('.endorsement-group input:checked').prop('checked', false);
         enableCheckEligibility();
         showInputStep();
+    }).on('click', '[data-clipboard]', function (e) {
+        var url = $(this).attr('data-clipboard'),
+            $txt;
+        console.log('url: ' + url);
+        $txt = $('<input>')
+            .css('position', 'absolute')
+            .css('left', '-2000px')
+            .val(url)
+            .appendTo(document.body);
+        $txt.select();
+        document.execCommand('copy');
+        $txt.remove();
     }).on('change', '#netid_list',  function(e) {
         enableCheckEligibility();
     }).on('change', '.displaying-reasons > select',  function(e) {
@@ -137,11 +149,6 @@ var registerEvents = function() {
         if ($(e.target).hasClass('email-editor') && e.which == 13) {
             finishEmailEdit($(e.target));
         }
-    }).on('click', '.copy_clipboard', function () {
-        var $txt = $(this).next();
-
-        $txt.select();
-        document.execCommand('copy');
     }).on('input', function (e) {
         if ($(e.target).hasClass('reason-editor')) {
             if (e.which !== 13) {
