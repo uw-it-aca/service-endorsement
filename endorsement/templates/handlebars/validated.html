@@ -69,7 +69,7 @@
   {{else}}
   <tr class="invalid-netid">
     <td>{{netid}}</td>
-    <td colspan="3">Not a valid UW NetID</td>
+    <td colspan="3">{{#if ../error_message }}{{../error_message}}{{else}}Not a valid UW NetID{{/if}}</td>
     <td class="centered col-border-left">n/a</td>
     <td></td>
     <td class="centered col-border-left">n/a</td>

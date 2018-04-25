@@ -22,3 +22,7 @@ class SubscriptionFailureException(Exception):
 
 class MissingReasonException(Exception):
     pass
+
+
+class TooManyUWNetids(Exception):
+    pass
