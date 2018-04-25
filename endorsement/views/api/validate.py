@@ -1,5 +1,6 @@
 import logging
 import json
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from userservice.user import UserService
@@ -8,13 +9,13 @@ from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model, get_endorsee_email_model)
 from endorsement.dao.endorse import (
     is_office365_permitted, is_google_permitted,
-    get_endorsements_for_endorsee)
+    get_endorsements_for_endorsee, get_endorsements_by_endorser)
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
-from endorsement.exceptions import InvalidNetID, UnrecognizedUWNetid
-from restclients_core.exceptions import DataFailureException
+from endorsement.exceptions import (
+    InvalidNetID, UnrecognizedUWNetid, TooManyUWNetids)
 
 
 logger = logging.getLogger(__name__)
@@ -43,9 +44,18 @@ class Validate(RESTDispatch):
             'validated': []
         }
 
+        endorsements = get_endorsements_by_endorser(endorser)
+        max_netids = getattr(settings, "ENDORSER_LIMIT", 300)
+        netid_count = max_netids - endorsements.count()
+
         for endorse_netid in netids:
             try:
                 endorsee = get_endorsee_model(endorse_netid)
+
+                netid_count -= 1
+                if netid_count < 0:
+                    raise TooManyUWNetids()
+
                 endorsements = get_endorsements_for_endorsee(endorsee)
                 active = False
                 valid = {
@@ -102,6 +112,13 @@ class Validate(RESTDispatch):
                 valid = {
                     'netid': endorse_netid,
                     'error': '%s' % (ex)
+                }
+            except TooManyUWNetids:
+                valid = {
+                    'netid': endorse_netid,
+                    'error': 'Netid Count Exceeded',
+                    'error_message': 'Limit of %s netids exceeded' % (
+                        max_netids)
                 }
             except Exception as ex:
                 valid = {
