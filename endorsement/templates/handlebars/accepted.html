@@ -2,15 +2,10 @@
 {% tplhandlebars "endorse-accepted" %}
 
 <div class="card">
-  <h3>Congratulations!</h3>
+  <h4>Congratulations!</h4>
   <p>We are working on your provisioning. Once complete, {{ category_name }} will be available to you at
-{{#if is_o365}}
-<a href="https://login.microsoftonline.com">UW Microsoft Tools (Office 365)
-{{/if}}
-{{#if is_google}}
-<a href="https://itconnect.uw.edu/connect/email/google-apps/">UW Google Tools (G Suite)</a>
-{{/if}}
- </p>
+{{#if is_o365}}<a href="https://login.microsoftonline.com">UW Microsoft Tools (Office 365)</a>{{/if}}{{#if is_google}}<a href="https://itconnect.uw.edu/connect/email/google-apps/">UW Google Tools (G Suite)</a>{{/if}}.
+</p>
 </div>
 
 {% endtplhandlebars %}

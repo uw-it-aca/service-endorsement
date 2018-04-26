@@ -7,24 +7,24 @@ $(window.document).ready(function() {
 });
 
 var registerEvents = function() {
-    $('#app_content').on('click', 'button#accept', function(e) {
+    $('#accept_content').on('click', 'button#accept', function(e) {
         var $this = $(this);
 
         $this.button('loading');
         acceptEndorsement();
     });
 
-    $(document).on('endorse:AcceptEndorsement', function (e, data) {
+    $(document).on('endorse:AcceptEndorsement', function (e, endorsement) {
         var source = $("#endorse-accepted").html();
         var template = Handlebars.compile(source);
-        $('#accept').html(template(window.endorsement));
+        $('#accept_content').html(template(endorsement));
     });
 };
 
 var displayPageBody = function() {
     var source = $("#endorse-accept").html();
     var template = Handlebars.compile(source);
-    $('#accept').html(template(window.endorsement));
+    $('#accept_content').html(template(window.endorsement));
 };
 
 var displayPageHeader = function() {
@@ -48,7 +48,7 @@ var acceptEndorsement = function () {
             "X-CSRFToken": csrf_token
         },
         success: function(results) {
-            $(document).trigger('endorse:AcceptEndorsement');
+            $(document).trigger('endorse:AcceptEndorsement', [results]);
         },
         error: function(xhr, status, error) {
         }
