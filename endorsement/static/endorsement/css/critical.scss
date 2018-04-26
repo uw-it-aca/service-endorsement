@@ -356,8 +356,13 @@ a {
 	height: 160px;
 }
 
-/* footer  Stuff*/
+/* app container Stuff*/
 
+#app_container {
+    min-height: 500px;
+}
+
+/* footer  Stuff*/
 
 #app_footer {
     .footer-bar {
