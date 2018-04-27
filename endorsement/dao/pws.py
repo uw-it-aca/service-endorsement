@@ -7,6 +7,7 @@ import logging
 import traceback
 from uw_pws import PWS
 from restclients_core.exceptions import DataFailureException
+from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.util.log import log_exception
 
 
@@ -18,7 +19,16 @@ def get_entity(uwnetid):
     """
     Retrieve the Entity object for the given netid
     """
-    return pws.get_entity_by_netid(uwnetid)
+    try:
+        return pws.get_entity_by_netid(uwnetid)
+    except DataFailureException as ex:
+        if ex.status == 404:
+            raise UnrecognizedUWNetid(uwnetid)
+
+        log_exception(logger,
+                      '%s get_entity ' % uwnetid,
+                      traceback.format_exc())
+        raise
 
 
 def get_person(uwnetid):
@@ -30,23 +40,44 @@ def get_person(uwnetid):
 
 def get_endorsee_data(uwnetid):
     """
-    Return uwregid, display_anme retrieved from PWS/Entity for the
-    given uwnetid.
+    Return uwregid, display_name and email1 retrieved from PWS/Person for the
+    given uwnetid.  Failing that, fetch entity
     """
-    entity = get_entity(uwnetid)
-    return entity.uwregid, entity.display_name
+    try:
+        person = get_person(uwnetid)
+        return person.uwregid, person.display_name, person.email1
+    except DataFailureException as ex:
+        if ex.status == 404:
+            # v0.1 does not endorse non-person/shared uwnetids
+            #     entity = get_entity(uwnetid)
+            #     return entity.uwregid, entity.display_name, None
+            raise UnrecognizedUWNetid(uwnetid)
+
+        raise
 
 
-def get_endorser_regid(uwnetid):
+def get_endorser_data(uwnetid):
     """
     Get from PWS/person, make sure it is a valid personal uwnetid
     """
-    return get_person(uwnetid).uwregid
+    try:
+        person = get_person(uwnetid)
+        return person.uwregid, person.display_name
+    except DataFailureException as ex:
+        if ex.status == 404:
+            # v0.1 does not endorse non-person/shared uwnetids
+            #     entity = get_entity(uwnetid)
+            #     return entity.uwregid, entity.display_name, None
+            raise UnrecognizedUWNetid(uwnetid)
+
+        raise
 
 
 def is_renamed_uwnetid(uwnetid):
     try:
-        en = get_entity(uwnetid)
+        get_entity(uwnetid)
+        return False
+    except UnrecognizedUWNetid:
         return False
     except DataFailureException as ex:
         log_exception(logger,

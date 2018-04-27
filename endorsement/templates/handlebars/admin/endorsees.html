@@ -1,0 +1,44 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "admin-endorsee-search-result" %}
+
+<h3>Services and Provisioners for {{endorsee}}</h3>
+<table id="endorsee-table" class="endorsee-table table table-striped">
+  <thead>
+    <tr>
+      <th>Service</th>
+      <th>Provisioner</th>
+      <th>Reason</th>
+      <th>Email Date</th>
+      <th>Provisioned Date</th>
+    </tr>
+  </thead>
+  <tbody class="scrollable">
+    {{#each endorsements.endorsements}}
+    <tr>
+      <td>{{category_name}}</td>
+      <td>{{endorser.netid}}</td>
+      <td>{{reason}}</td>
+      <td>{{datetime_emailed}}</td>
+      <td>
+        {{#if datetime_endorsed}}
+        {{datetime_endorsed}}
+        {{else}}
+        {{#if accept_url}}
+        Pending <a fclass="copy_clipboard" data-toggle="tooltip" data-clipboard-copy="{{accept_url}}" title="Copy acceptance link to clipboard" href="javascript:void(0);"><i class="fa fa-copy"></i></a>
+        {{/if}}
+        {{/if}}
+      </td>
+    </tr>
+    {{/each}}
+</tbody>
+</table>
+
+
+{% endtplhandlebars %}
+
+{% tplhandlebars "admin-endorsee-search-error" %}
+<h3>Error searching for Provision Requests</h3>
+<p>
+  {{error}}
+</p>
+{% endtplhandlebars %}

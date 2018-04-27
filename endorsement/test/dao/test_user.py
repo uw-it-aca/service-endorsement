@@ -7,7 +7,7 @@ from endorsement.dao.user import get_endorser_model, get_endorsee_model
 class TestUserDao(TransactionTestCase):
 
     def test_get_endorser_model(self):
-        user, created = get_endorser_model('jstaff')
+        user = get_endorser_model('jstaff')
         self.assertIsNotNone(user)
         self.assertEqual(user.regid,
                          '10000000000000000000000000000001')
@@ -19,15 +19,15 @@ class TestUserDao(TransactionTestCase):
         self.assertIsNotNone(Endorser.objects.get(netid='jstaff'))
 
     def test_get_endorsee_model(self):
-        user, created = get_endorsee_model('endorsee1')
+        user = get_endorsee_model('endorsee2')
         self.assertIsNotNone(user)
-        self.assertEqual(user.display_name, "Endorsee I")
+        self.assertEqual(user.display_name, "SIMON ENDORSEE2")
         self.assertTrue(user.kerberos_active_permitted)
 
-        qset = Endorsee.objects.filter(netid='endorsee1')
+        qset = Endorsee.objects.filter(netid='endorsee2')
         self.assertEqual(len(qset), 1)
 
-        self.assertIsNotNone(Endorsee.objects.get(netid='endorsee1'))
+        self.assertIsNotNone(Endorsee.objects.get(netid='endorsee2'))
 
         self.assertRaises(DataFailureException,
                           get_endorsee_model,

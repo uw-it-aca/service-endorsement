@@ -1,9 +1,10 @@
 <h3>General</h3>
 <ul>
-    {% url 'userservice.views.support' as user_override_url %}
+    {% url 'userservice_override' as user_override_url %}
     {% if user_override_url %}
     <li><a href="{{ user_override_url }}">{{ userservice_link|default:"User Override" }}</a></li>
     {% endif %}
+    <li><a href="{% url 'endorsee_search' %}">Provisionee Search</a></li>
 </ul>
 
 <h3>Web Services</h3>

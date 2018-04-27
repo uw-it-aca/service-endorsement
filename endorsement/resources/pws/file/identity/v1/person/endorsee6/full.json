@@ -1,0 +1,37 @@
+{
+"DisplayName":"BRADFORD ENDORSEE6",
+"EduPersonAffiliations":["affiliate"],
+"IsTestEntity":false,
+"PriorUWNetIDs":[],
+"PriorUWRegIDs":["252F3390420044EDA16FE4C8C7000007"],
+"RegisteredFirstMiddleName":"BRADFORD",
+"RegisteredName":"REG ENDORSEE6",
+"RegisteredSurname":"ENDORSEE6",
+"UIDNumber":"301090",
+"UWNetID":"endorsee6",
+"UWRegID":"BE43A1115A014E559570337951000008",
+"WhitepagesPublish":true,
+"PersonAffiliations":
+    {"EmployeePersonAffiliation":
+       {"EmployeeID":"350701271",
+        "EmployeeWhitePages":{
+           "Address1":null,
+           "Address2":null,
+           "Department1":null,
+           "Department2":null,
+           "Email1":"endorsee6@uw.edu",
+           "Email2":null,
+           "Fax":null,
+           "Name":null,
+           "Phone1":null,
+           "Phone2":null,
+           "PublishInDirectory":false,
+           "Title1":null,
+           "Title2":null,
+           "TouchDial":null,
+           "VoiceMail":null},
+        "HomeDepartment":"CAMPUS HR OPERATIONS",
+        "MailStop":"359532"
+     }
+  }
+}

@@ -1,42 +1,48 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 
 <div class="container">
 
-    <h3>Select service for endorsement</h3>
+  <p style="padding: 10px;">This tool allows you to manage non-employees' ability to access UW G Suite (Google) and/or UW Microsoft Office 365. Use this to vouch that someone who has a UW NetID is eligible to use these services because of an established working relationship with UW.</p>
+    <p style="padding: 10px;">This tool does not allow you to provision services to shared UW NetIDs at this time.</p>
 
-    <div class="endorsement-group">
-      <div>
-        <label>
-          <input type="checkbox" name="Office365" id="endorse_o365" value="office365" />
-          Endorse users for Office365
-        </label>
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#endorse" data-toggle="tab"><h2>Provision services</h2></a></li>
+    <li><a href="#endorsed" data-toggle="tab" class="previous-endorsement"><h2>Manage your provisioned services</h2></a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="endorse">
+       <div class="form-group" id="uwnetids-input">
+        <h3>Enter UW NetIDs to provision services</h3>
+
+           <label for="netid_list">Add the UW NetID(s) for which you want to provision services, separated by a comma or one per line.</label>
+        <textarea id="netid_list"  rows="15" cols="60" class="form-control"></textarea>
+        <br />
+        <button type="button" name="ValidateUWNetids" id="validate" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Validating UW NetIDs">Check for provision eligibility</button>
       </div>
-      <div>
-        <label>
-          <input type="checkbox" name="GoogleApps" id="endorse_google" value="googleapps" />
-          Endorse users for UW Google Apps
-        </label>
+
+      <div class="form-group" id="uwnetids-validated" style="display: none;">
+      </div>
+
+      <div class="form-group" id="uwnetids-endorsed" style="display: none;">
       </div>
     </div>
-
-
-  <div class="form-group" id="uwnetids-input">
-    <h3>Enter UW Netids to endorse</h3>
-
-  Add UW Netids below for endorsement and click Validate to preview before adding endorsement.
-    <textarea id="netid_list"  rows="15" cols="60" class="form-control"></textarea>
-    <br />
-    <input type="button" name="ValidateUWNetids" id="validate" value="Check Eligibility" class="btn btn-primary" />
-  </div>
-
-  <div class="form-group" id="uwnetids-validated" style="display: none;">
-  </div>
-
-  <div class="form-group" id="uwnetids-endorsed" style="display: none;">
+    <div class="tab-pane" id="endorsed">
+    </div>
   </div>
 </div>
 
+{% include "handlebars/validated.html" %}
+{% include "handlebars/valid_partial.html" %}
+{% include "handlebars/endorse_result.html" %}
+{% include "handlebars/endorsed.html" %}
+{% include "handlebars/endorsed_partial.html" %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static "endorsement/js/main.js" %}"></script>
 {% endblock %}

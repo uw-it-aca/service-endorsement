@@ -1,0 +1,37 @@
+{
+"DisplayName":"JERRY ENDORSEE7",
+"EduPersonAffiliations":["affiliate"],
+"IsTestEntity":false,
+"PriorUWNetIDs":[],
+"PriorUWRegIDs":[],
+"RegisteredFirstMiddleName":"BRADFORD",
+"RegisteredName":"JEROME ENDORSEE7",
+"RegisteredSurname":"ENDORSEE7",
+"UIDNumber":"301090",
+"UWNetID":"endorsee6",
+"UWRegID":"BE43A1115A014E559570337007000009",
+"WhitepagesPublish":true,
+"PersonAffiliations":
+    {"EmployeePersonAffiliation":
+       {"EmployeeID":"530070001",
+        "EmployeeWhitePages":{
+           "Address1":null,
+           "Address2":null,
+           "Department1":null,
+           "Department2":null,
+           "Email1":"endorsee7@uw.edu",
+           "Email2":null,
+           "Fax":null,
+           "Name":null,
+           "Phone1":null,
+           "Phone2":null,
+           "PublishInDirectory":true,
+           "Title1":null,
+           "Title2":null,
+           "TouchDial":null,
+           "VoiceMail":null},
+        "HomeDepartment":"CAMPUS HR OPERATIONS",
+        "MailStop":"359533"
+     }
+  }
+}

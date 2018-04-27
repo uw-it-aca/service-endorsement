@@ -1,0 +1,17 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "endorse-accept" %}
+  
+<div class="card">
+  <p style="padding: 10px;">The UW employee {{ endorser.name }} ({{ endorser.netid }}) has requested that you be given access to {{ category_name }}.</p>
+
+    <p>Your use of these services is bound by UW-IT’s Acceptable Use Policy, as well as being subject to state and federal law, and to other UW policies and procedures. For more information, visit UW-IT’s Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/">http://itconnect.uw.edu/work/appropriate-use/</a>.</p>
+
+  <h3>Statement of Agreement</h3>
+
+    <p>I agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to my use of UW computing resources, including my use of {{ category_name }}.
+    </p>
+
+  <button type="button" name="AcceptProvisionRequest" id="accept" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Accepting">Agree</button>
+</div>
+
+{% endtplhandlebars %}

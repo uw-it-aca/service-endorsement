@@ -1,108 +1,21 @@
 $green: #5cb85c;
 $red: #d9534f;
-$data_desctext: #787878;
 
-.historic-section, .current-section {
-    margin-top:1rem;
-}
+.endorsement-navigation .endorsement-wrapper { background-position: right 20px bottom 20px; }
 
-.course-info { padding-left: 0;
-    .course-select {
-        vertical-align:middle;
-        margin-left: 8px;
-    }
-    .course-title { font-size: 1.6em; }
-}
+.tab-content { padding-top: 20px; }
 
-.course-data {
-    .historic-section{border-top:1px solid #ccc;padding-top: 1rem;}
-}
+.nav-tabs li a { padding: 5px 10px; }
+.nav-tabs li.active h2 { font-weight: bold; }
+.nav-tabs li h2 { font-size: 20px; margin: 10px auto; font-weight: normal; }
 
-.course-data {
-    margin-top: 16px;
+legend { border-bottom: 0; font-size: 16px; font-weight: bold; margin-bottom: 10px; }
 
-    /** Current Course **/
+.col-border-left { border-left: 2px solid #ddd; }
+tr.unchecked { opacity: .5; font-style: italic; }
+tr.unchecked a { cursor: not-allowed; }
+tr.unchecked a:hover { text-decoration: none; color: #0077c2; }
 
-    .current-schedule-row {
-        .card {border:none;
-            .card-body { padding-top:1rem;
-            }
-        }
-        .course-days, .course-time, .course-location {
-            margin-right:1rem;
-        }
-    }
-
-    .table-course-schedule {
-        width:100%;
-        font-size:1.3rem;
-        td {
-            padding: 0 8px 8px 0;
-            width: 6em;
-        }
-    }
-
-    .loading {
-        min-height: 200px;
-        background-color: #f8f8f8;
-        opacity: .4;
-    }
-
-    .loading:before {
-        z-index: 100;
-        color: black;
-        content: "\f110";
-        font-family: FontAwesome;
-        font-size:40px;
-        position: absolute;
-        top: 80px;
-        left: 250px;
-        -webkit-animation: fa-spin 2s infinite linear;
-        animation: fa-spin 2s infinite linear;
-    }
-
-    .course-data-widget {
-        margin-top: 24px;
-        i { 
-            font-size: 85%;padding-left:1rem;color:$data_desctext;   
-        }
-        .course-data-items {
-            padding-left: 8px;
-            .course-data-number {
-                font-size: 2.6em;
-                margin-top: -15px;
-            }
-            .course-data-description {
-                font-size:1em;
-                color:$data_desctext;
-                margin-top:-5px;
-            }
-        }
-    }
-    .historic-section {
-        .historic-filters {
-            margin-top: .5rem;
-            .nav { padding-bottom: 1rem;
-                .nav-item {
-                    a {padding: 0 .5em;}
-                    &.active a { pointer-events: none; cursor: default; color:#333; 
-                    }
-                }
-            }
-            .tab-content {
-                .tab-pane {padding: .5rem 0;}
-            }
-        }
-    }
-    .list {
-        li {
-            line-height: 1.4rem;
-            padding-bottom: .4rem;
-        }
-    }
-
-    ul.list-unstyled li:nth-child(n+11) {
-        display: none;
-    }
-
-}
+.btn-primary:disabled { background-color: #777; border-color: #777; }
+.btn-primary:disabled:hover { background-color: #777; border-color: #777; }
+.btn.button-link { color: #0077c2; }

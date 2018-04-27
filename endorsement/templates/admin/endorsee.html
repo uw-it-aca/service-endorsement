@@ -1,0 +1,35 @@
+{% extends wrapper_template %}
+{% load static %}
+{% block content %}
+<style>
+.current_message { background-color: #fbfbe3; }
+h4 {font-weight: 900;}
+</style>
+<div class="container" style="max-width: 800px;">
+<h2>Provisioned User Search</h2>
+
+<form>
+  {% csrf_token %}
+  <div class="form-inline">
+    <label for="endorsee">Provisionee:</label>
+    <input type="text" class="form-control" id="endorsee" size="20">
+    <button type="button" name="SearchEndorsee" id="search_endorsee" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching Provsionees">Search</button>
+  </div>
+</form>
+
+<div id="endorsees">
+</div>
+
+</div>
+{% include "handlebars/admin/endorsees.html" %}
+{% endblock %}
+
+{% block extra_js%}
+<script src="{% static "endorsement/js/endorsee.js" %}"></script>
+<script src="{% static "vendor/js/moment.2.8.3.min.js" %}"></script>
+
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript">
+$('head').append($('<link rel="stylesheet" type="text/css" /><link rel="stylesheet" href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}">').attr('href', 'https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css'));
+</script>
+{% endblock %}

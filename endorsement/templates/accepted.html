@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Provisioning Accepted{% endblock title %}
+
+{% block content %}
+    <div role="main" aria-labelledby="sea-accepted">
+        <div class="card">
+          <h2 id="sea-accepted">Provisioning Accepted</h2>
+            <p>Our records show that you've already accepted the Provisioning Request associated with this url.  If you have have reached this page in error or have questions contact help@uw.edu</p>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static "endorsement/js/main.js" %}"></script>
+{% endblock %}

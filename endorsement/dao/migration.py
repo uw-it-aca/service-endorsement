@@ -3,7 +3,7 @@ import traceback
 from endorsement.util.log import log_exception
 from endorsement.dao.gws import get_endorser_endorsees
 from endorsement.dao.user import get_endorsee_model, get_endorser_model
-from endorsement.dao.endorse import store_endorsement
+from endorsement.dao.endorse import store_office365_endorsement
 
 
 logger = logging.getLogger(__name__)
@@ -22,10 +22,8 @@ def migrate_msca_endorsements():
         endorser_netid = item.get("endorser")
         endorsee_list = item.get("endorsees")
         try:
-            endorser, created = get_endorser_model(endorser_netid)
-            if created:
-                logger.info("Create endorser: %s" % endorser)
-                total_migrated_endorser = total_migrated_endorser + 1
+            endorser = get_endorser_model(endorser_netid)
+            total_migrated_endorser = total_migrated_endorser + 1
         except Exception:
             log_exception(
                 logger,
@@ -39,9 +37,7 @@ def migrate_msca_endorsements():
 
         for netid in endorsee_list:
             try:
-                endorsee, created = get_endorsee_model(netid)
-                if created:
-                    logger.info("Create endorsee: %s" % endorsee)
+                endorsee = get_endorsee_model(netid)
             except Exception:
                 log_exception(
                     logger,
@@ -49,9 +45,7 @@ def migrate_msca_endorsements():
                     traceback.format_exc())
                 continue
 
-            en, created = store_endorsement(endorser, endorsee)
-            if created:
-                logger.info("Create endorsement: %s" % en)
-                total_migrated_endorsements = total_migrated_endorsements + 1
+            store_office365_endorsement(endorser, endorsee, 'migration')
+            total_migrated_endorsements = total_migrated_endorsements + 1
 
     return total_migrated_endorser, total_migrated_endorsements

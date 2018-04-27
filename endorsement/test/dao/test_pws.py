@@ -1,7 +1,8 @@
 from restclients_core.exceptions import (
     DataFailureException, InvalidNetID)
 from endorsement.dao.pws import is_renamed_uwnetid,\
-    get_endorser_regid, get_endorsee_data
+    get_endorser_data, get_endorsee_data
+from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.test.dao import TestDao
 
 
@@ -19,25 +20,28 @@ class TestPwsDao(TestDao):
         self.assertTrue(is_renamed_uwnetid("endorsee5"))
 
     def test_get_endorsee_data(self):
-        uwregid, display_anme = get_endorsee_data("endorsee1")
-        self.assertEqual(uwregid, "50000000000000000000000000000001")
-        self.assertEqual(display_anme, "Endorsee I")
+        uwregid, display_anme, email = get_endorsee_data("endorsee2")
+        self.assertEqual(uwregid, "BE43A1115A014E5595703379511536E1")
+        self.assertEqual(display_anme, "SIMON ENDORSEE2")
+        self.assertEqual(email, "endorsee2@uw.edu")
 
         self.assertRaises(InvalidNetID,
                           get_endorsee_data,
                           "notareal_uwnetid")
-        self.assertRaises(DataFailureException,
+        self.assertRaises(UnrecognizedUWNetid,
                           get_endorsee_data,
                           "nomockid")
 
-    def test_get_endorser_regid(self):
-        self.assertEqual(get_endorser_regid('jstaff'),
+    def test_get_endorser_data(self):
+        regid, display_name = get_endorser_data('jstaff')
+        self.assertEqual(regid,
                          "10000000000000000000000000000001")
-        self.assertEqual(get_endorser_regid('jfaculty'),
+        regid, display_name = get_endorser_data('jfaculty')
+        self.assertEqual(regid,
                          "10000000000000000000000000000002")
         self.assertRaises(InvalidNetID,
-                          get_endorser_regid,
+                          get_endorser_data,
                           "notareal_uwnetid")
-        self.assertRaises(DataFailureException,
-                          get_endorser_regid,
+        self.assertRaises(UnrecognizedUWNetid,
+                          get_endorser_data,
                           "nomockid")

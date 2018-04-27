@@ -1,0 +1,38 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "validation_partial" %}
+
+      {{#if eligible}}
+         {{#if active}}
+            <td class="col-border-left centered">
+            {{#if self_endorsed}}
+               <i class="fa fa-check success"></i>
+            {{else}}
+               <input type="checkbox" name="endorse_{{svc}}" value="{{netid}}" />
+            {{/if}}
+            </td>
+            <td>
+              {{#if endorsers}}
+              Service already provisioned by
+              <ul>
+                {{#each endorsers}}
+                <li>{{this}}</li>
+                {{/each}}
+              </ul>
+              {{else}}
+              Already eligible for this service {{#unless active}}due to existing affiliation {{/unless}}
+              {{/if}}
+            </td>
+         {{else}}
+           <td  class="col-border-left centered">
+             <input type="checkbox" name="endorse_{{svc}}" value="{{netid}}" checked="checked" />
+           </td>
+           <td></td>
+         {{/if}}
+      {{else}}
+        <td class="invalid-netid centered"><i class="fa fa-minus-circle"></i></td>
+        <td>
+          Not eligible to have this service provisioned
+        </td>
+      {{/if}}
+
+{% endtplhandlebars %}
