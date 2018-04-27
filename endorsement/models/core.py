@@ -40,6 +40,7 @@ class Endorser(models.Model):
         return {
             "netid": self.netid,
             "regid": self.regid,
+            "name": self.display_name,
             "is_valid": self.is_valid,
             "last_visit": datetime_to_str(self.last_visit)
             }
