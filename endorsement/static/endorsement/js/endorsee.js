@@ -8,6 +8,7 @@ $(window.document).ready(function() {
 
 var registerEvents = function() {
     $('button#search_endorsee').on('click', function (e) {
+        $(this).button('loading');
         searchEndorsee();
     });
 
@@ -90,6 +91,9 @@ var searchEndorsee = function () {
         },
         error: function(xhr, status, error) {
             displayEndorsedUWNetIDError(xhr.responseJSON);
+        },
+        complete: function () {
+            $('button#search_endorsee').button('reset');
         }
     });
 };
