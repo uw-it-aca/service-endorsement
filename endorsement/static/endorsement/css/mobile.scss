@@ -21,4 +21,4 @@ tr.unchecked a:hover { text-decoration: none; color: #0077c2; }
 .btn.button-link { color: #0077c2; }
 
 /* endorsee accepts terms */
-div.card { padding-top: 20px; min-height: 300px;}
+div.card, div.error-container div.card { padding-top: 20px; min-height: 300px;}
