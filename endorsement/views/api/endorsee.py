@@ -2,8 +2,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from endorsement.views.decorators import admin_required
-from endorsement.dao.user import get_endorsee_model
-from endorsement.dao.endorse import get_endorsements_for_endorsee
+from endorsement.dao.endorse import get_endorsements_for_endorsee_re
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time
 from endorsement.views.rest_dispatch import RESTDispatch
@@ -22,17 +21,12 @@ class Endorsee(RESTDispatch):
     def get(self, request, *args, **kwargs):
         timer = Timer()
 
-        try:
-            endorsee_netid = self.kwargs['endorsee']
-            endorsee = get_endorsee_model(endorsee_netid)
-            endorsees = {
-                'endorsee': endorsee.netid,
-                'endorsements': []
-            }
-        except UnrecognizedUWNetid as ex:
-            return self.error_response(401, "Not a valid userid: %s" % ex)
+        endorsee_regex = self.kwargs['endorsee']
+        endorsees = {
+            'endorsements': []
+        }
 
-        for er in get_endorsements_for_endorsee(endorsee):
+        for er in get_endorsements_for_endorsee_re(endorsee_regex):
             endorsees['endorsements'].append(er.json_data())
 
         log_resp_time(logger, "endorsee", timer)

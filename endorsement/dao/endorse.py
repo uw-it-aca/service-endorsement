@@ -6,7 +6,7 @@ from uw_uwnetid.category import update_catagory
 from uw_uwnetid.subscription import (
     get_netid_subscriptions, update_subscription)
 from endorsement.dao.user import get_endorsee_model
-from endorsement.models import EndorsementRecord
+from endorsement.models import Endorsee, EndorsementRecord
 from endorsement.exceptions import (
     NoEndorsementException, CategoryFailureException,
     SubscriptionFailureException)
@@ -71,6 +71,12 @@ def get_endorsements_by_endorser(endorser):
 
 def get_endorsements_for_endorsee(endorsee):
     return EndorsementRecord.objects.filter(endorsee=endorsee)
+
+
+def get_endorsements_for_endorsee_re(endorsee_regex):
+    endorsees = Endorsee.objects.filter(
+        netid__regex=r'^%s$' % endorsee_regex).values_list('id', flat=True)
+    return EndorsementRecord.objects.filter(endorsee_id__in=endorsees)
 
 
 def initiate_office365_endorsement(endorser, endorsee, reason):

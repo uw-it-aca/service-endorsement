@@ -5,8 +5,9 @@
 <table id="endorsee-table" class="endorsee-table table table-striped">
   <thead>
     <tr>
-      <th>Service</th>
+      <th>Provisionee</th>
       <th>Provisioner</th>
+      <th>Service</th>
       <th>Reason</th>
       <th>Email Date</th>
       <th>Provisioned Date</th>
@@ -15,8 +16,9 @@
   <tbody class="scrollable">
     {{#each endorsements.endorsements}}
     <tr>
-      <td>{{category_name}}</td>
+      <td>{{endorsee.netid}}</td>
       <td>{{endorser.netid}}</td>
+      <td>{{category_name}}</td>
       <td>{{reason}}</td>
       <td>{{datetime_emailed}}</td>
       <td>
