@@ -499,7 +499,7 @@ var displayEndorsedUWNetIDs = function(endorsed) {
 
     $('div.tab-pane#endorsed').html(template(context));
     $('div.tab-pane#endorsed ul').each(function () {
-        var pending = $('.pending-endorsee', this);
+        var pending = $('.current-endorsee', this);
 
         if (pending.length) {
             pending.appendTo($(this));
