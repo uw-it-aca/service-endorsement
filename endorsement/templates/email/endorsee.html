@@ -1,30 +1,26 @@
 <p>The UW employee {{ endorser_name }} ({{ endorser.netid }}) has requested that you be given access through the University of Washington to
-  {%if o365_endorsed %}UW Microsoft Office 365{% endif %}
-  {%if both_endorsed %} and {% endif %}
-  {%if google_endorsed %}UW G Suite (Google){% endif %}.
+  {%if o365_endorsed %}UW Office 365{% endif %}{%if both_endorsed %} and {% endif %}{%if google_endorsed %}UW G Suite (Google){% endif %}.
 </p>
 
 <p>
-    <span style="font-weight: 700;">Your use of these services is bound by UW-IT’s Acceptable Use Policy, as well as being subject to state and federal law, and to other UW policies and procedures.</span> For more information, visit UW-IT’s Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/">http://itconnect.uw.edu/work/appropriate-use/</a>.
+    <span style="font-weight: 700;">Your use of these services is bound by UW-IT’s Appropriate Use policy, as well as being subject to state and federal law, and to other UW policies and procedures.</span> For more information, visit UW-IT’s Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/">http://itconnect.uw.edu/work/appropriate-use/</a>.
 </p>
 
-<p>To access the service{%if both_endorsed%}s{% endif %}, you must first agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to your use of UW computing resources, including your use of  {%if o365_endorsed %}UW Microsoft{% endif %}
-  {%if both_endorsed %} and {% endif %}
-  {%if google_endorsed %}Google{% endif %}.
+<p>To access the service{%if both_endorsed%}s{% endif %}, you must first agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to your use of UW computing resources, including your use of  {%if o365_endorsed %}UW Office 365{% endif %}{%if both_endorsed %} and {% endif %}{%if google_endorsed %}UW G Suite{% endif %}.
 </p>
 
 <p>
     {%if both_endorsed %}You must agree to the policies of each service separately.{% endif %}
 </p>
 
-<ul>
+<ul style="list-style-type: none;">
   {%if google_endorsed %}
     <li>
-        <a href="{{ app_server_base }}{% url 'accept_view' google_accept_id %}">Review and agree to the policies in order to access UW Google Tools (G Suite).</a></li>
+        <a href="{{ app_server_base }}{% url 'accept_view' google_accept_id %}">Review and agree to the policies in order to access UW G Suite (Google).</a></li>
   {% endif %}
   {%if o365_endorsed %}
     <li>
-        <a href="{{ app_server_base }}{% url 'accept_view' o365_accept_id %}">Review and agree to the policies in order to access to Office 365.</a>
+        <a href="{{ app_server_base }}{% url 'accept_view' o365_accept_id %}">Review and agree to the policies in order to access to UW Office 365.</a>
     </li>
   {% endif %}
 </ul>

@@ -7,12 +7,12 @@
     <tr>
       <th>UW NetID</th>
       <th>Name</th>
-      <th class="col-border-left">Office 365</th>
+      <th class="col-border-left">UW Office 365</th>
       <th>Your provision reason</th>
-      <th><!-- {{#if can_revoke}}Revoke Office365{{/if}} --></th>
-      <th class="col-border-left">Google</th>
+      <th><!-- {{#if can_revoke}}Revoke UW Office 365{{/if}} --></th>
+      <th class="col-border-left">UW G Suite (Google)</th>
       <th>Your provision reason</th>
-      <th><!-- {{#if can_revoke}}Revoke Google{{/if}} --></th>
+      <th><!-- {{#if can_revoke}}Revoke UW G Suite{{/if}} --></th>
     </tr>
   </thead>
   {{#each endorsed.endorsed}}
@@ -79,7 +79,6 @@
                   {{this.netid}}
                   {{#if ../google.accept_url}}
                   {{#equals this.netid ../../../../google.endorser.netid}}
-                      <!-- this is the one on the "manage" page -->
                   <br />Pending acceptance
                       <br /><a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ ../../../google.accept_url }}" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy acceptance link</a>
                   {{/equals}}
