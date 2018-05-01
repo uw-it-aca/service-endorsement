@@ -28,7 +28,9 @@
             {{#if ../../../../can_revoke}}
               Provisioned by <ul>
               {{#each o365.endorsers}}
-                <li>
+                <li {{#if ../o365.accept_url}}
+                    {{#equals this.netid ../../../o365.endorser.netid}}class="pending-endorsee"{{/equals}}
+                    {{/if}}>
                   <span style="white-space: nowrap;">
                   {{this.netid}}
                   {{#if ../o365.accept_url}}
@@ -74,7 +76,9 @@
             {{#if ../../../../can_revoke}}
               Provisioned by <ul>
               {{#each google.endorsers}}
-                <li>
+                <li {{#if ../google.accept_url}}
+                    {{#equals this.netid ../../../google.endorser.netid}}class="pending-endorsee"{{/equals}}
+                    {{/if}}>
                   <span style="white-space: nowrap;">
                   {{this.netid}}
                   {{#if ../google.accept_url}}
