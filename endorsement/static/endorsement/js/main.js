@@ -498,6 +498,13 @@ var displayEndorsedUWNetIDs = function(endorsed) {
     };
 
     $('div.tab-pane#endorsed').html(template(context));
+    $('div.tab-pane#endorsed ul').each(function () {
+        var pending = $('.current-endorsee', this);
+
+        if (pending.length) {
+            pending.appendTo($(this));
+        }
+    });
 };
 
 var getEndorsedUWNetIDs = function() {
