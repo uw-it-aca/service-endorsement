@@ -8,7 +8,6 @@ from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model, get_endorsee_email_model)
 from endorsement.dao.endorse import (
     store_office365_endorsement, store_google_endorsement)
-from endorsement.dao.notification import notify_endorsees
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)

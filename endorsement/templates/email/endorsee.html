@@ -1,4 +1,4 @@
-<p>The UW employee {{ endorser_name }} ({{ endorser.netid }}) has requested that you be given access through the University of Washington to
+<p>The UW employee {{ endorser_name }} ({{ endorser_netid }}) has requested that you be given access through the University of Washington to
   {%if o365_endorsed %}UW Microsoft Office 365{% endif %}
   {%if both_endorsed %} and {% endif %}
   {%if google_endorsed %}UW G Suite (Google){% endif %}.
@@ -20,11 +20,11 @@
 <ul>
   {%if google_endorsed %}
     <li>
-        <a href="{{ app_server_base }}{% url 'accept_view' google_accept_id %}">Review and agree to the policies in order to access UW Google Tools (G Suite).</a></li>
+        <a href="{{ google_accept_url }}">Review and agree to the policies in order to access UW Google Tools (G Suite).</a></li>
   {% endif %}
   {%if o365_endorsed %}
     <li>
-        <a href="{{ app_server_base }}{% url 'accept_view' o365_accept_id %}">Review and agree to the policies in order to access to Office 365.</a>
+        <a href="{{ o365_accept_url }}">Review and agree to the policies in order to access to Office 365.</a>
     </li>
   {% endif %}
 </ul>
