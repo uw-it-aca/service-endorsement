@@ -171,7 +171,7 @@ class EndorsementRecord(models.Model):
         ])
 
     def json_data(self):
-        data = {
+        return {
             "endorser": self.endorser.json_data(),
             "endorsee": self.endorsee.json_data(),
             "category_code": self.category_code,
@@ -181,16 +181,16 @@ class EndorsementRecord(models.Model):
             "datetime_endorsed": datetime_to_str(self.datetime_endorsed),
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
-            "datetime_expired": datetime_to_str(self.datetime_expired)
-            }
+            "datetime_expired": datetime_to_str(self.datetime_expired),
+            "accept_url": self.accept_url()
+        }
 
-        data['accept_url'] = None if (self.datetime_endorsed) else "%s%s" % (
+    def accept_url(self):
+        return None if (self.datetime_endorsed) else "%s%s" % (
             getattr(settings, "APP_SERVER_BASE",
                     "http://provision-test.uw.edu"),
             reverse('accept_view',
                     kwargs={'accept_id': self.accept_id}))
-
-        return data
 
     class Meta:
         unique_together = (("endorser", "category_code", "endorsee"),)

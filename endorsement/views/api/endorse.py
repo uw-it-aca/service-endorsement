@@ -41,10 +41,11 @@ class Endorse(RESTDispatch):
             return invalid_endorser(logger, timer)
 
         endorser = get_endorser_model(netid)
+        endorser_json = endorser.json_data()
         endorser_pws = get_person(netid)
 
         endorsed = {
-            'endorser': endorser.json_data(),
+            'endorser': endorser_json,
             'endorser_name': endorser_pws.display_name,
             'endorser_email': endorser_pws.email1,
             'endorsed': {}
@@ -80,7 +81,7 @@ class Endorse(RESTDispatch):
                 except (CategoryFailureException,
                         SubscriptionFailureException) as ex:
                     endorsements['o365'] = {
-                        'endorser': endorser.json_data(),
+                        'endorser': endorser_json,
                         'endorsee': endorsee.json_data(),
                         'error': "%s" % (ex)
                     }
@@ -96,7 +97,7 @@ class Endorse(RESTDispatch):
                     else:
                         clear_google_endorsement(endorser, endorsee)
                         endorsements['google'] = {
-                            'endorser': endorser.json_data(),
+                            'endorser': endorser_json,
                             'endorsee': endorsee.json_data(),
                             'endorsed': False
                         }
@@ -106,7 +107,7 @@ class Endorse(RESTDispatch):
                 except (CategoryFailureException,
                         SubscriptionFailureException) as ex:
                     endorsements['google'] = {
-                        'endorser': endorser.json_data(),
+                        'endorser': endorser_json,
                         'endorsee': endorsee.json_data(),
                         'error': "%s" % (ex)
                     }
@@ -119,7 +120,5 @@ class Endorse(RESTDispatch):
                 }
 
             endorsed['endorsed'][endorsee.netid] = endorsements
-
-        notify_endorsees(endorser, endorsed['endorsed'])
 
         return self.json_response(endorsed)

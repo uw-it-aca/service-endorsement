@@ -242,21 +242,8 @@ def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
         raise SubscriptionFailureException('%s' % ex)
 
 
-def record_mail_sent(endorser, endorsement):
+def record_mail_sent(id):
     emailed_date = timezone.now()
 
-    if endorsement['o365']['endorsed']:
-        EndorsementRecord.objects.filter(
-            category_code=EndorsementRecord.OFFICE_365_ENDORSEE,
-            endorser=endorser,
-            endorsee=get_endorsee_model(
-                endorsement['o365']['endorsee']['netid'])).update(
-                    datetime_emailed=emailed_date)
-
-    if endorsement['google']['endorsed']:
-        EndorsementRecord.objects.filter(
-            category_code=EndorsementRecord.GOOGLE_SUITE_ENDORSEE,
-            endorser=endorser,
-            endorsee=get_endorsee_model(
-                endorsement['google']['endorsee']['netid'])).update(
-                    datetime_emailed=emailed_date)
+    EndorsementRecord.objects.filter(pk=int(id)).update(
+        datetime_emailed=emailed_date)
