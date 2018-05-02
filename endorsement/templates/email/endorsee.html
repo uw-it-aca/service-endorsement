@@ -16,12 +16,12 @@
 <ul style="list-style-type: none;">
     {%if o365_endorsed %}
     <li>
-        <a href="{{ app_server_base }}{% url 'accept_view' o365_accept_id %}">Review and agree to the policies in order to access UW Office 365.</a>
+        <a href="{{ o365_accept_url }}">Review and agree to the policies in order to access UW Office 365.</a>
     </li>
   {% endif %}
     {%if google_endorsed %}
     <li>
-        <a href="{{ app_server_base }}{% url 'accept_view' google_accept_id %}">Review and agree to the policies in order to access UW G Suite (Google).</a>
+        <a href="{{ google_accept_url }}">Review and agree to the policies in order to access UW G Suite (Google).</a>
     </li>
   {% endif %}
 
@@ -31,19 +31,11 @@
 <ul style="list-style-type: none;">
   {%if google_endorsed %}
     <li>
-<<<<<<< HEAD
         <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate">Get started using UW G Suite</a> </li>
   {% endif %}
   {%if o365_endorsed %}
     <li>
         <a href="FIX ME">Get started using UW Office 365</a>
-=======
-        <a href="{{ google_accept_url }}">Review and agree to the policies in order to access UW Google Tools (G Suite).</a></li>
-  {% endif %}
-  {%if o365_endorsed %}
-    <li>
-        <a href="{{ o365_accept_url }}">Review and agree to the policies in order to access to Office 365.</a>
->>>>>>> master
     </li>
   {% endif %}
 </ul>
