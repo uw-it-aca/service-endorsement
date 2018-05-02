@@ -14,15 +14,28 @@
 </p>
 
 <ul style="list-style-type: none;">
+    {%if o365_endorsed %}
+    <li>
+        <a href="{{ app_server_base }}{% url 'accept_view' o365_accept_id %}">Review and agree to the policies in order to access UW Office 365.</a>
+    </li>
+  {% endif %}
+    {%if google_endorsed %}
+    <li>
+        <a href="{{ app_server_base }}{% url 'accept_view' google_accept_id %}">Review and agree to the policies in order to access UW G Suite (Google).</a>
+    </li>
+  {% endif %}
+
+</ul>
+
+<p>Once you have agreed to the policies, the activation process will likely be completed within two hours, but it may take up to 24 hours.</p>
+<ul style="list-style-type: none;">
   {%if google_endorsed %}
     <li>
-        <a href="{{ app_server_base }}{% url 'accept_view' google_accept_id %}">Review and agree to the policies in order to access UW G Suite (Google).</a></li>
+        <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate">Get started using UW G Suite</a> </li>
   {% endif %}
   {%if o365_endorsed %}
     <li>
-        <a href="{{ app_server_base }}{% url 'accept_view' o365_accept_id %}">Review and agree to the policies in order to access to UW Office 365.</a>
+        <a href="FIX ME">Get started using UW Office 365</a>
     </li>
   {% endif %}
 </ul>
-
-
