@@ -47,7 +47,7 @@ def store_endorsement(endorser, endorsee, reason, category_code):
 
 
 def clear_endorsement(endorser, endorsee, category_code):
-    logger.info('former category %s for %s by %s' % (
+    logger.info('clearing record %s for %s by %s' % (
         category_code, endorsee.netid, endorser.netid))
 
     EndorsementRecord.objects.filter(
@@ -131,7 +131,14 @@ def clear_office365_endorsement(endorser, endorsee):
     Upon failure to renew, the endorsement tools should:
       *  mark category 235 it former (status 3).
     """
-    _former_category(endorsee.netid, Category.OFFICE_365_ENDORSEE)
+    if EndorsementRecord.objects.filter(
+            endorsee=endorsee,
+            category_code=Category.OFFICE_365_ENDORSEE).count() <= 1:
+        _former_category(endorsee.netid, Category.OFFICE_365_ENDORSEE)
+        logger.info('former category %s for %s by %s' % (
+            Category.OFFICE_365_ENDORSEE,
+            endorsee.netid, endorser.netid))
+
     clear_endorsement(
         endorser, endorsee, EndorsementRecord.OFFICE_365_ENDORSEE)
 
@@ -141,7 +148,14 @@ def clear_google_endorsement(endorser, endorsee):
     Upon failure to renew, the endorsement tools should:
       *  mark category 234 it former (status 3).
     """
-    _former_category(endorsee.netid, Category.GOOGLE_SUITE_ENDORSEE)
+    if EndorsementRecord.objects.filter(
+            endorsee=endorsee,
+            category_code=Category.GOOGLE_SUITE_ENDORSEE).count() <= 1:
+        _former_category(endorsee.netid, Category.GOOGLE_SUITE_ENDORSEE)
+        logger.info('former category %s for %s by %s' % (
+            Category.GOOGLE_SUITE_ENDORSEE,
+            endorsee.netid, endorser.netid))
+
     clear_endorsement(
         endorser, endorsee, EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
@@ -242,21 +256,8 @@ def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
         raise SubscriptionFailureException('%s' % ex)
 
 
-def record_mail_sent(endorser, endorsement):
+def record_mail_sent(id):
     emailed_date = timezone.now()
 
-    if endorsement['o365']['endorsed']:
-        EndorsementRecord.objects.filter(
-            category_code=EndorsementRecord.OFFICE_365_ENDORSEE,
-            endorser=endorser,
-            endorsee=get_endorsee_model(
-                endorsement['o365']['endorsee']['netid'])).update(
-                    datetime_emailed=emailed_date)
-
-    if endorsement['google']['endorsed']:
-        EndorsementRecord.objects.filter(
-            category_code=EndorsementRecord.GOOGLE_SUITE_ENDORSEE,
-            endorser=endorser,
-            endorsee=get_endorsee_model(
-                endorsement['google']['endorsee']['netid'])).update(
-                    datetime_emailed=emailed_date)
+    EndorsementRecord.objects.filter(pk=int(id)).update(
+        datetime_emailed=emailed_date)

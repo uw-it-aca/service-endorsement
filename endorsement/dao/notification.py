@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
-from endorsement.dao.pws import get_person
+from endorsement.models import EndorsementRecord
+from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao.endorse import record_mail_sent
 from endorsement.dao import display_datetime
 from datetime import datetime
@@ -11,36 +12,34 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def create_endorsee_message(endorser, endorsement):
+def create_endorsee_message(endorser):
     sent_date = datetime.now()
     params = {
-        "endorser_name": get_person(endorser.netid).display_name,
-        "endorsed_date": display_datetime(sent_date),
-        "app_server_base": getattr(settings, "APP_SERVER_BASE",
-                                   "http://provision-test.uw.edu")
+        "endorser_netid": endorser['netid'],
+        "endorser_name": endorser['display_name'],
+        "endorsed_date": display_datetime(sent_date)
     }
 
     services = ""
     try:
-        if endorsement['o365']['endorsed']:
-            services += "UW Microsoft"
-            params['o365_endorsed'] = True
-            params['o365_accept_id'] = endorsement['o365']['accept_id']
+        params['o365_accept_url'] =\
+            endorser['services']['o365']['accept_url']
+        services += "UW Microsoft"
+        params['o365_endorsed'] = True
     except KeyError:
         params['o365_endorsed'] = False
-        pass
 
     try:
-        if endorsement['google']['endorsed']:
-            if len(services):
-                services += " and "
+        params['google_accept_url'] =\
+            endorser['services']['google']['accept_url']
 
-            services += "Google"
-            params['google_endorsed'] = True
-            params['google_accept_id'] = endorsement['google']['accept_id']
+        if len(services):
+            services += " and "
+
+        services += "Google"
+        params['google_endorsed'] = True
     except KeyError:
         params['google_endorsed'] = False
-        pass
 
     params['both_endorsed'] = (params['google_endorsed'] and
                                params['o365_endorsed'])
@@ -55,39 +54,68 @@ def create_endorsee_message(endorser, endorsement):
             loader.render_to_string(html_template, params))
 
 
-def notify_endorsees(endorser, endorsements):
+def notify_endorsees():
     sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
                      "provision-noreply@uw.edu")
 
-    for netid, endorsement in endorsements.items():
-        endorsed = False
-        for e in ['o365', 'google']:
-            try:
-                if endorsement[e]['endorsed']:
-                    endorsed = True
-            except KeyError:
-                pass
-
-        if not endorsed:
-            continue
-
-        (subject, text_body, html_body) = create_endorsee_message(
-            endorser, endorsement)
-
-        recipients = [endorsement['email']]
-
-        message = EmailMultiAlternatives(
-            subject, text_body, sender, recipients,
-            headers={'Precedence': 'bulk'}
-        )
-        message.attach_alternative(html_body, "text/html")
-
+    endorsements = {}
+    for er in EndorsementRecord.objects.filter(
+            datetime_emailed__isnull=True,
+            datetime_endorsed__isnull=True):
         try:
-            message.send()
-            record_mail_sent(endorser, endorsement)
-            log_message = "Submission email sent"
+            email = get_endorsee_email_model(er.endorsee).email
         except Exception as ex:
-            log_message = "Submission email failed: %s" % ex
+            logger.error("Notify get email failed: %s, netid: %s" % (
+                ex, er.endorsee))
 
-        logger.info("%s, To: %s, Status: %s" % (
-            log_message, endorsement['email'], subject))
+        if email not in endorsements:
+            endorsements[email] = {
+                'endorsers': {}
+            }
+
+        if (er.endorser.netid not in endorsements[email]['endorsers']):
+            endorsements[email]['endorsers'][er.endorser.netid] = {
+                'netid': er.endorser.netid,
+                'display_name': er.endorser.display_name,
+                'services': {}
+            }
+
+        s = endorsements[email]['endorsers'][er.endorser.netid]['services']
+        if er.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
+            s['o365'] = {
+                'id': er.id,
+                'accept_url': er.accept_url()
+            }
+
+        if er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
+            s['google'] = {
+                'id': er.id,
+                'accept_url': er.accept_url()
+            }
+
+        endorsements[email]['endorsers'][er.endorser.netid]['services'] = s
+
+    for email, endorsers in endorsements.items():
+        for endorser_netid, endorsers in endorsers['endorsers'].items():
+            (subject, text_body, html_body) = create_endorsee_message(
+                endorsers)
+
+            recipients = [email]
+            message = EmailMultiAlternatives(
+                subject, text_body, sender, recipients,
+                headers={'Precedence': 'bulk'}
+            )
+            message.attach_alternative(html_body, "text/html")
+
+            try:
+                message.send()
+
+                for service, data in endorsers['services'].items():
+                    record_mail_sent(data['id'])
+
+                logger.info("Submission email sent To: %s, Status: %s" % (
+                    email, subject))
+            except Exception as ex:
+                logger.error(
+                    "Submission email failed: %s, To: %s, Status: %s" % (
+                        ex, email, subject))
