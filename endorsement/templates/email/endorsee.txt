@@ -13,3 +13,8 @@ Once you have agreed to the policies, the activation process will likely be comp
 
 {%if o365_endorsed %}Get started using UW Office 365 here: http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/{% endif %}
 {%if google_endorsed %}Get started using UW G Suite here: https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate{% endif %}
+
+Thank you,
+
+UW-IT Help Center
+help@uw.edu
