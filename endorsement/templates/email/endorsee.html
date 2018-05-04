@@ -1,5 +1,6 @@
+
 <p>The UW employee {{ endorser_name }} ({{ endorser_netid }}) has requested that you be given access through the University of Washington to
-  {%if o365_endorsed %}UW Office 365{% endif %}{%if both_endorsed %} and {% endif %}{%if google_endorsed %}UW G Suite (Google){% endif %}.
+    {%if o365_endorsed %}<strong>UW Office 365</strong>{% endif %}{%if both_endorsed %} and {% endif %}{%if google_endorsed %}<strong>UW G Suite (Google)</strong>{% endif %}.
 </p>
 
 <p>
@@ -28,6 +29,7 @@
 </ul>
 
 <p>Once you have agreed to the policies, the activation process will likely be completed within two hours, but it may take up to 24 hours.</p>
+
 <ul style="list-style-type: none;">
   {%if o365_endorsed %}
     <li>
@@ -36,8 +38,13 @@
   {% endif %}
   {%if google_endorsed %}
     <li>
-        <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate">Get started using UW G Suite</a> </li>
+        <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate">Get started using UW G Suite</a>
+    </li>
   {% endif %}
-
 </ul>
 
+<p>
+    Thank you,<br />
+    UW-IT Help Center<br />
+    help@uw.edu
+</p>
