@@ -166,7 +166,7 @@ def is_permitted(endorser, endorsee, subscription_codes):
         response = get_netid_subscriptions(endorsee.netid, subscription_codes)
         for sub in response:
             if (sub.subscription_code in subscription_codes and
-                sub.status_code != Subscription.STATUS_UNPERMITTED):
+                    sub.status_code != Subscription.STATUS_UNPERMITTED):
                 subscription_codes.remove(sub.subscription_code)
 
         active = len(subscription_codes) == 0
