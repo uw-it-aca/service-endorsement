@@ -251,39 +251,38 @@ var enableCheckEligibility = function() {
 };
 
 var enableEndorsability = function() {
-    var endorsable = false,
-        netids = false,
+    var $netids = $('.endorsed_netid'),
+        endorsable = $netids.length > 0,
+        unchecked = 0,
         $button = $('button#confirm_endorsements');
 
-    $('.endorsed_netid').each(function () {
+    $netids.each(function () {
         var $row = $(this).closest('tr');
 
         if ($('input[type="checkbox"]:checked', $row).length > 0) {
             $row.removeClass('unchecked');
             $(".email-editor", $row).removeAttr('disabled');
-            netids = true;
-            if (validEmailAddress($('.shown-email', $row).html())) {
-                var reason = getReason($row);
-                if (reason.length > 0) {
-                    endorsable = true;
-                }
+            if (!validEmailAddress($('.shown-email', $row).html()) ||
+                    getReason($row).length <= 0) {
+                endorsable = false;
             }
         } else {
+            unchecked += 1;
             $row.addClass('unchecked');
             $(".email-editor", $row).attr('disabled', 'disabled');
         }
     });
 
-    if (endorsable) {
+    if (endorsable && unchecked < $netids.length) {
         $button.removeAttr('disabled');
     } else {
         $button.attr('disabled', 'disabled');
     }
 
-    if (netids) {
-        $button.removeClass('no_netids');
-    } else {
+    if (unchecked == $netids.length) {
         $button.addClass('no_netids');
+    } else {
+        $button.removeClass('no_netids');
     }
 };
 
