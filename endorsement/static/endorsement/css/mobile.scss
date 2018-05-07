@@ -12,9 +12,11 @@ $red: #d9534f;
 legend { border-bottom: 0; font-size: 16px; font-weight: bold; margin-bottom: 10px; }
 
 .col-border-left { border-left: 2px solid #ddd; }
-tr.unchecked { opacity: .5; font-style: italic; }
-tr.unchecked a { cursor: not-allowed; }
-tr.unchecked a:hover { text-decoration: none; color: #0077c2; }
+tr.unchecked {
+    td:nth-child(-n+4) {opacity: .5; font-style: italic;}
+    a { cursor: not-allowed; }
+    a:hover { text-decoration: none; color: #0077c2; }
+}
 
 .btn-primary:disabled { background-color: #777; border-color: #777; }
 .btn-primary:disabled:hover { background-color: #777; border-color: #777; }
