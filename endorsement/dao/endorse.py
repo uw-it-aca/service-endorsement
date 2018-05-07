@@ -30,9 +30,11 @@ def initiate_endorsement(endorser, endorsee, reason, category_code):
     return en
 
 
-def store_endorsement(endorser, endorsee, reason, category_code):
-    logger.info('activate category %s for %s because %s by %s' % (
-        category_code, endorsee.netid, reason, endorser.netid))
+def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
+    logger.info('activate category %s for %s%s because %s by %s' % (
+        category_code, endorsee.netid,
+        " (by %s)" % acted_as if acted_as else "",
+        reason, endorser.netid))
 
     en, created = EndorsementRecord.objects.update_or_create(
         endorser=endorser,
@@ -40,7 +42,8 @@ def store_endorsement(endorser, endorsee, reason, category_code):
         reason=reason,
         endorsee=endorsee,
         defaults={
-            'datetime_endorsed': timezone.now()
+            'datetime_endorsed': timezone.now(),
+            'acted_as': acted_as
         })
 
     return en
@@ -87,7 +90,7 @@ def initiate_office365_endorsement(endorser, endorsee, reason):
         endorser, endorsee, reason, EndorsementRecord.OFFICE_365_ENDORSEE)
 
 
-def store_office365_endorsement(endorser, endorsee, reason):
+def store_office365_endorsement(endorser, endorsee, acted_as, reason):
     """
     To endorse O365, the tools should:
       *  Add category 235, status 1 for given endorsee
@@ -102,7 +105,8 @@ def store_office365_endorsement(endorser, endorsee, reason):
                             ])
 
     return store_endorsement(
-        endorser, endorsee, reason, EndorsementRecord.OFFICE_365_ENDORSEE)
+        endorser, endorsee, acted_as, reason,
+        EndorsementRecord.OFFICE_365_ENDORSEE)
 
 
 def initiate_google_endorsement(endorser, endorsee, reason):
@@ -113,7 +117,7 @@ def initiate_google_endorsement(endorser, endorsee, reason):
         endorser, endorsee, reason, EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
 
-def store_google_endorsement(endorser, endorsee, reason):
+def store_google_endorsement(endorser, endorsee, acted_as, reason):
     """
     The expected life cycle for a UW G Suite endorsement would be:
       *  Add category 234, status 1 record for given endorsee
@@ -122,7 +126,7 @@ def store_google_endorsement(endorser, endorsee, reason):
     _activate_category(endorsee.netid, Category.GOOGLE_SUITE_ENDORSEE)
     _activate_subscriptions(endorsee.netid, endorser.netid,
                             [Subscription.SUBS_CODE_GOOGLE_APPS])
-    return store_endorsement(endorser, endorsee, reason,
+    return store_endorsement(endorser, endorsee, acted_as, reason,
                              EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
 
