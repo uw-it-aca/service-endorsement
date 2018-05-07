@@ -24,18 +24,6 @@ class Endorser(models.Model):
     is_valid = models.NullBooleanField()
     last_visit = models.DateTimeField(null=True)
 
-    def __eq__(self, other):
-        return other is not None and\
-            self.regid == other.regid
-
-    def __str__(self):
-        return "{%s}" % ', '.join([
-            "netid: %s" % self.netid,
-            "regid: %s" % self.regid,
-            "is_valid: %s" % self.is_valid,
-            "last_visit: %s" % datetime_to_str(self.last_visit)
-        ])
-
     def json_data(self):
         return {
             "netid": self.netid,
@@ -44,6 +32,13 @@ class Endorser(models.Model):
             "is_valid": self.is_valid,
             "last_visit": datetime_to_str(self.last_visit)
             }
+
+    def __eq__(self, other):
+        return other is not None and\
+            self.regid == other.regid
+
+    def __str__(self):
+        return "%s" % self.json_data()
 
     class Meta:
         db_table = 'uw_service_endorsement_endorser'
@@ -64,14 +59,6 @@ class Endorsee(models.Model):
         return other is not None and\
             self.regid == other.regid
 
-    def __str__(self):
-        return "{%s}" % ', '.join([
-            "netid: %s" % self.netid,
-            "regid: %s" % self.regid,
-            "name: %s" % self.display_name,
-            "is_valid: %s" % self.kerberos_active_permitted
-        ])
-
     def json_data(self):
         return {
             "netid": self.netid,
@@ -79,6 +66,9 @@ class Endorsee(models.Model):
             "name": self.display_name,
             "is_valid": self.kerberos_active_permitted
             }
+
+    def __str__(self):
+        return "%s" % self.json_data()
 
     class Meta:
         db_table = 'uw_service_endorsement_endorsee'
@@ -100,6 +90,9 @@ class EndorseeEmail(models.Model):
             "email": self.email
             }
 
+    def __str__(self):
+        return "%s" % self.json_data()
+
     class Meta:
         db_table = 'uw_service_endorsement_endorsee_email'
 
@@ -120,6 +113,7 @@ class EndorsementRecord(models.Model):
     category_code = models.SmallIntegerField(
         choices=CATEGORY_CODE_CHOICES)
     reason = models.CharField(max_length=64, null=True)
+    acted_as = models.SlugField(max_length=32, null=True)
     accept_salt = models.CharField(max_length=32)
     accept_id = models.CharField(max_length=32, null=True)
     datetime_created = models.DateTimeField(null=True)
@@ -152,24 +146,6 @@ class EndorsementRecord(models.Model):
             self.endorser.netid, endorsee_netid,
             self.category_code, self.accept_salt)).hexdigest()
 
-    def __str__(self):
-        return "{%s}" % ', '.join([
-            "endorser: %s" % self.endorser,
-            "endorsee: %s" % self.endorsee,
-            "category_code: %s" % self.category_code,
-            "category_name: %s" % self.get_category_code_display(),
-            "reason: %s" % self.reason,
-            "accept_id: %s" % self.accept_id,
-            "datetime_endorsed: %s" % (
-                datetime_to_str(self.datetime_endorsed)),
-            "datetime_emailed: %s" % (
-                datetime_to_str(self.datetime_emailed)),
-            "datetime_renewed: %s" % (
-                datetime_to_str(self.datetime_renewed)),
-            "datetime_expired: %s" % (
-                datetime_to_str(self.datetime_expired)),
-        ])
-
     def json_data(self):
         return {
             "endorser": self.endorser.json_data(),
@@ -177,6 +153,7 @@ class EndorsementRecord(models.Model):
             "category_code": self.category_code,
             "category_name": self.get_category_code_display(),
             "reason": self.reason,
+            "acted_as": self.acted_as,
             "accept_id": self.accept_id,
             "datetime_endorsed": datetime_to_str(self.datetime_endorsed),
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
@@ -191,6 +168,9 @@ class EndorsementRecord(models.Model):
                     "http://provision-test.uw.edu"),
             reverse('accept_view',
                     kwargs={'accept_id': self.accept_id}))
+
+    def __str__(self):
+        return "%s" % self.json_data()
 
     class Meta:
         unique_together = (("endorser", "category_code", "endorsee"),)

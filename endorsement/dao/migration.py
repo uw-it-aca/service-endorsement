@@ -45,7 +45,7 @@ def migrate_msca_endorsements():
                     traceback.format_exc())
                 continue
 
-            store_office365_endorsement(endorser, endorsee, 'migration')
+            store_office365_endorsement(endorser, endorsee, None, 'migration')
             total_migrated_endorsements = total_migrated_endorsements + 1
 
     return total_migrated_endorser, total_migrated_endorsements

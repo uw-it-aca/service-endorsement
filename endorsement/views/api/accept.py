@@ -34,9 +34,13 @@ class Accept(RESTDispatch):
         except KeyError:
             return invalid_session(logger, timer)
 
-        netid = UserService().get_user()
+        user_service = UserService()
+        netid = user_service.get_user()
         if not netid:
             return invalid_session(logger, timer)
+
+        original_user = user_service.get_original_user()
+        acted_as = None if (netid == original_user) else original_user
 
         records = EndorsementRecord.objects.filter(accept_id=accept_id)
         if len(records) != 1:
@@ -51,10 +55,12 @@ class Accept(RESTDispatch):
 
         if is_o365:
             json_data = store_office365_endorsement(
-                record.endorser, record.endorsee, record.reason).json_data()
+                record.endorser, record.endorsee,
+                acted_as, record.reason).json_data()
         elif is_google:
             json_data = store_google_endorsement(
-                record.endorser, record.endorsee, record.reason).json_data()
+                record.endorser, record.endorsee,
+                acted_as, record.reason).json_data()
 
         json_data['is_o365'] = is_o365
         json_data['is_google'] = is_google
