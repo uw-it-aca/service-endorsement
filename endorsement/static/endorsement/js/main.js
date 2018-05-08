@@ -57,7 +57,6 @@ var registerEvents = function() {
     }).on('click', '[data-clipboard]', function (e) {
         var url = $(this).attr('data-clipboard'),
             $txt;
-        console.log('url: ' + url);
         $txt = $('<input>')
             .css('position', 'absolute')
             .css('left', '-2000px')

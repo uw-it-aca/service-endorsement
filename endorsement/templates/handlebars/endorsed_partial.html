@@ -28,16 +28,7 @@
             {{#if ../../../../can_revoke}}
               Provisioned by <ul>
               {{#each o365.endorsers}}
-                <li {{#equals this.netid ../../../o365.endorser.netid}}class="current-endorsee"{{/equals}}>
-                  <span style="white-space: nowrap;">
-                  {{this.netid}}
-                  {{#if ../o365.accept_url}}
-                  {{#equals this.netid ../../../../o365.endorser.netid}}
-                  <br />Pending acceptance <br /><a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ ../../../o365.accept_url }}" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy acceptance link</a>
-                  {{/equals}}
-                  {{/if}}
-                  </span>
-                </li>
+                <li {{#equals this.netid ../../../o365.endorser.netid}}class="current-endorsee"{{/equals}}>{{this.netid}}{{#if ../o365.accept_url}}{{#equals this.netid ../../../../o365.endorser.netid}}<br />Pending acceptance <br /><a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ ../../../o365.accept_url }}" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy acceptance link</a>{{/equals}}{{/if}}</li>
               {{/each}}
               </ul>
             {{else}}
@@ -74,17 +65,7 @@
             {{#if ../../../../can_revoke}}
               Provisioned by <ul>
               {{#each google.endorsers}}
-                <li {{#equals this.netid ../../../google.endorser.netid}}class="current-endorsee"{{/equals}}>
-                  <span style="white-space: nowrap;">
-                  {{this.netid}}
-                  {{#if ../google.accept_url}}
-                  {{#equals this.netid ../../../../google.endorser.netid}}
-                  <br />Pending acceptance
-                      <br /><a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ ../../../google.accept_url }}" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy acceptance link</a>
-                  {{/equals}}
-                  {{/if}}
-                  </span>
-                </li>
+                <li {{#equals this.netid ../../../google.endorser.netid}}class="current-endorsee"{{/equals}}>{{this.netid}}{{#if ../google.accept_url}}{{#equals this.netid ../../../../google.endorser.netid}}<br />Pending acceptance<br /><a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ ../../../google.accept_url }}" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy acceptance link</a>{{/equals}}{{/if}}</li>
               {{/each}}
               </ul>
             {{else}}
