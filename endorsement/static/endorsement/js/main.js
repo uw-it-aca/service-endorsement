@@ -550,9 +550,12 @@ var showEndorsedStep = function () {
 };
 
 var getNetidList = function () {
-    var netid_list = $('#netid_list').val();
+    var netid_list = $('#netid_list').val().toLowerCase();
     if (netid_list) {
-        return unique(netid_list.replace(/\n/g, ' ').split(/[ ,]+/));
+        return unique(netid_list
+                      .replace(/\n/g, ' ')
+                      .replace(/([a-z0-9]+)(@(uw|washington|u\.washington)\.edu)?/g, '$1')
+                      .split(/[ ,]+/));
     }
 
     return [];
