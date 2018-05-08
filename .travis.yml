@@ -30,5 +30,5 @@ script:
 #  - mocha endorsement/static/js/test/ --recursive
   - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
 after_script:
-  - coveralls --merge=js-coverage.json
+  - coveralls
 notifications:

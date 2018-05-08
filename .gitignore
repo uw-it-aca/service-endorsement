@@ -1,7 +1,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
+-*$py.class
 
 # C extensions
 *.so
@@ -11,10 +11,10 @@ __pycache__/
 env/
 build/
 develop-eggs/
+.eggs/
 dist/
 downloads/
 eggs/
-.eggs/
 lib/
 lib64/
 parts/
@@ -33,6 +33,8 @@ var/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+.hypothesis/
+*,cover
 
 # Unit test / coverage reports
 htmlcov/
@@ -42,8 +44,6 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*,cover
-.hypothesis/
 
 # Translations
 *.mo
@@ -52,11 +52,27 @@ coverage.xml
 # Django stuff:
 *.log
 
+# vim...
+*.swp
+
 # Sphinx documentation
 docs/_build/
 
 # PyBuilder
 target/
 
-#Ipython Notebook
+# virtualenv/django
+bin/
+include/
+local/
+/project/
+/manage.py
+db.sqlite3
+/src/
+
+# Mac OS
+*.DS_Store
+
+pip-selfcheck.json
+share/
 .ipynb_checkpoints
