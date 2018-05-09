@@ -554,7 +554,7 @@ var notify = function (msg) {
     var $notify = $('.endorsement-notification');
 
     $notify.html(msg).css('display', 'inline-block').fadeOut(3500);
-}
+};
 
 var getNetidList = function () {
     var netid_list = $('#netid_list').val().toLowerCase();
