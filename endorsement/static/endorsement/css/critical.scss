@@ -155,6 +155,17 @@ a {
             //padding-left: 4px;
         }
     }
+    .endorsement-notification {
+        display: none;
+        position: absolute;
+        margin-left: 28%;
+        border-radius: 3px;
+        padding: 0 10px;
+        color: black;
+        background-color: #B0D940;
+        line-height: 28px;
+        height: 28px;
+    }
     .endorsement-search-links {
         display: inline-block;
         float: right;

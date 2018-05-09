@@ -3,10 +3,11 @@
 
 {% block content %}
 
+
 <div class="container">
 
-  <p style="padding: 10px;">This tool allows you to manage non-employees' ability to access UW Office 365 and/or UW G Suite (Google). Use this to vouch that someone who has a UW NetID is eligible to use these services because of an established working relationship with UW.</p>
-    <p style="padding: 10px;">This tool does not allow you to provision services to shared UW NetIDs at this time.</p>
+  <p style="padding: 10px 10px 0 10px;">This tool allows you to manage non-employees' ability to access UW Office 365 and/or UW G Suite (Google). Use this to vouch that someone who has a UW NetID is eligible to use these services because of an established working relationship with UW. This tool does not allow you to provision services to shared UW NetIDs at this time.</p>
+    <p style="padding: 0 10px;">You will need to know the UW NetID of each person to whom you are provisioning services, as well as a valid email address at which they can receive email.</p>
 
   <ul class="nav nav-tabs">
     <li class="active"><a href="#endorse" data-toggle="tab"><h2>Provision services</h2></a></li>
@@ -16,9 +17,9 @@
   <div class="tab-content">
     <div class="tab-pane active" id="endorse">
        <div class="form-group" id="uwnetids-input">
-        <h3>Enter UW NetIDs to provision services</h3>
+        <h3>Provision services for other people</h3>
 
-           <label for="netid_list">Add the UW NetID(s) for which you want to provision services, separated by a comma or one per line.</label>
+           <label for="netid_list">Enter the UW NetID(s), @uw.edu, or @washington.edu email address(es) for which you want to provision services.</label>
         <textarea id="netid_list"  rows="15" cols="60" class="form-control"></textarea>
         <br />
         <button type="button" name="ValidateUWNetids" id="validate" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Validating UW NetIDs">Check for provision eligibility</button>

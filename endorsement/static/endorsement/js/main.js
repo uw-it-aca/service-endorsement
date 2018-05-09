@@ -56,8 +56,8 @@ var registerEvents = function() {
         showInputStep();
     }).on('click', '[data-clipboard]', function (e) {
         var url = $(this).attr('data-clipboard'),
+            msg = $(this).attr('data-clipboard-msg'),
             $txt;
-        console.log('url: ' + url);
         $txt = $('<input>')
             .css('position', 'absolute')
             .css('left', '-2000px')
@@ -66,6 +66,7 @@ var registerEvents = function() {
         $txt.select();
         document.execCommand('copy');
         $txt.remove();
+        notify(msg);
     }).on('change', '#netid_list',  function(e) {
         enableCheckEligibility();
     }).on('change', '.displaying-reasons > select',  function(e) {
@@ -547,6 +548,12 @@ var showEndorsedStep = function () {
     $('#uwnetids-input').hide();
     $('#uwnetids-validated').hide();
     $('#uwnetids-endorsed').show();
+};
+
+var notify = function (msg) {
+    var $notify = $('.endorsement-notification');
+
+    $notify.html(msg).css('display', 'inline-block').fadeOut(3500);
 };
 
 var getNetidList = function () {
