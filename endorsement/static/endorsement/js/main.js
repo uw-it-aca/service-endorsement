@@ -553,7 +553,11 @@ var showEndorsedStep = function () {
 var notify = function (msg) {
     var $notify = $('.endorsement-notification');
 
-    $notify.html(msg).css('display', 'inline-block').fadeOut(3500);
+    $notify.html(msg).css('display', 'block');
+    $notify
+        .css('top', $(document).scrollTop())
+        .css('left', (($(document).width() - $notify.width())/2) + 'px')
+        .fadeOut(3500);
 };
 
 var getNetidList = function () {
