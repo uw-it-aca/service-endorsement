@@ -60,7 +60,7 @@ class Endorse(RESTDispatch):
 
                 if 'email' in to_endorse:
                     endorsements['email'] = get_endorsee_email_model(
-                        endorsee, email=to_endorse['email']).email
+                        endorsee, endorser, email=to_endorse['email']).email
 
                 try:
                     if to_endorse['o365']:

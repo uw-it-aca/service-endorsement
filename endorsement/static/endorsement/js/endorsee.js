@@ -22,19 +22,7 @@ var registerEvents = function() {
             e.preventDefault();
         }
     }).on('click', '[data-clipboard-copy]', function () {
-        var url = $(this).attr('data-clipboard'),
-            msg = $(this).attr('data-clipboard-msg'),
-            $txt;
-
-        $txt = $('textarea')
-            .css('position', 'absolute')
-            .css('left', '-2000px')
-            .val(url)
-            .appendTo(document.body);
-        $txt.select();
-        document.execCommand('copy');
-        $txt.remove();
-        notify(msg);
+        copy_clipboard($(this));
     });
 };
 
@@ -105,21 +93,4 @@ var searchEndorsee = function () {
             $('button#search_endorsee').button('reset');
         }
     });
-};
-
-
-var notify = function (msg) {
-    var $notify = $('<div></div>')
-        .html(msg)
-        .addClass('alert-success')
-        .appendTo($('body'));
-
-    $notify
-        .css('display', 'block')
-        .css('position', 'absolute')
-        .css('top', $(document).scrollTop())
-        .css('left', (($(document).width() - $notify.width())/2) + 'px')
-        .fadeOut(3500, function () {
-            $(this).remove();
-        });
 };
