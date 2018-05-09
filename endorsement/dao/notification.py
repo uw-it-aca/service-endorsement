@@ -63,7 +63,8 @@ def notify_endorsees():
             datetime_emailed__isnull=True,
             datetime_endorsed__isnull=True):
         try:
-            email = get_endorsee_email_model(er.endorsee).email
+            email = get_endorsee_email_model(
+                er.endorsee, er.endorser).email
         except Exception as ex:
             logger.error("Notify get email failed: %s, netid: %s" % (
                 ex, er.endorsee))

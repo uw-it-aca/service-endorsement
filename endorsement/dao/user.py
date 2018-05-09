@@ -45,28 +45,28 @@ def get_endorsee_model(uwnetid):
             'display_name': display_name,
             'kerberos_active_permitted': kerberos_active_permitted})
 
-    # update EndorseeEmail model
-    endorsee_email = get_endorsee_email_model(user, email=email)
-
     if created:
         logger.info("Create endorsee: %s" % user)
 
     return user
 
 
-def get_endorsee_email_model(endorsee, email=None):
+def get_endorsee_email_model(endorsee, endorser, email=None):
     """
     return an EndorseeEmail object, never updating with Null email.
     @exception: DataFailureException
     """
     if email and len(email):
         endorsee_email, created = EndorseeEmail.objects.update_or_create(
-            endorsee=endorsee, defaults={'email': email})
+            endorsee=endorsee, endorser=endorser, defaults={'email': email})
     else:
+        uwregid, display_name, pws_email = get_endorsee_data(endorsee.netid)
         endorsee_email, created = EndorseeEmail.objects.get_or_create(
-            endorsee=endorsee, defaults={'email': email})
+            endorsee=endorsee, endorser=endorser,
+            defaults={'email': pws_email})
 
     if created:
-        logger.info("Create endorsee email: %s %s" % (endorsee.netid, email))
+        logger.info("Create endorsee email: %s %s" % (
+            endorsee.netid, endorser.netid, email))
 
     return endorsee_email
