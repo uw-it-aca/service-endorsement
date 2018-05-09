@@ -66,7 +66,7 @@ def get_endorsee_email_model(endorsee, endorser, email=None):
             defaults={'email': pws_email})
 
     if created:
-        logger.info("Create endorsee email: %s %s" % (
+        logger.info("Create endorsee email: %s %s %s" % (
             endorsee.netid, endorser.netid, email))
 
     return endorsee_email
