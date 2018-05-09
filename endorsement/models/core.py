@@ -81,6 +81,9 @@ class EndorseeEmail(models.Model):
     """
     endorsee = models.ForeignKey(Endorsee,
                                  on_delete=models.PROTECT)
+    endorser = models.ForeignKey(Endorser,
+                                 null=True,
+                                 on_delete=models.PROTECT)
     email = models.CharField(max_length=128,
                              null=True)
 

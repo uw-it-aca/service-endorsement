@@ -61,7 +61,8 @@ class Validate(RESTDispatch):
                 valid = {
                     'netid': endorse_netid,
                     'name': endorsee.display_name,
-                    'email': get_endorsee_email_model(endorsee).email
+                    'email': get_endorsee_email_model(
+                        endorsee, endorser).email
                 }
 
                 for e in endorsements:
