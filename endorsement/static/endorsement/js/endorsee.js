@@ -14,6 +14,13 @@ var registerEvents = function() {
 
     $(document).on('endorse:UWNetIDsEndorseeResult', function (e, endorsements) {
         displayEndorsedUWNetIDs(endorsements);
+    }).on('keypress', function (e) {
+        if ($(e.target).attr('id', 'endorsee') && e.which == 13) {
+            $('button#search_endorsee').button('loading');
+            searchEndorsee();
+            e.stopPropagation();
+            e.preventDefault();
+        }
     }).on('click', '[data-clipboard]', function () {
         var url = $(this).attr('data-clipboard'),
             $txt;
