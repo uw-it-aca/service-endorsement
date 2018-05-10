@@ -28,11 +28,19 @@ var registerEvents = function() {
 
 
 var displayEndorsedUWNetIDs = function(endorsements) {
-    var source = $("#admin-endorsee-search-result").html();
-    var template = Handlebars.compile(source);
+    var source,
+        template;
 
-    $('#endorsees').html(template(endorsements));
-    $('#endorsee-table').dataTable();
+    if (endorsements.endorsements.endorsements.length) {
+        source = $("#admin-endorsee-search-result").html();
+        template = Handlebars.compile(source);
+        $('#endorsees').html(template(endorsements));
+        $('#endorsee-table').dataTable();
+    } else {
+        source = $("#admin-endorsee-empty-search-result").html();
+        template = Handlebars.compile(source);
+        $('#endorsees').html(template(endorsements));
+    }
 };
 
 
