@@ -41,7 +41,8 @@ def accept(request, accept_id):
 
         record = records[0]
         if not record.valid_endorsee(netid):
-            return invalid_session(logger, timer)
+            context["auth_failure"] = "provisionee"
+            return render(request, "401.html", context, status=401)
 
         context['endorsement_record'] = json.dumps(record.json_data())
 

@@ -36,7 +36,7 @@ def index(request):
         }
 
         if not is_valid_endorser(netid):
-            context["err"] = "Invalid Endorser"
+            context["auth_failure"] = "provisioner"
             return render(request, "401.html", context, status=401)
 
         try:
