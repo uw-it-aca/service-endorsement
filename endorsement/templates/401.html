@@ -8,7 +8,12 @@
     <div class="container error-container" role="main" aria-labelledby="sea-404-error">
         <div class="card">
             <h2 id="sea-404-error">You are not authorized to access this page.</h2>
-            <p>Only UW employees may provision services to others.</p>
+            {% if auth_failure == 'provisioner' %}
+            Only UW employees may provision services to others.
+            {% elif auth_failure == 'provisionee' %}
+            Only the provisioned netid can view the acceptance link.
+            {% endif %}
+            <p>{{ auth_failure_reason }}</p>
         </div>
     </div>
 
