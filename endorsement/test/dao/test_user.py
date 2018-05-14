@@ -1,7 +1,8 @@
 from django.test import TransactionTestCase
 from restclients_core.exceptions import DataFailureException
 from endorsement.models.core import Endorser, Endorsee
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
+from endorsement.dao.user import (
+    get_endorser_model, get_endorsee_model, get_endorsee_email_model)
 
 
 class TestUserDao(TransactionTestCase):
@@ -34,3 +35,9 @@ class TestUserDao(TransactionTestCase):
                           'endorsee5')
         qset = Endorsee.objects.filter(netid='endorsee5')
         self.assertEqual(len(qset), 0)
+
+    def test_get_endorsee_email_model(self):
+        endorser = get_endorser_model('jstaff')
+        endorsee = get_endorsee_model('endorsee2')
+        email = get_endorsee_email_model(endorsee, endorser)
+        self.assertEqual(email.email, "endorsee2@uw.edu")

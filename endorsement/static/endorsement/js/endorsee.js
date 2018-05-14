@@ -21,7 +21,7 @@ var registerEvents = function() {
             e.stopPropagation();
             e.preventDefault();
         }
-    }).on('click', '[data-clipboard-copy]', function () {
+    }).on('click', '[data-clipboard]', function () {
         copy_clipboard($(this));
     });
 };
