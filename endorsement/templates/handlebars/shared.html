@@ -21,12 +21,12 @@
       {{#each shared.shared}}
       <tr>
         <td>{{name}}</td>
+        <td class="col-border-left">{{#if endorsements.o365}}Provisioned by...{{else}}Not provisioned{{/if}}</td>
         <td></td>
+        <td>{{#if endorsements.o365}}{{else}}<button type="button" id="shared_endorse" class="btn btn-primary" data-netid="{{ name }}" data-service="o365">Provision</button>{{/if}}</td>
+        <td class="col-border-left">{{#if endorsements.google}}Provisioned by...{{else}}Not provisioned{{/if}}</td>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>{{#if endorsements.google}}{{else}}<button type="button" id="shared_endorse" class="btn btn-primary" data-netid="{{ name }}" data-service="google">Provision</button>{{/if}}</td>
       </tr>
       {{/each}}
   {{else}}

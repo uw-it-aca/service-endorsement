@@ -7,6 +7,7 @@ from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.user import get_endorser_model
 from endorsement.dao.endorse import (
     get_endorsements_by_endorser, get_endorsements_for_endorsee)
+from endorsement.dao.uwnetid_supported import get_shared_netids_for_netid
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time
 from endorsement.views.rest_dispatch import (
@@ -33,7 +34,11 @@ class Endorsed(RESTDispatch):
 
         endorser = get_endorser_model(netid)
         endorsed = {}
+        shared_netids = [x.name for x in get_shared_netids_for_netid(netid)]
         for er in get_endorsements_by_endorser(endorser):
+            if er.endorsee.netid in shared_netids:
+                continue
+
             endorsement_type = 'unknown'
             if (er.category_code == EndorsementRecord.OFFICE_365_ENDORSEE):
                 endorsement_type = 'o365'

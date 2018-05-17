@@ -4,11 +4,14 @@ from django.utils.decorators import method_decorator
 from userservice.user import UserService
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.uwnetid_supported import get_shared_netids_for_netid
-from endorsement.dao.user import get_endorser_model
+from endorsement.dao.user import get_endorser_model, get_endorsee_model
+from endorsement.dao.endorse import (
+    get_endorsements_by_endorser, get_endorsements_for_endorsee)
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
+from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
 
 
 logger = logging.getLogger(__name__)
@@ -30,10 +33,25 @@ class Shared(RESTDispatch):
             return invalid_endorser(logger, timer)
 
         endorser = get_endorser_model(netid)
+        endorsements = get_endorsements_by_endorser(endorser)
         owned = []
         for shared in get_shared_netids_for_netid(netid):
             if shared.is_owner():
-                owned.append(shared.json_data())
+                data = shared.json_data()
+                data['endorsements'] = None
+                try:
+                    endorsee = get_endorsee_model(shared.name)
+                    for endorsement in endorsements:
+                        if endorsement.endorsee.id == endorsee.id:
+                            all = []
+                            for er in get_endorsements_for_endorsee(endorsee):
+                                all.append(er.json_data())
+
+                            data['endorsements'] = all
+                except (UnrecognizedUWNetid, InvalidNetID):
+                    pass
+
+                owned.append(data)
 
         log_resp_time(logger, "shared", timer)
         return self.json_response({
