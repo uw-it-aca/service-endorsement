@@ -11,6 +11,7 @@
 
   <ul class="nav nav-tabs">
     <li class="active"><a href="#endorse" data-toggle="tab"><h2>Provision services</h2></a></li>
+    <li><a href="#shared" data-toggle="tab" class="shared-endorse"><h2>Manage your shared netids</h2></a></li>
     <li><a href="#endorsed" data-toggle="tab" class="previous-endorsement"><h2>Manage your provisioned services</h2></a></li>
   </ul>
 
@@ -31,6 +32,8 @@
       <div class="form-group" id="uwnetids-endorsed" style="display: none;">
       </div>
     </div>
+    <div class="tab-pane" id="shared">
+    </div>
     <div class="tab-pane" id="endorsed">
     </div>
   </div>
@@ -41,6 +44,7 @@
 {% include "handlebars/endorse_result.html" %}
 {% include "handlebars/endorsed.html" %}
 {% include "handlebars/endorsed_partial.html" %}
+{% include "handlebars/shared.html" %}
 
 {% endblock %}
 

@@ -3,7 +3,6 @@ from django.utils import timezone
 from endorsement.models.core import Endorser, Endorsee, EndorseeEmail
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_endorser_data, get_endorsee_data
-from endorsement.dao.uwnetid_subscription_60 import is_valid_endorsee
 
 
 logger = logging.getLogger(__name__)

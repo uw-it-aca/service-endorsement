@@ -1,0 +1,74 @@
+{
+  "uwNetID": "jfaculty",
+  "supportedList": [
+    {
+      "name": "jstaff",
+      "role": "supporter"
+    },
+    {
+      "name": "eadm_jfaculty",
+      "role": "owner",
+      "netidType": "administrator"
+    },
+    {
+      "name": "emailinfo",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "jfaculty",
+      "role": "supporter"
+    },
+    {
+      "name": "jfaculty-admin",
+      "role": "owner",
+      "netidType": "shared"
+    },
+    {
+      "name": "kool",
+      "role": "supporter"
+    },
+    {
+      "name": "monitoring",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "nebionotic",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "nebulus",
+      "role": "administrator",
+      "netidType": "shared"
+    },
+    {
+      "name": "pcppm",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "pmxtest1",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "sadm_jfaculty",
+      "role": "owner",
+      "netidType": "administrator"
+    },
+    {
+      "name": "xware",
+      "role": "administrator",
+      "netidType": "shared",
+      "status": "former"
+    },
+    {
+      "name": "wadm_jfaculty",
+      "role": "owner",
+      "netidType": "administrator"
+    }
+  ],
+  "timeStamp": "Fri, 20 Feb 2015 16:11:18 -0800"
+}

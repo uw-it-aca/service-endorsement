@@ -175,6 +175,8 @@ var registerEvents = function() {
     }).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
         $('button#confirm_endorsements').button('reset');
         displayEndorsedUWNetIDs(endorsed);
+    }).on('endorse:UWNetIDsShared', function (e, shared) {
+        displaySharedUWNetIDs(shared);
     }).on('show.bs.modal', '#responsibility_modal' ,function (event) {
         var _modal = $(this);
         _modal.find('input#accept_responsibility').attr('checked', false);
@@ -183,6 +185,10 @@ var registerEvents = function() {
 
     $('a[href="#endorsed"]').on('shown.bs.tab', function () {
         getEndorsedUWNetIDs();
+    });
+
+    $('a[href="#shared"]').on('shown.bs.tab', function () {
+        getSharedUWNetIDs();
     });
 
 };
@@ -514,6 +520,46 @@ var getEndorsedUWNetIDs = function() {
         },
         error: function(xhr, status, error) {
             $('#endorsed').html($('#endorsed-failure').html());
+        }
+    });
+};
+
+var displaySharedUWNetIDs = function(shared) {
+    var source = $("#shared-netids").html();
+    var template = Handlebars.compile(source);
+    var context = {
+        has_shared: false,
+        shared: shared
+    };
+
+    $.each(shared.shared, function () {
+        if (true) {
+            context.has_shared = true;
+            return false;
+        }
+    });
+
+    $('div.tab-pane#shared').html(template(context));
+};
+
+var getSharedUWNetIDs = function() {
+    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+
+    $('#shared').html($('#shared-loading').html());
+
+    $.ajax({
+        url: "/api/v1/shared/",
+        dataType: "JSON",
+        type: "GET",
+        accepts: {html: "application/json"},
+        headers: {
+            "X-CSRFToken": csrf_token
+        },
+        success: function(results) {
+            $(document).trigger('endorse:UWNetIDsShared', [results]);
+        },
+        error: function(xhr, status, error) {
+            $('#shared').html($('#shared-failure').html());
         }
     });
 };
