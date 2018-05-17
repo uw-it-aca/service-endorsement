@@ -10,11 +10,23 @@
       <thead>
         <tr>
           <th>Shared UW NetID</th>
+          <th class="col-border-left">UW Office 365</th>
+          <th>Your provision reason</th>
+          <th><!-- {{#if can_revoke}}Revoke UW Office 365{{/if}} --></th>
+          <th class="col-border-left">UW G Suite (Google)</th>
+          <th>Your provision reason</th>
+          <th><!-- {{#if can_revoke}}Revoke UW G Suite{{/if}} --></th>
         </tr>
       </thead>
       {{#each shared.shared}}
       <tr>
         <td>{{name}}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
       </tr>
       {{/each}}
   {{else}}
