@@ -1,0 +1,14 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "endorsers_partial" %}
+
+          {{#if endorser}}
+          Provisioned<!-- by <ul>
+            {{#each endorsers}}
+            <li {{#equals netid ../../../o365.endorser.netid}}class="current-endorsee"{{/equals}}>{{netid}}</li>
+            {{/each}}
+          </ul> -->
+          {{else}}
+          Not provisioned
+          {{/if}}
+
+{% endtplhandlebars %}

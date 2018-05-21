@@ -36,13 +36,14 @@ def get_endorsee_model(uwnetid):
     return an Endorsee object
     @exception: DataFailureException
     """
-    uwregid, display_name, email = get_endorsee_data(uwnetid)
+    uwregid, display_name, email, is_person = get_endorsee_data(uwnetid)
     kerberos_active_permitted = is_valid_endorsee(uwnetid)
     user, created = Endorsee.objects.update_or_create(
         regid=uwregid,
         defaults={
             'netid': uwnetid,
             'display_name': display_name,
+            'is_person': is_person,
             'kerberos_active_permitted': kerberos_active_permitted})
 
     if created:
@@ -60,7 +61,8 @@ def get_endorsee_email_model(endorsee, endorser, email=None):
         endorsee_email, created = EndorseeEmail.objects.update_or_create(
             endorsee=endorsee, endorser=endorser, defaults={'email': email})
     else:
-        uwregid, display_name, pws_email = get_endorsee_data(endorsee.netid)
+        uwregid, display_name, pws_email, is_person = get_endorsee_data(
+            endorsee.netid)
         endorsee_email, created = EndorseeEmail.objects.get_or_create(
             endorsee=endorsee, endorser=endorser,
             defaults={'email': pws_email})

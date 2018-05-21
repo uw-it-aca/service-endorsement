@@ -8,9 +8,10 @@ from endorsement.dao.user import (
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_person
 from endorsement.dao.endorse import (
-    initiate_office365_endorsement, clear_office365_endorsement,
-    initiate_google_endorsement, clear_google_endorsement)
-from endorsement.dao.notification import notify_endorsees
+    initiate_office365_endorsement, store_office365_endorsement,
+    clear_office365_endorsement,
+    initiate_google_endorsement, store_google_endorsement,
+    clear_google_endorsement)
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
@@ -33,12 +34,16 @@ class Endorse(RESTDispatch):
 
         endorsees = json.loads(request.read())
 
-        netid = UserService().get_user()
+        user_service = UserService()
+        netid = user_service.get_user()
         if not netid:
             return invalid_session(logger, timer)
 
         if not is_valid_endorser(netid):
             return invalid_endorser(logger, timer)
+
+        original_user = user_service.get_original_user()
+        acted_as = None if (netid == original_user) else original_user
 
         endorser = get_endorser_model(netid)
         endorser_json = endorser.json_data()
@@ -65,8 +70,14 @@ class Endorse(RESTDispatch):
                 try:
                     if to_endorse['o365']:
                         reason = to_endorse['reason']
-                        e = initiate_office365_endorsement(
-                            endorser, endorsee, reason)
+                        e = None
+                        if to_endorse.get('store', False):
+                            e = store_office365_endorsement(
+                                endorser, endorsee, acted_as, reason)
+                        else:
+                            e = initiate_office365_endorsement(
+                                endorser, endorsee, reason)
+
                         endorsements['o365'] = e.json_data()
                         endorsements['o365']['endorsed'] = True
                         endorsements['reason'] = reason
@@ -89,8 +100,14 @@ class Endorse(RESTDispatch):
                 try:
                     if to_endorse['google']:
                         reason = to_endorse['reason']
-                        e = initiate_google_endorsement(
-                            endorser, endorsee, reason)
+                        e = None
+                        if to_endorse.get('store', False):
+                            e = store_google_endorsement(
+                                endorser, endorsee, acted_as, reason)
+                        else:
+                            e = initiate_google_endorsement(
+                                endorser, endorsee, reason)
+
                         endorsements['google'] = e.json_data()
                         endorsements['google']['endorsed'] = True
                         endorsements['reason'] = reason
@@ -112,13 +129,21 @@ class Endorse(RESTDispatch):
                         'error': "%s" % (ex)
                     }
 
-            except (KeyError, InvalidNetID, UnrecognizedUWNetid) as ex:
+            except InvalidNetID as ex:
+                endorsements = {
+                    'endorsee': {
+                        'netid': endorsee_netid
+                    },
+                    'name': "",
+                    'error': '%s' % (ex)
+                }
+            except (KeyError, UnrecognizedUWNetid) as ex:
                 endorsements = {
                     'endorsee': endorsee.json_data(),
                     'name': endorsee.display_name,
                     'error': '%s' % (ex)
                 }
 
-            endorsed['endorsed'][endorsee.netid] = endorsements
+            endorsed['endorsed'][endorsee_netid] = endorsements
 
         return self.json_response(endorsed)

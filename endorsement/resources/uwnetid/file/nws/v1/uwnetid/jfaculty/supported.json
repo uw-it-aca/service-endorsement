@@ -54,6 +54,11 @@
       "netidType": "shared"
     },
     {
+      "name": "endorsee3",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
       "name": "sadm_jfaculty",
       "role": "owner",
       "netidType": "administrator"

@@ -317,7 +317,7 @@ a {
   }
 }
 
-#uwnetids-endorsed {
+#uwnetids-endorsed, #shared-uwnetids {
   table {
     ul {
        display: inline;
@@ -327,6 +327,11 @@ a {
        li:after { content: ", "; }
        li:last-child:after { content: ""; }
     }
+  }
+
+  a.link-disabled {
+    cursor: not-allowed !important;
+    pointer-events: none;
   }
 }
 

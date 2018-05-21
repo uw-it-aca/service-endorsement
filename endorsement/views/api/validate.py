@@ -51,6 +51,9 @@ class Validate(RESTDispatch):
         for endorse_netid in netids:
             try:
                 endorsee = get_endorsee_model(endorse_netid)
+                if not endorsee.is_person:
+                    raise InvalidNetID(
+                        '%s not a personal netid' % endorse_netid)
 
                 netid_count -= 1
                 if netid_count < 0:

@@ -11,8 +11,8 @@
 
   <ul class="nav nav-tabs">
     <li class="active"><a href="#endorse" data-toggle="tab"><h2>Provision services</h2></a></li>
-    <li><a href="#shared" data-toggle="tab" class="shared-endorse"><h2>Manage your shared netids</h2></a></li>
     <li><a href="#endorsed" data-toggle="tab" class="previous-endorsement"><h2>Manage your provisioned services</h2></a></li>
+    <li><a href="#shared" data-toggle="tab" class="shared-endorse"><h2>Manage shared NetIDs you own</h2></a></li>
   </ul>
 
   <div class="tab-content">
@@ -41,9 +41,12 @@
 
 {% include "handlebars/validated.html" %}
 {% include "handlebars/valid_partial.html" %}
+{% include "handlebars/reasons_partial.html" %}
 {% include "handlebars/endorse_result.html" %}
 {% include "handlebars/endorsed.html" %}
 {% include "handlebars/endorsed_partial.html" %}
+{% include "handlebars/endorsers_partial.html" %}
+{% include "handlebars/endorse_button_partial.html" %}
 {% include "handlebars/shared.html" %}
 
 {% endblock %}

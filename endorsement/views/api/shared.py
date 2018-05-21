@@ -2,6 +2,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from userservice.user import UserService
+from endorsement.models import EndorsementRecord
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.uwnetid_supported import get_shared_netids_for_netid
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
@@ -37,15 +38,40 @@ class Shared(RESTDispatch):
         owned = []
         for shared in get_shared_netids_for_netid(netid):
             if shared.is_owner():
-                data = shared.json_data()
-                data['endorsements'] = None
+                data = {
+                    'netid': shared.name,
+                    'name': None,
+                    'role': shared.role,
+                    'endorsements': None
+                }
+
                 try:
                     endorsee = get_endorsee_model(shared.name)
+                    data['name'] = endorsee.display_name
                     for endorsement in endorsements:
                         if endorsement.endorsee.id == endorsee.id:
-                            all = []
+                            all = {
+                                'o365': None,
+                                'google': None
+                            }
                             for er in get_endorsements_for_endorsee(endorsee):
-                                all.append(er.json_data())
+                                if (EndorsementRecord.OFFICE_365_ENDORSEE ==
+                                        er.category_code):
+                                    all['o365'] = er.json_data()
+                                    all['o365']['endorser'] = \
+                                        endorser.json_data()
+                                    all['o365']['endorsers'] = [
+                                        endorser.json_data()
+                                    ]
+
+                                if (EndorsementRecord.GOOGLE_SUITE_ENDORSEE ==
+                                        er.category_code):
+                                    all['google'] = er.json_data()
+                                    all['google']['endorser'] = \
+                                        endorser.json_data()
+                                    all['google']['endorsers'] = [
+                                        endorser.json_data()
+                                    ]
 
                             data['endorsements'] = all
                 except (UnrecognizedUWNetid, InvalidNetID):

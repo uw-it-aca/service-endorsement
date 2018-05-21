@@ -53,6 +53,7 @@ class Endorsee(models.Model):
                              unique=True)
     display_name = models.CharField(max_length=64,
                                     null=True)
+    is_person = models.NullBooleanField(default=True)
     kerberos_active_permitted = models.NullBooleanField(default=False)
 
     def __eq__(self, other):

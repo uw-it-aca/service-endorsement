@@ -41,23 +41,7 @@
       </div>
     </td>
     <td>
-      <div class="displaying-reasons">
-        <select required="required" style="width: 150px;">
-            <option disabled selected value=""></option>
-            <option value="clinical">Clinical work</option>
-            <option value="instructional">Instructional activities</option>
-            <option value="research">Research</option>
-            <option value="mentoring">Student mentoring</option>
-            <option value="consulting">Third-party consulting</option>
-            <option value="advancement">University Advancement support</option>
-            <option value="volunteer">Volunteer work</option>
-            <option value="other">Other...</option>
-        </select>
-        </div>
-        <div class="editing-reason visually-hidden">
-          <input type=input class="reason-editor" placeholder="Reason for provisioning" value="" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
-        </div>
-        <p style="font-size: small; {{plural ../../netid_count 'display: none;' ''}}"><a href="javascript:void(0);" class='apply-all'>Apply to all</a></p>
+      {{> reasons_partial .}}
     </td>
      {{#with (subscription_context o365 netid 'o365') }}
         {{> validation_partial .}}

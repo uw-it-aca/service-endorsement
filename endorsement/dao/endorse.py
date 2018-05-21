@@ -39,9 +39,9 @@ def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
     en, created = EndorsementRecord.objects.update_or_create(
         endorser=endorser,
         category_code=category_code,
-        reason=reason,
         endorsee=endorsee,
         defaults={
+            'reason': reason,
             'datetime_endorsed': timezone.now(),
             'acted_as': acted_as
         })
