@@ -1,0 +1,17 @@
+{% load templatetag_handlebars %}
+
+{% tplhandlebars "shared_provisioned_modal_content" %}
+<div class="modal-header">
+  <span>Access to {{ service_name }}</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+    <p>You have agreed to comply with all the crazy rules around your provision of {{ service_name }} for {{ netid }}.</p>
+    <p>Checkout these links: </p>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Close</button>
+</div>
+{% endtplhandlebars %}
