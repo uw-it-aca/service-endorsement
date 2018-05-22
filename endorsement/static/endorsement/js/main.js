@@ -199,7 +199,10 @@ var registerEvents = function() {
     }).on('endorse:SharedUWNetIDsEndorseStatus', function (e, endorsed) {
         updateSharedEndorsementStatus(endorsed);
     }).on('endorse:SharedUWNetIDsEndorseSuccess', function (e, netid, service, service_name) {
-        sharedEndorseSuccessModal(netid, service, service_name);
+        // pause for shared endorse modal fade
+        setTimeout(function () {
+            sharedEndorseSuccessModal(netid, service, service_name);
+        }, 500);
     }).on('endorse:SharedUWNetIDsEndorseStatusError', function (e, netid, service, error) {
         $('button[data-netid="' + netid + '"][data-service="' + service + '"].shared_endorse')
             .button('reset');
