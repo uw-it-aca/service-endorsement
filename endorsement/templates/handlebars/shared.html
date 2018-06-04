@@ -2,7 +2,10 @@
 {% tplhandlebars "shared-netids" %}
 
 <div class="form-group" id="shared-uwnetids">
-<h3>Shared UW NetIDs for which you can provisioned services</h3>
+
+    <p style="padding: 10px 10px 0 10px;">You may provision services for any shared UW NetID that you own.</p>
+
+    <h3>Your shared UW NetIDs </h3>
 
   {{#if has_shared}}
   <div class="form-group">
@@ -33,7 +36,10 @@
       {{/each}}
     </table>
   {{else}}
-  <div class="no-endorsements">You own no shared UW NetIDs.</dev>
+  <div class="no-endorsements">
+      <p>You do not own any shared UW NetIDs.</p>
+      <p>Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view shared UW NetIDs on which you are an administrator.</p>
+  </div>
   {{/if}}
 </div>
 

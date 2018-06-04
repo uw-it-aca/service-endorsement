@@ -3,14 +3,14 @@
 
 <!-- Responsiblity Modal -->
 <div class="modal-header">
-  <span>Confirm Shared NetID <span style="font-weight: bold;">{{netid}}</span> provision request</span>
+  <span>Provision services for shared UW NetID <span style="font-weight: bold;">{{netid}}</span></span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
   <p>By selecting the shared UW
-      NetID {{ netid }} to receive the {{#if is_o365 }}UW Office 365{{else}}{{#if is_google}}UW G Suite (Google){{/if}}{{/if}} service you have identified, you confirm that:</p>
+      NetID {{ netid }} to receive access to {{#if is_o365 }}UW Office 365{{else}}{{#if is_google}}UW G Suite (Google){{/if}}{{/if}}, you confirm that:</p>
     <ol>
         <li>The provisioning recipient associated with each UW NetID requires use of the service(s) to carry out official UW operations, and</li>
         <li>You have authority to make this request in accord with the UW-IT <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">guidelines for providing computing services to UW affiliates</a>.</li>
