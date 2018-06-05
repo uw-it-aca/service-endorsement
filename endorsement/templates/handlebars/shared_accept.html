@@ -9,13 +9,28 @@
   </button>
 </div>
 <div class="modal-body">
-  <p>By selecting the shared UW
-      NetID {{ netid }} to receive access to {{#if is_o365 }}UW Office 365{{else}}{{#if is_google}}UW G Suite (Google){{/if}}{{/if}}, you confirm that:</p>
-    <ol>
-        <li>The provisioning recipient associated with each UW NetID requires use of the service(s) to carry out official UW operations, and</li>
-        <li>You have authority to make this request in accord with the UW-IT <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">guidelines for providing computing services to UW affiliates</a>.</li>
-    </ol>
-
+  {{#if endorse_netid_count}}
+  <p>
+    You have chosen to provision {{endorse_netid_count}} NetID{{plural endorse_netid_count '' 's'}}:
+    {{#if endorse_o365_netid_count}}
+    <p>
+    Office 365:<ul>
+      {{#each endorse_o365}}
+      {{netid}}
+      {{/each}}
+    </ul>
+    </p>
+    {{/if}}
+    {{#if endorse_google_netid_count}}
+    <p>
+    G Suite: <ul>
+      {{#each endorse_google}}
+      {{netid}}
+      {{/each}}
+    </ul>
+    </p>
+    {{/if}}
+  </p>
   <p>
       <label>
           <input type="checkbox" id="shared_accept_responsibility_A"  />
@@ -29,11 +44,37 @@
           I understand and accept these other terms.
       </label>
   </p>
+  {{/if}}
+
+  {{#if revoke_netid_count}}
+  <p>
+    You have chosen to revoke {{revoke_netid_count}} NetID{{plural revoke_netid_count '' 's'}}:
+    {{#if revoke_o365_netid_count}}
+    <p>
+    Office 365:<ul>
+      {{#each revoke_o365}}
+      {{netid}}
+      {{/each}}
+    </ul>
+    </p>
+    {{/if}}
+    {{#if revoke_google_netid_count}}
+    <p>
+    G Suite: <ul>
+      {{#each revoke_google}}
+      {{netid}}
+      {{/each}}
+    </ul>
+    </p>
+    {{/if}}
+  </p>
+  {{/if}}
+
 
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
-  <button type="button" id="confirm_shared_endorse" data-netid="{{ netid }}" data-service="{{ service }}" class="btn btn-primary" disabled="disabled">Provision services for this shared UW NetID</button>
+  <button type="button" id="confirm_shared_endorse" data-netid="{{ netid }}" data-service="{{ service }}" class="btn btn-primary" disabled="disabled">Provision services for {{plural endorse_netid_count 'this' 'these'}} shared UW NetID{{plural endorse_netid_count '' 's'}}</button>
 </div>
 
 {% endtplhandlebars %}

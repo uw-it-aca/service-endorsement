@@ -1,14 +1,11 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "endorsers_partial" %}
-
-          {{#if endorser}}
-          Provisioned<!-- by <ul>
-            {{#each endorsers}}
-            <li {{#equals netid ../../../o365.endorser.netid}}class="current-endorsee"{{/equals}}>{{netid}}</li>
-            {{/each}}
-          </ul> -->
+<div style="position: relative">
+          {{#if endorsement}}
+          <input type="checkbox" id="revoke_{{svc}}_{{netid}}" value="{{netid}}" /><label for="revoke_{{svc}}_{{netid}}"><i class="fa fa-square-o"></i></label>
           {{else}}
-          Not provisioned
+          <input type="checkbox" id="endorse_{{svc}}_{{netid}}" value="{{netid}}" /><label for="endorse_{{svc}}_{{netid}}"><i class="fa fa-square-o"></i></label>
           {{/if}}
+</div>
 
 {% endtplhandlebars %}

@@ -419,8 +419,42 @@ footer .footer-links ul li:last-child {
 }*/
 
 
+/***** Checkboxes *****/
+input[type=checkbox][id^=revoke_],
+input[type=checkbox][id^=endorse_] { display:none; }
+
+input[type=checkbox][id^=revoke_] + label,
+input[type=checkbox][id^=endorse_] + label {
+    font-size: 1.75em;
+}
+
+input[type=checkbox][id^=revoke_] + label:before,
+input[type=checkbox][id^=endorse_] + label:before {
+  font-family: FontAwesome;
+  display: inline-block;
+  position: absolute;
+}
+
+input[type=checkbox][id^=endorse_]:checked + label:before { content: "\f00c"; color: #DAA520;}
+input[type=checkbox][id^=revoke_] + label:before { content: "\f00c"; color: green;}
+input[type=checkbox][id^=revoke_]:checked + label:before { content: "\f00d"; color: red;}
+
+
 /***** EVERYTHING ELSE *****/
 
+.action {
+    font-weight: 600;
+    font-style: italic;
+}
+
+select.error {
+    border: 1px solid red;
+    + div {
+        display: inline !important;
+        color: red;
+        font-size: .9em;
+    }
+}
 
 /* may not be needed once Bootstrap is in use */
 #boxplots {
