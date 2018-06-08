@@ -64,3 +64,7 @@ Handlebars.registerHelper('plural', function(n, singular, plural) {
 Handlebars.registerHelper('equals', function(a, b, options) {
     return (a == b) ? options.fn(this) : options.inverse(this);
 });
+
+Handlebars.registerHelper('gt', function(a, b, options) {
+    return (a > b) ? options.fn(this) : options.inverse(this);
+});

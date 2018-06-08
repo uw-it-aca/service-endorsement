@@ -12,7 +12,11 @@
   {{#if endorse_netid_count}}
   <div class="shared-acceptance container col-md-12">
     <div class="row">
-      You are about to provision the UW NetID{{plural endorse_o365_netid_count '' 's'}}
+      You are about to provision 
+      {{#gt endorse_netid_count 12}}
+      <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>{{endorse_o365_netid_count}} Netids to UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>{{endorse_google_netid_count}} Netids to UW G Suite</li>{{/if}}</ul>.
+      {{else}}
+      the UW NetID{{plural endorse_o365_netid_count '' 's'}}
       {{#if endorse_o365_netid_count}}
       <ul class="comma-list">
         {{#each endorse_o365}}<li style="font-weight: bold;">{{this}}</li>{{/each}}
@@ -32,6 +36,7 @@
         {{#each endorse_google}}<li style="font-weight: bold;">{{this}}</li>{{/each}}
       </ul> to the UW G Suite service.
       {{/if}}
+      {{/gt}}
     </div>
     <div class="row">
       As the Shared UW NetID owner, you are responsible for proper use, account maintenance and file privilieges.
