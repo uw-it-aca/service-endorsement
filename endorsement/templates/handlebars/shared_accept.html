@@ -3,74 +3,74 @@
 
 <!-- Responsiblity Modal -->
 <div class="modal-header">
-  <span>Provision services for shared UW NetID <span style="font-weight: bold;">{{netid}}</span></span>
+  <span style="font-weight: bold;">Confirm Shared UW NetID provision requests</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
   {{#if endorse_netid_count}}
-  <p>
-    You have chosen to provision {{endorse_netid_count}} NetID{{plural endorse_netid_count '' 's'}}:
+  <div class="shared-acceptance container col-md-12">
+    <div class="row">
+      You are about to provision the UW NetID{{plural endorse_o365_netid_count '' 's'}}
+      {{#if endorse_o365_netid_count}}
+      <ul class="comma-list">
+        {{#each endorse_o365}}<li style="font-weight: bold;">{{this}}</li>{{/each}}
+      </ul> to the UW Office 365
+      {{#if endorse_google_netid_count}}
+      service and 
+      {{else}}
+      service.
+      {{/if}}
+      {{/if}}
+      {{#if endorse_google_netid_count}}
+      {{#unless endorse_o365_netid_count}}
+      You are about to provision the 
+      {{/unless}}
+      UW NetID{{plural endorse_google_netid_count '' 's'}}
+      <ul class="comma-list">
+        {{#each endorse_google}}<li style="font-weight: bold;">{{this}}</li>{{/each}}
+      </ul> to the UW G Suite service.
+      {{/if}}
+    </div>
+    <div class="row">
+      As the Shared UW NetID owner, you are responsible for proper use, account maintenance and file privilieges.
+    </div>
+    <div class="row">
+      The use of 
+      <ul class="comma-list">
+        {{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}
+        {{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}
+      </ul>
+      <span style="font-weight: bold">by any individual acting as the Shared UW NetID</span> is bound by UW-IT's Appropritate Use policy, as well as being subject to state and federal law, and other UW policies and procedures. For more information, visit UW-IT's Appropriate user Page at <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">http://itconnect.uw.edu/work/appropriate-use/</a>.
+    </div>
+    <h3>Statement of agreement</h3>
     {{#if endorse_o365_netid_count}}
-    <p>
-    Office 365:<ul>
-      {{#each endorse_o365}}
-      {{netid}}
-      {{/each}}
-    </ul>
-    </p>
+    <div class="row">
+      <div class="col-md-1">
+        <input type="checkbox" id="shared_accept_responsibility_B"  />
+      </div>
+      <div class="col-md-11">
+        <label for="shared_accept_responsibility_B">
+          I agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to my use of UW computing resources, including the use of UW Office 365.
+        </label>
+      </div>
+    </div>
     {{/if}}
     {{#if endorse_google_netid_count}}
-    <p>
-    G Suite: <ul>
-      {{#each endorse_google}}
-      {{netid}}
-      {{/each}}
-    </ul>
-    </p>
+    <div class="row">
+      <div class="col-md-1">
+        <input type="checkbox" id="shared_accept_responsibility_A"  />
+      </div>
+      <div class="col-md-11">
+        <label for="shared_accept_responsibility_A">
+          I agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to my use of UW computing resources, including the use of UW G Suite.
+        </label>
+      </div>
+    </div>
     {{/if}}
-  </p>
-  <p>
-      <label>
-          <input type="checkbox" id="shared_accept_responsibility_A"  />
-          I understand and accept these terms.
-      </label>
-  </p>
-
-  <p>
-      <label>
-          <input type="checkbox" id="shared_accept_responsibility_B"  />
-          I understand and accept these other terms.
-      </label>
-  </p>
+  </div>
   {{/if}}
-
-  {{#if revoke_netid_count}}
-  <p>
-    You have chosen to revoke {{revoke_netid_count}} NetID{{plural revoke_netid_count '' 's'}}:
-    {{#if revoke_o365_netid_count}}
-    <p>
-    Office 365:<ul>
-      {{#each revoke_o365}}
-      {{netid}}
-      {{/each}}
-    </ul>
-    </p>
-    {{/if}}
-    {{#if revoke_google_netid_count}}
-    <p>
-    G Suite: <ul>
-      {{#each revoke_google}}
-      {{netid}}
-      {{/each}}
-    </ul>
-    </p>
-    {{/if}}
-  </p>
-  {{/if}}
-
-
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>

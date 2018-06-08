@@ -2,9 +2,16 @@
 {% tplhandlebars "endorsers_partial" %}
 <div style="position: relative">
           {{#if endorsement}}
-          <input type="checkbox" id="revoke_{{svc}}_{{netid}}" value="{{netid}}" /><label for="revoke_{{svc}}_{{netid}}"><i class="fa fa-square-o"></i></label>
+          <div class="row">
+          <div class="col-xs-6 text-center">
+            Provisioned<br />{{endorsement.date_endorsed}}
+          </div>
+          <div class="col-xs-6 text-center">
+          <button type="button" name="Revoke {{ endorsement.category_name }}" class="btn btn-primary confirm_revoke" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking">Revoke</button>
+          </div>
+          </div>
           {{else}}
-          <input type="checkbox" id="endorse_{{svc}}_{{netid}}" value="{{netid}}" /><label for="endorse_{{svc}}_{{netid}}"><i class="fa fa-square-o"></i></label>
+          <input type="checkbox" id="endorse_{{svc}}_{{netid}}" value="{{netid}}" /><label for="endorse_{{svc}}_{{netid}}">Provision {{#equals svc 'o365'}}Office 365{{else}}G Suite{{/equals}}</label>
           {{/if}}
 </div>
 

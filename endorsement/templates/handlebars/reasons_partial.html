@@ -1,17 +1,19 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "reasons_partial" %}
 
-{{#unendorsed endorsements}}
+{{#endorsed endorsements}}
+{{reason endorsements}}<input type=hidden class="reason-editor" placeholder="Reason for provisioning" value="{{reason endorsements}}">
+{{else}}
 <div class="displaying-reasons">
-  <select required="required" class="invalid" style="width: 150px;">
-    <option disabled selected value=""></option>
-    <option value="clinical" {{#reason endorsements 'Clinical work'}}selected="selected"{{/reason}}>Clinical work</option>
-    <option value="instructional" {{#reason endorsements 'Instructional activities'}}selected="selected"{{/reason}}>Instructional activities</option>
-    <option value="research" {{#reason endorsements 'Research'}}selected="selected"{{/reason}}>Research</option>
-    <option value="mentoring" {{#reason endorsements 'Student mentoring'}}selected="selected"{{/reason}}>Student mentoring</option>
-    <option value="consulting" {{#reason endorsements 'Third-party consulting'}}selected="selected"{{/reason}}>Third-party consulting</option>
-    <option value="advancement" {{#reason endorsements 'University Advancement support'}}selected="selected"{{/reason}}>University Advancement support</option>
-    <option value="volunteer" {{#reason endorsements 'Volunteer work'}}selected="selected"{{/reason}}>Volunteer work</option>
+  <select required="required" style="width: 150px;">
+    <option selected disabled value=""></option>
+    <option value="clinical">Clinical work</option>
+    <option value="instructional">Instructional activities</option>
+    <option value="research">Research</option>
+    <option value="mentoring">Student mentoring</option>
+    <option value="consulting">Third-party consulting</option>
+    <option value="advancement">University Advancement support</option>
+    <option value="volunteer">Volunteer work</option>
     <option value="other">Other...</option>
   </select>
   <div style="display: none;"><br />Provide reason</div>
@@ -20,6 +22,6 @@
   <input type=input class="reason-editor" placeholder="Reason for provisioning" value="" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
 </div>
 <p style="font-size: small;"><a href="javascript:void(0);" class='apply-all{{#has_reason endorsements}} visually-hidden{{/has_reason}}'>Apply to all</a></p>
-{{/unendorsed}}
+{{/endorsed}}
 
 {% endtplhandlebars %}

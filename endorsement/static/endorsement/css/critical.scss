@@ -80,7 +80,7 @@ img {
 .inline {display:inline;}
 /* Text structure */
 
-h1, h2, h3, h4 { font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif; font-weight: bold; /*color: $uwpurple;*/ }   
+h1, h2, h3, h4 { font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif; font-weight: bold; /*color: $uwpurple;*/ }
 
 h3 {
     font-size: 1.4rem; 
@@ -213,6 +213,9 @@ a {
 
 .nav-tabs {
     margin-top: 12px;
+    li {
+      h2 { font-size: 18px !important;}
+    }
 }
 
 #uwnetids-validated {
@@ -256,6 +259,12 @@ a {
     .has_netids {
       display: none;
     }
+  }
+}
+
+#shared-uwnetids {
+  button#shared_update {
+    margin-top: 10px;
   }
 }
 
@@ -318,32 +327,35 @@ a {
 }
 
 #uwnetids-endorsed, #shared-uwnetids {
-  table {
-    ul {
-       display: inline;
-       list-style: none;
-       padding: 0;
-       li { display: inline; }
-       li:after { content: ", "; }
-       li:last-child:after { content: ""; }
-    }
-  }
-
   a.link-disabled {
     cursor: not-allowed !important;
     pointer-events: none;
   }
 }
 
-.no-endorsements {
-    height: 8em;
-    line-height: 8em;
-    text-align: center;
-    background-color: #f9f9f9;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 24px;
+ul.comma-list { display: inline; list-style: none; padding: 0;
+  li { display: inline; }
+  li:after { content: ", "; }
+  li:nth-last-child(2):after { content: " and "; }
+  li:last-child:after { content: ""; }
+}
 
+.no-endorsements {
+  height: 8em;
+  line-height: 8em;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 24px;
+}
+
+.modal-content {
+  overflow: auto;
+}
+
+.shared-acceptance {
+  .row { margin-bottom: 12px; }
 }
 
 .success { color: green; }
@@ -420,6 +432,8 @@ footer .footer-links ul li:last-child {
 
 
 /***** Checkboxes *****/
+input[type=checkbox][id^=endorse_] { margin-right: 10px; }
+/**
 input[type=checkbox][id^=revoke_],
 input[type=checkbox][id^=endorse_] { display:none; }
 
@@ -438,21 +452,44 @@ input[type=checkbox][id^=endorse_] + label:before {
 input[type=checkbox][id^=endorse_]:checked + label:before { content: "\f00c"; color: #DAA520;}
 input[type=checkbox][id^=revoke_] + label:before { content: "\f00c"; color: green;}
 input[type=checkbox][id^=revoke_]:checked + label:before { content: "\f00d"; color: red;}
-
+**/
 
 /***** EVERYTHING ELSE *****/
-
+/**
 .action {
     font-weight: 600;
     font-style: italic;
 }
+**/
 
-select.error {
-    border: 1px solid red;
-    + div {
-        display: inline !important;
-        color: red;
-        font-size: .9em;
+td.error {
+    select {
+        border: 1px solid red;
+        + div {
+            display: inline !important;
+            color: red;
+            font-size: .9em;
+        }
+    }
+    .displaying-email {
+        display: none;
+    }
+    .editing-email {
+        position: static;
+        left: auto;
+        top: auto;
+        .email-editor {
+            border: 1px solid red;
+        }
+        input + span {
+            display: inline !important;
+            white-space: nowrap;
+            color: red;
+            font-size: .9em;
+        }
+        .finish-edit-email {
+            display: none;
+        }
     }
 }
 

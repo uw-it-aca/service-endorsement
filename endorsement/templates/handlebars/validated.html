@@ -34,7 +34,7 @@
     <td><span class="endorsed_name">{{name}}</span></td>
     <td>
       <div class="editing-email visually-hidden">
-        <input type=input class="email-editor" placeholder="Email address required" value="{{email}}" style="width: 160px;"> <a href="javascript:void(0);" class="finish-edit-email"><i class="fa fa-minus-circle failure"></i></a>
+        <input type=input class="email-editor" placeholder="Email address required" value="{{email}}" style="width: 160px;"> <span style="display: none;">Valid email required</span><a href="javascript:void(0);" class="finish-edit-email"><i class="fa fa-minus-circle failure"></i></a>
       </div>
       <div class="displaying-email">
         <span class="shown-email">{{email}}</span> <br><a href="javascript:void(0);" class="edit-email"><p style="font-size: small;">Edit</p></a>
@@ -70,9 +70,6 @@
 <!-- Button trigger modal -->
 
   <button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning..." data-target="#responsibility_modal"><span class="has_netids">Provision services to selected UW NetIDs</span><span class="no_netids" style="display: none;">No UW NetIDs selected</span></button>
-
-  <p style="margin-left: 190px; width: 300px;">Provide a valid email address and reason for provisioning services for all selected UW NetIDs.</p>
-
   </div>
 
 <!-- Responsiblity Modal -->
