@@ -37,12 +37,21 @@
     <div class="tab-pane" id="endorsed">
     </div>
   </div>
+
+
+  <!-- Revoke Confirmation Modal -->
+  <div class="modal fade" id="revoke_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"></div>
+  </div>
 </div>
+
 
 {% include "handlebars/validated.html" %}
 {% include "handlebars/valid_partial.html" %}
 {% include "handlebars/reasons_partial.html" %}
 {% include "handlebars/endorse_result.html" %}
+{% include "handlebars/revoke_modal.html" %}
 {% include "handlebars/endorsed.html" %}
 {% include "handlebars/endorsed_partial.html" %}
 {% include "handlebars/endorsers_partial.html" %}
@@ -58,4 +67,6 @@
 <script src="{% static "endorsement/js/main.js" %}"></script>
 <script src="{% static "endorsement/js/clipboard.js" %}"></script>
 <script src="{% static "endorsement/js/notify.js" %}"></script>
+<script src="{% static "endorsement/js/datetime.js" %}"></script>
+<script src="{% static "vendor/js/moment.2.8.3.min.js" %}"></script>
 {% endblock %}

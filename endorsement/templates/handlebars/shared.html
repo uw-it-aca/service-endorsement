@@ -9,32 +9,29 @@
 
   {{#if has_shared}}
   <div class="form-group">
+    <div style="height: 400px; scroll: auto; overflow: hidden; overflow-y: scroll;">
     <table class="table table-striped">
       <thead>
         <tr>
           <th>Shared UW NetID</th>
           <th>Name</th>
+          <th>Reason for provisioning</th>
           <th class="col-border-left">UW Office 365</th>
-          <th>Your provision reason</th>
-          <th><!-- {{#if can_revoke}}Revoke UW Office 365{{/if}} --></th>
           <th class="col-border-left">UW G Suite (Google)</th>
-          <th>Your provision reason</th>
-          <th><!-- {{#if can_revoke}}Revoke UW G Suite{{/if}} --></th>
         </tr>
       </thead>
       {{#each shared.shared}}
       <tr>
         <td>{{netid}}</td>
         <td>{{name}}</td>
-        <td id="endorsers-o365-{{netid}}" class="col-border-left">{{> endorsers_partial endorsements.o365}}</td>
-        <td id="reason-o365-{{ netid }}">{{> reasons_partial endorsement=endorsements.o365}}</td>
-        <td id="action-o365-{{ netid }}">{{> endorse_button_partial endorsements=endorsements.o365 netid=netid service='o365'}}</td>
-        <td id="endorsers-google-{{netid}}" class="col-border-left">{{> endorsers_partial endorsements.google}}</td>
-        <td id="reason-google-{{ netid }}">{{> reasons_partial endorsement=endorsements.google}}</td>
-        <td id="action-google-{{ netid }}">{{> endorse_button_partial endorsements=endorsements.google netid=netid service='google'}}</td>
+        <td id="reason-{{ netid }}">{{> reasons_partial endorsements=endorsements}}</td>
+        <td id="endorsers-o365-{{netid}}" class="col-border-left">{{> endorsers_partial endorsement=endorsements.o365 netid=netid svc="o365"}}</td>
+        <td id="endorsers-google-{{netid}}" class="col-border-left">{{> endorsers_partial endorsement=endorsements.google  netid=netid svc="google"}}</td>
       </tr>
       {{/each}}
     </table>
+    </div>
+<button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
   {{else}}
   <div class="no-endorsements">
       <p>You do not own any shared UW NetIDs.</p>
@@ -49,7 +46,6 @@
     </div>
   </div>
 </div>
-
 {% endtplhandlebars %}
 
 

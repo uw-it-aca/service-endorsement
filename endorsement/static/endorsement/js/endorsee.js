@@ -55,19 +55,6 @@ var displayEndorsedUWNetIDError = function(json_data) {
 };
 
 
-var utc2local = function (utc_date) {
-    var local = null,
-        utc;
-
-    if (utc_date) {
-        utc = moment.utc(utc_date).toDate();
-        local = moment(utc).local().format('YYYY-MM-DD HH:mm:ss');
-    }
-
-    return local;
-};
-
-
 var searchEndorsee = function () {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
     var netid = $('input#endorsee').val();
