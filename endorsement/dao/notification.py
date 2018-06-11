@@ -120,3 +120,86 @@ def notify_endorsees():
                 logger.error(
                     "Submission email failed: %s, To: %s, Status: %s" % (
                         ex, email, subject))
+
+
+def create_endorser_message(endorsed):
+    sent_date = datetime.now()
+    params = {
+        "o365_endorsed": endorsed.get('o365', None),
+        "google_endorsed": endorsed.get('google', None),
+        "o365_endorsed_count": len(endorsed.get('o365', [])),
+        "google_endorsed_count": len(endorsed.get('google', [])),
+        "endorsed_date": display_datetime(sent_date)
+    }
+
+    params["endorsed_count"] = params["o365_endorsed_count"]
+    params["endorsed_count"] += params["google_endorsed_count"]
+    params['both_endorsed'] = (params['google_endorsed'] and
+                               params['o365_endorsed'])
+
+    subject = "Shared NetID access to %s%s%s" % (
+        'UW Office 365' if 'o365_endorsed' in params else '',
+        ' and ' if (
+            'o365_endorsed' in params and 'google_endorsed' in params) else '',
+        'UW G Suite' if 'google_endorsed' in params else '')
+
+    text_template = "email/endorser.txt"
+    html_template = "email/endorser.html"
+
+    return (subject,
+            loader.render_to_string(text_template, params),
+            loader.render_to_string(html_template, params))
+
+
+def notify_endorsers():
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
+    endorsements = {}
+    for er in EndorsementRecord.objects.filter(
+            datetime_emailed__isnull=True,
+            datetime_endorsed__isnull=False):
+
+        # rely on @u forwarding for valid address
+        email = "%s@uw.edu" % er.endorser.netid
+        if email not in endorsements:
+            endorsements[email] = {}
+
+        data = {
+            'netid': er.endorsee.netid,
+            'id': er.id
+        }
+
+        if er.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
+            if 'o365' in endorsements[email]:
+                endorsements[email]['o365'].append(data)
+            else:
+                endorsements[email]['o365'] = [data]
+        elif er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
+            if 'google' in endorsements[email]:
+                endorsements[email]['google'].append(data)
+            else:
+                endorsements[email]['google'] = [data]
+
+    for email, endorsed in endorsements.items():
+        (subject, text_body, html_body) = create_endorser_message(endorsed)
+        recipients = [email]
+        message = EmailMultiAlternatives(
+            subject, text_body, sender, recipients,
+            headers={'Precedence': 'bulk'}
+        )
+
+        message.attach_alternative(html_body, "text/html")
+        try:
+            message.send()
+            for svc in ['o365', 'google']:
+                if svc in endorsed:
+                    for id in [x['id'] for x in endorsed[svc]]:
+                        record_mail_sent(id)
+
+            logger.info(
+                "Endorsement email sent To: %s, Status: %s" % (
+                    email, subject))
+        except Exception as ex:
+            logger.error(
+                "Endorsement email failed: %s, To: %s, Status: %s" % (
+                    ex, email, subject))
