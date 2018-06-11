@@ -1,0 +1,20 @@
+The UW employee {{ endorser_name }} ({{ endorser_netid }}) has requested that you be given access through the University of Washington to {%if o365_endorsed %}UW Office 365{% endif %}{%if both_endorsed %} and {% endif %}{%if google_endorsed %}UW G Suite (Google){% endif %}.
+
+Your use of these services is bound by UW-IT’s Appropriate Use policy, as well as being subject to state and federal law, and to other UW policies and procedures.</span> For more information, visit UW-IT’s Appropriate Use page at http://itconnect.uw.edu/work/appropriate-use/.
+
+To access the service{%if both_endorsed%}s{% endif %}, you must first agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to your use of UW computing resources, including your use of  {%if o365_endorsed %}UW Office 365{% endif %}{%if both_endorsed %} and {% endif %}{%if google_endorsed %}UW G Suite{% endif %}.
+
+{%if both_endorsed %}You must agree to the policies of each service separately.{% endif %}
+
+{%if o365_endorsed %}Review and agree to the policies in order to access UW Office 365 here: {{ o365_accept_url }}{% endif %}
+{%if google_endorsed %}Review and agree to the policies in order to access UW G Suite (Google) here: {{ google_accept_url }}{% endif %}
+
+Once you have agreed to the policies, the activation process will likely be completed within two hours, but it may take up to 24 hours.
+
+{%if o365_endorsed %}Get started using UW Office 365 here: http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/{% endif %}
+{%if google_endorsed %}Get started using UW G Suite here: https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate{% endif %}
+
+Thank you,
+
+UW-IT Help Center
+help@uw.edu

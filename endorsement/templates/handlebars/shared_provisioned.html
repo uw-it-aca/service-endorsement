@@ -10,7 +10,11 @@
 <div class="modal-body">
   <div>
     You have agreed to comply with all relevant policies, and we are in the process of provisioning
-    <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>NetID{{plural endorse_google_netid_count '' 's'}} <ul class="comma-list">{{#each endorse_o365}}<li>{{this}}</li>{{/each}}</ul> to UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>NetID{{plural endorse_google_netid_count '' 's'}} <ul class="comma-list">{{#each endorse_google}}<li>{{this}}</li>{{/each}}</ul> to UW G Suite</li>{{/if}}</ul>.
+    {{#gt endorse_netid_count 10}}
+    <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>{{endorse_o365_netid_count}} Netid{{plural endorse_o365_netid_count '' 's'}} to UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>{{endorse_google_netid_count}} Netid{{plural endorse_google_netid_count '' 's'}} to UW G Suite</li>{{/if}}</ul>.
+    {{else}}
+    <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>NetID{{plural endorse_o365_netid_count '' 's'}} <ul class="comma-list">{{#each endorse_o365}}<li>{{this}}</li>{{/each}}</ul> to UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>NetID{{plural endorse_google_netid_count '' 's'}} <ul class="comma-list">{{#each endorse_google}}<li>{{this}}</li>{{/each}}</ul> to UW G Suite</li>{{/if}}</ul>.
+    {{/gt}}
   </div>
   <br /> 
   {{#if endorse_o365_netid_count}}
