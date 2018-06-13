@@ -15,18 +15,17 @@ class Command(BaseCommand):
     help = 'Alert management to invalid endorsers'
 
     def handle(self, *args, **options):
-        endorsers = EndorsementRecord.objects.filter(
-            datetime_endorsed__isnull=False).values_list(
-                'endorser__netid', flat=True).distinct()
-
+        endorsements = EndorsementRecord.objects.filter(
+            datetime_endorsed__isnull=False)
+        endorsers = list(set([e.endorser.netid for e in endorsements]))
         for netid in endorsers:
             if not is_valid_endorser(netid):
                 endorser = get_endorser_model(netid)
-                endorsements = EndorsementRecord.objects.filter(
-                    endorser=endorser)
                 body = loader.render_to_string('email/invalid_endorser.txt',
-                                               {'endorser': endorser,
-                                                'endorsements': endorsements})
+                                               {
+                                                   'endorser': endorser,
+                                                   'endorsements': endorsements
+                                               })
                 mail_managers(
                     'Provsioner %s no longer valid' % endorser, body)
 

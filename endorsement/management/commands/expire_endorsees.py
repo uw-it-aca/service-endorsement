@@ -27,15 +27,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         lifetime = options.get('lifetime', self.default_lifetime)
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
-        birth = now - timedelta(days=lifetime)
-        endorsees = EndorsementRecord.objects.filter(
-            datetime_endorsed__lt=birth).values_list(
-                'endorsee__netid', flat=True).distinct()
-
+        endorsements = EndorsementRecord.objects.filter(
+            datetime_endorsed__lt=now-timedelta(days=lifetime))
+        endorsees = list(set([e.endorsee.netid for e in endorsements]))
         for netid in endorsees:
             endorsee = get_endorsee_model(netid)
-            endorsements = EndorsementRecord.objects.filter(
-                endorsee=endorsee, datetime_endorsed__lt=birth)
             body = loader.render_to_string('email/expired_endorsee.txt',
                                            {
                                                'lifetime': lifetime,
@@ -43,7 +39,7 @@ class Command(BaseCommand):
                                                'endorsements': endorsements
                                            })
             mail_managers(
-                'Provsioner %s no longer valid' % endorsee, body)
+                'Provisioned services for %s expiring' % endorsee, body)
 
-            logger.info('expired endorsments for %s %s endorsments', (
-                netid, len(endorsements)))
+            logger.info('expired endorsments (%s) for %s', (
+                len(endorsements)), netid)

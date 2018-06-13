@@ -6,8 +6,8 @@ has exceeded their provisioned service lifetime ({{lifetime}} day{{lifetime|plur
 The following endorsements should be renewed or revoked:
 
 Provisioner    Service        Reason
--------------  -------------  --------------------------------{%for e in endorsements %}
-{{e.endorser.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.reason|ljust:"40"}}{% endfor %}
+-------------  -------------  --------------------------------{%for e in endorsements %}{% if endorsee.netid == e.endorsee.netid %}
+{{e.endorser.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.reason|ljust:"40"}}{% endif %}{% endfor %}
 
 Sincerely,
 
