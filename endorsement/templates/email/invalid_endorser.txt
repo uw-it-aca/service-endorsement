@@ -4,7 +4,7 @@ It has recently come to my attention that the netid "{{ endorser.netid }}"
 has lost the privilege to endorse the following netids to their
 respective services:
 
-Netid          Service        Reason
+Provisionee    Service        Reason
 -------------  -------------  --------------------------------{%for e in endorsements %}
 {{e.endorsee.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.reason|ljust:"40"}}{% endfor %}
 

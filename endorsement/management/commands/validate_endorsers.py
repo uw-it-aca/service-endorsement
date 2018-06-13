@@ -5,10 +5,14 @@ from django.template import loader
 from endorsement.models import EndorsementRecord
 from endorsement.dao.user import get_endorser_model
 from endorsement.dao.gws import is_valid_endorser
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = 'Send and/or retry failed email notification to endorsers'
+    help = 'Alert management to invalid endorsers'
 
     def handle(self, *args, **options):
         endorsers = EndorsementRecord.objects.filter(
@@ -21,9 +25,10 @@ class Command(BaseCommand):
                 endorsements = EndorsementRecord.objects.filter(
                     endorser=endorser)
                 body = loader.render_to_string('email/invalid_endorser.txt',
-                                               {
-                                                   'endorser': endorser,
-                                                   'endorsements': endorsements
-                                               })
+                                               {'endorser': endorser,
+                                                'endorsements': endorsements})
                 mail_managers(
                     'Provsioner %s no longer valid' % endorser, body)
+
+                logger.info('no longer valid endorser %s of %s endorsments', (
+                    netid, len(endorsements)))
