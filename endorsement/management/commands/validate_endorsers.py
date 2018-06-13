@@ -16,7 +16,7 @@ class Command(BaseCommand):
                 'endorser__netid', flat=True).distinct()
 
         for netid in endorsers:
-            if True or not is_valid_endorser(netid):
+            if not is_valid_endorser(netid):
                 endorser = get_endorser_model(netid)
                 endorsements = EndorsementRecord.objects.filter(
                     endorser=endorser)
@@ -25,7 +25,5 @@ class Command(BaseCommand):
                                                    'endorser': endorser,
                                                    'endorsements': endorsements
                                                })
-                print "%s" % body
-                continue
                 mail_managers(
                     'Provsioner %s no longer valid' % endorser, body)
