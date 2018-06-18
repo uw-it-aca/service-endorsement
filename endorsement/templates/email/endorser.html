@@ -6,22 +6,22 @@
     {%if o365_endorsed %}
     <li>
       <p>
-        The {{ o365_endorsed_count}} NetID{{ o365_endorsed_count|pluralize}} {% for e in o365_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last %} and {% endif %}{{e.netid}}{% endfor %} will be provisioned to <strong>UW Office 365</strong>.
+        Access to <strong>UW Office 365</strong> will be provisioned for the {{ o365_endorsed_count}} UW NetID{{ o365_endorsed_count|pluralize}} {% for e in o365_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last %} and {% endif %}{{e.netid}}{% endfor %}.
       </p>
       <p>
-        <a href="http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/" target="_blank">Get started using UW Office 365</a>
+        <a href="http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/" target="_blank">Get started using UW Office 365.</a>
       </p>
     </li>
     {% endif %}
     {%if google_endorsed %}
     <li>
       <p>
-        The {{ google_endorsed_count}} NetID{{ google_endorsed_count|pluralize}} {% for e in google_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last %} and {% endif %}{{e.netid}}{% endfor %} will be provisioned to <strong>UW G Suite (Google)</strong>.
+        Access to <strong>UW G Suite (Google)</strong> will be provisioned for the {{ google_endorsed_count}} UW NetID{{ google_endorsed_count|pluralize}} {% for e in google_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last %} and {% endif %}{{e.netid}}{% endfor %}.
       </p>
       <p>
       </p>
       <p>
-        <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate" target="_blank">Get started using UW G Suite</a>
+        <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate" target="_blank">Get started using UW G Suite.</a>
       </p>
     </li>
   {% endif %}

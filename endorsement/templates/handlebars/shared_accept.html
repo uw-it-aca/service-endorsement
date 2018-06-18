@@ -1,7 +1,7 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "shared_accept_modal_content" %}
 
-<!-- Responsiblity Modal -->
+<!-- Responsibility Modal -->
 <div class="modal-header">
   <span style="font-weight: bold;">Confirm Shared UW NetID provision requests</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -12,9 +12,9 @@
   {{#if endorse_netid_count}}
   <div class="shared-acceptance container col-md-12">
     <div class="row">
-      You are about to provision 
+      You are about to provision
       {{#gt endorse_netid_count 10}}
-      <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>{{endorse_o365_netid_count}} Netids to UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>{{endorse_google_netid_count}} Netids to UW G Suite</li>{{/if}}</ul>.
+      <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>{{endorse_o365_netid_count}} shared UW NetIDs to UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>{{endorse_google_netid_count}} shared UW NetIDs to UW G Suite</li>{{/if}}</ul>.
       {{else}}
       the UW NetID{{plural endorse_o365_netid_count '' 's'}}
       {{#if endorse_o365_netid_count}}
