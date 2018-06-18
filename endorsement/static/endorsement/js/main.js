@@ -5,7 +5,16 @@ $(window.document).ready(function() {
     displayPageHeader();
     enableCheckEligibility();
     registerEvents();
-    $('#netid_list:visible').focus();
+    if (window.location.hash === '#provision') {
+        $('#netid_list:visible').focus();
+    } else if (window.location.hash === '#provisioned') {
+        $('a[href="#provisioned"]').tab('show');
+    } else if (window.location.hash === '#shared') {
+        $('a[href="#shared"]').tab('show');
+    } else {
+        history.replaceState({ hash: '#provision' }, null, '#provision');
+        $('#netid_list:visible').focus();
+    }
 });
 
 
@@ -140,6 +149,10 @@ var registerEvents = function() {
 
         enableEndorsability();
         enableSharedEndorsability();
+    }).on('click', '.tab-link', function (e) {
+        var tab = $(e.target).attr('href');
+
+        $('a[href="'+ tab + '"]').tab('show');
     }).on('focusout', '.email-editor', function(e) {
         finishEmailEdit($(e.target));
     }).on('change', '#accept_responsibility',  function(e) {
@@ -232,6 +245,16 @@ var registerEvents = function() {
     }).on('click', 'button#confirm_shared_endorse', function(e) {
         $(this).parents('.modal').modal('hide');
         endorseSharedUWNetIDs(getSharedUWNetIDsToEndorse());
+
+    }).on('click', '.nav-tabs a[data-toggle="tab"]', function(e) {
+        if (history.pushState) {
+            var hash = $(this).attr('href');
+
+            history.pushState({ hash: hash }, null, hash);
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
     }).on('change', 'input[id^="shared_accept_responsibility"]', function(e) {
         var boxes = $('input[id^="shared_accept_responsibility"]').length,
             checked = $('input[id^="shared_accept_responsibility"]:checked').length;
@@ -253,21 +276,26 @@ var registerEvents = function() {
         _modal.find('button#confirm_shared_endorse').attr('disabled', 'disabled');
     });
 
-    $('a[href="#endorse"]').on('shown.bs.tab', function () {
+    $(window).bind('popstate', function (e) {
+        var hash = e.originalEvent.state.hash;
+
+        $('a[href="'+ hash + '"]').tab('show');
+    });
+
+    $('a[href="#provision"]').on('shown.bs.tab', function (e) {
         $('#netid_list:visible').focus();
     });
 
-    $('a[href="#endorsed"]').on('shown.bs.tab', function () {
+    $('a[href="#provisioned"]').on('shown.bs.tab', function (e) {
         getEndorsedUWNetIDs();
     });
 
-    $('a[href="#shared"]').on('shown.bs.tab', function () {
+    $('a[href="#shared"]').on('shown.bs.tab', function (e) {
         // load once
         if ($('#shared table').length === 0) {
             getSharedUWNetIDs();
         }
     });
-
 };
 
 var finishEmailEdit = function($editor) {
@@ -599,8 +627,8 @@ var displayEndorsedUWNetIDs = function(endorsed) {
         endorsed: endorsed
     };
 
-    $('div.tab-pane#endorsed').html(template(context));
-    $('div.tab-pane#endorsed ul').each(function () {
+    $('div.tab-pane#provisioned').html(template(context));
+    $('div.tab-pane#provisioned ul').each(function () {
         var pending = $('.current-endorsee', this);
 
         if (pending.length) {
@@ -612,7 +640,7 @@ var displayEndorsedUWNetIDs = function(endorsed) {
 var getEndorsedUWNetIDs = function() {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
-    $('#endorsed').html($('#endorsed-loading').html());
+    $('#provisioned').html($('#endorsed-loading').html());
 
     $.ajax({
         url: "/api/v1/endorsed/",
@@ -626,7 +654,7 @@ var getEndorsedUWNetIDs = function() {
             $(document).trigger('endorse:UWNetIDsEndorsed', [results]);
         },
         error: function(xhr, status, error) {
-            $('#endorsed').html($('#endorsed-failure').html());
+            $('#provisioned').html($('#endorsed-failure').html());
         }
     });
 };
