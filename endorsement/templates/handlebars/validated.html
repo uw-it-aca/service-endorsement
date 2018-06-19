@@ -53,7 +53,7 @@
   {{else}}
   <tr class="invalid-netid">
     <td>{{netid}}</td>
-    <td colspan="3">{{#if ../is_shared}}<a href="#shared" class='tab-link'>Shared UW NetID</a>{{else}}{{#if ../is_ineligible}}Ineligible UW NetID{{else}}Not a valid UW NetID{{/if}}{{/if}}</td>
+    <td colspan="3">{{#if ../is_shared}}Shared UW NetIDs cannot be provisioned here. <a href="#shared" class='tab-link'>Provision services to your Shared UW NetIDs</a>{{else}}{{#if ../is_ineligible}}Ineligible UW NetID{{else}}Not a valid UW NetID{{/if}}{{/if}}</td>
     <td class="centered col-border-left">n/a</td>
     <td></td>
     <td class="centered col-border-left">n/a</td>
