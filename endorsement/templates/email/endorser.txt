@@ -1,12 +1,22 @@
-You have requested provisioning for {{endorsed_count}} shared UW NetID{{ endorsed_count|pluralize }} to {%if o365_endorsed %}UW Office 365{% endif %}{% if both_endorsed %} and {% endif %}{%if google_endorsed %}UW G Suite (Google){% endif %}.
+You have requested access to {% if o365_endorsed %}UW Office 365 for {% if o365_endorsed_count > 3 %}{{ o365_endorsed_count }} of your shared UW Netids{% if both_endorsed %}
+{% else %}.{% endif %}{% else %}the shared UW NetID{{ o365_endorsed_count|pluralize}}:
 
-{%if o365_endorsed %}{{ o365_endorsed_count}} NetID{{ o365_endorsed_count|pluralize}} will be provisioned to UW Office 365.
+{% for e in o365_endorsed %}        '{{e.netid}}'
+{% endfor %}
+{% endif %}{% endif %}{% if both_endorsed %}and {% endif %}{% if google_endorsed %}UW G Suite (Google) for {% if google_endorsed_count > 3 %}{{ google_endorsed_count }} of your shared UW Netids.
+{% else %}the shared UW NetID{{ google_endorsed_count|pluralize}}:
 
-Get started using UW Office 365 here: http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365
+{% for e in google_endorsed %}        '{{e.netid}}'
+{% endfor %}{% endif %}{% endif %}
+We are in the process of provisioning access for {{ endorsed_count|pluralize:"this,these" }} acccount{{ endorsed_count|pluralize }}.
+
+{% if o365_endorsed %}Get started using UW Office 365 at:
+
+        http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/
 {% endif %}
-{%if google_endorsed %}{{ google_endorsed_count}} NetID{{ google_endorsed_count|pluralize }} will be provisioned to UW G Suite (Google).
+{% if google_endorsed %}Get started using UW G Suite at:
 
-Get started using UW G Suite here: https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate
+        https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate
 {% endif %}
 Shared NetID use of these services is bound by UW-IT’s Appropriate Use policy, as well as being subject to
 state and federal law, and to other UW policies and procedures.  For more information, visit UW-IT’s Appropriate Use

@@ -41,8 +41,8 @@ def create_endorsee_message(endorser):
     except KeyError:
         params['google_endorsed'] = False
 
-    params['both_endorsed'] = (params['google_endorsed'] and
-                               params['o365_endorsed'])
+    params['both_endorsed'] = (params['google_endorsed'] > 0 and
+                               params['o365_endorsed'] > 0)
 
     subject = "Your new access to %s tools" % (services)
 
@@ -134,8 +134,8 @@ def create_endorser_message(endorsed):
 
     params["endorsed_count"] = params["o365_endorsed_count"]
     params["endorsed_count"] += params["google_endorsed_count"]
-    params['both_endorsed'] = (params['google_endorsed'] and
-                               params['o365_endorsed'])
+    params['both_endorsed'] = (params['google_endorsed'] > 0 and
+                               params['o365_endorsed'] > 0)
 
     subject = "Shared NetID access to %s%s%s" % (
         'UW Office 365' if 'o365_endorsed' in params else '',
@@ -190,6 +190,8 @@ def notify_endorsers():
 
         message.attach_alternative(html_body, "text/html")
         try:
+            print "%s" % text_body
+            continue
             message.send()
             for svc in ['o365', 'google']:
                 if svc in endorsed:

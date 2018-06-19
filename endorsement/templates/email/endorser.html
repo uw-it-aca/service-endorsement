@@ -1,37 +1,45 @@
 <p>
-  You have requested provisioning for the following {{endorsed_count}} shared UW NetID{{ endorsed_count|pluralize }}:
-</p>
-
-<ul style="list-style-type: none;">
-    {%if o365_endorsed %}
-    <li>
-      <p>
-        Access to <strong>UW Office 365</strong> will be provisioned for the {{ o365_endorsed_count}} UW NetID{{ o365_endorsed_count|pluralize}} {% for e in o365_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last %} and {% endif %}{{e.netid}}{% endfor %}.
-      </p>
-      <p>
-        <a href="http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/" target="_blank">Get started using UW Office 365.</a>
-      </p>
-    </li>
-    {% endif %}
-    {%if google_endorsed %}
-    <li>
-      <p>
-        Access to <strong>UW G Suite (Google)</strong> will be provisioned for the {{ google_endorsed_count}} UW NetID{{ google_endorsed_count|pluralize}} {% for e in google_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last %} and {% endif %}{{e.netid}}{% endfor %}.
-      </p>
-      <p>
-      </p>
-      <p>
-        <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate" target="_blank">Get started using UW G Suite.</a>
-      </p>
-    </li>
+  You have requested access to
+{% if o365_endorsed %}
+  UW Office 365 for 
+  {% if o365_endorsed_count > 10 %}
+  {{ o365_endorsed_count }} of your shared UW Netids{% if not both_endorsed %}.{% endif %}
+  {% else %}
+  the shared UW NetID{{ o365_endorsed_count|pluralize}}
+  {% for e in o365_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last and not forloop.first %} and {% endif %}'{{e.netid}}'{% endfor %}{% if not both_endorsed %}.{% endif %}
   {% endif %}
+{% endif %}
 
-</ul>
+{% if both_endorsed %} and {% endif %}
+
+{% if google_endorsed %}
+  UW G Suite (Google) for
+  {% if google_endorsed_count > 10 %}
+  {{ google_endorsed_count }} of your shared UW Netids.
+  {% else %}
+  the shared UW NetID{{ google_endorsed_count|pluralize}}
+  {% for e in google_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last and not forloop.first %} and {% endif %}'{{e.netid}}'{% endfor %}.
+  {% endif %}
+{% endif %}
+</p>
 
 <p>
-    <span style="font-weight: 700;">Shared NetID use of these services is bound by UW-IT’s Appropriate Use policy, as well as being subject to state and federal law, and to other UW policies and procedures.</span> For more information, visit UW-IT’s Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">http://itconnect.uw.edu/work/appropriate-use/</a>.
+We are in the process of provisioning access for {{ endorsed_count|pluralize:"this,these" }} acccount{{ endorsed_count|pluralize }}.
 </p>
 
+{% if o365_endorsed %}
+<p>
+  <a href="http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/" target="_blank">Get started using UW Office 365.</a>
+</p>
+{% endif %}
+{% if google_endorsed %}
+<p>
+  <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate" target="_blank">Get started using UW G Suite.</a>
+</p>
+{% endif %}
+<p>
+  <span style="font-weight: 700;">Shared NetID use of these services is bound by UW-IT&apos;s Appropriate Use policy, as well as being subject to state and federal law, and to other UW policies and procedures.</span> For more information, visit UW-IT&apos;s Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">http://itconnect.uw.edu/work/appropriate-use/</a>.
+</p>
 <p>
     Thank you,<br />
     UW-IT Help Center<br />
