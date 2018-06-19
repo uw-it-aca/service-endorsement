@@ -1,6 +1,7 @@
 import logging
 from django.utils import timezone
 from endorsement.models.core import Endorser, Endorsee, EndorseeEmail
+from uw_uwnetid.models import Category
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_endorser_data, get_endorsee_data
 from endorsement.dao.uwnetid_subscription_60 import is_valid_endorsee
@@ -77,7 +78,8 @@ def get_endorsee_email_model(endorsee, endorser, email=None):
 
 def is_shared_netid(netid):
     for category in get_shared_categories_for_netid(netid):
-        if category.category_code == 11 and category.source_code == 4:
+        if (category.source_code == 4 and
+                category.status_code == Category.STATUS_ACTIVE):
             return True
 
     return False
