@@ -190,8 +190,6 @@ def notify_endorsers():
 
         message.attach_alternative(html_body, "text/html")
         try:
-            print "%s" % text_body
-            continue
             message.send()
             for svc in ['o365', 'google']:
                 if svc in endorsed:
