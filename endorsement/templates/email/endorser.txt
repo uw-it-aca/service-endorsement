@@ -1,14 +1,14 @@
-You have requested access to {% if o365_endorsed %}UW Office 365 for {% if o365_endorsed_count > 3 %}{{ o365_endorsed_count }} of your shared UW Netids{% if both_endorsed %}
+You have requested access to {% if o365_endorsed %}UW Office 365 for {% if o365_endorsed_count > 3 %}{{ o365_endorsed_count }} of your shared UW NetIDs{% if both_endorsed %}
 {% else %}.{% endif %}{% else %}the shared UW NetID{{ o365_endorsed_count|pluralize}}:
 
 {% for e in o365_endorsed %}        '{{e.netid}}'
 {% endfor %}
-{% endif %}{% endif %}{% if both_endorsed %}and {% endif %}{% if google_endorsed %}UW G Suite (Google) for {% if google_endorsed_count > 3 %}{{ google_endorsed_count }} of your shared UW Netids.
+{% endif %}{% endif %}{% if both_endorsed %}and {% endif %}{% if google_endorsed %}UW G Suite (Google) for {% if google_endorsed_count > 3 %}{{ google_endorsed_count }} of your shared UW NetIDs.
 {% else %}the shared UW NetID{{ google_endorsed_count|pluralize}}:
 
 {% for e in google_endorsed %}        '{{e.netid}}'
 {% endfor %}{% endif %}{% endif %}
-We are in the process of provisioning access for {{ endorsed_count|pluralize:"this,these" }} acccount{{ endorsed_count|pluralize }}.
+We are in the process of provisioning access for {{ endorsed_count|pluralize:"this,these" }} account{{ endorsed_count|pluralize }}.
 
 {% if o365_endorsed %}Get started using UW Office 365 at:
 
@@ -18,9 +18,9 @@ We are in the process of provisioning access for {{ endorsed_count|pluralize:"th
 
         https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate
 {% endif %}
-Shared NetID use of these services is bound by UW-IT’s Appropriate Use policy, as well as being subject to
+Shared UW NetID use of these services is bound by UW-IT’s Appropriate Use policy, as well as being subject to
 state and federal law, and to other UW policies and procedures.  For more information, visit UW-IT’s Appropriate Use
-page at http://itconnect.uw.edu/work/appropriate-use/.
+page at http://itconnect.uw.edu/work/appropriate-use/
 
 Thank you,
 
