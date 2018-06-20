@@ -18,10 +18,12 @@ class TestEndorseDao(TransactionTestCase):
 
         self.assertIsNotNone(
             EndorsementRecord.objects.get(endorser=endorser,
-                                          endorsee=endorsee))
+                                          endorsee=endorsee,
+                                          is_deleted__isnull=True))
 
         qset = EndorsementRecord.objects.filter(endorser=endorser,
-                                                endorsee=endorsee)
+                                                endorsee=endorsee,
+                                                is_deleted__isnull=True)
         self.assertEqual(len(qset), 1)
 
         endorsee = get_endorsee_model('endorsee6')

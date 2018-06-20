@@ -28,7 +28,8 @@ class Command(BaseCommand):
         lifetime = options.get('lifetime', self.default_lifetime)
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
         endorsements = EndorsementRecord.objects.filter(
-            datetime_endorsed__lt=now-timedelta(days=lifetime))
+            datetime_endorsed__lt=now-timedelta(days=lifetime),
+            is_deleted__isnull=True)
         endorsees = list(set([e.endorsee.netid for e in endorsements]))
         for netid in endorsees:
             endorsee = get_endorsee_model(netid)

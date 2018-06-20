@@ -35,7 +35,7 @@ class Accept(RESTDispatch):
         original_user = user_service.get_original_user()
         acted_as = None if (netid == original_user) else original_user
 
-        records = EndorsementRecord.objects.filter(accept_id=accept_id)
+        records = EndorsementRecord.objects.get_accept_endorsement(accept_id)
         if len(records) != 1:
             return invalid_session(logger, timer)
 

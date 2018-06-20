@@ -3,7 +3,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from endorsement.models import EndorsementRecord
 from endorsement.dao.user import get_endorsee_email_model
-from endorsement.dao.endorse import record_mail_sent
 from endorsement.dao import display_datetime
 from datetime import datetime
 import logging
@@ -59,9 +58,7 @@ def notify_endorsees():
                      "provision-noreply@uw.edu")
 
     endorsements = {}
-    for er in EndorsementRecord.objects.filter(
-            datetime_emailed__isnull=True,
-            datetime_endorsed__isnull=True):
+    for er in EndorsementRecord.objects.get_unendorsed_unnotified():
         try:
             email = get_endorsee_email_model(
                 er.endorsee, er.endorser).email
@@ -112,7 +109,7 @@ def notify_endorsees():
                 message.send()
 
                 for service, data in endorsers['services'].items():
-                    record_mail_sent(data['id'])
+                    EndorsementRecord.objects.emailed(data['id'])
 
                 logger.info("Submission email sent To: %s, Status: %s" % (
                     email, subject))
@@ -155,10 +152,7 @@ def notify_endorsers():
     sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
                      "provision-noreply@uw.edu")
     endorsements = {}
-    for er in EndorsementRecord.objects.filter(
-            datetime_emailed__isnull=True,
-            datetime_endorsed__isnull=False):
-
+    for er in EndorsementRecord.objects.get_endorsed_unnotified():
         # rely on @u forwarding for valid address
         email = "%s@uw.edu" % er.endorser.netid
         if email not in endorsements:
@@ -194,7 +188,7 @@ def notify_endorsers():
             for svc in ['o365', 'google']:
                 if svc in endorsed:
                     for id in [x['id'] for x in endorsed[svc]]:
-                        record_mail_sent(id)
+                        EndorsementRecord.objects.emailed(id)
 
             logger.info(
                 "Endorsement email sent To: %s, Status: %s" % (

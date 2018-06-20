@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         endorsements = EndorsementRecord.objects.filter(
-            datetime_endorsed__isnull=False)
+            datetime_endorsed__isnull=False, is_deleted__isnull=True)
         endorsers = list(set([e.endorser.netid for e in endorsements]))
         for netid in endorsers:
             if not is_valid_endorser(netid):

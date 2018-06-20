@@ -5,8 +5,7 @@ from uw_uwnetid.models import Subscription, Category
 from uw_uwnetid.category import update_catagory
 from uw_uwnetid.subscription import (
     get_netid_subscriptions, update_subscription)
-from endorsement.dao.user import get_endorsee_model
-from endorsement.models import Endorsee, EndorsementRecord
+from endorsement.models import EndorsementRecord
 from endorsement.exceptions import (
     NoEndorsementException, CategoryFailureException,
     SubscriptionFailureException)
@@ -25,7 +24,14 @@ def initiate_endorsement(endorser, endorsee, reason, category_code):
         category_code=category_code,
         reason=reason,
         endorsee=endorsee,
-        defaults={'datetime_created': timezone.now()})
+        defaults={
+            'datetime_created': timezone.now(),
+            'datetime_emailed': None,
+            'datetime_endorsed': None,
+            'datetime_renewed': None,
+            'datetime_expired': None,
+            'is_deleted': None,
+        })
 
     return en
 
@@ -43,43 +49,47 @@ def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
         defaults={
             'reason': reason,
             'datetime_endorsed': timezone.now(),
-            'acted_as': acted_as
+            'acted_as': acted_as,
+            'datetime_emailed': None,
+            'datetime_renewed': None,
+            'datetime_expired': None,
+            'is_deleted': None,
         })
 
     return en
 
 
 def clear_endorsement(endorser, endorsee, category_code):
+    if EndorsementRecord.objects.get_endorsements_for_endorsee(
+            endorsee, category_code).count() <= 1:
+        _former_category(endorsee.netid, category_code)
+        logger.info('former category %s for %s by %s' % (
+            category_code, endorsee.netid, endorser.netid))
+
     logger.info('clearing record %s for %s by %s' % (
         category_code, endorsee.netid, endorser.netid))
-
-    EndorsementRecord.objects.filter(
-        endorser=endorser,
-        category_code=category_code,
-        endorsee=endorsee).delete()
+    get_endorsement(endorser, endorsee, category_code).revoke()
 
 
 def get_endorsement(endorser, endorsee, category_code):
     try:
-        return EndorsementRecord.objects.get(
-            endorser=endorser, endorsee=endorsee,
-            category_code=category_code)
+        return EndorsementRecord.objects.get_endorsement(
+            endorser, endorsee, category_code)
     except EndorsementRecord.DoesNotExist:
         raise NoEndorsementException()
 
 
 def get_endorsements_by_endorser(endorser):
-    return EndorsementRecord.objects.filter(endorser=endorser)
+    return EndorsementRecord.objects.get_endorsements_for_endorser(endorser)
 
 
 def get_endorsements_for_endorsee(endorsee):
-    return EndorsementRecord.objects.filter(endorsee=endorsee)
+    return EndorsementRecord.objects.get_endorsements_for_endorsee(endorsee)
 
 
 def get_endorsements_for_endorsee_re(endorsee_regex):
-    endorsees = Endorsee.objects.filter(
-        netid__regex=r'^%s$' % endorsee_regex).values_list('id', flat=True)
-    return EndorsementRecord.objects.filter(endorsee_id__in=endorsees)
+    return EndorsementRecord.objects.get_endorsements_for_endorsee_re(
+        endorsee_regex)
 
 
 def initiate_office365_endorsement(endorser, endorsee, reason):
@@ -135,14 +145,6 @@ def clear_office365_endorsement(endorser, endorsee):
     Upon failure to renew, the endorsement tools should:
       *  mark category 235 it former (status 3).
     """
-    if EndorsementRecord.objects.filter(
-            endorsee=endorsee,
-            category_code=Category.OFFICE_365_ENDORSEE).count() <= 1:
-        _former_category(endorsee.netid, Category.OFFICE_365_ENDORSEE)
-        logger.info('former category %s for %s by %s' % (
-            Category.OFFICE_365_ENDORSEE,
-            endorsee.netid, endorser.netid))
-
     clear_endorsement(
         endorser, endorsee, EndorsementRecord.OFFICE_365_ENDORSEE)
 
@@ -152,14 +154,6 @@ def clear_google_endorsement(endorser, endorsee):
     Upon failure to renew, the endorsement tools should:
       *  mark category 234 it former (status 3).
     """
-    if EndorsementRecord.objects.filter(
-            endorsee=endorsee,
-            category_code=Category.GOOGLE_SUITE_ENDORSEE).count() <= 1:
-        _former_category(endorsee.netid, Category.GOOGLE_SUITE_ENDORSEE)
-        logger.info('former category %s for %s by %s' % (
-            Category.GOOGLE_SUITE_ENDORSEE,
-            endorsee.netid, endorser.netid))
-
     clear_endorsement(
         endorser, endorsee, EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
@@ -179,7 +173,8 @@ def is_permitted(endorser, endorsee, subscription_codes):
             active = False
             # weirdness for testing with mock data
             if getattr(settings, "RESTCLIENTS_DAO_CLASS", 'File') == 'File':
-                e = EndorsementRecord.objects.filter(endorsee=endorsee)
+                e = EndorsementRecord.objects.filter(endorsee=endorsee,
+                                                     is_deleted__isnull=True)
                 active = len(e) < 0
         else:
             raise
@@ -259,10 +254,3 @@ def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
 
     except DataFailureException as ex:
         raise SubscriptionFailureException('%s' % ex)
-
-
-def record_mail_sent(id):
-    emailed_date = timezone.now()
-
-    EndorsementRecord.objects.filter(pk=int(id)).update(
-        datetime_emailed=emailed_date)
