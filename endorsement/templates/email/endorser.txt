@@ -1,9 +1,9 @@
-You have requested access to {% if o365_endorsed %}UW Office 365 for {% if o365_endorsed_count > 3 %}{{ o365_endorsed_count }} of your shared UW NetIDs{% if both_endorsed %}
+You have requested access to {% if o365_endorsed %}UW Office 365 for {% if o365_endorsed_count > 10 %}{{ o365_endorsed_count }} of your shared UW NetIDs{% if both_endorsed %}
 {% else %}.{% endif %}{% else %}the shared UW NetID{{ o365_endorsed_count|pluralize}}:
 
 {% for e in o365_endorsed %}        '{{e.netid}}'
 {% endfor %}
-{% endif %}{% endif %}{% if both_endorsed %}and {% endif %}{% if google_endorsed %}UW G Suite (Google) for {% if google_endorsed_count > 3 %}{{ google_endorsed_count }} of your shared UW NetIDs.
+{% endif %}{% endif %}{% if both_endorsed %}and {% endif %}{% if google_endorsed %}UW G Suite (Google) for {% if google_endorsed_count > 10 %}{{ google_endorsed_count }} of your shared UW NetIDs.
 {% else %}the shared UW NetID{{ google_endorsed_count|pluralize}}:
 
 {% for e in google_endorsed %}        '{{e.netid}}'

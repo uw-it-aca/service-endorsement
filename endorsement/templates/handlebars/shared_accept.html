@@ -12,12 +12,12 @@
   {{#if endorse_netid_count}}
   <div class="shared-acceptance container col-md-12">
     <div class="row">
-      You are about to provision
+      You are about to provision the
       {{#gt endorse_netid_count 10}}
       <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>{{endorse_o365_netid_count}} shared UW NetIDs to UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>{{endorse_google_netid_count}} shared UW NetIDs to UW G Suite</li>{{/if}}</ul>.
       {{else}}
-      the UW NetID{{plural endorse_o365_netid_count '' 's'}}
       {{#if endorse_o365_netid_count}}
+      UW NetID{{plural endorse_o365_netid_count '' 's'}}
       <ul class="comma-list">
         {{#each endorse_o365}}<li style="font-weight: bold;">{{this}}</li>{{/each}}
       </ul> to the UW Office 365
@@ -28,9 +28,6 @@
       {{/if}}
       {{/if}}
       {{#if endorse_google_netid_count}}
-      {{#unless endorse_o365_netid_count}}
-      You are about to provision the
-      {{/unless}}
       UW NetID{{plural endorse_google_netid_count '' 's'}}
       <ul class="comma-list">
         {{#each endorse_google}}<li style="font-weight: bold;">{{this}}</li>{{/each}}
