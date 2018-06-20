@@ -163,7 +163,7 @@ var registerEvents = function() {
         }
     });
 
-    // broad delegation
+    // broad modal event delegation
     $(document).on('keypress', function (e) {
         if ($(e.target).hasClass('email-editor') && e.which == 13) {
             finishEmailEdit($(e.target));
@@ -201,7 +201,6 @@ var registerEvents = function() {
                 $('.revoke-' + id).html('');
                 $('.endorsed-' + id).html($("#unendorsed").html());
             });
-
         });
     }).on('endorse:SharedUWNetIDsRevokeStatus', function (e, data) {
         updateSharedEndorsementStatus(data.revoked);
@@ -266,6 +265,15 @@ var registerEvents = function() {
         } else {
             $('button#confirm_shared_endorse').attr('disabled', 'disabled');
         }
+    }).on('shown.bs.tab', 'a[href="#provision"]', function (e) {
+        $('#netid_list:visible').focus();
+    }).on('shown.bs.tab', 'a[href="#provisioned"]', function (e) {
+        getEndorsedUWNetIDs();
+    }).on('shown.bs.tab', 'a[href="#shared"]', function (e) {
+        // load once
+        if ($('#shared table').length === 0) {
+            getSharedUWNetIDs();
+        }
     }).on('show.bs.modal', '#responsibility_modal' ,function (event) {
         var _modal = $(this);
 
@@ -282,21 +290,6 @@ var registerEvents = function() {
         var hash = e.originalEvent.state.hash;
 
         $('a[href="'+ hash + '"]').tab('show');
-    });
-
-    $('a[href="#provision"]').on('shown.bs.tab', function (e) {
-        $('#netid_list:visible').focus();
-    });
-
-    $('a[href="#provisioned"]').on('shown.bs.tab', function (e) {
-        getEndorsedUWNetIDs();
-    });
-
-    $('a[href="#shared"]').on('shown.bs.tab', function (e) {
-        // load once
-        if ($('#shared table').length === 0) {
-            getSharedUWNetIDs();
-        }
     });
 };
 
