@@ -214,7 +214,9 @@ var registerEvents = function() {
         enableSharedEndorsability();
     }).on('endorse:SharedUWNetIDsEndorseSuccess', function (e, netid, service, service_name) {
         // pause for shared endorse modal fade
+        $('button#shared_update').button('reset');
         setTimeout(function () {
+            enableSharedEndorsability();
             sharedEndorseSuccessModal(netid, service, service_name);
         }, 500);
     }).on('endorse:SharedUWNetIDsEndorseStatusError', function (e, netid, service, error) {
@@ -244,8 +246,8 @@ var registerEvents = function() {
         $modal.modal('show');
     }).on('click', 'button#confirm_shared_endorse', function(e) {
         $(this).parents('.modal').modal('hide');
+        $('button#shared_update').button('loading');
         endorseSharedUWNetIDs(getSharedUWNetIDsToEndorse());
-
     }).on('click', '.nav-tabs a[data-toggle="tab"]', function(e) {
         if (history.pushState) {
             var hash = $(this).attr('href');
