@@ -158,13 +158,13 @@ class EndorsementRecordManager(models.Manager):
             **params)
 
     def get_unendorsed_unnotified(self):
-        super(EndorsementRecordManager, self).get_queryset().filter(
+        return super(EndorsementRecordManager, self).get_queryset().filter(
             datetime_emailed__isnull=True,
             datetime_endorsed__isnull=True,
             is_deleted__isnull=True)
 
     def get_endorsed_unnotified(self):
-        super(EndorsementRecordManager, self).get_queryset().filter(
+        return super(EndorsementRecordManager, self).get_queryset().filter(
             datetime_emailed__isnull=True,
             datetime_endorsed__isnull=False,
             is_deleted__isnull=True)
