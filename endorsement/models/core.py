@@ -131,11 +131,9 @@ class EndorsementRecordManager(models.Manager):
         return self.get_endorsement(None, endorsee, category_code)
 
     def get_endorsements_for_endorsee_re(self, endorsee_regex):
-        endorsees = super(
-            EndorsementRecordManager, self).get_queryset().filter(
-                netid__regex=r'^%s$' % endorsee_regex,
-                is_deleted__isnull=True).values_list(
-                    'id', flat=True)
+        endorsees = Endorsee.objects.filter(
+            netid__regex=r'^%s$' % endorsee_regex).values_list(
+                'id', flat=True)
 
         return super(EndorsementRecordManager, self).get_queryset().filter(
             endorsee_id__in=endorsees, is_deleted__isnull=True)
