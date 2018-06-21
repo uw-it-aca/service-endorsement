@@ -33,11 +33,11 @@ def log_exception(logger, message, exc_info):
 
 
 def log_invalid_netid_response(logger, timer):
-    logger.error('Invalid netid, abort', timer)
+    logger.error("%s %s", 'Invalid netid, abort', timer)
 
 
 def log_err_with_netid(logger, timer, message):
-    logger.error(add_user_info(message), timer)
+    logger.error("%s %s", add_user_info(message), timer)
 
 
 def log_exception_with_timer(logger, timer, exc_info):
@@ -58,7 +58,7 @@ def log_data_error_response(logger, timer):
 
 
 def log_resp_time(logger, message, timer):
-    logger.info(logger, add_user_info(message), timer)
+    logger.info("%s %s", add_user_info(message), timer)
 
 
 def log_data_not_found_response(logger, timer):
