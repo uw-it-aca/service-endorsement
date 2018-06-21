@@ -233,10 +233,11 @@ var registerEvents = function() {
         displaySharedUWNetIDs(shared);
     }).on('click', '.confirm_revoke', function (event) {
         var $this = $(this),
-            $modal = $('#revoke_modal');
+            $modal = $('#revoke_modal'),
+            content_id = $this.closest('#shared-uwnetids').length ? '#shared_revoke_modal_content' : '#revoke_modal_content';
 
         $('.modal-content', $modal).html(
-            Handlebars.compile($("#revoke_modal_content").html())({
+            Handlebars.compile($(content_id).html())({
                 netid: $this.attr('data-netid'),
                 service: $this.attr('data-service'),
                 service_name: $this.attr('data-service-name')
