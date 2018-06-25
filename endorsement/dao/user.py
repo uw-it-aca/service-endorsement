@@ -38,19 +38,20 @@ def get_endorsee_model(uwnetid):
     return an Endorsee object
     @exception: DataFailureException
     """
+    try:
+        return Endorsee.objects.get(netid=uwnetid)
+    except Endorsee.DoesNotExist:
+        pass
+
     uwregid, display_name, email, is_person = get_endorsee_data(uwnetid)
     kerberos_active_permitted = is_valid_endorsee(uwnetid)
-    user, created = Endorsee.objects.update_or_create(
+    user = Endorsee.objects.create(
+        netid=uwnetid,
         regid=uwregid,
-        defaults={
-            'netid': uwnetid,
-            'display_name': display_name,
-            'is_person': is_person,
-            'kerberos_active_permitted': kerberos_active_permitted})
-
-    if created:
-        logger.info("Create endorsee: %s" % user)
-
+        display_name=display_name,
+        is_person=is_person,
+        kerberos_active_permitted=kerberos_active_permitted)
+    logger.info("Create endorsee: %s" % user)
     return user
 
 
