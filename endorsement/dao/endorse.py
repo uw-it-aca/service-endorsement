@@ -41,20 +41,32 @@ def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
         category_code, endorsee.netid,
         " (by %s)" % acted_as if acted_as else "",
         reason, endorser.netid))
-
-    en, created = EndorsementRecord.objects.update_or_create(
-        endorser=endorser,
-        category_code=category_code,
-        endorsee=endorsee,
-        defaults={
-            'reason': reason,
-            'datetime_endorsed': timezone.now(),
-            'acted_as': acted_as,
-            'datetime_emailed': None,
-            'datetime_renewed': None,
-            'datetime_expired': None,
-            'is_deleted': None,
-        })
+    now = timezone.now()
+    try:
+        en = EndorsementRecord.objects.get(
+            endorser=endorser,
+            category_code=category_code,
+            endorsee=endorsee)
+        en.reason = reason
+        en.datetime_endorsed = now
+        en.acted_as = acted_as
+        en.datetime_emailed = None
+        en.datetime_renewed = now if en.is_deleted else None
+        en.datetime_expired = None
+        en.is_deleted = None
+        en.save()
+    except EndorsementRecord.DoesNotExist:
+        en = EndorsementRecord.objects.create(
+            endorser=endorser,
+            category_code=category_code,
+            endorsee=endorsee,
+            reason=reason,
+            datetime_endorsed=now,
+            acted_as=acted_as,
+            datetime_emailed=None,
+            datetime_renewed=None,
+            datetime_expired=None,
+            is_deleted=None)
 
     return en
 

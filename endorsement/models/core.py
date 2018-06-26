@@ -224,6 +224,7 @@ class EndorsementRecord(models.Model):
             self.category_code, self.accept_salt)).hexdigest()
 
     def revoke(self):
+        self.datetime_expired = timezone.now()
         self.is_deleted = True
         self.save()
 
