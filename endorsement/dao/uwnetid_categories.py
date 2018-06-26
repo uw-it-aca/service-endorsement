@@ -12,5 +12,4 @@ def get_shared_categories_for_netid(netid):
         Category.ALTID_SHARED_COURSE,
         Category.ALTID_SHARED_SAO,
         Category.ALTID_SHARED_CLINICAL_1,
-        Category.ALTID_SHARED_CLINICAL_2,
         Category.ALTID_SUPPORT_DEPARTMENTAL])
