@@ -1,0 +1,9 @@
+{% load templatetag_handlebars %}
+
+{% tplhandlebars "shared-netids-tab-link" %}
+<li><a href="#shared" data-toggle="tab" class="shared-endorse"><h2>Provision services for shared UW NetIDs you own</h2></a></li>
+{% endtplhandlebars %}
+
+{% tplhandlebars "shared-netids-tab-content" %}
+<div class="tab-pane" id="shared"></div>
+{% endtplhandlebars %}

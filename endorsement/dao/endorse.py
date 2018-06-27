@@ -18,20 +18,31 @@ logger = logging.getLogger(__name__)
 def initiate_endorsement(endorser, endorsee, reason, category_code):
     logger.info('initiate category %s for %s because %s by %s' % (
         category_code, endorsee.netid, reason, endorser.netid))
-
-    en, created = EndorsementRecord.objects.update_or_create(
-        endorser=endorser,
-        category_code=category_code,
-        reason=reason,
-        endorsee=endorsee,
-        defaults={
-            'datetime_created': timezone.now(),
-            'datetime_emailed': None,
-            'datetime_endorsed': None,
-            'datetime_renewed': None,
-            'datetime_expired': None,
-            'is_deleted': None,
-        })
+    now = timezone.now()
+    try:
+        en = EndorsementRecord.objects.get(
+            endorser=endorser,
+            category_code=category_code,
+            endorsee=endorsee)
+        en.reason = reason
+        en.datetime_emailed = None
+        en.datetime_endorsed = None
+        en.datetime_renewed = now if en.is_deleted else None
+        en.datetime_expired = None
+        en.is_deleted = None
+        en.save()
+    except EndorsementRecord.DoesNotExist:
+        en = EndorsementRecord.objects.create(
+            endorser=endorser,
+            category_code=category_code,
+            reason=reason,
+            endorsee=endorsee,
+            datetime_created=now,
+            datetime_emailed=None,
+            datetime_endorsed=None,
+            datetime_renewed=None,
+            datetime_expired=None,
+            is_deleted=None)
 
     return en
 
