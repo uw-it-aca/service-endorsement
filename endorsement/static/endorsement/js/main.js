@@ -5,6 +5,10 @@ $(window.document).ready(function() {
     displayPageHeader();
     enableCheckEligibility();
     registerEvents();
+    loadInitialTab();
+});
+
+var loadInitialTab = function () {
     if (window.location.hash === '#provision') {
         $('#netid_list:visible').focus();
     } else if (window.location.hash === '#provisioned') {
@@ -15,8 +19,7 @@ $(window.document).ready(function() {
         history.replaceState({ hash: '#provision' }, null, '#provision');
         $('#netid_list:visible').focus();
     }
-});
-
+};
 
 var registerEvents = function() {
     // in app events

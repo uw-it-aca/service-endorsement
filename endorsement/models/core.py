@@ -138,6 +138,14 @@ class EndorsementRecordManager(models.Manager):
         return super(EndorsementRecordManager, self).get_queryset().filter(
             endorsee_id__in=endorsees, is_deleted__isnull=True)
 
+    def get_all_endorsements_for_endorsee_re(self, endorsee_regex):
+        endorsees = Endorsee.objects.filter(
+            netid__regex=r'^%s$' % endorsee_regex).values_list(
+                'id', flat=True)
+
+        return super(EndorsementRecordManager, self).get_queryset().filter(
+            endorsee_id__in=endorsees)
+
     def emailed(self, id):
         datetime_emailed = timezone.now()
         super(EndorsementRecordManager, self).get_queryset().filter(
@@ -241,6 +249,7 @@ class EndorsementRecord(models.Model):
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired),
+            "is_revoked": self.is_deleted,
             "accept_url": self.accept_url()
         }
 

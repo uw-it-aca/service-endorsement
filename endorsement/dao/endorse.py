@@ -104,6 +104,11 @@ def get_endorsements_for_endorsee_re(endorsee_regex):
         endorsee_regex)
 
 
+def get_endorsement_records_for_endorsee_re(endorsee_regex):
+    return EndorsementRecord.objects.get_all_endorsements_for_endorsee_re(
+        endorsee_regex)
+
+
 def initiate_office365_endorsement(endorser, endorsee, reason):
     """
     Create record that endorsee requested endorsement for endorsee
