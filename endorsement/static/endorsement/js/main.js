@@ -27,6 +27,8 @@ var displayPageHeader = function() {
 };
 
 var loadTools = function (tools) {
+    // load method puts whatever the tool needs in the document,
+    // sets up events and so forth...
     $.each(tools, function () {
         this.load.apply(this);
     });

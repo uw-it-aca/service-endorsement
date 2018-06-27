@@ -55,10 +55,10 @@ class Validate(RESTDispatch):
                 if not endorsee.is_person:
                     if is_shared_netid(endorsee.netid):
                         raise SharedUWNetid(
-                            '%s is a shared netid' % endorse_netid)
+                            '%s is a Shared NetID' % endorse_netid)
                     else:
                         raise InvalidNetID(
-                            '%s not a personal netid' % endorse_netid)
+                            '%s not a personal NetID' % endorse_netid)
 
                 netid_count -= 1
                 if netid_count < 0:

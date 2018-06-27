@@ -33,13 +33,9 @@ var ManageSharedNetids = {
             if ($('#shared table').length === 0) {
                 ManageSharedNetids._getSharedUWNetIDs();
             }
-        }).on('endorse:UWNetIDRevoking', function (e, validated) {
+        }).on('endorse:UWNetIDRevoking endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
             ManageSharedNetids._enableSharedEndorsability();
-        }).on('endorse:UWNetIDReasonEdited', function (e, validated) {
-            ManageSharedNetids._enableSharedEndorsability();
-        }).on('endorse:UWNetIDChangedReason', function (e) {
-            ManageSharedNetids._enableSharedEndorsability();
-        }).on('endorse:UWNetIDApplyAllReasons', function (e) {
+        }).on('change', 'input[id^="endorse_"]', function (e) {
             ManageSharedNetids._enableSharedEndorsability();
         }).on('endorse:SharedUWNetIDsRevokeStatus', function (e, data) {
             ManageSharedNetids._updateSharedEndorsementStatus(data.revoked);
@@ -64,8 +60,6 @@ var ManageSharedNetids = {
             ManageSharedNetids._endorseSharedUWNetIDs(ManageSharedNetids._getSharedUWNetIDsToEndorse());
         }).on('click', 'button#shared_update', function(e) {
             ManageSharedNetids._sharedEndorseAcceptModal(ManageSharedNetids._getSharedUWNetIDsToEndorse());
-        }).on('change', 'input[id^="endorse_"]', function (e) {
-            ManageSharedNetids._enableSharedEndorsability();
         }).on('change', 'input[id^="shared_accept_responsibility"]', function(e) {
             var boxes = $('input[id^="shared_accept_responsibility"]').length,
                 checked = $('input[id^="shared_accept_responsibility"]:checked').length;
