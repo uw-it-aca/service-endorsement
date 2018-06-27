@@ -411,5 +411,4 @@ var ProvisionServices = {
         $('#uwnetids-validated').hide();
         $('#uwnetids-endorsed').show();
     }
-
-}
+};

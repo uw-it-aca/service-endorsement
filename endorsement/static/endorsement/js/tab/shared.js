@@ -298,4 +298,4 @@ var ManageSharedNetids = {
         $('.modal-content', $modal).html(template(context));
         $modal.modal('show');
     }
-}
+};
