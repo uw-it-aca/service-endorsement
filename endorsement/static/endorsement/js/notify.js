@@ -2,15 +2,15 @@
 
 var Notify = {
     success: function (msg) {
-        Notify._notify(msg, 'alert-success')
+        Notify._notify(msg, 'alert-success');
     },
 
     error: function (msg) {
-        Notify._notify(msg, 'alert-danger', 7000)
+        Notify._notify(msg, 'alert-danger', 7000);
     },
 
     warning: function (msg) {
-        Notify._notify(msg, 'alert-warning')
+        Notify._notify(msg, 'alert-warning');
     },
 
     _notify: function (msg, div_class, fade) {
