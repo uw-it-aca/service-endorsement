@@ -1,7 +1,8 @@
 // javascript for service endorsement provisioning
 
 var ProvisionServices = {
-    hash: '#provision',
+    content_id: 'provision',
+    location_hash: '#provision',
 
     load: function () {
         this._loadTab();
@@ -10,41 +11,46 @@ var ProvisionServices = {
     },
 
     focus: function () {
-        if (window.location.hash === this.hash) {
-            $('a[href="' + this.hash + '"]').tab('show');
+        if (window.location.hash === this.location_hash) {
+            $('a[href="' + this.location_hash + '"]').tab('show');
             $('#netid_list:visible').focus();
         }
     },
 
     _loadTab: function () {
-        var tab_link = $("#provision-tab-link").html(),
-            tab_content = $("#provision-tab-content").html();
+        var tab_link_template = Handlebars.compile($("#provision-tab-link").html()),
+            tab_content_template = Handlebars.compile($("#provision-tab-content").html()),
+            context = {
+                tab_content_id: ProvisionServices.content_id
+            };
         
-        $('.nav-tabs').append(tab_link);
-        $('.tab-content').append(tab_content);
+        $('.nav-tabs').append(tab_link_template(context));
+        $('.tab-content').append(tab_content_template(context));
     },
 
     _registerEvents: function () {
-        $('#app_content').on('click', 'button#validate', function(e) {
+        // delegated events within our content
+        $('.tab-pane#' + ProvisionServices.content_id).on('click', 'button#validate', function(e) {
             var $this = $(this);
 
             $this.button('loading');
             ProvisionServices._validateUWNetids(ProvisionServices._getNetidList());
-        }).on('input', '#netid_list', function () {
-            ProvisionServices._enableCheckEligibility();
-        }).on('change', '#netid_list',  function(e) {
+        }).on('input change', '#netid_list', function () {
             ProvisionServices._enableCheckEligibility();
         }).on('click', 'button#netid_input', function(e) {
             ProvisionServices._showInputStep();
         }).on('change', 'input[name^="endorse_"]', function (e) {
             ProvisionServices._enableEndorsability();
         }).on('change', '#accept_responsibility',  function(e) {
+            var $endorse_button = $('button#endorse');
+
             if (this.checked) {
-                $('button#endorse').removeAttr('disabled');
+                $endorse_button .removeAttr('disabled');
             } else {
-                $('button#endorse').attr('disabled', 'disabled');
+                $endorse_button.attr('disabled', 'disabled');
             }
         }).on('click', 'button#new_netid_input', function(e) {
+            // clear text area and reset
             $('#netid_list').val('');
             $('.endorsement-group input:checked').prop('checked', false);
             ProvisionServices._enableCheckEligibility();
@@ -65,6 +71,10 @@ var ProvisionServices = {
             var $row = $(e.target).closest('tr');
 
             ProvisionServices._finishEmailEdit($('.email-editor', $row));
+        }).on('keypress', '.email-editor', function (e) {
+            if (e.which == 13) {
+                ProvisionServices._finishEmailEdit($(e.target));
+            }
         }).on('focusout', '.email-editor', function(e) {
             ProvisionServices._finishEmailEdit($(e.target));
         }).on('click', 'button#endorse', function(e) {
@@ -73,35 +83,31 @@ var ProvisionServices = {
             $this.parents('.modal').modal('hide');
             $('#confirm_endorsements').button('loading').addClass('loading');
             ProvisionServices._endorseUWNetIDs(ProvisionServices._getEndorseNetids());
-        }).on('keypress', function (e) {
-            if ($(e.target).hasClass('email-editor') && e.which == 13) {
-                ProvisionServices._finishEmailEdit($(e.target));
-            }
-        });
-
-        $(document).on('shown.bs.tab', 'a[href="#provision"]', function (e) {
-            $('#netid_list:visible').focus();
         }).on('endorse:UWNetIDsValidated', function (e, validated) {
             $('button#validate').button('reset');
             ProvisionServices._displayValidatedUWNetIDs(validated);
-        }).on('endorse:UWNetIDReasonEdited', function (e, validated) {
-            ProvisionServices._enableEndorsability();
+        }).on('endorse:UWNetIDsValidatedError', function (e, validated) {
+// bug
         }).on('endorse:UWNetIDsInvalidEmailError', function (e, $row, $td) {
             if ($('input[type="checkbox"]:checked', $row).length > 0) {
                 $td.addClass('error');
             }
-        }).on('endorse:UWNetIDsInvalidReasonError', function (e, $row, $td) {
-            if ($('input[type="checkbox"]:checked', $row).length > 0) {
-                $td.addClass('error');
-                $('button#shared_update').attr('disabled', 'disabled');
-            }
-        }).on('endorse:UWNetIDChangedReason', function (e) {
-            ProvisionServices._enableEndorsability();
-        }).on('endorse:UWNetIDApplyAllReasons', function (e) {
-            ProvisionServices._enableEndorsability();
         }).on('endorse:UWNetIDsEndorseStatus', function (e, endorsed) {
             $('button#confirm_endorsements').button('reset');
             ProvisionServices._displayEndorseResult(endorsed);
+        }).on('endorse:UWNetIDsEndorseStatusError', function (e, endorsed) {
+// bug
+        }).on('endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
+            ProvisionServices._enableEndorsability();
+        }).on('endorse:UWNetIDsInvalidReasonError', function (e, $row, $td) {
+            if ($('input[type="checkbox"]:checked', $row).length > 0) {
+                $td.addClass('error');
+            }
+        });
+
+        // broader event scope
+        $(document).on('shown.bs.tab', 'a[href="#provision"]', function (e) {
+            $('#netid_list:visible').focus();
         }).on('show.bs.modal', '#responsibility_modal' ,function (event) {
             var _modal = $(this);
 
@@ -234,7 +240,7 @@ var ProvisionServices = {
         var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i,
             result = pattern.test(email_address);
         if (!result) {
-            $(document).trigger('endorse:UWNetIDsInvalidEmailError', [$row, $td]);
+            $('#' + ProvisionServices.content_id).trigger('endorse:UWNetIDsInvalidEmailError', [$row, $td]);
         }
 
         return result;
@@ -330,7 +336,8 @@ var ProvisionServices = {
     },
 
     _validateUWNetids: function(netids) {
-        var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+        var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
+            $panel = $('.tab-pane#' + ProvisionServices.content_id);
 
         $.ajax({
             url: "/api/v1/validate/",
@@ -343,16 +350,18 @@ var ProvisionServices = {
             },
             success: function(results) {
                 window.endorsement = { validation: results };
-                $(document).trigger('endorse:UWNetIDsValidated', [results]);
+                $panel.trigger('endorse:UWNetIDsValidated', [results]);
             },
             error: function(xhr, status, error) {
+                $panel.trigger('endorse:UWNetIDsValidatedError', [results]);
             }
         });
     },
 
     _endorseUWNetIDs: function(endorsees) {
-        var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
-        var endorsed = {};
+        var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
+            endorsed = {},
+            $panel = $('.tab-pane#' + ProvisionServices.content_id);
 
         $.each(window.endorsement.validation.validated, function () {
             var endorsement = endorsees[this.netid];
@@ -384,9 +393,10 @@ var ProvisionServices = {
                 "X-CSRFToken": csrf_token
             },
             success: function(results) {
-                $(document).trigger('endorse:UWNetIDsEndorseStatus', [results]);
+                $panel.trigger('endorse:UWNetIDsEndorseStatus', [results]);
             },
             error: function(xhr, status, error) {
+                $panel.trigger('endorse:UWNetIDsEndorseStatusError', [error]);
             }
         });
     },

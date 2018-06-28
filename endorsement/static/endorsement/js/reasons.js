@@ -8,7 +8,8 @@ var Reasons = {
     _registerEvents: function () {
         $('#app_content').on('change', '.displaying-reasons > select',  function(e) {
             var $row = $(e.target).closest('tr'),
-                $selected = $('option:selected', $(this));
+                $selected = $('option:selected', $(this)),
+                $panel = $row.parents('.tab-pane');
 
             if ($selected.val() === 'other') {
                 var $editor = $('.reason-editor', $row),
@@ -33,11 +34,12 @@ var Reasons = {
                 }
             }
 
-            $(document).trigger('endorse:UWNetIDChangedReason');
+            $panel.trigger('endorse:UWNetIDChangedReason');
         }).on('click', '.apply-all', function (e) {
             var $td = $(e.target).closest('td'),
                 $row = $(e.target).closest('tr'),
                 $table = $(e.target).closest('table'),
+                $panel = $table.parents('.tab-pane'),
                 $selected = $('option:selected', $td),
                 value = $selected.val(),
                 $options = $('option[value=' + value + ']', $table);
@@ -59,9 +61,12 @@ var Reasons = {
                 $('.apply-all', $table).removeClass('visually-hidden');
             }
 
-            $(document).trigger('endorse:UWNetIDApplyAllReasons');
+            $panel.trigger('endorse:UWNetIDApplyAllReasons');
         }).on('input', function (e) {
-            if ($(e.target).hasClass('reason-editor')) {
+            var $target = $(e.target),
+                $panel = $target.parents('.tab-pane');
+
+            if ($target.hasClass('reason-editor')) {
                 if (e.which !== 13) {
                     var $row = $(e.target).closest('tr'),
                         reason = $.trim($(e.target).val());
@@ -75,18 +80,19 @@ var Reasons = {
                     }
                 }
 
-                $(document).trigger('endorse:UWNetIDReasonEdited');
+                $panel.trigger('endorse:UWNetIDReasonEdited');
             }
         });
     },
 
     getReason: function ($context) {
         var $selected = $('.displaying-reasons select option:selected', $context),
-            reason = ($selected.length === 0 || $selected.val() === 'other') ? $.trim($('.reason-editor', $context).val()) : $selected.html();
+            reason = ($selected.length === 0 || $selected.val() === 'other') ? $.trim($('.reason-editor', $context).val()) : $selected.html(),
+            $panel = $context.parents('.tab-pane');
 
         if (reason.length === 0 || $selected.val() === '') {
-            $(document).trigger('endorse:UWNetIDsInvalidReasonError',
-                                [$selected.closest('tr'), $selected.closest('td')]);
+            $panel.trigger('endorse:UWNetIDsInvalidReasonError',
+                           [$selected.closest('tr'), $selected.closest('td')]);
         }
 
         return reason;

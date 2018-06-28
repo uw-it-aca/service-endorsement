@@ -17,13 +17,14 @@ var Revoke = {
                 service = $this.attr('data-service'),
                 event_id = $this.attr('data-event-id'),
                 to_revoke = {},
-                $button = $('button[data-netid="' + netid + '"][data-service="' + service + '"]');
+                $button = $('button[data-netid="' + netid + '"][data-service="' + service + '"]'),
+                $panel = $button.parents('.tab-pane');
 
             $this.parents('.modal').modal('hide');
             $button.button('loading');
             to_revoke[netid] = {};
             to_revoke[netid][service] = false;
-            Revoke._revokeUWNetIDs(to_revoke, event_id);
+            Revoke._revokeUWNetIDs(to_revoke, event_id, $panel);
         });
     },
 
@@ -41,7 +42,7 @@ var Revoke = {
         $modal.modal('show');
     },
 
-    _revokeUWNetIDs: function(revokees, event_id) {
+    _revokeUWNetIDs: function(revokees, event_id, $panel) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
         $.ajax({
@@ -54,13 +55,15 @@ var Revoke = {
                 "X-CSRFToken": csrf_token
             },
             success: function(results) {
-                $(document).trigger(event_id, [
-                    {
-                        revokees: revokees,
-                        revoked: results
-                    }]);
+                $panel.trigger(event_id, [{
+                    revokees: revokees,
+                    revoked: results
+                }]);
             },
             error: function(xhr, status, error) {
+                var error_event_id = event_id + 'Error';
+
+                $panel.trigger(error_event_id, [error]);
             }
         });
     }
