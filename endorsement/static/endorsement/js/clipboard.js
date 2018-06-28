@@ -24,6 +24,6 @@ var ClipboardCopy = {
         $txt.select();
         document.execCommand('copy');
         $txt.remove();
-        notify(msg);
+        Notify.success(msg);
     }
 };

@@ -86,8 +86,9 @@ var ProvisionServices = {
         }).on('endorse:UWNetIDsValidated', function (e, validated) {
             $('button#validate').button('reset');
             ProvisionServices._displayValidatedUWNetIDs(validated);
-        }).on('endorse:UWNetIDsValidatedError', function (e, validated) {
-// bug
+        }).on('endorse:UWNetIDsValidatedError', function (e, error) {
+            $('button#validate').button('reset');
+            Notify.error('Validation error: ' + error);
         }).on('endorse:UWNetIDsInvalidEmailError', function (e, $row, $td) {
             if ($('input[type="checkbox"]:checked', $row).length > 0) {
                 $td.addClass('error');
@@ -95,8 +96,9 @@ var ProvisionServices = {
         }).on('endorse:UWNetIDsEndorseStatus', function (e, endorsed) {
             $('button#confirm_endorsements').button('reset');
             ProvisionServices._displayEndorseResult(endorsed);
-        }).on('endorse:UWNetIDsEndorseStatusError', function (e, endorsed) {
-// bug
+        }).on('endorse:UWNetIDsEndorseStatusError', function (e, error) {
+            $('button#confirm_endorsements').button('reset');
+            Notify.error('Validation error: ' + error);
         }).on('endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
             ProvisionServices._enableEndorsability();
         }).on('endorse:UWNetIDsInvalidReasonError', function (e, $row, $td) {
@@ -353,7 +355,7 @@ var ProvisionServices = {
                 $panel.trigger('endorse:UWNetIDsValidated', [results]);
             },
             error: function(xhr, status, error) {
-                $panel.trigger('endorse:UWNetIDsValidatedError', [results]);
+                $panel.trigger('endorse:UWNetIDsValidatedError', [error]);
             }
         });
     },
