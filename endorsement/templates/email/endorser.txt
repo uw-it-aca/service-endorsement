@@ -1,0 +1,29 @@
+You have requested access to {% if both_endorsed and o365_endorsed_count == 1 and google_endorsed_count == 1 and o365_endorsed.0.netid == google_endorsed.0.netid%}UW Office 365 and UW G Suite (Google) for the shared UW Netid '{{o365_endorsed.0.netid}}'.
+{% else %}{% if o365_endorsed %}UW Office 365 for {% if o365_endorsed_count > 10 %}{{ o365_endorsed_count }} of your shared UW NetIDs{% if both_endorsed %}
+{% else %}.{% endif %}{% else %}the shared UW NetID{{ o365_endorsed_count|pluralize}}:
+
+{% for e in o365_endorsed %}        '{{e.netid}}'
+{% endfor %}
+{% endif %}{% endif %}{% if both_endorsed %}and {% endif %}{% if google_endorsed %}UW G Suite (Google) for {% if google_endorsed_count > 10 %}{{ google_endorsed_count }} of your shared UW NetIDs.
+{% else %}the shared UW NetID{{ google_endorsed_count|pluralize}}:
+
+{% for e in google_endorsed %}        '{{e.netid}}'
+{% endfor %}{% endif %}{% endif %}{% endif %}
+We are in the process of provisioning access for {{ endorsed_count|pluralize:"this,these" }} account{{ endorsed_count|pluralize }}.
+
+{% if o365_endorsed %}Get started using UW Office 365 at:
+
+        http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/
+{% endif %}
+{% if google_endorsed %}Get started using UW G Suite at:
+
+        https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate
+{% endif %}
+Shared UW NetID use of these services is bound by UW-IT’s Appropriate Use policy, as well as being subject to
+state and federal law, and to other UW policies and procedures.  For more information, visit UW-IT’s Appropriate Use
+page at http://itconnect.uw.edu/work/appropriate-use/
+
+Thank you,
+
+UW-IT Help Center
+help@uw.edu

@@ -28,11 +28,13 @@ def accept(request, accept_id):
             }
         }
 
-        records = EndorsementRecord.objects.filter(
-            accept_id=accept_id, datetime_endorsed__isnull=True)
+        records = EndorsementRecord.objects.get_accept_endorsement(
+            accept_id, endorsed=False)
         if len(records) != 1:
             endorsee = get_endorsee_model(netid)
-            for record in EndorsementRecord.objects.filter(endorsee=endorsee):
+            er = EndorsementRecord.objects.get_endorsements_for_endorsee(
+                endorsee)
+            for record in er:
                 if accept_id == record.get_accept_id(netid):
                     return render(request, "accepted.html", context)
 

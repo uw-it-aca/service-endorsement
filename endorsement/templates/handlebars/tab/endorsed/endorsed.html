@@ -1,0 +1,29 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "endorsed-netids" %}
+
+<div class="form-group" id="uwnetids-endorsed">
+<h3>Accounts for which you have provisioned services</h3>
+
+  {{#if has_endorsed}}
+  {{> endorsed_partial .}}
+<!-- 
+  <button type="button" name="Revoke" id="revoke" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Services">Revoke Endorsements</button>
+-->
+  {{else}}
+  <div class="no-endorsements">You haven't provisioned services for any UW NetIDs.</dev>
+  {{/if}}
+
+
+
+</div>
+{% endtplhandlebars %}
+
+
+{% tplhandlebars "endorsed-loading" %}
+<div class="loading"><div></div></div>
+{% endtplhandlebars %}
+
+
+{% tplhandlebars "endorsed-failure" %}
+<div class="no-endorsements">We are unable to determine provisioned services at this time.  Please try again later.</dev>
+{% endtplhandlebars %}

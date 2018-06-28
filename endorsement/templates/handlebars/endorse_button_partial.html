@@ -1,0 +1,6 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "endorse_button_partial" %}
+
+{{#if endorsements}}<button type="button" class="btn btn-primary shared_revoke" data-netid="{{ netid }}" data-service="{{ service }}" data-service-name="{{ endorsements.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-primary shared_endorse" data-netid="{{ netid }}" data-service="{{ service }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision</button>{{/if}}
+
+{% endtplhandlebars %}

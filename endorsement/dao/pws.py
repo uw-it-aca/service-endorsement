@@ -45,15 +45,13 @@ def get_endorsee_data(uwnetid):
     """
     try:
         person = get_person(uwnetid)
-        return person.uwregid, person.display_name, person.email1
+        return person.uwregid, person.display_name, person.email1, True
     except DataFailureException as ex:
-        if ex.status == 404:
-            # v0.1 does not endorse non-person/shared uwnetids
-            #     entity = get_entity(uwnetid)
-            #     return entity.uwregid, entity.display_name, None
-            raise UnrecognizedUWNetid(uwnetid)
+        if int(ex.status) == 404:
+            entity = get_entity(uwnetid)
+            return entity.uwregid, entity.display_name, None, False
 
-        raise
+        raise UnrecognizedUWNetid(uwnetid)
 
 
 def get_endorser_data(uwnetid):

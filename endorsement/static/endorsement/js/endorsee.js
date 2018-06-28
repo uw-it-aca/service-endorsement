@@ -3,8 +3,8 @@
 $(window.document).ready(function() {
     registerEvents();
     $('[data-toggle="tooltip"]').tooltip();
+    initDataTable();
 });
-
 
 var registerEvents = function() {
     $('button#search_endorsee').on('click', function (e) {
@@ -26,20 +26,63 @@ var registerEvents = function() {
     });
 };
 
+var initDataTable = function () {
+    $('#endorsee-table').dataTable({
+            'aaSorting': [[5, 'desc']],
+            'scrollY': '460px',
+            'scrollCollapse': true,
+            'paging': false,
+            "initComplete": function () {
+                $('#show-revoked')
+                    .prependTo('#endorsee-table_filter')
+                    .css('display', 'inline-block')
+                    .find('input')
+                    .change(function () {
+                        var api = $('#endorsee-table').dataTable().api();
+
+                        api.column(6).search(this.checked ? 'provisioned' : '').draw();
+                    });
+            }
+        });
+};
 
 var displayEndorsedUWNetIDs = function(endorsements) {
     var source,
-        template;
+        template,
+        endorsee_source = $("#admin-endorsee-search-result-endorsee").html(),
+        endorsee_template = Handlebars.compile(endorsee_source),
+        datetime_endorsed_source = $("#admin-endorsee-search-result-endorsee-datetime-endorsed").html(),
+        datetime_endorsed_template = Handlebars.compile(datetime_endorsed_source),
+        revoked_source = $("#admin-endorsee-search-result-endorsee-is-revoked").html(),
+        revoked_template = Handlebars.compile(revoked_source);
 
     if (endorsements.endorsements.endorsements.length) {
-        source = $("#admin-endorsee-search-result").html();
-        template = Handlebars.compile(source);
-        $('#endorsees').html(template(endorsements));
-        $('#endorsee-table').dataTable();
+        var api = $('#endorsee-table').dataTable().api();
+
+        api.clear();
+
+        $.each(endorsements.endorsements.endorsements, function () {
+            api.row.add([
+                endorsee_template(this),
+                this.endorser.netid,
+                this.category_name,
+                this.reason,
+                this.datetime_emailed,
+                datetime_endorsed_template(this),
+                revoked_template(this),
+                this.datetime_expired
+            ]);
+        });
+
+        if ($('#show-revoked input:checked').length) {
+            api.columns([6]).search('provisioned').draw();
+        } else {
+            api.draw(true);
+        }
     } else {
         source = $("#admin-endorsee-empty-search-result").html();
         template = Handlebars.compile(source);
-        $('#endorsees').html(template(endorsements));
+        $('#endorsee-table tbody').html(template(endorsements));
     }
 };
 
@@ -51,20 +94,7 @@ var displayEndorsedUWNetIDError = function(json_data) {
             error: (json_data) ? (json_data.hasOwnProperty('error') ? json_data.error : json_data) : "Unknown error"
         };
 
-    $('#endorsees').html(template(context));
-};
-
-
-var utc2local = function (utc_date) {
-    var local = null,
-        utc;
-
-    if (utc_date) {
-        utc = moment.utc(utc_date).toDate();
-        local = moment(utc).local().format('YYYY-MM-DD HH:mm:ss');
-    }
-
-    return local;
+    $('#endorsees tbody').html(template(context));
 };
 
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 from uw_uwnetid.models import Category
 import hashlib
 import random
@@ -53,6 +54,7 @@ class Endorsee(models.Model):
                              unique=True)
     display_name = models.CharField(max_length=64,
                                     null=True)
+    is_person = models.NullBooleanField(default=True)
     kerberos_active_permitted = models.NullBooleanField(default=False)
 
     def __eq__(self, other):
@@ -100,6 +102,82 @@ class EndorseeEmail(models.Model):
         db_table = 'uw_service_endorsement_endorsee_email'
 
 
+class EndorsementRecordManager(models.Manager):
+    def get_endorsement(self, endorser=None, endorsee=None,
+                        category_code=None):
+        params = {
+            'is_deleted__isnull': True
+        }
+
+        if endorser:
+            params['endorser'] = endorser
+
+        if endorsee:
+            params['endorsee'] = endorsee
+
+        if category_code:
+            params['category_code'] = category_code
+
+        if 'endorser' in params and 'endorsee' in params:
+            return super(EndorsementRecordManager, self).get(**params)
+
+        return super(EndorsementRecordManager, self).get_queryset().filter(
+            **params)
+
+    def get_endorsements_for_endorser(self, endorser, category_code=None):
+        return self.get_endorsement(endorser, None, category_code)
+
+    def get_endorsements_for_endorsee(self, endorsee, category_code=None):
+        return self.get_endorsement(None, endorsee, category_code)
+
+    def get_endorsements_for_endorsee_re(self, endorsee_regex):
+        endorsees = Endorsee.objects.filter(
+            netid__regex=r'^%s$' % endorsee_regex).values_list(
+                'id', flat=True)
+
+        return super(EndorsementRecordManager, self).get_queryset().filter(
+            endorsee_id__in=endorsees, is_deleted__isnull=True)
+
+    def get_all_endorsements_for_endorsee_re(self, endorsee_regex):
+        endorsees = Endorsee.objects.filter(
+            netid__regex=r'^%s$' % endorsee_regex).values_list(
+                'id', flat=True)
+
+        return super(EndorsementRecordManager, self).get_queryset().filter(
+            endorsee_id__in=endorsees)
+
+    def emailed(self, id):
+        datetime_emailed = timezone.now()
+        super(EndorsementRecordManager, self).get_queryset().filter(
+            pk=id, is_deleted__isnull=True).update(
+                datetime_emailed=datetime_emailed)
+
+    def get_accept_endorsement(self, accept_id, endorsed=None):
+        params = {
+            'accept_id': accept_id,
+            'is_deleted__isnull': True
+        }
+
+        if endorsed is not None:
+            params['datetime_endorsed__isnull'] = False if (
+                endorsed is True) else True
+
+        return super(EndorsementRecordManager, self).get_queryset().filter(
+            **params)
+
+    def get_unendorsed_unnotified(self):
+        return super(EndorsementRecordManager, self).get_queryset().filter(
+            datetime_emailed__isnull=True,
+            datetime_endorsed__isnull=True,
+            is_deleted__isnull=True)
+
+    def get_endorsed_unnotified(self):
+        return super(EndorsementRecordManager, self).get_queryset().filter(
+            datetime_emailed__isnull=True,
+            datetime_endorsed__isnull=False,
+            is_deleted__isnull=True)
+
+
 class EndorsementRecord(models.Model):
     GOOGLE_SUITE_ENDORSEE = Category.GOOGLE_SUITE_ENDORSEE
     OFFICE_365_ENDORSEE = Category.OFFICE_365_ENDORSEE
@@ -118,12 +196,16 @@ class EndorsementRecord(models.Model):
     reason = models.CharField(max_length=64, null=True)
     acted_as = models.SlugField(max_length=32, null=True)
     accept_salt = models.CharField(max_length=32)
-    accept_id = models.CharField(max_length=32, null=True)
+    accept_id = models.CharField(max_length=32, null=True,
+                                 unique=True)
     datetime_created = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
     datetime_endorsed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
+    is_deleted = models.NullBooleanField()
+
+    objects = EndorsementRecordManager()
 
     def __eq__(self, other):
         return other is not None and\
@@ -149,6 +231,11 @@ class EndorsementRecord(models.Model):
             self.endorser.netid, endorsee_netid,
             self.category_code, self.accept_salt)).hexdigest()
 
+    def revoke(self):
+        self.datetime_expired = timezone.now()
+        self.is_deleted = True
+        self.save()
+
     def json_data(self):
         return {
             "endorser": self.endorser.json_data(),
@@ -162,6 +249,7 @@ class EndorsementRecord(models.Model):
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired),
+            "is_revoked": self.is_deleted,
             "accept_url": self.accept_url()
         }
 

@@ -1,9 +1,11 @@
 import logging
 from django.utils import timezone
 from endorsement.models.core import Endorser, Endorsee, EndorseeEmail
+from uw_uwnetid.models import Category
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_endorser_data, get_endorsee_data
 from endorsement.dao.uwnetid_subscription_60 import is_valid_endorsee
+from endorsement.dao.uwnetid_categories import get_shared_categories_for_netid
 
 
 logger = logging.getLogger(__name__)
@@ -36,18 +38,20 @@ def get_endorsee_model(uwnetid):
     return an Endorsee object
     @exception: DataFailureException
     """
-    uwregid, display_name, email = get_endorsee_data(uwnetid)
+    try:
+        return Endorsee.objects.get(netid=uwnetid)
+    except Endorsee.DoesNotExist:
+        pass
+
+    uwregid, display_name, email, is_person = get_endorsee_data(uwnetid)
     kerberos_active_permitted = is_valid_endorsee(uwnetid)
-    user, created = Endorsee.objects.update_or_create(
+    user = Endorsee.objects.create(
+        netid=uwnetid,
         regid=uwregid,
-        defaults={
-            'netid': uwnetid,
-            'display_name': display_name,
-            'kerberos_active_permitted': kerberos_active_permitted})
-
-    if created:
-        logger.info("Create endorsee: %s" % user)
-
+        display_name=display_name,
+        is_person=is_person,
+        kerberos_active_permitted=kerberos_active_permitted)
+    logger.info("Create endorsee: %s" % user)
     return user
 
 
@@ -60,7 +64,8 @@ def get_endorsee_email_model(endorsee, endorser, email=None):
         endorsee_email, created = EndorseeEmail.objects.update_or_create(
             endorsee=endorsee, endorser=endorser, defaults={'email': email})
     else:
-        uwregid, display_name, pws_email = get_endorsee_data(endorsee.netid)
+        uwregid, display_name, pws_email, is_person = get_endorsee_data(
+            endorsee.netid)
         endorsee_email, created = EndorseeEmail.objects.get_or_create(
             endorsee=endorsee, endorser=endorser,
             defaults={'email': pws_email})
@@ -70,3 +75,12 @@ def get_endorsee_email_model(endorsee, endorser, email=None):
             endorsee.netid, endorser.netid, email))
 
     return endorsee_email
+
+
+def is_shared_netid(netid):
+    for category in get_shared_categories_for_netid(netid):
+        if (category.source_code == 4 and
+                category.status_code == Category.STATUS_ACTIVE):
+            return True
+
+    return False
