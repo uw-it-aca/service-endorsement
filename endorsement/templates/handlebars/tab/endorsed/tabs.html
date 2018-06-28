@@ -1,0 +1,9 @@
+{% load templatetag_handlebars %}
+
+{% tplhandlebars "provisioned-tab-link" %}
+<li><a href="#provisioned" data-toggle="tab" class="previous-endorsement"><h2>Manage your provisioned services</h2></a></li>
+{% endtplhandlebars %}
+
+{% tplhandlebars "provisioned-tab-content" %}
+<div class="tab-pane" id="provisioned"></div>
+{% endtplhandlebars %}
