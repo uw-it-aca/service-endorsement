@@ -3,7 +3,7 @@
 
 <!-- Responsibility Modal -->
 <div class="modal-header">
-  <span style="font-weight: bold;">Confirm shared UW NetID provision request</span>
+  <span style="font-weight: bold;">Confirm Shared UW NetID provision request</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
@@ -14,7 +14,7 @@
     <div class="row">
       You are about to provision the
       {{#gt endorse_netid_count 10}}
-      <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>{{endorse_o365_netid_count}} shared UW NetIDs to UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>{{endorse_google_netid_count}} shared UW NetIDs to UW G Suite</li>{{/if}}</ul>.
+      <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>{{endorse_o365_netid_count}} Shared UW NetIDs to UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>{{endorse_google_netid_count}} Shared UW NetIDs to UW G Suite</li>{{/if}}</ul>.
       {{else}}
       {{#if endorse_o365_netid_count}}
       UW NetID{{plural endorse_o365_netid_count '' 's'}}
@@ -77,7 +77,7 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
-  <button type="button" id="confirm_shared_endorse" data-netid="{{ netid }}" data-service="{{ service }}" class="btn btn-primary" disabled="disabled">Provision services for {{plural endorse_netid_count 'this' 'these'}} shared UW NetID{{plural endorse_netid_count '' 's'}}</button>
+  <button type="button" id="confirm_shared_endorse" data-netid="{{ netid }}" data-service="{{ service }}" class="btn btn-primary" disabled="disabled">Provision services for {{plural endorse_netid_count 'this' 'these'}} Shared UW NetID{{plural endorse_netid_count '' 's'}}</button>
 </div>
 
 {% endtplhandlebars %}
