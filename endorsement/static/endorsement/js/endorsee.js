@@ -4,25 +4,31 @@ $(window.document).ready(function() {
     registerEvents();
     $('[data-toggle="tooltip"]').tooltip();
     initDataTable();
+    ClipboardCopy.load.apply(ClipboardCopy);
 });
 
 var registerEvents = function() {
     $('button#search_endorsee').on('click', function (e) {
         $(this).button('loading');
-        searchEndorsee();
+        searchEndorsee($('input#endorsee').val());
     });
 
     $(document).on('endorse:UWNetIDsEndorseeResult', function (e, endorsements) {
         displayEndorsedUWNetIDs(endorsements);
-    }).on('keypress', function (e) {
-        if ($(e.target).attr('id', 'endorsee') && e.which == 13) {
+    }).on('click', '.alpha-search', function (e) {
+        var alpha = $(this).html();
+
+        $('button#search_endorsee').button('loading');
+        searchEndorsee(alpha.toLowerCase() + '.*');
+        e.stopPropagation();
+        e.preventDefault();
+    }).on('keypress', '[id="endorsee"]', function (e) {
+        if (e.which == 13) {
             $('button#search_endorsee').button('loading');
-            searchEndorsee();
+            searchEndorsee($('input#endorsee').val());
             e.stopPropagation();
             e.preventDefault();
         }
-    }).on('click', '[data-clipboard]', function () {
-        copy_clipboard($(this));
     });
 };
 
@@ -54,13 +60,12 @@ var displayEndorsedUWNetIDs = function(endorsements) {
         datetime_endorsed_source = $("#admin-endorsee-search-result-endorsee-datetime-endorsed").html(),
         datetime_endorsed_template = Handlebars.compile(datetime_endorsed_source),
         revoked_source = $("#admin-endorsee-search-result-endorsee-is-revoked").html(),
-        revoked_template = Handlebars.compile(revoked_source);
+        revoked_template = Handlebars.compile(revoked_source),
+        api = $('#endorsee-table').dataTable().api();
+
+    api.clear().draw();
 
     if (endorsements.endorsements.endorsements.length) {
-        var api = $('#endorsee-table').dataTable().api();
-
-        api.clear();
-
         $.each(endorsements.endorsements.endorsements, function () {
             api.row.add([
                 endorsee_template(this),
@@ -98,12 +103,11 @@ var displayEndorsedUWNetIDError = function(json_data) {
 };
 
 
-var searchEndorsee = function () {
+var searchEndorsee = function (search_string) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
-    var netid = $('input#endorsee').val();
 
     $.ajax({
-        url: "/api/v1/endorsee/" + netid,
+        url: "/api/v1/endorsee/" + search_string,
         dataType: "JSON",
         type: "GET",
         accepts: {html: "application/json"},
@@ -120,7 +124,7 @@ var searchEndorsee = function () {
             });
 
             $(document).trigger('endorse:UWNetIDsEndorseeResult', [{
-                endorsee: netid,
+                endorsee: search_string,
                 endorsements: results
             }]);
         },
