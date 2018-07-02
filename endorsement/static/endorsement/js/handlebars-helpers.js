@@ -61,6 +61,16 @@ Handlebars.registerHelper('plural', function(n, singular, plural) {
     return plural;
 });
 
+Handlebars.registerHelper('single_endorsement', function(o365, google, options) {
+    if (o365 && Object.keys(o365).length === 1 &&
+            google && Object.keys(google).length === 1 &&
+            o365[Object.keys(o365)[0]] === google[Object.keys(google)[0]]) {
+        return options.fn(this);
+    }
+
+    return options.inverse(this);
+});
+
 Handlebars.registerHelper('equals', function(a, b, options) {
     return (a == b) ? options.fn(this) : options.inverse(this);
 });
