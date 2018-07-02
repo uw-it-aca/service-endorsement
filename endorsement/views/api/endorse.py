@@ -139,10 +139,17 @@ class Endorse(RESTDispatch):
                 }
             except (KeyError, UnrecognizedUWNetid) as ex:
                 endorsements = {
-                    'endorsee': endorsee.json_data(),
-                    'name': endorsee.display_name,
                     'error': '%s' % (ex)
                 }
+
+                if 'endorsee' in locals():
+                    endorsements['endorsee'] = endorsee.json_data()
+                    endorsements['name'] = endorsee.display_name
+                else:
+                    endorsements['endorsee'] = {
+                        'netid': endorsee_netid
+                    }
+                    endorsements['name'] = ""
 
             endorsed['endorsed'][endorsee_netid] = endorsements
 
