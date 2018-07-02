@@ -1,7 +1,7 @@
 <p>
   You have requested access to
 {% if both_endorsed and o365_endorsed_count == 1 and google_endorsed_count == 1 and o365_endorsed.0.netid == google_endorsed.0.netid%}
-UW Office 365 and UW G Suite (Google) for the shared UW Netid '{{o365_endorsed.0.netid}}'.
+UW Office 365 and UW G Suite (Google) for the shared UW Netid {{o365_endorsed.0.netid}}.
 {% else %}
 {% if o365_endorsed %}
   UW Office 365 for 

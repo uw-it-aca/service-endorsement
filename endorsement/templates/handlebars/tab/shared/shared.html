@@ -3,13 +3,13 @@
 
 <div class="form-group" id="shared-uwnetids">
 
-    <p style="padding: 10px 10px 0 10px;">You may provision services for any shared UW NetID that you own.</p>
+    <p style="padding: 10px 10px 0 10px;">You may provision services for any Shared UW NetID that you own.</p>
 
     <h3>Your shared UW NetIDs </h3>
 
   {{#if has_shared}}
   <div class="form-group">
-    <div style="height: 400px; scroll: auto; overflow: hidden; overflow-y: scroll;">
+    <div style="height: 400px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid grey;">
     <table class="table table-striped">
       <thead>
         <tr>
@@ -34,8 +34,8 @@
 <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
   {{else}}
   <div class="no-endorsements">
-      <p>You do not own any shared UW NetIDs.</p>
-      <p>Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view shared UW NetIDs on which you are an administrator.</p>
+      <p>You do not own any Shared UW NetIDs.</p>
+      <p>Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view Shared UW NetIDs on which you are an administrator.</p>
   </div>
   {{/if}}
 </div>
@@ -55,5 +55,5 @@
 
 
 {% tplhandlebars "shared-failure" %}
-<div class="no-endorsements">We are unable to determine if you own any UW NetIDs at this time.  Please try again later.</dev>
+<div class="no-endorsements">We are unable to determine if you own any Shared UW NetIDs at this time.  Please try again later.</dev>
 {% endtplhandlebars %}
