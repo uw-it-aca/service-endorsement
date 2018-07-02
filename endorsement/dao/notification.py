@@ -135,10 +135,10 @@ def create_endorser_message(endorsed):
                                params['o365_endorsed'] > 0)
 
     subject = "Shared NetID access to %s%s%s" % (
-        'UW Office 365' if 'o365_endorsed' in params else '',
+        'UW Office 365' if params['o365_endorsed'] else '',
         ' and ' if (
-            'o365_endorsed' in params and 'google_endorsed' in params) else '',
-        'UW G Suite' if 'google_endorsed' in params else '')
+            params['o365_endorsed'] and params['google_endorsed']) else '',
+        'UW G Suite' if params['google_endorsed'] else '')
 
     text_template = "email/endorser.txt"
     html_template = "email/endorser.html"
