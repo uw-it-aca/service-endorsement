@@ -34,30 +34,14 @@
     <td><span class="endorsed_name">{{name}}</span></td>
     <td>
       <div class="editing-email visually-hidden">
-        <input type=input class="email-editor" placeholder="Email address required" value="{{email}}" style="width: 160px;"> <a href="javascript:void(0);" class="finish-edit-email"><i class="fa fa-minus-circle failure"></i></a>
+        <input type=input class="email-editor" placeholder="Email address required" value="{{email}}" style="width: 160px;"> <span style="display: none;">Valid email required</span><a href="javascript:void(0);" class="finish-edit-email"><i class="fa fa-minus-circle failure"></i></a>
       </div>
       <div class="displaying-email">
         <span class="shown-email">{{email}}</span> <br><a href="javascript:void(0);" class="edit-email"><p style="font-size: small;">Edit</p></a>
       </div>
     </td>
     <td>
-      <div class="displaying-reasons">
-        <select required="required" style="width: 150px;">
-            <option disabled selected value=""></option>
-            <option value="clinical">Clinical work</option>
-            <option value="instructional">Instructional activities</option>
-            <option value="research">Research</option>
-            <option value="mentoring">Student mentoring</option>
-            <option value="consulting">Third-party consulting</option>
-            <option value="advancement">University Advancement support</option>
-            <option value="volunteer">Volunteer work</option>
-            <option value="other">Other...</option>
-        </select>
-        </div>
-        <div class="editing-reason visually-hidden">
-          <input type=input class="reason-editor" placeholder="Reason for provisioning" value="" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
-        </div>
-        <p style="font-size: small; {{plural ../../netid_count 'display: none;' ''}}"><a href="javascript:void(0);" class='apply-all'>Apply to all</a></p>
+      {{> reasons_partial .}}
     </td>
      {{#with (subscription_context o365 netid 'o365') }}
         {{> validation_partial .}}
@@ -69,7 +53,7 @@
   {{else}}
   <tr class="invalid-netid">
     <td>{{netid}}</td>
-    <td colspan="3">{{#if ../error_message }}{{../error_message}}{{else}}Not a valid UW NetID{{/if}}</td>
+    <td colspan="3">{{#if ../is_shared}}Shared UW NetIDs cannot be provisioned here. <a href="#shared" class='tab-link'>Provision services to your Shared UW NetIDs</a>{{else}}{{#if ../is_ineligible}}Ineligible UW NetID{{else}}Not a valid UW NetID{{/if}}{{/if}}</td>
     <td class="centered col-border-left">n/a</td>
     <td></td>
     <td class="centered col-border-left">n/a</td>
@@ -86,9 +70,6 @@
 <!-- Button trigger modal -->
 
   <button type="button" id="confirm_endorsements" class="btn btn-primary" data-toggle="modal" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning..." data-target="#responsibility_modal"><span class="has_netids">Provision services to selected UW NetIDs</span><span class="no_netids" style="display: none;">No UW NetIDs selected</span></button>
-
-  <p style="margin-left: 190px; width: 300px;">Provide a valid email address and reason for provisioning services for all selected UW NetIDs.</p>
-
   </div>
 
 <!-- Responsiblity Modal -->
@@ -106,7 +87,8 @@
             NetID{{plural netid_count '' 's'}} to receive the services you have identified, you confirm that:</p>
           <ol>
               <li>The provisioning recipient associated with each UW NetID requires use of the service(s) to carry out official UW operations, and</li>
-              <li>You have authority to make this request in accord with the UW-IT <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">guidelines for providing computing services to UW affiliates</a>.</li>
+              <li>You have authority to make this request in accord with the UW-IT guidelines for providing computing services to UW
+affiliates. For more information, visit: <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">https://itconnect.uw.edu/connect/email/resources/affiliate-access/</a>.</li>
           </ol>
 
         <p>

@@ -7,8 +7,9 @@ from endorsement.views.endorsee_search import endorsee_search
 from endorsement.views.api.validate import Validate
 from endorsement.views.api.endorse import Endorse
 from endorsement.views.api.accept import Accept
-from endorsement.views.api.endorsed import Endorsed
 from endorsement.views.api.endorsee import Endorsee
+from endorsement.views.api.endorsed import Endorsed
+from endorsement.views.api.shared import Shared
 
 
 urlpatterns = [
@@ -22,6 +23,7 @@ urlpatterns = [
         Endorsee.as_view(), name='endorsee_api'),
     url(r'^api/v1/endorsed', Endorsed.as_view(), name='endorsed_api'),
     url(r'^api/v1/endorse', Endorse.as_view(), name='endorse_api'),
+    url(r'^api/v1/shared', Shared.as_view(), name='shared_api'),
     url(r'^api/v1/accept', Accept.as_view(), name='accept_api'),
     url(r'.*', page.index, name='home'),
 ]

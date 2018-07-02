@@ -1,0 +1,129 @@
+{
+  "uwNetID": "jstaff",
+  "supportedList": [
+    {
+      "name": "a_br11",
+      "role": "administrator",
+      "netidType": "shared"
+    },
+    {
+      "name": "a_vida_tools",
+      "role": "administrator",
+      "netidType": "shared"
+    },
+    {
+      "name": "jfaculty",
+      "role": "supporter"
+    },
+    {
+      "name": "cpnebeng",
+      "role": "owner",
+      "netidType": "shared"
+    },
+    {
+      "name": "eadm_jstaff",
+      "role": "owner",
+      "netidType": "administrator"
+    },
+    {
+      "name": "emailinf",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "jstaff",
+      "role": "supporter"
+    },
+    {
+      "name": "jstaff-admin",
+      "role": "owner",
+      "netidType": "shared"
+    },
+    {
+      "name": "jstaff2",
+      "role": "owner",
+      "netidType": "shared"
+    },
+    {
+      "name": "jstaff3",
+      "role": "owner",
+      "netidType": "shared"
+    },
+    {
+      "name": "kool",
+      "role": "supporter"
+    },
+    {
+      "name": "monitoring",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "nebnotic",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "nebula",
+      "role": "administrator",
+      "netidType": "shared"
+    },
+    {
+      "name": "org-mpe",
+      "role": "owner",
+      "netidType": "support"
+    },
+    {
+      "name": "org-neb",
+      "role": "owner",
+      "netidType": "support"
+    },
+    {
+      "name": "org-uwwi",
+      "role": "owner",
+      "netidType": "support"
+    },
+    {
+      "name": "pcppm",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "pmxtest",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "pppmsrv",
+      "role": "owner-admin",
+      "netidType": "shared"
+    },
+    {
+      "name": "sadm_jstaff",
+      "role": "owner",
+      "netidType": "administrator"
+    },
+    {
+      "name": "xware",
+      "role": "administrator",
+      "netidType": "shared",
+      "status": "former"
+    },
+    {
+      "name": "uxxi-blog",
+      "role": "administrator",
+      "netidType": "shared"
+    },
+    {
+      "name": "wadm_jstaff",
+      "role": "owner",
+      "netidType": "administrator"
+    },
+    {
+      "name": "windowsinfrastructure",
+      "role": "administrator",
+      "netidType": "shared"
+    }
+  ],
+  "timeStamp": "Fri, 20 Feb 2015 16:11:18 -0800"
+}

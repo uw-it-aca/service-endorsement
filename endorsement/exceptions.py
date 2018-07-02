@@ -8,6 +8,10 @@ class UnrecognizedUWNetid(Exception):
     pass
 
 
+class SharedUWNetid(Exception):
+    pass
+
+
 class NoEndorsementException(Exception):
     pass
 

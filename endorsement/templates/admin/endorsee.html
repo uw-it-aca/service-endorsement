@@ -14,13 +14,36 @@ h4 {font-weight: 900;}
     <label for="endorsee">Provisionee:</label>
     <input type="text" class="form-control" id="endorsee" size="20">
     <button type="button" name="SearchEndorsee" id="search_endorsee" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search</button>
+<!--
+    <div class="alpha-search-list">
+      Or list provisioned NetIDs alphabetically: {% for letter in alphabet_string %}<a class="alpha-search" href="javascript: void(0);">{{letter}}</a> {% endfor %}
+    </div>
+-->
   </div>
 </form>
 
 <div id="endorsees">
+<div id="show-revoked" class="checkbox" style="display: none; padding-right: 20px;">
+  Revoked <input type="checkbox" checked data-toggle="toggle" data-width="80" data-on="<span style='margin-left: -8px;'>Hidden</span>" data-off="<span>Shown</span>">
+</div>
+<table id="endorsee-table" class="endorsee-table table table-striped">
+  <thead>
+    <tr>
+      <th>Provisionee</th>
+      <th>Provisioner</th>
+      <th>Service</th>
+      <th>Reason</th>
+      <th>Email Date</th>
+      <th>Provisioned Date</th>
+      <th>Revoked</th>
+      <th>Revoked Date</th>
+    </tr>
+  </thead>
+  <tbody class="scrollable">
+  </tbody>
+</table>
 </div>
 
-</div>
 {% include "handlebars/admin/endorsees.html" %}
 {% endblock %}
 
@@ -28,10 +51,13 @@ h4 {font-weight: 900;}
 <script src="{% static "endorsement/js/endorsee.js" %}"></script>
 <script src="{% static "endorsement/js/clipboard.js" %}"></script>
 <script src="{% static "endorsement/js/notify.js" %}"></script>
+<script src="{% static "endorsement/js/datetime.js" %}"></script>
 <script src="{% static "vendor/js/moment.2.8.3.min.js" %}"></script>
 
-<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
 <script type="text/javascript">
-$('head').append($('<link rel="stylesheet" type="text/css" /><link rel="stylesheet" href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}">').attr('href', 'https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css'));
+$('head').append($('<link rel="stylesheet" type="text/css" /><link rel="stylesheet">').attr('href', 'https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css'));
+$('head').append($('<link rel="stylesheet" type="text/css" /><link rel="stylesheet">').attr('href', 'https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css'));
 </script>
 {% endblock %}

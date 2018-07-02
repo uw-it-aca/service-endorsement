@@ -1,0 +1,59 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "shared-netids" %}
+
+<div class="form-group" id="shared-uwnetids">
+
+    <p style="padding: 10px 10px 0 10px;">You may provision services for any Shared UW NetID that you own.</p>
+
+    <h3>Your shared UW NetIDs </h3>
+
+  {{#if has_shared}}
+  <div class="form-group">
+    <div style="height: 400px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid grey;">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Shared UW NetID</th>
+          <th>Name</th>
+          <th>Reason for provisioning</th>
+          <th class="col-border-left">UW Office 365</th>
+          <th class="col-border-left">UW G Suite (Google)</th>
+        </tr>
+      </thead>
+      {{#each shared.shared}}
+      <tr>
+        <td>{{netid}}</td>
+        <td>{{name}}</td>
+        <td id="reason-{{ netid }}">{{> reasons_partial endorsements=endorsements}}</td>
+        <td id="endorsers-o365-{{netid}}" class="col-border-left">{{> endorsers_partial endorsement=endorsements.o365 netid=netid svc="o365"}}</td>
+        <td id="endorsers-google-{{netid}}" class="col-border-left">{{> endorsers_partial endorsement=endorsements.google  netid=netid svc="google"}}</td>
+      </tr>
+      {{/each}}
+    </table>
+    </div>
+<button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
+  {{else}}
+  <div class="no-endorsements">
+      <p>You do not own any Shared UW NetIDs.</p>
+      <p>Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view Shared UW NetIDs on which you are an administrator.</p>
+  </div>
+  {{/if}}
+</div>
+
+<div class="modal fade" id="shared_netid_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+{% endtplhandlebars %}
+
+
+{% tplhandlebars "shared-loading" %}
+<div class="loading"><div></div></div>
+{% endtplhandlebars %}
+
+
+{% tplhandlebars "shared-failure" %}
+<div class="no-endorsements">We are unable to determine if you own any Shared UW NetIDs at this time.  Please try again later.</dev>
+{% endtplhandlebars %}

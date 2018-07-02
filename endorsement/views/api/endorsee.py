@@ -2,7 +2,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from endorsement.views.decorators import admin_required
-from endorsement.dao.endorse import get_endorsements_for_endorsee_re
+from endorsement.dao.endorse import get_endorsement_records_for_endorsee_re
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time, log_data_error_response
 from endorsement.views.rest_dispatch import RESTDispatch
@@ -26,7 +26,7 @@ class Endorsee(RESTDispatch):
         }
 
         try:
-            for er in get_endorsements_for_endorsee_re(endorsee_regex):
+            for er in get_endorsement_records_for_endorsee_re(endorsee_regex):
                 endorsees['endorsements'].append(er.json_data())
         except Exception:
             log_data_error_response(logger, timer)
