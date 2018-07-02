@@ -7,11 +7,11 @@ var HashHistory = {
 
     _registerEvents: function () {
         $(document).on('click', '.nav-tabs a[data-toggle="tab"]', function(e) {
-            HashHistory._push($(this).attr('href'))
+            HashHistory._push($(this).attr('href'));
         }).on('click', '.tab-link', function(e) {
             var hash = $(this).attr('href');
 
-            HashHistory._push(hash)
+            HashHistory._push(hash);
             $('a[href="'+ hash + '"]').tab('show');
         });
 
