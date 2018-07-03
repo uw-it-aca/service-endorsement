@@ -1,5 +1,6 @@
 import logging
 from django.utils import timezone
+from django.db import IntegrityError, transaction
 from endorsement.models.core import Endorser, Endorsee, EndorseeEmail
 from uw_uwnetid.models import Category
 from endorsement.dao.gws import is_valid_endorser
@@ -41,18 +42,21 @@ def get_endorsee_model(uwnetid):
     try:
         return Endorsee.objects.get(netid=uwnetid)
     except Endorsee.DoesNotExist:
-        pass
+        uwregid, display_name, email, is_person = get_endorsee_data(uwnetid)
+        kerberos_active_permitted = is_valid_endorsee(uwnetid)
+        try:
+            user = Endorsee.objects.create(
+                netid=uwnetid,
+                regid=uwregid,
+                display_name=display_name,
+                is_person=is_person,
+                kerberos_active_permitted=kerberos_active_permitted)
 
-    uwregid, display_name, email, is_person = get_endorsee_data(uwnetid)
-    kerberos_active_permitted = is_valid_endorsee(uwnetid)
-    user = Endorsee.objects.create(
-        netid=uwnetid,
-        regid=uwregid,
-        display_name=display_name,
-        is_person=is_person,
-        kerberos_active_permitted=kerberos_active_permitted)
-    logger.info("Create endorsee: %s" % user)
-    return user
+            logger.info("Create endorsee: %s" % user)
+            return user
+        except IntegrityError:
+            transaction.commit()
+            return Endorsee.objects.get(netid=uwnetid)
 
 
 def get_endorsee_email_model(endorsee, endorser, email=None):
