@@ -1,21 +1,32 @@
 // javascript for service endorsement manager
 
 $(window.document).ready(function() {
-    var common_tools = [Revoke,
-                        Reasons,
-                        HashHistory,
-                        ClipboardCopy],
-        tabs = [ProvisionServices,
-                ManageProvisionedServices,
-                ManageSharedNetids];
-        
+    var common_tools,
+        tabs;
+
 	$("span.warning").popover({'trigger':'hover'});
     displayPageHeader();
 
-    loadTools(common_tools);
-    loadTools(tabs);
+    try {
+        common_tools = [Revoke,
+                        Reasons,
+                        HashHistory,
+                        ClipboardCopy];
+        loadTools(common_tools);
 
-    initialFocus(tabs);
+        tabs = [ProvisionServices,
+                ManageProvisionedServices,
+                ManageSharedNetids];
+        loadTools(tabs);
+
+        initialFocus(tabs);
+    }
+    catch (err) {
+        if (err.name !== 'ReferenceError') {
+            // not a 401, 404 response
+            console.error(err);
+        }
+    }
 });
 
 var displayPageHeader = function() {
