@@ -55,9 +55,13 @@ h4 {font-weight: 900;}
 <script src="{% static "vendor/js/moment.2.8.3.min.js" %}"></script>
 
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
 <script type="text/javascript">
-$('head').append($('<link rel="stylesheet" type="text/css" /><link rel="stylesheet">').attr('href', 'https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css'));
-$('head').append($('<link rel="stylesheet" type="text/css" /><link rel="stylesheet">').attr('href', 'https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css'));
+$('head').append($('<link rel="stylesheet" type="text/css" /><link rel="stylesheet">').attr('href', 'https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css')).append($('<link rel="stylesheet" type="text/css" /><link rel="stylesheet">').attr('href', 'https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css')).append($('<link rel="stylesheet" type="text/css" /><link rel="stylesheet">').attr('href', 'https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css')).append('<style>div.dt-buttons { margin-top: 14px; }</style>');
 </script>
 {% endblock %}
