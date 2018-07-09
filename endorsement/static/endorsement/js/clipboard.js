@@ -6,7 +6,7 @@ var ClipboardCopy = {
     },
 
     _registerEvents: function () {
-        $('#app_content').on('click', '[data-clipboard]', function (e) {
+        $(document).on('click', '[data-clipboard]', function (e) {
             ClipboardCopy._copy_clipboard($(this));
         });
     },

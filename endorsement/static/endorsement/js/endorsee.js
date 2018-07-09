@@ -34,11 +34,11 @@ var registerEvents = function() {
 
 var initDataTable = function () {
     $('#endorsee-table').dataTable({
-            'aaSorting': [[5, 'desc']],
-            'scrollY': '460px',
-            'scrollCollapse': true,
-            'paging': false,
-            "initComplete": function () {
+        aaSorting: [[5, 'desc']],
+        scrollY: '460px',
+        scrollCollapse: true,
+        paging: false,
+        initComplete: function () {
                 $('#show-revoked')
                     .prependTo('#endorsee-table_filter')
                     .css('display', 'inline-block')
@@ -48,8 +48,12 @@ var initDataTable = function () {
 
                         api.column(6).search(this.checked ? 'provisioned' : '').draw();
                     });
-            }
+            },
+        dom: 'Bfrti',
+        buttons: ['csv', 'print']
         });
+
+    $('div.dt-buttons button').attr('disabled', '1');
 };
 
 var displayEndorsedUWNetIDs = function(endorsements) {
@@ -84,10 +88,13 @@ var displayEndorsedUWNetIDs = function(endorsements) {
         } else {
             api.draw(true);
         }
+
+        $('div.dt-buttons button').removeAttr('disabled');
     } else {
         source = $("#admin-endorsee-empty-search-result").html();
         template = Handlebars.compile(source);
         $('#endorsee-table tbody').html(template(endorsements));
+        $('div.dt-buttons button').attr('disabled', '1');
     }
 };
 
