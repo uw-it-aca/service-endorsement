@@ -15,7 +15,7 @@
 {% endtplhandlebars %}
 
 {% tplhandlebars "admin-endorsee-search-result-endorsee-is-revoked" %}
-{{#if is_revoked }}<span class="fa fa-check"></span>{{else}}<span style="display: none;">provisioned</span>{{ /if }}
+{{#if is_revoked }}<span class="fa fa-check"></span><span style="display: none;">true</span>{{else}}<span style="display: none;">false</span>{{ /if }}
 {% endtplhandlebars %}
 
 {% tplhandlebars "admin-endorsee-search-error" %}

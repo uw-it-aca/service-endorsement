@@ -34,11 +34,11 @@ var registerEvents = function() {
 
 var initDataTable = function () {
     $('#endorsee-table').dataTable({
-            'aaSorting': [[5, 'desc']],
-            'scrollY': '460px',
-            'scrollCollapse': true,
-            'paging': false,
-            "initComplete": function () {
+        aaSorting: [[5, 'desc']],
+        scrollY: '460px',
+        scrollCollapse: true,
+        paging: false,
+        initComplete: function () {
                 $('#show-revoked')
                     .prependTo('#endorsee-table_filter')
                     .css('display', 'inline-block')
@@ -46,10 +46,14 @@ var initDataTable = function () {
                     .change(function () {
                         var api = $('#endorsee-table').dataTable().api();
 
-                        api.column(6).search(this.checked ? 'provisioned' : '').draw();
+                        api.column(6).search(this.checked ? 'false' : '').draw();
                     });
-            }
+            },
+        dom: 'Bfrti',
+        buttons: ['csv', 'print']
         });
+
+    $('div.dt-buttons button').attr('disabled', '1');
 };
 
 var displayEndorsedUWNetIDs = function(endorsements) {
@@ -80,14 +84,17 @@ var displayEndorsedUWNetIDs = function(endorsements) {
         });
 
         if ($('#show-revoked input:checked').length) {
-            api.columns([6]).search('provisioned').draw();
+            api.columns([6]).search('false').draw();
         } else {
             api.draw(true);
         }
+
+        $('div.dt-buttons button').removeAttr('disabled');
     } else {
         source = $("#admin-endorsee-empty-search-result").html();
         template = Handlebars.compile(source);
         $('#endorsee-table tbody').html(template(endorsements));
+        $('div.dt-buttons button').attr('disabled', '1');
     }
 };
 
