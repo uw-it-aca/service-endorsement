@@ -8,4 +8,4 @@ Service Endorsement
 ===================
 
 Install instructions at:
-https://github.com/uw-it-aca/service-endorsement/wiki/Install-Service-Endorsement-Web-Application
+https://github.com/uw-it-aca/service-endorsement/wiki/Installation
