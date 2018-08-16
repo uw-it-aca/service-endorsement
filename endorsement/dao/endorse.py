@@ -133,13 +133,13 @@ def store_office365_endorsement(endorser, endorsee, acted_as, reason):
     To endorse O365, the tools should:
       *  Add category 235, status 1 for given endorsee
       *  Activate subscription 59 Office 365 Pilot
-      *  Activate subscription 251 Office 365 Addee
+      *  Activate subscription 250 Future Office 365
     """
     _activate_category(endorsee.netid, Category.OFFICE_365_ENDORSEE)
     _activate_subscriptions(endorsee.netid, endorser.netid,
                             [
                                 Subscription.SUBS_OFFICE_356_PILOT,
-                                Subscription.SUBS_CODE_OFFICE_365_ADDEE,
+                                Subscription.SUBS_CODE_FUTURE_OFFICE_365,
                             ])
 
     return store_endorsement(

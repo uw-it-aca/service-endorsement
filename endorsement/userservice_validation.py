@@ -1,3 +1,5 @@
+from django.conf import settings
+from uw_saml.utils import is_member_of_group
 import re
 
 
@@ -14,3 +16,12 @@ def validate(username):
                 "then 0-7 letters or numbers)")
 
     return None
+
+
+def can_override_user(request):
+    """
+    Return True if the original user has impersonate permission
+    """
+    return is_member_of_group(request,
+                              getattr(settings, "ENDORSEMENT_ADMIN_GROUP",
+                                      'u_acadev_endorsement_support'))
