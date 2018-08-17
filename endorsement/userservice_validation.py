@@ -23,5 +23,5 @@ def can_override_user(request):
     Return True if the original user has impersonate permission
     """
     return is_member_of_group(request,
-                              getattr(settings, "ENDORSEMENT_ADMIN_GROUP",
+                              getattr(settings, "PROVISION_ADMIN_GROUP",
                                       'u_acadev_provision_support'))
