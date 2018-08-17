@@ -1,0 +1,45 @@
+{
+    "DisplayName": "JAMES STAFF",
+    "EduPersonAffiliations": [
+        "member",
+        "alum",
+        "staff",
+        "employee"
+    ],
+    "IsTestEntity": true,
+    "PersonAffiliations": {
+        "AlumPersonAffiliation": {
+            "DevelopmentID": "0000100001"
+        },
+        "EmployeePersonAffiliation": {
+            "EmployeeID": "100000001",
+            "EmployeeWhitePages": {
+                "Addresses": ["237 Denny, C-3175, 4333 Brooklyn Ave NE, Seattle, WA 98195"],
+                "Departments": ["University Computing Services"],
+                "EmailAddresses": ["jstaff@uw.edu"],
+                "Faxes": ["+1 206 123-4321"],
+                "Name": "JAMES STAFF",
+                "Phones": ["+1 206 123-1234", "+1 206 543-1234"],
+                "PublishInDirectory": false,
+                "Positions": ["Systems Engineer"],
+                "TouchDials": [],
+                "VoiceMails": []
+            },
+            "HomeDepartment": "OVP OF UW IT",
+            "MailStop": "359540"
+        }
+    },
+    "PreferredFirstName": "Jimmy",
+    "PreferredMiddleName": "",
+    "PreferredSurname": "McStaff",
+    "PriorUWNetIDs": [],
+    "PriorUWRegIDs": [],
+    "RegisteredFirstMiddleName": "JAMES",
+    "RegisteredName": "JAMES STAFF",
+    "RegisteredSurname": "Staff",
+    "RepositoryTimeStamp": "05/02/2018 03:46:48 PM",
+    "UIDNumber": "35443",
+    "UWNetID": "jstaff",
+    "UWRegID": "10000000000000000000000000000001",
+    "WhitepagesPublish": false
+}

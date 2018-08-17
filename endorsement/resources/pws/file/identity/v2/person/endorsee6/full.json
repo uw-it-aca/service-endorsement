@@ -1,0 +1,41 @@
+{
+    "DisplayName": "BRADFORD ENDORSEE6",
+    "EduPersonAffiliations": [
+        "affiliate"
+    ],
+    "IsTestEntity": false,
+    "PersonAffiliations": {
+        "EmployeePersonAffiliation": {
+            "EmployeeID": "350701271",
+            "EmployeeWhitePages": {
+                "Addresss": [],
+                "Departments": [],
+                "EmailAddresses": ["endorsee6@uw.edu"],
+                "Faxes": [],
+                "Name": null,
+                "Phones": [],
+                "Positions": [],
+                "PublishInDirectory": false,
+                "TouchDials": [],
+                "VoiceMails": []
+            },
+            "HomeDepartment": "CAMPUS HR OPERATIONS",
+            "MailStop": "359532"
+        }
+    },
+    "PreferredFirstName": "Bradster",
+    "PreferredMiddleName": "",
+    "PreferredSurname": "LeEndorsee6",
+    "RepositoryTimeStamp": "05/02/2018 03:46:48 PM",
+    "PriorUWNetIDs": [],
+    "PriorUWRegIDs": [
+        "252F3390420044EDA16FE4C8C7000007"
+    ],
+    "RegisteredFirstMiddleName": "BRADFORD",
+    "RegisteredName": "REG ENDORSEE6",
+    "RegisteredSurname": "ENDORSEE6",
+    "UIDNumber": "301090",
+    "UWNetID": "endorsee6",
+    "UWRegID": "BE43A1115A014E559570337951000008",
+    "WhitepagesPublish": true
+}

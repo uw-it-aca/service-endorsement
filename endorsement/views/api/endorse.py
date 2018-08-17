@@ -52,7 +52,8 @@ class Endorse(RESTDispatch):
         endorsed = {
             'endorser': endorser_json,
             'endorser_name': endorser_pws.display_name,
-            'endorser_email': endorser_pws.email1,
+            'endorser_email': endorser_pws.email_addresses[0] if (
+                len(endorser_pws.email_addresses) > 0) else None,
             'endorsed': {}
         }
 
