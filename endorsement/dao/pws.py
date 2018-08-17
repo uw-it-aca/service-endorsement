@@ -40,12 +40,14 @@ def get_person(uwnetid):
 
 def get_endorsee_data(uwnetid):
     """
-    Return uwregid, display_name and email1 retrieved from PWS/Person for the
-    given uwnetid.  Failing that, fetch entity
+    Return uwregid, display_name and first email_addresses retrieved from
+    PWS/Person for the given uwnetid.  Failing that, fetch entity
     """
     try:
         person = get_person(uwnetid)
-        return person.uwregid, person.display_name, person.email1, True
+        return (person.uwregid, person.display_name,
+                person.email_addresses[0] if (
+                    len(person.email_addresses) > 0) else None, True)
     except DataFailureException as ex:
         if int(ex.status) == 404:
             entity = get_entity(uwnetid)

@@ -1,0 +1,11 @@
+{
+"status": 301,
+"headers":{
+        "Server": "Microsoft-IIS/8.5",
+        "Location": "https://ws.admin.washington.edu/identity/v1/entity/endorsee51.json",
+        "X-AspNet-Version": "4.0.30319",
+        "X-Powered-By": "ASP.NET",
+        "Content-Length": 0,
+        "Connection": "close"
+          }
+}

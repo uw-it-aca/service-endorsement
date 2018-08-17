@@ -1,0 +1,41 @@
+{
+    "DisplayName": "SIMON ENDORSEE2",
+    "EduPersonAffiliations": [
+        "affiliate"
+    ],
+    "IsTestEntity": false,
+    "PersonAffiliations": {
+        "EmployeePersonAffiliation": {
+            "EmployeeID": "857001721",
+            "EmployeeWhitePages": {
+                "Addresss": [],
+                "Departments": [],
+                "EmailAddresses": ["endorsee2@uw.edu"],
+                "Faxes": [],
+                "Name": null,
+                "Phones": [],
+                "PublishInDirectory": true,
+                "Positions": [],
+                "TouchDials": [],
+                "VoiceMails": []
+            },
+            "HomeDepartment": "CAMPUS HR OPERATIONS",
+            "MailStop": "359532"
+        }
+    },
+    "PriorUWNetIDs": [],
+    "PriorUWRegIDs": [
+        "252F3390420044EDA16FE4C8C7467F20"
+    ],
+    "PreferredFirstName": "Simon",
+    "PreferredMiddleName": "",
+    "PreferredSurname": "McEndorsee2",
+    "RepositoryTimeStamp": "05/02/2018 03:46:48 PM",
+    "RegisteredFirstMiddleName": "SIMON",
+    "RegisteredName": "SIMON ENDORSEE2",
+    "RegisteredSurname": "ENDORSEE2",
+    "UIDNumber": "301090",
+    "UWNetID": "endorsee2",
+    "UWRegID": "BE43A1115A014E5595703379511536E1",
+    "WhitepagesPublish": true
+}
