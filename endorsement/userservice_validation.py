@@ -24,4 +24,4 @@ def can_override_user(request):
     """
     return is_member_of_group(request,
                               getattr(settings, "ENDORSEMENT_ADMIN_GROUP",
-                                      'u_acadev_endorsement_support'))
+                                      'u_acadev_provision_support'))
