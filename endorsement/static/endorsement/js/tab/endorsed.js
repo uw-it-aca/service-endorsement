@@ -29,11 +29,13 @@ var ManageProvisionedServices = {
     _registerEvents: function () {
         // delegated events within our content
         $('.tab-pane#' + ManageProvisionedServices.content_id).on('click', 'button.confirm_revoke', function(e) {
-            Revoke.revoke($(this), '#revoke_modal_content',
-                          'endorse:UWNetIDsRevokeStatus');
+            Revoke.revoke($(this), '#revoke_modal_content', 'endorse:UWNetIDsRevokeStatus');
+        }).on('click', '#export_csv', function (e) {
+            ManageProvisionedServices._exportProvisionedToCSV();
         }).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
             $('button#confirm_endorsements').button('reset');
             ManageProvisionedServices._displayEndorsedUWNetIDs(endorsed);
+            window.endorsed = endorsed;
         }).on('endorse:UWNetIDsEndorsedError', function (e, error) {
             $('#' + ManageProvisionedServices.content_id).html($('#endorsed-failure').html());
         }).on('endorse:UWNetIDsRevokeStatus', function (e, data) {
@@ -95,5 +97,82 @@ var ManageProvisionedServices = {
                 pending.appendTo($(this));
             }
         });
+    },
+
+    _exportProvisionedToCSV: function() {
+        var $table = $('#provisioned table'),
+            endorsed = window.endorsed.endorsed,
+            colDelim = ',',
+            rowDelim = '\r\n',
+            data = [[]],
+            fields = [],
+            csv,
+            downlink;
+
+        // csv header fields
+        $('thead tr th', $table).each(function (i) {
+            var label = $(this).attr('data-csv-label');
+
+            if (label != undefined) {
+                data[0].push(label)
+                fields.push(i);
+            }
+        });
+
+        // collect csv data from table
+        $('tr', $table).each(function () {
+            var $cols = $(this).find('td');
+
+            if ($cols.length) {
+                var row = [];
+
+                $.each(fields, function(i, n) {
+                    var $col = $($cols.get(n)),
+                        provisioned = $col.attr('data-csv-provisioned'),
+                        reason = $col.attr('data-csv-reason'),
+                        endorsement,
+                        context;
+
+                    if (provisioned) {
+                        context = provisioned.split('-');
+                        endorsement = endorsed[context[1]] && endorsed[context[1]][context[0]];
+                        if (endorsement) {
+                            row.push((endorsement.datetime_endorsed) ? utc2local(endorsement.datetime_endorsed) : 'pending');
+                        }
+                    } else if (reason) {
+                        context = reason.split('-');
+                        endorsement = endorsed[context[1]] && endorsed[context[1]][context[0]];
+                        if (endorsement) {
+                            row.push(endorsement.reason);
+                        }
+                    } else {
+                        row.push($col.html());
+                    }
+                });
+
+                data.push(row);
+            }
+        });
+
+        // generate csv, escaping delims and quotes
+        csv = data.map(function(row) {
+            return row.map(function(col) {
+                var escaped = col.replace(/"/g, '""');
+
+                if (escaped.indexOf('"') >= 0 || escaped.indexOf(colDelim) >= 0) {
+                    escaped = '"' + escaped + '"';
+                }
+
+                return escaped;
+            }).join(colDelim);
+            return r;
+        }).join(rowDelim);
+
+        // download
+        downlink = document.createElement('a');
+        downlink.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+        downlink.target = '_blank';
+        downlink.download = 'provisioned.csv';
+        downlink.click();
     }
 };
