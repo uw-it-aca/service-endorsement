@@ -5,13 +5,13 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>UW NetID</th>
-      <th>Name</th>
-      <th class="col-border-left">UW Office 365</th>
-      <th>Your provision reason</th>
+      <th data-csv-label="netid">UW NetID</th>
+      <th data-csv-label="name">Name</th>
+      <th data-csv-label="UW Office 365 Provisioned"class="col-border-left">UW Office 365</th>
+      <th data-csv-label="UW Office 365 Reason">Your provision reason</th>
       <th><!-- {{#if can_revoke}}Revoke UW Office 365{{/if}} --></th>
-      <th class="col-border-left">UW G Suite (Google)</th>
-      <th>Your provision reason</th>
+      <th class="col-border-left" data-csv-label="UW G Suite Provsioned">UW G Suite (Google)</th>
+      <th data-csv-label="UW G Suite Reason">Your provision reason</th>
       <th><!-- {{#if can_revoke}}Revoke UW G Suite{{/if}} --></th>
     </tr>
   </thead>
@@ -19,7 +19,7 @@
   <tr>
     <td>{{@key}}</td>
     <td>{{name}}</td>
-    <td class="result-status col-border-left endorsed-o365-{{ @key }}">
+    <td class="result-status col-border-left endorsed-o365-{{ @key }}" data-csv-provisioned="o365-{{ @key }}">
       {{#if o365}}
         {{#if o365.error}}
           {{o365.error}}
@@ -46,7 +46,7 @@
         {{/if}}
       {{/if}}
     </td>
-    <td class="reason-o365-{{ @key }}">{{o365.reason}}</td>
+    <td class="reason-o365-{{ @key }}" data-csv-reason="o365-{{ @key }}">{{o365.reason}}</td>
     <td class="revoke-o365-{{ @key }}">
       {{#if ../can_revoke}}
         {{#if o365}}
@@ -56,7 +56,7 @@
         {{/if}}
       {{/if}}
     </td>
-    <td class="result-status col-border-left endorsed-google-{{ @key }}">
+    <td class="result-status col-border-left endorsed-google-{{ @key }}" data-csv-provisioned="google-{{ @key }}">
       {{#if google}}
         {{#if google.error}}
           {{google.error}}
@@ -83,7 +83,7 @@
         {{/if}}
       {{/if}}
     </td>
-    <td class="reason-google-{{ @key }}">{{google.reason}}</td>
+    <td class="reason-google-{{ @key }}" data-csv-reason="google-{{ @key }}">{{google.reason}}</td>
     <td class="revoke-google-{{ @key }}">
       {{#if ../can_revoke}}
         {{#if google}}
