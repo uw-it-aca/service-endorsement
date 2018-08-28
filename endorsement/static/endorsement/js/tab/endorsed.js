@@ -113,8 +113,8 @@ var ManageProvisionedServices = {
         $('thead tr th', $table).each(function (i) {
             var label = $(this).attr('data-csv-label');
 
-            if (label != undefined) {
-                data[0].push(label)
+            if (label !== undefined) {
+                data[0].push(label);
                 fields.push(i);
             }
         });
@@ -165,7 +165,6 @@ var ManageProvisionedServices = {
 
                 return escaped;
             }).join(colDelim);
-            return r;
         }).join(rowDelim);
 
         // download
