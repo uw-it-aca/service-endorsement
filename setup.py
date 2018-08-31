@@ -35,7 +35,7 @@ setup(
         'pytz',
         'AuthZ-Group>=1.6',
         'UW-RestClients-Core<1.0,>=0.9.3',
-        'UW-Restclients-PWS<2.0,>=1.0.1',
+        'UW-Restclients-PWS<2.0,>=1.0.2',
         'UW-RestClients-GWS<1.0',
         'UW-RestClients-UWNetID>=0.8.3,<1.0',
         'UW-RestClients-Django-Utils>=0.6.8,<1.0',
