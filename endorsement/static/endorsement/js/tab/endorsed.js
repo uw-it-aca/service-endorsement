@@ -163,7 +163,7 @@ var ManageProvisionedServices = {
                             }
 
                         } else {
-                            msg += 'not endorsed';
+                            msg += 'not provisioned';
                         }
 
                         row.push(msg);
