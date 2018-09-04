@@ -121,7 +121,8 @@ var ManageProvisionedServices = {
 
         // collect csv data from table
         $('tr', $table).each(function () {
-            var $cols = $(this).find('td');
+            var $cols = $(this).find('td'),
+                msg;
 
             if ($cols.length) {
                 var row = [];
@@ -134,17 +135,47 @@ var ManageProvisionedServices = {
                         context;
 
                     if (provisioned) {
+                        msg = '';
                         context = provisioned.split('-');
                         endorsement = endorsed[context[1]] && endorsed[context[1]][context[0]];
+
                         if (endorsement) {
-                            row.push((endorsement.datetime_endorsed) ? utc2local(endorsement.datetime_endorsed) : 'pending');
+                            if (endorsement.datetime_endorsed) {
+                                msg += 'provisioned ' +  utc2local(endorsement.datetime_endorsed);
+                            } else {
+                                msg += 'pending acceptance';
+                            }
+
+                            if (endorsement.hasOwnProperty('endorsers') && endorsement.endorsers.length > 1) {
+                                msg += " (also provisioned by ";
+
+                                $.each(endorsement.endorsers, function (i) {
+                                    if (this.netid != endorsement.endorser.netid) {
+                                        if (i > 0) {
+                                            msg += ', ';
+                                        }
+
+                                        msg += this.netid;
+                                    }
+                                });
+
+                                msg += ')';
+                            }
+
+                        } else {
+                            msg += 'not endorsed';
                         }
+
+                        row.push(msg);
                     } else if (reason) {
+                        msg = '';
                         context = reason.split('-');
                         endorsement = endorsed[context[1]] && endorsed[context[1]][context[0]];
                         if (endorsement) {
-                            row.push(endorsement.reason);
+                            msg += endorsement.reason;
                         }
+
+                        row.push(msg);
                     } else {
                         row.push($col.html());
                     }
