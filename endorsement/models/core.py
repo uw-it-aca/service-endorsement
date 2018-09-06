@@ -20,7 +20,7 @@ class Endorser(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
                              unique=True)
-    display_name = models.CharField(max_length=64,
+    display_name = models.CharField(max_length=256,
                                     null=True)
     is_valid = models.NullBooleanField()
     last_visit = models.DateTimeField(null=True)
@@ -52,7 +52,7 @@ class Endorsee(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
                              unique=True)
-    display_name = models.CharField(max_length=64,
+    display_name = models.CharField(max_length=256,
                                     null=True)
     is_person = models.NullBooleanField(default=True)
     kerberos_active_permitted = models.NullBooleanField(default=False)
