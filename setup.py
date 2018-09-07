@@ -28,7 +28,6 @@ setup(
         'simplejson',
         'django-compressor',
         'django-userservice<3.0,>=2.0',
-        'BeautifulSoup',
         'urllib3==1.10.2',
         'django-templatetag-handlebars',
         'unittest2',
