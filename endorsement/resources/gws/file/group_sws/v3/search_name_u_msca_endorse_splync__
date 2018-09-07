@@ -1,0 +1,33 @@
+{
+    "schemas": [
+        "urn:mace:washington.edu:schemas:groups:1.0"
+    ],
+    "meta": {
+        "resourceType": "search",
+        "version": "v3.0",
+        "searchParameters": {
+        "name": "u_msca_endorse_splync_",
+        "stem": "string",
+        "scope": "string",
+        "type": "string",
+        "owner": "string",
+        "affiliate": "string",
+        "instructor": "string"
+    },
+    "selfRef": "https://iam-ws.u.washington.edu/group_sws/v3/group/a1681c3fcba3f54f759e6c9432004381"
+    },
+    "data": [
+        {
+            "regid": "8db9e80f3e4d42bca23fd7ce1a01f273",
+            "url": "/group_sws/v2/group/8db9e80f3e4d42bca23fd7ce1a01f273",
+            "displayName": "u_msca_endorse_splync_jstaff",
+            "id": "u_msca_endorse_splync_jstaff"
+        },
+        {
+            "regid": "783b786fea534b158389d24332d2f817",
+            "url": "/group_sws/v2/group/be93e933b99b4ee6800263df8d70cbda",
+            "displayName": "u_msca_endorse_splync_jfaculty",
+            "id": "u_msca_endorse_splync_jfaculty"
+        }
+   ]
+}

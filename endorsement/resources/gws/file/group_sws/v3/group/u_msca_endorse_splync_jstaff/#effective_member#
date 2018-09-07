@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+ <meta http-equiv="Content-Type"
+       content="application/xhtml+xml; charset=utf-8"/>
+</head>
+<body>
+  <div class="group">
+   Members of 
+    <br/>
+    Regid: <span class="regid">8db9e80f3e4d42bca23fd7ce1a01f273</span>
+    <br/>
+    <ul class="members">
+     <li>
+       <a rel="memberlink" class="effective_member" type="uwnetid" href="/group_sws/v2/group/u_msca_endorse_splync_jstaff/effective_member/endorsee1">endorsee2</a>
+     </li>
+     <li>
+       <a rel="memberlink" class="effective_member" type="uwnetid" href="/group_sws/v2/group/u_msca_endorse_splync_jstaff/effective_member/endorsee2">endorsee6</a>
+     </li>
+    </ul>
+  </div>
+</body>
+</html>
+{
+    "schemas": [
+        "urn:mace:washington.edu:schemas:groups:1.0"
+     ],
+     "meta": {
+        "resource": "groupmembers",
+        "version": "v3.0",
+        "regid": "string",
+        "id": "u_msca_endorse_splync_jstaff",
+        "type": "effective",
+        "selfRef": "string",
+        "timestamp": 1214343146201
+    },
+    "data": [
+        {
+            "mtype": "direct",
+            "source": null,
+            "type": "uwnetid",
+            "id": "javerage"
+        },
+        {
+            "mtype": "direct",
+            "source": null,
+            "type": "uwnetid",
+            "id": "eight"
+        },
+        {
+            "mtype": "direct",
+            "source": null,
+            "type": "uwnetid",
+            "id": "nine"
+        },
+        {
+            "mtype": "direct",
+            "source": null,
+            "type": "uwnetid",
+            "id": "six"
+        },
+        {
+            "mtype": "direct",
+            "source": null,
+            "type": "uwnetid",
+            "id": "seven"
+        }
+    ]
+}
