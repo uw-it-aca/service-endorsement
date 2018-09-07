@@ -13,7 +13,7 @@ from endorsement.util.log import log_exception_with_timer,\
 
 class RESTDispatch(View):
     def error_response(self, status, message='', content={}):
-        content['error'] = '%s' % message
+        content['error'] = '{0}'.format(message)
         return HttpResponse(json.dumps(content),
                             status=status,
                             content_type='application/json')

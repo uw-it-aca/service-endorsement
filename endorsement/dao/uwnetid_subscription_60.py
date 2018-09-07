@@ -39,5 +39,6 @@ def is_valid_endorsee(uwnetid):
 
     except Exception:
         return handel_err(logger,
-                          '%s subs_60.has_active_kerberos_subs ' % uwnetid,
+                          '{0} subs_60.has_active_kerberos_subs '.format(
+                              uwnetid),
                           traceback.format_exc())

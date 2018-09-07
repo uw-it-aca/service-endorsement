@@ -18,7 +18,7 @@ def _get_user():
 
 def add_user_info(message):
     try:
-        return "%s - %s" % (json.dumps(_get_user()), message)
+        return "{0} - {1}".format(json.dumps(_get_user()), message)
     except Exception:
         return message
 
@@ -28,16 +28,16 @@ def log_exception(logger, message, exc_info):
     exc_info is a string containing the full stack trace,
     including the exception type and value
     """
-    logger.error("%s => %s",
-                 add_user_info(message), exc_info.splitlines())
+    logger.error("{0} => {1}".format(
+        add_user_info(message), exc_info.splitlines()))
 
 
 def log_invalid_netid_response(logger, timer):
-    logger.error("%s %s", 'Invalid netid, abort', timer)
+    logger.error("{0} {1}".format('Invalid netid, abort', timer))
 
 
 def log_err_with_netid(logger, timer, message):
-    logger.error("%s %s", add_user_info(message), timer)
+    logger.error("{0} {1}".format(add_user_info(message), timer))
 
 
 def log_exception_with_timer(logger, timer, exc_info):
@@ -58,7 +58,7 @@ def log_data_error_response(logger, timer):
 
 
 def log_resp_time(logger, message, timer):
-    logger.info("%s %s", add_user_info(message), timer)
+    logger.info("{0} {1}".format(add_user_info(message), timer))
 
 
 def log_data_not_found_response(logger, timer):

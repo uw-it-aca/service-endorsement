@@ -29,5 +29,5 @@ def get_shared_netids_for_netid(netid):
             return []
     except Exception:
         return handel_err(logger,
-                          '%s supported resources ' % netid,
+                          '{0} supported resources '.format(netid),
                           traceback.format_exc())

@@ -27,12 +27,13 @@ def migrate_msca_endorsements():
         except Exception:
             log_exception(
                 logger,
-                "get_endorser_model for %s FAILED, Skip it!" % endorser_netid,
+                "get_endorser_model for {0} FAILED, Skip it!".format(
+                    endorser_netid),
                 traceback.format_exc())
             continue
 
         if len(endorsee_list) == 0:
-            logger.error("endorser: %s has no endorsee!" % endorser)
+            logger.error("endorser: {0} has no endorsee!".format(endorser))
             continue
 
         for netid in endorsee_list:
@@ -41,7 +42,8 @@ def migrate_msca_endorsements():
             except Exception:
                 log_exception(
                     logger,
-                    "get_endorsee_model for %s FAILED, Skip it!" % netid,
+                    "get_endorsee_model for {0} FAILED, Skip it!".format(
+                        netid),
                     traceback.format_exc())
                 continue
 

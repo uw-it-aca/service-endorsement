@@ -43,7 +43,7 @@ def create_endorsee_message(endorser):
     params['both_endorsed'] = (params['google_endorsed'] > 0 and
                                params['o365_endorsed'] > 0)
 
-    subject = "Your new access to %s tools" % (services)
+    subject = "Your new access to {0} tools".format(services)
 
     text_template = "email/endorsee.txt"
     html_template = "email/endorsee.html"
@@ -63,8 +63,8 @@ def notify_endorsees():
             email = get_endorsee_email_model(
                 er.endorsee, er.endorser).email
         except Exception as ex:
-            logger.error("Notify get email failed: %s, netid: %s" % (
-                ex, er.endorsee))
+            logger.error("Notify get email failed: {0}, netid: {1}"
+                         .format(ex, er.endorsee))
 
         if email not in endorsements:
             endorsements[email] = {
@@ -111,12 +111,13 @@ def notify_endorsees():
                 for service, data in endorsers['services'].items():
                     EndorsementRecord.objects.emailed(data['id'])
 
-                logger.info("Submission email sent To: %s, Status: %s" % (
-                    email, subject))
+                logger.info(
+                    "Submission email sent To: {0}, Status: {1}"
+                    .format(email, subject))
             except Exception as ex:
                 logger.error(
-                    "Submission email failed: %s, To: %s, Status: %s" % (
-                        ex, email, subject))
+                    "Submission email failed: {0}, To: {1}, Status: {2}"
+                    .format(ex, email, subject))
 
 
 def create_endorser_message(endorsed):
@@ -134,7 +135,7 @@ def create_endorser_message(endorsed):
     params['both_endorsed'] = (params['google_endorsed'] > 0 and
                                params['o365_endorsed'] > 0)
 
-    subject = "Shared NetID access to %s%s%s" % (
+    subject = "Shared NetID access to {0}{1}{2}".format(
         'UW Office 365' if params['o365_endorsed'] else '',
         ' and ' if (
             params['o365_endorsed'] and params['google_endorsed']) else '',
@@ -154,7 +155,7 @@ def notify_endorsers():
     endorsements = {}
     for er in EndorsementRecord.objects.get_endorsed_unnotified():
         # rely on @u forwarding for valid address
-        email = "%s@uw.edu" % er.endorser.netid
+        email = "{0}@uw.edu".format(er.endorser.netid)
         if email not in endorsements:
             endorsements[email] = {}
 
@@ -191,9 +192,9 @@ def notify_endorsers():
                         EndorsementRecord.objects.emailed(id)
 
             logger.info(
-                "Endorsement email sent To: %s, Status: %s" % (
-                    email, subject))
+                "Endorsement email sent To: {0}, Status: {1}"
+                .format(email, subject))
         except Exception as ex:
             logger.error(
-                "Endorsement email failed: %s, To: %s, Status: %s" % (
-                    ex, email, subject))
+                "Endorsement email failed: {0}, To: {1}, Status: {2}"
+                .format(ex, email, subject))

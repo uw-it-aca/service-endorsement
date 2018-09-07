@@ -8,5 +8,6 @@ _logger = logging.getLogger(__name__)
 
 def log_interaction(request, interaction_type):
     if interaction_type is not None:
-        _logger.info(add_user_info(": Interaction: %s" % interaction_type))
+        _logger.info(add_user_info(": Interaction: {0}".format(
+            interaction_type)))
     return HttpResponse()

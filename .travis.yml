@@ -4,6 +4,7 @@ services:
   - memcached
 python:
   - "2.7"
+  - "3.6"
 
 install:
   - sudo apt-get install -qq python-dev libxml2-dev libxmlsec1-dev

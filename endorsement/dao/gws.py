@@ -51,7 +51,7 @@ def get_msca_endorsement_groups():
     """
     Returns a list of uw_gws.GroupReference objects
     """
-    action = 'search groups with name=%s' % NAME_PREFIX
+    action = 'search groups with name={0}'.format(NAME_PREFIX)
     timer = Timer()
     try:
         return gws.search_groups(name=NAME_PREFIX)
@@ -63,7 +63,8 @@ def is_valid_endorser(uwnetid):
     """
     Return True if the user is in PersonReg currently
     """
-    action = '%s is_effective_member of %s group' % (uwnetid, ENDORSER_GROUP)
+    action = '{0} is_effective_member of {1} group'.format(
+        uwnetid, ENDORSER_GROUP)
     timer = Timer()
     try:
         return gws.is_effective_member(ENDORSER_GROUP, uwnetid)
@@ -87,9 +88,9 @@ def is_in_admin_group(group_key):
     user_service.get_user()
 
     if not hasattr(settings, group_key):
-        print "You must have a group defined as your admin group."
-        print 'Configure that using %s="foo_group"' % group_key
-        raise Exception("Missing %s in settings" % group_key)
+        print("You must have a group defined as your admin group.")
+        print('Configure that using {0}="foo_group"'.format(group_key))
+        raise Exception("Missing {0} in settings".format(group_key))
 
     actual_user = user_service.get_original_user()
     if not actual_user:

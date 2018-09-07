@@ -10,9 +10,9 @@ from django.test.utils import override_settings
 
 def _missing_url(name):
     try:
-        url = reverse(name)
+        reverse(name)
     except Exception as ex:
-        print "Ex: ", ex
+        print("Ex: {0}".format(ex))
         return True
 
     return False

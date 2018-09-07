@@ -95,7 +95,7 @@ class Endorse(RESTDispatch):
                     endorsements['o365'] = {
                         'endorser': endorser_json,
                         'endorsee': endorsee.json_data(),
-                        'error': "%s" % (ex)
+                        'error': "{0}".format(ex)
                     }
 
                 try:
@@ -127,7 +127,7 @@ class Endorse(RESTDispatch):
                     endorsements['google'] = {
                         'endorser': endorser_json,
                         'endorsee': endorsee.json_data(),
-                        'error': "%s" % (ex)
+                        'error': "{0}".format(ex)
                     }
 
             except InvalidNetID as ex:
@@ -136,11 +136,11 @@ class Endorse(RESTDispatch):
                         'netid': endorsee_netid
                     },
                     'name': "",
-                    'error': '%s' % (ex)
+                    'error': '{0}'.format(ex)
                 }
             except (KeyError, UnrecognizedUWNetid) as ex:
                 endorsements = {
-                    'error': '%s' % (ex)
+                    'error': '{0}'.format(ex)
                 }
 
                 if 'endorsee' in locals():

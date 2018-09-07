@@ -29,7 +29,7 @@ def get_endorser_model(uwnetid):
         regid=uwregid, defaults=updated_values)
 
     if created:
-        logger.info("Create endorser: %s" % user)
+        logger.info("Create endorser: {0}".format(user))
 
     return user
 
@@ -52,7 +52,7 @@ def get_endorsee_model(uwnetid):
                 is_person=is_person,
                 kerberos_active_permitted=kerberos_active_permitted)
 
-            logger.info("Create endorsee: %s" % user)
+            logger.info("Create endorsee: {0}".format(user))
             return user
         except IntegrityError:
             transaction.commit()
@@ -75,8 +75,8 @@ def get_endorsee_email_model(endorsee, endorser, email=None):
             defaults={'email': pws_email})
 
     if created:
-        logger.info("Create endorsee email: %s %s %s" % (
-            endorsee.netid, endorser.netid, email))
+        logger.info("Create endorsee email: {0} {1} {2}"
+                    .format(endorsee.netid, endorser.netid, email))
 
     return endorsee_email
 

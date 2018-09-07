@@ -21,7 +21,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--lifetime', dest='lifetime', default=self.default_lifetime,
             type=int,
-            help='provisioning lifetime in days, default %s' % (
+            help='provisioning lifetime in days, default {0}'.format(
                 self.default_lifetime))
 
     def handle(self, *args, **options):
@@ -40,7 +40,7 @@ class Command(BaseCommand):
                                                'endorsements': endorsements
                                            })
             mail_managers(
-                'Provisioned services for %s expiring' % endorsee, body)
+                'Provisioned services for {0} expiring'.format(endorsee), body)
 
-            logger.info('expired endorsments (%s) for %s', (
-                len(endorsements)), netid)
+            logger.info('expired endorsments ({0}) for {1}'.format(
+                len(endorsements), netid))
