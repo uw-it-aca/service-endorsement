@@ -18,45 +18,8 @@ from endorsement.util.time_helper import Timer
 
 
 logger = logging.getLogger(__name__)
-NAME_PREFIX = "u_msca_endorse_splync_*"
-GROUP_NAME_PATTERN = r"^u_msca_endorse_splync_(.+)$"
 ENDORSER_GROUP = "uw_employee"
 gws = GWS()
-
-
-def get_endorser_endorsees():
-    """
-    Returns a list of {'endorser': uwnetid, 'endorsees': [uwnetid]}
-    of the msca_endorsement_groups on uw Group Service.
-    """
-    ret_list = []
-    for gr in get_msca_endorsement_groups():
-        group_name = ''.join(gr.name)
-        match = re.search(GROUP_NAME_PATTERN, group_name)
-        if match:
-            endorser_uwnetid = match.group(1)
-            endorsees = []
-            members = gws.get_effective_members(group_name)
-            if members is not None:
-                for mem in members:
-                    if mem.is_uwnetid():
-                        endorsees.append(mem.name)
-            ret_list.append({'endorser': endorser_uwnetid,
-                             'endorsees': endorsees})
-
-    return ret_list
-
-
-def get_msca_endorsement_groups():
-    """
-    Returns a list of uw_gws.GroupReference objects
-    """
-    action = 'search groups with name={0}'.format(NAME_PREFIX)
-    timer = Timer()
-    try:
-        return gws.search_groups(name=NAME_PREFIX)
-    finally:
-        log_resp_time(logger, action, timer)
 
 
 def is_valid_endorser(uwnetid):
