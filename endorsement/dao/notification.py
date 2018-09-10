@@ -53,10 +53,7 @@ def create_endorsee_message(endorser):
             loader.render_to_string(html_template, params))
 
 
-def notify_endorsees():
-    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
-                     "provision-noreply@uw.edu")
-
+def get_unendorsed_unnotified():
     endorsements = {}
     for er in EndorsementRecord.objects.get_unendorsed_unnotified():
         try:
@@ -92,6 +89,15 @@ def notify_endorsees():
             }
 
         endorsements[email]['endorsers'][er.endorser.netid]['services'] = s
+
+    return endorsements
+
+
+def notify_endorsees():
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
+
+    endorsements = get_unendorsed_unnotified()
 
     for email, endorsers in endorsements.items():
         for endorser_netid, endorsers in endorsers['endorsers'].items():
@@ -132,8 +138,8 @@ def create_endorser_message(endorsed):
 
     params["endorsed_count"] = params["o365_endorsed_count"]
     params["endorsed_count"] += params["google_endorsed_count"]
-    params['both_endorsed'] = (params['google_endorsed'] > 0 and
-                               params['o365_endorsed'] > 0)
+    params['both_endorsed'] = (params['google_endorsed'] is not None and
+                               params['o365_endorsed'] is not None)
 
     subject = "Shared NetID access to {0}{1}{2}".format(
         'UW Office 365' if params['o365_endorsed'] else '',
@@ -149,9 +155,7 @@ def create_endorser_message(endorsed):
             loader.render_to_string(html_template, params))
 
 
-def notify_endorsers():
-    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
-                     "provision-noreply@uw.edu")
+def get_endorsed_unnotified():
     endorsements = {}
     for er in EndorsementRecord.objects.get_endorsed_unnotified():
         # rely on @u forwarding for valid address
@@ -174,6 +178,14 @@ def notify_endorsers():
                 endorsements[email]['google'].append(data)
             else:
                 endorsements[email]['google'] = [data]
+
+    return endorsements
+
+
+def notify_endorsers():
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
+    endorsements = get_endorsed_unnotified()
 
     for email, endorsed in endorsements.items():
         (subject, text_body, html_body) = create_endorser_message(endorsed)

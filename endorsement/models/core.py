@@ -228,9 +228,10 @@ class EndorsementRecord(models.Model):
         return self.accept_id == self.get_accept_id(endorsee_netid)
 
     def get_accept_id(self, endorsee_netid):
-        return hashlib.md5("{0}{1}{2}{3}".format(
+        val = "{0}{1}{2}{3}".format(
             self.endorser.netid, endorsee_netid,
-            self.category_code, self.accept_salt)).hexdigest()
+            self.category_code, self.accept_salt)
+        return hashlib.md5(val.encode()).hexdigest()
 
     def revoke(self):
         self.datetime_expired = timezone.now()
