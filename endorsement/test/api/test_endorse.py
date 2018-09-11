@@ -1,7 +1,6 @@
 import json
 from django.core.urlresolvers import reverse
 from endorsement.test.api import EndorsementApiTest
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
 
 
 class TestEndorsementEndorseAPI(EndorsementApiTest):
@@ -37,9 +36,6 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
         self.assertFalse(data['endorsed']['endorsee7']['o365']['endorsed'])
 
     def test_endorse_o365(self):
-        endorser = get_endorser_model('jfaculty')
-        endorsee = get_endorsee_model('endorsee7')
-
         self.set_user('jfaculty')
         url = reverse('endorse_api')
 
