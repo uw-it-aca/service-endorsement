@@ -57,7 +57,7 @@ class Endorse(RESTDispatch):
             'endorsed': {}
         }
 
-        for endorsee_netid, to_endorse in endorsees.iteritems():
+        for endorsee_netid, to_endorse in endorsees.items():
             try:
                 endorsee = get_endorsee_model(endorsee_netid)
                 endorsements = {
