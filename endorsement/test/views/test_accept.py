@@ -11,7 +11,7 @@ from endorsement.dao.endorse import (
 @require_url('accept_view', 'endorsement urls not configured',
              kwargs={'accept_id': "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
 class TestAccept(TestViewApi):
- 
+
     @classmethod
     def setUpTestData(cls):
         endorser = get_endorser_model('jfaculty')
@@ -51,6 +51,8 @@ class TestAccept(TestViewApi):
         self.assertEqual(get_original_user(request), 'endorsee6')
 
         url = reverse('accept_view',
-                      kwargs={"accept_id": 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'})
+                      kwargs={
+                          "accept_id": 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+                      })
         response = self.client.get(url)
         self.assertEquals(response.status_code, 404)
