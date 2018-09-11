@@ -25,7 +25,7 @@ class TestNotificationDao(TransactionTestCase):
                 self.assertEqual(
                     msg[0], 'Your new access to UW Microsoft and Google tools')
 
-    def test_endorsee_notification_message(self):
+    def test_endorser_notification_message(self):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
 
