@@ -2,16 +2,10 @@ import json
 from django.core.urlresolvers import reverse
 from endorsement.test.api import EndorsementApiTest
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.exceptions import NoEndorsementException
-from endorsement.dao.endorse import (
-    clear_office365_endorsement)
 
 
 class TestEndorsementEndorseAPI(EndorsementApiTest):
     def test_endorse_google(self):
-        endorser = get_endorser_model('jstaff')
-        endorsee = get_endorsee_model('endorsee7')
-
         self.set_user('jstaff')
         url = reverse('endorse_api')
 
