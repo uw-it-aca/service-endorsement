@@ -8,13 +8,9 @@ from endorsement.dao.endorse import (
 
 
 class TestEndorsementEndorseAPI(EndorsementApiTest):
-    def test_endorse(self):
+    def test_endorse_google(self):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
-        try:
-            clear_office365_endorsement(endorser, endorsee)
-        except NoEndorsementException as ex:
-            pass
 
         self.set_user('jstaff')
         url = reverse('endorse_api')
@@ -24,7 +20,8 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
                 "name": "JERRY ENDORSEE7",
                 "email": "endorsee7@uw.edu",
                 "reason": "Student mentoring",
-                "google": True
+                "google": True,
+                "o365": False
             }
         })
 
@@ -42,4 +39,39 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
         self.assertEqual(
             data['endorsed']['endorsee7']['google']['endorser']['netid'],
             'jstaff')
-        self.assertFalse('o365' in data['endorsed']['endorsee7'])
+        self.assertTrue('o365' in data['endorsed']['endorsee7'])
+        self.assertFalse(data['endorsed']['endorsee7']['o365']['endorsed'])
+
+    def test_endorse_o365(self):
+        endorser = get_endorser_model('jfaculty')
+        endorsee = get_endorsee_model('endorsee7')
+
+        self.set_user('jfaculty')
+        url = reverse('endorse_api')
+
+        data = json.dumps({
+            "endorsee7": {
+                "name": "JERRY ENDORSEE7",
+                "email": "endorsee7@uw.edu",
+                "reason": "Student mentoring",
+                "o365": True,
+                "google": False
+            }
+        })
+
+        response = self.client.post(url, data, content_type='application_json')
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(data['endorser']['netid'], 'jfaculty')
+        self.assertTrue('endorsee7' in data['endorsed'])
+        self.assertTrue('o365' in data['endorsed']['endorsee7'])
+        self.assertEqual(
+            data['endorsed']['endorsee7']['o365']['category_code'], 235)
+        self.assertEqual(
+            data['endorsed']['endorsee7']['o365']['endorsee']['netid'],
+            'endorsee7')
+        self.assertEqual(
+            data['endorsed']['endorsee7']['o365']['endorser']['netid'],
+            'jfaculty')
+        self.assertTrue('google' in data['endorsed']['endorsee7'])
+        self.assertFalse(data['endorsed']['endorsee7']['google']['endorsed'])

@@ -16,7 +16,7 @@ from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
-    InvalidNetID, UnrecognizedUWNetid,
+    InvalidNetID, UnrecognizedUWNetid, NoEndorsementException,
     CategoryFailureException, SubscriptionFailureException,
     MissingReasonException)
 
@@ -83,7 +83,11 @@ class Endorse(RESTDispatch):
                         endorsements['o365']['endorsed'] = True
                         endorsements['reason'] = reason
                     else:
-                        clear_office365_endorsement(endorser, endorsee)
+                        try:
+                            clear_office365_endorsement(endorser, endorsee)
+                        except NoEndorsementException as ex:
+                            pass
+
                         endorsements['o365'] = {
                             'endorsed': False
                         }
@@ -113,7 +117,11 @@ class Endorse(RESTDispatch):
                         endorsements['google']['endorsed'] = True
                         endorsements['reason'] = reason
                     else:
-                        clear_google_endorsement(endorser, endorsee)
+                        try:
+                            clear_google_endorsement(endorser, endorsee)
+                        except NoEndorsementException as ex:
+                            pass
+
                         endorsements['google'] = {
                             'endorser': endorser_json,
                             'endorsee': endorsee.json_data(),
