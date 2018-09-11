@@ -103,27 +103,30 @@ def notify_endorsees():
         for endorser_netid, endorsers in endorsers['endorsers'].items():
             (subject, text_body, html_body) = create_endorsee_message(
                 endorsers)
+            send_endorsee_email(sender, [email], subject,
+                                text_body, html_body, endorsers)
 
-            recipients = [email]
-            message = EmailMultiAlternatives(
-                subject, text_body, sender, recipients,
-                headers={'Precedence': 'bulk'}
-            )
-            message.attach_alternative(html_body, "text/html")
 
-            try:
-                message.send()
+def send_endorsee_email(sender, recipients, subject,
+                        text_body, html_body, endorsers):
+    message = EmailMultiAlternatives(
+        subject, text_body, sender, recipients,
+        headers={'Precedence': 'bulk'}
+    )
+    message.attach_alternative(html_body, "text/html")
 
-                for service, data in endorsers['services'].items():
-                    EndorsementRecord.objects.emailed(data['id'])
+    try:
+        message.send()
+        for service, data in endorsers['services'].items():
+            EndorsementRecord.objects.emailed(data['id'])
 
-                logger.info(
-                    "Submission email sent To: {0}, Status: {1}"
-                    .format(email, subject))
-            except Exception as ex:
-                logger.error(
-                    "Submission email failed: {0}, To: {1}, Status: {2}"
-                    .format(ex, email, subject))
+        logger.info(
+            "Submission email sent To: {0}, Status: {1}"
+            .format(','.join(recipients), subject))
+    except Exception as ex:
+        logger.error(
+            "Submission email failed: {0}, To: {1}, Status: {2}"
+            .format(ex, ','.join(recipients), subject))
 
 
 def create_endorser_message(endorsed):
@@ -186,27 +189,29 @@ def notify_endorsers():
     sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
                      "provision-noreply@uw.edu")
     endorsements = get_endorsed_unnotified()
-
     for email, endorsed in endorsements.items():
         (subject, text_body, html_body) = create_endorser_message(endorsed)
-        recipients = [email]
-        message = EmailMultiAlternatives(
-            subject, text_body, sender, recipients,
-            headers={'Precedence': 'bulk'}
-        )
+        send_endorser_email(sender, [email], subject,
+                            text_body, html_body, endorsed)
 
-        message.attach_alternative(html_body, "text/html")
-        try:
-            message.send()
-            for svc in ['o365', 'google']:
-                if svc in endorsed:
-                    for id in [x['id'] for x in endorsed[svc]]:
-                        EndorsementRecord.objects.emailed(id)
 
-            logger.info(
-                "Endorsement email sent To: {0}, Status: {1}"
-                .format(email, subject))
-        except Exception as ex:
-            logger.error(
-                "Endorsement email failed: {0}, To: {1}, Status: {2}"
-                .format(ex, email, subject))
+def send_endorser_email(sender, recipients, subject,
+                        text_body, html_body, endorsed):
+    message = EmailMultiAlternatives(
+        subject, text_body, sender, recipients, headers={'Precedence': 'bulk'})
+    message.attach_alternative(html_body, "text/html")
+    try:
+        message.send()
+        for svc in ['o365', 'google']:
+            if svc in endorsed:
+                for id in [x['id'] for x in endorsed[svc]]:
+                    EndorsementRecord.objects.emailed(id)
+
+        logger.info(
+            "Endorsement email sent To: {0}, Status: {1}"
+            .format(','.join(recipients), subject))
+
+    except Exception as ex:
+        logger.error(
+            "Endorsement email failed: {0}, To: {1}, Status: {2}"
+            .format(ex, ','.join(recipients), subject))
