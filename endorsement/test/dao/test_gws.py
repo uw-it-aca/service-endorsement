@@ -1,4 +1,4 @@
-from endorsement.dao.gws import is_valid_endorser, is_in_admin_group
+from endorsement.dao.gws import is_valid_endorser
 from endorsement.test.dao import TestDao
 
 

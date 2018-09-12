@@ -20,6 +20,14 @@ Message = 'django.contrib.messages.middleware.MessageMiddleware'
 XFrame = 'django.middleware.clickjacking.XFrameOptionsMiddleware'
 UserService = 'userservice.user.UserServiceMiddleware'
 AUTH_BACKEND = 'django.contrib.auth.backends.ModelBackend'
+MockSAMLAttributes = {
+    'uwnetid': ['jstaff'],
+    'affiliations': ['employee', 'member'],
+    'eppn': ['jstaff@washington.edu'],
+    'scopedAffiliations': ['employee@washington.edu', 'member@washington.edu'],
+    'isMemberOf': ['u_test_group', 'u_test_another_group',
+                   'u_acadev_provision_support'],
+}
 standard_test_override = override_settings(
     MIDDLEWARE_CLASSES=(Session,
                         Common,
@@ -48,6 +56,9 @@ class EndorsementApiTest(TransactionTestCase):
         self.client.login(username=username,
                           password=get_user_pass(username))
         self.process_request()
+        self.request.session['samlUserdata'] = MockSAMLAttributes.copy()
+        self.request.session['samlUserdata']['uwnetid'] = [username]
+        self.request.session.save()
 
     def process_request(self):
         self.request.session = self.client.session
