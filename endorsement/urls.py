@@ -1,6 +1,4 @@
-import re
 from django.conf.urls import url
-from endorsement.views.logger import log_interaction
 from endorsement.views import page
 from endorsement.views.accept import accept
 from endorsement.views.endorsee_search import endorsee_search
@@ -13,7 +11,6 @@ from endorsement.views.api.shared import Shared
 
 
 urlpatterns = [
-    url(r'^logger/(?P<interaction_type>\w+)$', log_interaction, name='logger'),
     url(r'^logout', page.logout, name='logout'),
     url(r'^accept/(?P<accept_id>[A-Za-z0-9]{32})$',
         accept, name='accept_view'),
