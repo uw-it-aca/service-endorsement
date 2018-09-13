@@ -4,15 +4,11 @@ provides access to the existing endorsement groups
 """
 
 import logging
-import re
 import sys
 import traceback
-from django.conf import settings
 from restclients_core.exceptions import InvalidNetID
 from restclients_core.exceptions import DataFailureException
-from userservice.user import UserService
 from uw_gws import GWS
-from authz_group import Group
 from endorsement.util.log import log_exception, log_resp_time
 from endorsement.util.time_helper import Timer
 

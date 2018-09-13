@@ -48,10 +48,6 @@ def log_invalid_endorser_response(logger, timer):
     log_err_with_netid(logger, timer, 'Invalid endorser, abort')
 
 
-def log_invalid_regid_response(logger, timer):
-    log_err_with_netid(logger, timer, 'Invalid regid, abort')
-
-
 def log_data_error_response(logger, timer):
     log_err_with_netid(logger, timer,
                        'Data not available due to a backend error, abort')
