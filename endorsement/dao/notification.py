@@ -43,7 +43,7 @@ def create_endorsee_message(endorser):
     params['both_endorsed'] = (params['google_endorsed'] > 0 and
                                params['o365_endorsed'] > 0)
 
-    subject = "Your new access to %s tools" % (services)
+    subject = "Your new access to {0} tools".format(services)
 
     text_template = "email/endorsee.txt"
     html_template = "email/endorsee.html"
@@ -53,18 +53,15 @@ def create_endorsee_message(endorser):
             loader.render_to_string(html_template, params))
 
 
-def notify_endorsees():
-    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
-                     "provision-noreply@uw.edu")
-
+def get_unendorsed_unnotified():
     endorsements = {}
     for er in EndorsementRecord.objects.get_unendorsed_unnotified():
         try:
             email = get_endorsee_email_model(
                 er.endorsee, er.endorser).email
         except Exception as ex:
-            logger.error("Notify get email failed: %s, netid: %s" % (
-                ex, er.endorsee))
+            logger.error("Notify get email failed: {0}, netid: {1}"
+                         .format(ex, er.endorsee))
 
         if email not in endorsements:
             endorsements[email] = {
@@ -93,30 +90,43 @@ def notify_endorsees():
 
         endorsements[email]['endorsers'][er.endorser.netid]['services'] = s
 
+    return endorsements
+
+
+def notify_endorsees():
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
+
+    endorsements = get_unendorsed_unnotified()
+
     for email, endorsers in endorsements.items():
         for endorser_netid, endorsers in endorsers['endorsers'].items():
             (subject, text_body, html_body) = create_endorsee_message(
                 endorsers)
+            send_endorsee_email(sender, [email], subject,
+                                text_body, html_body, endorsers)
 
-            recipients = [email]
-            message = EmailMultiAlternatives(
-                subject, text_body, sender, recipients,
-                headers={'Precedence': 'bulk'}
-            )
-            message.attach_alternative(html_body, "text/html")
 
-            try:
-                message.send()
+def send_endorsee_email(sender, recipients, subject,
+                        text_body, html_body, endorsers):
+    message = EmailMultiAlternatives(
+        subject, text_body, sender, recipients,
+        headers={'Precedence': 'bulk'}
+    )
+    message.attach_alternative(html_body, "text/html")
 
-                for service, data in endorsers['services'].items():
-                    EndorsementRecord.objects.emailed(data['id'])
+    try:
+        message.send()
+        for service, data in endorsers['services'].items():
+            EndorsementRecord.objects.emailed(data['id'])
 
-                logger.info("Submission email sent To: %s, Status: %s" % (
-                    email, subject))
-            except Exception as ex:
-                logger.error(
-                    "Submission email failed: %s, To: %s, Status: %s" % (
-                        ex, email, subject))
+        logger.info(
+            "Submission email sent To: {0}, Status: {1}"
+            .format(','.join(recipients), subject))
+    except Exception as ex:
+        logger.error(
+            "Submission email failed: {0}, To: {1}, Status: {2}"
+            .format(ex, ','.join(recipients), subject))
 
 
 def create_endorser_message(endorsed):
@@ -131,10 +141,10 @@ def create_endorser_message(endorsed):
 
     params["endorsed_count"] = params["o365_endorsed_count"]
     params["endorsed_count"] += params["google_endorsed_count"]
-    params['both_endorsed'] = (params['google_endorsed'] > 0 and
-                               params['o365_endorsed'] > 0)
+    params['both_endorsed'] = (params['google_endorsed'] is not None and
+                               params['o365_endorsed'] is not None)
 
-    subject = "Shared NetID access to %s%s%s" % (
+    subject = "Shared NetID access to {0}{1}{2}".format(
         'UW Office 365' if params['o365_endorsed'] else '',
         ' and ' if (
             params['o365_endorsed'] and params['google_endorsed']) else '',
@@ -148,13 +158,11 @@ def create_endorser_message(endorsed):
             loader.render_to_string(html_template, params))
 
 
-def notify_endorsers():
-    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
-                     "provision-noreply@uw.edu")
+def get_endorsed_unnotified():
     endorsements = {}
     for er in EndorsementRecord.objects.get_endorsed_unnotified():
         # rely on @u forwarding for valid address
-        email = "%s@uw.edu" % er.endorser.netid
+        email = "{0}@uw.edu".format(er.endorser.netid)
         if email not in endorsements:
             endorsements[email] = {}
 
@@ -174,26 +182,36 @@ def notify_endorsers():
             else:
                 endorsements[email]['google'] = [data]
 
+    return endorsements
+
+
+def notify_endorsers():
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
+    endorsements = get_endorsed_unnotified()
     for email, endorsed in endorsements.items():
         (subject, text_body, html_body) = create_endorser_message(endorsed)
-        recipients = [email]
-        message = EmailMultiAlternatives(
-            subject, text_body, sender, recipients,
-            headers={'Precedence': 'bulk'}
-        )
+        send_endorser_email(sender, [email], subject,
+                            text_body, html_body, endorsed)
 
-        message.attach_alternative(html_body, "text/html")
-        try:
-            message.send()
-            for svc in ['o365', 'google']:
-                if svc in endorsed:
-                    for id in [x['id'] for x in endorsed[svc]]:
-                        EndorsementRecord.objects.emailed(id)
 
-            logger.info(
-                "Endorsement email sent To: %s, Status: %s" % (
-                    email, subject))
-        except Exception as ex:
-            logger.error(
-                "Endorsement email failed: %s, To: %s, Status: %s" % (
-                    ex, email, subject))
+def send_endorser_email(sender, recipients, subject,
+                        text_body, html_body, endorsed):
+    message = EmailMultiAlternatives(
+        subject, text_body, sender, recipients, headers={'Precedence': 'bulk'})
+    message.attach_alternative(html_body, "text/html")
+    try:
+        message.send()
+        for svc in ['o365', 'google']:
+            if svc in endorsed:
+                for id in [x['id'] for x in endorsed[svc]]:
+                    EndorsementRecord.objects.emailed(id)
+
+        logger.info(
+            "Endorsement email sent To: {0}, Status: {1}"
+            .format(','.join(recipients), subject))
+
+    except Exception as ex:
+        logger.error(
+            "Endorsement email failed: {0}, To: {1}, Status: {2}"
+            .format(ex, ','.join(recipients), subject))

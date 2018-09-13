@@ -27,7 +27,8 @@ class Command(BaseCommand):
                                                    'endorsements': endorsements
                                                })
                 mail_managers(
-                    'Provisioner %s no longer valid' % endorser, body)
+                    'Provisioner {0} no longer valid'.format(endorser), body)
 
-                logger.info('no longer valid endorser %s of %s endorsments', (
-                    netid, len(endorsements)))
+                logger.info(
+                    'no longer valid endorser {0} of {1} endorsments'.format(
+                        netid, len(endorsements)))

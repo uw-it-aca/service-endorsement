@@ -10,7 +10,7 @@ def log_session_key(request):
     session_key = request.session.session_key
     if session_key is None:
         session_key = ''
-    session_hash = hashlib.md5(session_key).hexdigest()
+    session_hash = hashlib.md5(session_key.encode('utf-8')).hexdigest()
     log_entry = _get_user(request)
     log_entry['session_key'] = session_hash
     logger.info(json.dumps(log_entry))

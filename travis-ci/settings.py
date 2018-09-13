@@ -13,8 +13,6 @@ SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = DEBUG
-
 ALLOWED_HOSTS = []
 
 
@@ -95,6 +93,7 @@ TEMPLATES = [
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
+            'debug': DEBUG,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -113,3 +112,4 @@ COMPRESS_OFFLINE = False
 AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.all_ok.AllOK'
 USERSERVICE_ADMIN_GROUP=''
 RESTCLIENTS_ADMIN_GROUP=''
+PROVISION_ADMIN_GROUP='u_acadev_provision_support'

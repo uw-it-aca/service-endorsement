@@ -8,18 +8,18 @@ from django.test.client import RequestFactory
 from django.test.utils import override_settings
 
 
-def _missing_url(name):
+def _missing_url(name, kwargs=None):
     try:
-        url = reverse(name)
+        reverse(name, kwargs=kwargs)
     except Exception as ex:
-        print "Ex: ", ex
+        print("Ex: {0}".format(ex))
         return True
 
     return False
 
 
-def require_url(url, message):
-    return skipIf(_missing_url(url), message)
+def require_url(url, message, kwargs=None):
+    return skipIf(_missing_url(url, kwargs), message)
 
 
 def get_user(netid):

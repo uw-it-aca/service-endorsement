@@ -1,5 +1,4 @@
-from restclients_core.exceptions import (
-    DataFailureException, InvalidNetID)
+from restclients_core.exceptions import InvalidNetID
 from endorsement.dao.pws import is_renamed_uwnetid,\
     get_endorser_data, get_endorsee_data
 from endorsement.exceptions import UnrecognizedUWNetid

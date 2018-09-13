@@ -43,7 +43,7 @@ def index(request):
             log_resp_time(logger, "index.html", timer)
             return render(request, "index.html", context)
         except Exception as ex:
-            print "%s" % ex
+            logger.error("{0}".format(ex))
     except Exception:
         handle_exception(logger, timer, traceback)
 

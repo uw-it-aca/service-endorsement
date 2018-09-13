@@ -2,7 +2,8 @@ from django.test import TransactionTestCase
 from restclients_core.exceptions import DataFailureException
 from endorsement.models.core import Endorser, Endorsee
 from endorsement.dao.user import (
-    get_endorser_model, get_endorsee_model, get_endorsee_email_model)
+    get_endorser_model, get_endorsee_model,
+    get_endorsee_email_model, is_shared_netid)
 
 
 class TestUserDao(TransactionTestCase):
@@ -41,3 +42,7 @@ class TestUserDao(TransactionTestCase):
         endorsee = get_endorsee_model('endorsee2')
         email = get_endorsee_email_model(endorsee, endorser)
         self.assertEqual(email.email, "endorsee2@uw.edu")
+
+    def test_shared_netids(self):
+        self.assertTrue(is_shared_netid('endorsee3'))
+        self.assertTrue(is_shared_netid('endorsee7'))

@@ -18,3 +18,7 @@ class TestPage(TestViewApi):
 
         response = self.get_response("home")
         self.assertEqual(response.status_code, 200)
+
+    def test_logout(self):
+        response = self.get_response("logout")
+        self.assertEqual(response.status_code, 302)

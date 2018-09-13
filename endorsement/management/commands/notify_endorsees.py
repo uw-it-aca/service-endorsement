@@ -9,4 +9,4 @@ class Command(BaseCommand):
         try:
             notify_endorsees()
         except Exception as ex:
-            raise CommandError('notify: %s' % ex)
+            raise CommandError('notify: {0}'.format(ex))
