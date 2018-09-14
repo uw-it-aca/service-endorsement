@@ -43,7 +43,7 @@ setup(
         'django-pyscss',
         'django_mobileesp',
         'Django-SupportTools>=2.0.4,<3.0',
-        'django_client_logger',
+        'django_client_logger>=1.3,<2.0',
     ],
     license='Apache License, Version 2.0',
     description=('App mangaging University of Washington Endorsed Services'),
