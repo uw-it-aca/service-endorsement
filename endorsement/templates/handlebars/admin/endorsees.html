@@ -1,7 +1,7 @@
 {% load templatetag_handlebars %}
 
 {% tplhandlebars "admin-endorsee-search-result-endorsee" %}
-{{endorsee.netid}}{{#if acted_as}} (by {{ acted_as }}){{/if}}
+{{endorsee.netid}}{{#if acted_as}} (by {{ acted_as }}){{/if}}{{#unless endorsee.is_person}} (shared netid){{/unless}}
 {% endtplhandlebars %}
 
 {% tplhandlebars "admin-endorsee-search-result-endorsee-datetime-endorsed" %}
