@@ -60,7 +60,9 @@ var displayEndorsedUWNetIDs = function(endorsements) {
     var source,
         template,
         endorsee_source = $("#admin-endorsee-search-result-endorsee").html(),
+        endorsee_shared_source = $("#admin-endorsee-search-result-endorsee-shared").html(),
         endorsee_template = Handlebars.compile(endorsee_source),
+        endorsee_shared_template = Handlebars.compile(endorsee_shared_source),
         datetime_endorsed_source = $("#admin-endorsee-search-result-endorsee-datetime-endorsed").html(),
         datetime_endorsed_template = Handlebars.compile(datetime_endorsed_source),
         revoked_source = $("#admin-endorsee-search-result-endorsee-is-revoked").html(),
@@ -73,6 +75,7 @@ var displayEndorsedUWNetIDs = function(endorsements) {
         $.each(endorsements.endorsements.endorsements, function () {
             api.row.add([
                 endorsee_template(this),
+                endorsee_shared_template(this),
                 this.endorser.netid,
                 this.category_name,
                 this.reason,
@@ -84,7 +87,7 @@ var displayEndorsedUWNetIDs = function(endorsements) {
         });
 
         if ($('#show-revoked input:checked').length) {
-            api.columns([6]).search('false').draw();
+            api.columns([7]).search('false').draw();
         } else {
             api.draw(true);
         }
