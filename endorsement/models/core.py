@@ -67,7 +67,8 @@ class Endorsee(models.Model):
             "netid": self.netid,
             "regid": self.regid,
             "name": self.display_name,
-            "is_valid": self.kerberos_active_permitted
+            "is_valid": self.kerberos_active_permitted,
+            "is_person": self.is_person
             }
 
     def __str__(self):
