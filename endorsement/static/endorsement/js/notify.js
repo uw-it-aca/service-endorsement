@@ -24,7 +24,7 @@ var Notify = {
             Notify._bound = true;
             $('body').on('notify:MessageDisplayed', function () {
                 Notify._display();
-            })
+            });
         }
 
         $.each(Notify._queue, function () {
