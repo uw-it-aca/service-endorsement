@@ -1,0 +1,26 @@
+Hello {{ endorser.netid }},
+
+<p>
+
+You previously used the Provisioning Request Tool to provision {% if google_endorsed_count > 0 %} UW G Suite{% if o365_endorsed_count > 0 %} and{% endif %}{% endif %}{% if o365_endorsed_count > 0 %} UW Office 365{% endif %} services for the following UW NetIDs:
+</p>
+<ul style="list-style: none;">
+{% for key, value in endorsed.items %}
+<li>{{ key }}: {% for v in value %}{% if not forloop.first %}, {% endif %}{{v.service}}{% endfor %}</li>
+{% endfor %}
+</ul>
+<p>
+Please find a UW employee to reprovision services for these UW NetIDs. 
+</p>
+<p>
+If you take no action, services will be revoked and data will be deleted for these UW NetIDs in roughly 14 days.
+</p>
+<p>
+Read more about provisioning accounts to UW affiliates & Sponsored UW NetIDs using the Provisioning Request Tool at:
+<a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/">https://itconnect.uw.edu/connect/email/resources/affiliate-access/</a>
+</p>
+<br />
+Thank you,<br />
+UW-IT Help Center<br />
+help@uw.edu<br />
+------ 

@@ -7,6 +7,7 @@ from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_endorser_data, get_endorsee_data
 from endorsement.dao.uwnetid_subscription_60 import is_valid_endorsee
 from endorsement.dao.uwnetid_categories import get_shared_categories_for_netid
+from endorsement.exceptions import UnrecognizedUWNetid
 
 
 logger = logging.getLogger(__name__)
@@ -17,11 +18,20 @@ def get_endorser_model(uwnetid):
     return an Endorser object
     @exception: DataFailureException
     """
-    uwregid, display_name = get_endorser_data(uwnetid)
+    try:
+        uwregid, display_name = get_endorser_data(uwnetid)
+    except UnrecognizedUWNetid:
+        try:
+            # perhaps separated user fell out of PWS?
+            return Endorser.objects.get(netid=uwnetid)
+        except Endorser.DoesNotExist:
+            raise UnrecognizedUWNetid()
+
     updated_values = {
         'netid': uwnetid,
         'display_name': display_name,
         'is_valid': is_valid_endorser(uwnetid),
+        'datetime_emailed': None,
         'last_visit': timezone.now()
     }
 

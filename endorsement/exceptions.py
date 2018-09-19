@@ -30,3 +30,7 @@ class MissingReasonException(Exception):
 
 class TooManyUWNetids(Exception):
     pass
+
+
+class EmailFailureException(Exception):
+    pass
