@@ -3,7 +3,7 @@ from endorsement.provisioner_validation import validate_endorsers
 
 
 class Command(BaseCommand):
-    help = 'Alert management to invalid endorsers'
+    help = 'Identify and act on provisioners who are no longer valid'
 
     def handle(self, *args, **options):
         try:

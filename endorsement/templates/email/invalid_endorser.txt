@@ -3,8 +3,8 @@ Hello {{ endorser.netid }},
 You previously used the Provisioning Request Tool to provision
 {% if google_endorsed_count > 0 %}UW G Suite{% if o365_endorsed_count > 0 %} and{% endif %}{% endif %}{% if o365_endorsed_count > 0 %} UW Office 365{% endif %} services for the following UW NetIDs:
 {% for key, value in endorsed.items %}
-    {{ key }}: {% for v in value %}{% if not forloop.first %}, {% endif %}{{v.service}}{% endfor %}
-{% endfor %}
+    {{ key }}: {% for v in value %}{% if not forloop.first %}, {% endif %}{{v.service}}{% endfor %}{% endfor %}
+
 Please find a UW employee to reprovision services for these UW NetIDs. 
 
 If you take no action, services will be revoked and data will be deleted for
