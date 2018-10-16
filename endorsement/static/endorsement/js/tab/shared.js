@@ -219,7 +219,7 @@ var ManageSharedNetids = {
                     $row;
 
                 if (endorsements.hasOwnProperty('error')) {
-                    Notify.error('Error provisioning shared netid "' + netid + '"')
+                    Notify.error('Error provisioning shared netid "' + netid + '"');
                     $('button#shared_update').button('reset');
                     return;
                 }
