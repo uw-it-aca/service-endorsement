@@ -11,8 +11,8 @@ def has_google_analytics(request):
 
 
 def is_desktop(request):
-
-    desktopapp = not request.is_mobile and not request.is_tablet
+    desktopapp = (not getattr(request, 'is_mobile', False) and
+                  not getattr(request, 'is_tablet', False))
     return {
         'is_desktop': desktopapp
     }

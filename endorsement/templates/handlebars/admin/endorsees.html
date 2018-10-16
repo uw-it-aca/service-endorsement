@@ -4,6 +4,10 @@
 {{endorsee.netid}}{{#if acted_as}} (by {{ acted_as }}){{/if}}
 {% endtplhandlebars %}
 
+{% tplhandlebars "admin-endorsee-search-result-endorsee-shared" %}
+{{#unless endorsee.is_person}}shared{{/unless}}
+{% endtplhandlebars %}
+
 {% tplhandlebars "admin-endorsee-search-result-endorsee-datetime-endorsed" %}
         {{#if datetime_endorsed}}
         {{datetime_endorsed}}

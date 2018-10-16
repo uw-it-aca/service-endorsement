@@ -5,6 +5,7 @@ from django.utils import timezone
 from uw_uwnetid.models import Category
 import hashlib
 import random
+import json
 
 
 def datetime_to_str(d_obj):
@@ -20,7 +21,7 @@ class Endorser(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
                              unique=True)
-    display_name = models.CharField(max_length=64,
+    display_name = models.CharField(max_length=256,
                                     null=True)
     is_valid = models.NullBooleanField()
     last_visit = models.DateTimeField(null=True)
@@ -39,7 +40,7 @@ class Endorser(models.Model):
             self.regid == other.regid
 
     def __str__(self):
-        return "%s" % self.json_data()
+        return json.dumps(self.json_data())
 
     class Meta:
         db_table = 'uw_service_endorsement_endorser'
@@ -52,7 +53,7 @@ class Endorsee(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
                              unique=True)
-    display_name = models.CharField(max_length=64,
+    display_name = models.CharField(max_length=256,
                                     null=True)
     is_person = models.NullBooleanField(default=True)
     kerberos_active_permitted = models.NullBooleanField(default=False)
@@ -66,11 +67,12 @@ class Endorsee(models.Model):
             "netid": self.netid,
             "regid": self.regid,
             "name": self.display_name,
-            "is_valid": self.kerberos_active_permitted
+            "is_valid": self.kerberos_active_permitted,
+            "is_person": self.is_person
             }
 
     def __str__(self):
-        return "%s" % self.json_data()
+        return json.dumps(self.json_data())
 
     class Meta:
         db_table = 'uw_service_endorsement_endorsee'
@@ -96,7 +98,7 @@ class EndorseeEmail(models.Model):
             }
 
     def __str__(self):
-        return "%s" % self.json_data()
+        return json.dumps(self.json_data())
 
     class Meta:
         db_table = 'uw_service_endorsement_endorsee_email'
@@ -132,7 +134,7 @@ class EndorsementRecordManager(models.Manager):
 
     def get_endorsements_for_endorsee_re(self, endorsee_regex):
         endorsees = Endorsee.objects.filter(
-            netid__regex=r'^%s$' % endorsee_regex).values_list(
+            netid__regex=r'^{0}$'.format(endorsee_regex)).values_list(
                 'id', flat=True)
 
         return super(EndorsementRecordManager, self).get_queryset().filter(
@@ -140,7 +142,7 @@ class EndorsementRecordManager(models.Manager):
 
     def get_all_endorsements_for_endorsee_re(self, endorsee_regex):
         endorsees = Endorsee.objects.filter(
-            netid__regex=r'^%s$' % endorsee_regex).values_list(
+            netid__regex=r'^{0}$'.format(endorsee_regex)).values_list(
                 'id', flat=True)
 
         return super(EndorsementRecordManager, self).get_queryset().filter(
@@ -208,10 +210,10 @@ class EndorsementRecord(models.Model):
     objects = EndorsementRecordManager()
 
     def __eq__(self, other):
-        return other is not None and\
-            self.endorser == other.endorser and\
-            self.endorsee == other.endorsee and\
-            self.category_code == other.category_code
+        return (other is not None and
+                self.endorser == other.endorser and
+                self.endorsee == other.endorsee and
+                self.category_code == other.category_code)
 
     def save(self, *args, **kwargs):
         if not self.accept_salt:
@@ -227,9 +229,10 @@ class EndorsementRecord(models.Model):
         return self.accept_id == self.get_accept_id(endorsee_netid)
 
     def get_accept_id(self, endorsee_netid):
-        return hashlib.md5("%s%s%s%s" % (
+        val = "{0}{1}{2}{3}".format(
             self.endorser.netid, endorsee_netid,
-            self.category_code, self.accept_salt)).hexdigest()
+            self.category_code, self.accept_salt)
+        return hashlib.md5(val.encode()).hexdigest()
 
     def revoke(self):
         self.datetime_expired = timezone.now()
@@ -254,14 +257,14 @@ class EndorsementRecord(models.Model):
         }
 
     def accept_url(self):
-        return None if (self.datetime_endorsed) else "%s%s" % (
+        return None if (self.datetime_endorsed) else "{0}{1}".format(
             getattr(settings, "APP_SERVER_BASE",
                     "http://provision-test.uw.edu"),
             reverse('accept_view',
                     kwargs={'accept_id': self.accept_id}))
 
     def __str__(self):
-        return "%s" % self.json_data()
+        return json.dumps(self.json_data())
 
     class Meta:
         unique_together = (("endorser", "category_code", "endorsee"),)

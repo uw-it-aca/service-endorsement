@@ -13,9 +13,12 @@
   <div class="no-endorsements">You haven't provisioned services for any UW NetIDs.</dev>
   {{/if}}
 
-
+  {{#if has_endorsed}}
+  <button type="button" name="ExportCSV" id="export_csv" class="btn btn-default btn-outline" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Exporting Accounts">Export Accounts as CSV</button>
+  {{/if}}
 
 </div>
+
 {% endtplhandlebars %}
 
 

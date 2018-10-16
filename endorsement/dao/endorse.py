@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def initiate_endorsement(endorser, endorsee, reason, category_code):
-    logger.info('initiate category %s for %s because %s by %s' % (
+    logger.info('initiate category {0} for {1} because {2} by {3}'.format(
         category_code, endorsee.netid, reason, endorser.netid))
     now = timezone.now()
     try:
@@ -48,9 +48,9 @@ def initiate_endorsement(endorser, endorsee, reason, category_code):
 
 
 def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
-    logger.info('activate category %s for %s%s because %s by %s' % (
+    logger.info('activate category {0} for {1}{2} because {3} by {4}'.format(
         category_code, endorsee.netid,
-        " (by %s)" % acted_as if acted_as else "",
+        " (by {0})".format(acted_as if acted_as else ""),
         reason, endorser.netid))
     now = timezone.now()
     try:
@@ -86,10 +86,10 @@ def clear_endorsement(endorser, endorsee, category_code):
     if EndorsementRecord.objects.get_endorsements_for_endorsee(
             endorsee, category_code).count() <= 1:
         _former_category(endorsee.netid, category_code)
-        logger.info('former category %s for %s by %s' % (
+        logger.info('former category {0} for {1} by {2}'.format(
             category_code, endorsee.netid, endorser.netid))
 
-    logger.info('clearing record %s for %s by %s' % (
+    logger.info('clearing record {0} for {1} by {2}'.format(
         category_code, endorsee.netid, endorser.netid))
     get_endorsement(endorser, endorsee, category_code).revoke()
 
@@ -253,9 +253,9 @@ def _update_category(netid, category_code, status):
         response = update_catagory(netid, category_code, status)
         if response['responseList'][0]['result'].lower() != "success":
             raise CategoryFailureException(
-                '%s' % response['responseList'][0]['result'])
+                '{0}'.format(response['responseList'][0]['result']))
     except (KeyError, DataFailureException) as ex:
-        raise CategoryFailureException('%s' % ex)
+        raise CategoryFailureException('{0}'.format(ex))
 
 
 def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
@@ -273,7 +273,7 @@ def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
         if len(subscriptions) > 0:
             for response in response_list:
                 if response.result.lower() != 'success':
-                    logger.error('subscription error: %s: %s - %s' % (
+                    logger.error('subscription error: {0}: {1} - {2}'.format(
                             response.query['subscriptionCode'],
                             response.result, response.more_info))
 
@@ -281,4 +281,4 @@ def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
                 'Invalid Subscription Response')
 
     except DataFailureException as ex:
-        raise SubscriptionFailureException('%s' % ex)
+        raise SubscriptionFailureException('{0}'.format(ex))

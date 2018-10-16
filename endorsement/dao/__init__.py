@@ -7,12 +7,6 @@ from django.utils.timezone import (
     get_default_timezone, localtime, is_naive, make_aware)
 
 
-def is_using_file_dao():
-    dao = PWS_DAO()._getDAO()
-    class_name = dao.__class__.__name__
-    return class_name == "File"
-
-
 def handel_err(logger, message, stacktrace):
     log_exception(logger, message, stacktrace)
     exc_type, exc_value, exc_traceback = sys.exc_info()

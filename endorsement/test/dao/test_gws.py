@@ -1,5 +1,4 @@
-from endorsement.dao.gws import is_valid_endorser,\
-    get_endorser_endorsees
+from endorsement.dao.gws import is_valid_endorser
 from endorsement.test.dao import TestDao
 
 
@@ -11,16 +10,3 @@ class TestGwsDao(TestDao):
 
         self.assertFalse(is_valid_endorser("notareal_uwnetid"))
         self.assertFalse(is_valid_endorser("nomockid"))
-
-    def test_get_endorsees_by_endorser(self):
-        endorse_list = get_endorser_endorsees()
-        self.assertEqual(len(endorse_list), 2)
-
-        self.assertEqual(endorse_list[0].get("endorser"), 'jstaff')
-        endorsee_list = endorse_list[0].get("endorsees")
-        self.assertEqual(len(endorsee_list), 2)
-        self.assertEqual(endorsee_list[0], 'endorsee2')
-        self.assertEqual(endorsee_list[1], 'endorsee6')
-
-        self.assertEqual(endorse_list[1].get("endorser"), 'jfaculty')
-        self.assertEqual(len(endorse_list[1].get("endorsees")), 0)

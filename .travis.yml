@@ -4,6 +4,7 @@ services:
   - memcached
 python:
   - "2.7"
+  - "3.6"
 
 install:
   - sudo apt-get install -qq python-dev libxml2-dev libxmlsec1-dev
@@ -12,7 +13,6 @@ before_script:
   - pip install coverage
   - pip install python-coveralls
   - pip install pycodestyle
-  - pip install MySQL-python
   - pip install pytz
   - npm install jquery
   - npm install -g jshint

@@ -26,7 +26,7 @@ def get_entity(uwnetid):
             raise UnrecognizedUWNetid(uwnetid)
 
         log_exception(logger,
-                      '%s get_entity ' % uwnetid,
+                      '{0} get_entity '.format(uwnetid),
                       traceback.format_exc())
         raise
 
@@ -81,6 +81,6 @@ def is_renamed_uwnetid(uwnetid):
         return False
     except DataFailureException as ex:
         log_exception(logger,
-                      '%s get_entity ' % uwnetid,
+                      '{0} get_entity '.format(uwnetid),
                       traceback.format_exc())
         return ex.status == 301

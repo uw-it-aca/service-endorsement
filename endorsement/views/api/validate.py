@@ -55,10 +55,10 @@ class Validate(RESTDispatch):
                 if not endorsee.is_person:
                     if is_shared_netid(endorsee.netid):
                         raise SharedUWNetid(
-                            '%s is a Shared NetID' % endorse_netid)
+                            '{0} is a Shared NetID'.format(endorse_netid))
                     else:
                         raise InvalidNetID(
-                            '%s not a personal NetID' % endorse_netid)
+                            '{0} not a personal NetID'.format(endorse_netid))
 
                 netid_count -= 1
                 if netid_count < 0:
@@ -94,7 +94,7 @@ class Validate(RESTDispatch):
 
                 except Exception as ex:
                     valid['o365'] = {
-                        'error': "%s" % ex
+                        'error': "{0}".format(ex)
                     }
 
                 try:
@@ -114,37 +114,37 @@ class Validate(RESTDispatch):
 
                 except Exception as ex:
                     valid['google'] = {
-                        'error': "%s" % ex
+                        'error': "{0}".format(ex)
                     }
 
             except UnrecognizedUWNetid as ex:
                 valid = {
                     'netid': endorse_netid,
-                    'error': 'Unrecognized NetID: %s' % (ex),
+                    'error': 'Unrecognized NetID: {0}'.format(ex),
                 }
             except SharedUWNetid as ex:
                 valid = {
                     'netid': endorse_netid,
-                    'error': 'Shared NetID: %s' % (ex),
+                    'error': 'Shared NetID: {0}'.format(ex),
                     'is_shared': True
                 }
             except InvalidNetID as ex:
                 valid = {
                     'netid': endorse_netid,
-                    'error': '%s' % (ex),
+                    'error': '{0}'.format(ex),
                     'is_ineligible': True
                 }
             except TooManyUWNetids:
                 valid = {
                     'netid': endorse_netid,
                     'error': 'Netid Count Exceeded',
-                    'error_message': 'Limit of %s netids exceeded' % (
+                    'error_message': 'Limit of {0} netids exceeded'.format(
                         max_netids)
                 }
             except Exception as ex:
                 valid = {
                     'netid': endorse_netid,
-                    'error': '%s' % (ex)
+                    'error': '{0}'.format(ex)
                 }
 
             validated['validated'].append(valid)
