@@ -137,9 +137,10 @@ class Validate(RESTDispatch):
             except TooManyUWNetids:
                 valid = {
                     'netid': endorse_netid,
-                    'error': 'Netid Count Exceeded',
-                    'error_message': 'Limit of {0} netids exceeded'.format(
-                        max_netids)
+                    'error': 'Provision Count Exceeded',
+                    'error_message':
+                        'Limit of {0} provisioned netids exceeded'.format(
+                            max_netids)
                 }
             except Exception as ex:
                 valid = {
