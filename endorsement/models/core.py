@@ -24,6 +24,7 @@ class Endorser(models.Model):
     display_name = models.CharField(max_length=256,
                                     null=True)
     is_valid = models.NullBooleanField()
+    datetime_emailed = models.DateTimeField(null=True)
     last_visit = models.DateTimeField(null=True)
 
     def json_data(self):

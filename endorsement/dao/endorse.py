@@ -82,16 +82,20 @@ def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
     return en
 
 
-def clear_endorsement(endorser, endorsee, category_code):
+def clear_endorsement(endorsement):
     if EndorsementRecord.objects.get_endorsements_for_endorsee(
-            endorsee, category_code).count() <= 1:
-        _former_category(endorsee.netid, category_code)
+            endorsement.endorsee, endorsement.category_code).count() <= 1:
+        _former_category(endorsement)
         logger.info('former category {0} for {1} by {2}'.format(
-            category_code, endorsee.netid, endorser.netid))
+            endorsement.category_code,
+            endorsement.endorsee.netid,
+            endorsement.endorser.netid))
 
     logger.info('clearing record {0} for {1} by {2}'.format(
-        category_code, endorsee.netid, endorser.netid))
-    get_endorsement(endorser, endorsee, category_code).revoke()
+        endorsement.category_code,
+        endorsement.endorsee.netid,
+        endorsement.endorser.netid))
+    endorsement.revoke()
 
 
 def get_endorsement(endorser, endorsee, category_code):
@@ -173,8 +177,8 @@ def clear_office365_endorsement(endorser, endorsee):
     Upon failure to renew, the endorsement tools should:
       *  mark category 235 it former (status 3).
     """
-    clear_endorsement(
-        endorser, endorsee, EndorsementRecord.OFFICE_365_ENDORSEE)
+    clear_endorsement(get_endorsement(
+        endorser, endorsee, EndorsementRecord.OFFICE_365_ENDORSEE))
 
 
 def clear_google_endorsement(endorser, endorsee):
@@ -182,8 +186,8 @@ def clear_google_endorsement(endorser, endorsee):
     Upon failure to renew, the endorsement tools should:
       *  mark category 234 it former (status 3).
     """
-    clear_endorsement(
-        endorser, endorsee, EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
+    clear_endorsement(get_endorsement(
+        endorser, endorsee, EndorsementRecord.GOOGLE_SUITE_ENDORSEE))
 
 
 def is_permitted(endorser, endorsee, subscription_codes):
@@ -241,11 +245,12 @@ def _activate_category(netid, category_code):
     _update_category(netid, category_code, Category.STATUS_ACTIVE)
 
 
-def _former_category(netid, category_code):
+def _former_category(endorsement):
     """
     return with given netid activated in category_code
     """
-    _update_category(netid, category_code, Category.STATUS_FORMER)
+    _update_category(endorsement.endorsee.netid,
+                     endorsement.category_code, Category.STATUS_FORMER)
 
 
 def _update_category(netid, category_code, status):

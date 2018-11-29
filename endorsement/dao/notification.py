@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
+from django.utils import timezone
 from endorsement.models import EndorsementRecord
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
-from datetime import datetime
+from endorsement.dao.endorse import clear_endorsement
+from endorsement.exceptions import EmailFailureException
 import logging
 
 
@@ -12,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_endorsee_message(endorser):
-    sent_date = datetime.now()
+    sent_date = timezone.now()
     params = {
         "endorser_netid": endorser['netid'],
         "endorser_name": endorser['display_name'],
@@ -103,8 +105,13 @@ def notify_endorsees():
         for endorser_netid, endorsers in endorsers['endorsers'].items():
             (subject, text_body, html_body) = create_endorsee_message(
                 endorsers)
-            send_endorsee_email(sender, [email], subject,
-                                text_body, html_body, endorsers)
+            try:
+                send_email(
+                    sender, [email], subject, text_body, html_body, "Endorsee")
+                for service, data in endorsers['services'].items():
+                    EndorsementRecord.objects.emailed(data['id'])
+            except EmailFailureException as ex:
+                pass
 
 
 def send_endorsee_email(sender, recipients, subject,
@@ -117,9 +124,6 @@ def send_endorsee_email(sender, recipients, subject,
 
     try:
         message.send()
-        for service, data in endorsers['services'].items():
-            EndorsementRecord.objects.emailed(data['id'])
-
         logger.info(
             "Submission email sent To: {0}, Status: {1}"
             .format(','.join(recipients), subject))
@@ -130,7 +134,7 @@ def send_endorsee_email(sender, recipients, subject,
 
 
 def create_endorser_message(endorsed):
-    sent_date = datetime.now()
+    sent_date = timezone.now()
     params = {
         "o365_endorsed": endorsed.get('o365', None),
         "google_endorsed": endorsed.get('google', None),
@@ -191,27 +195,89 @@ def notify_endorsers():
     endorsements = get_endorsed_unnotified()
     for email, endorsed in endorsements.items():
         (subject, text_body, html_body) = create_endorser_message(endorsed)
-        send_endorser_email(sender, [email], subject,
-                            text_body, html_body, endorsed)
+        try:
+            send_email(
+                sender, [email], subject, text_body, html_body, "Endorser")
+            for svc in ['o365', 'google']:
+                if svc in endorsed:
+                    for id in [x['id'] for x in endorsed[svc]]:
+                        EndorsementRecord.objects.emailed(id)
+        except EmailFailureException as ex:
+            pass
 
 
-def send_endorser_email(sender, recipients, subject,
-                        text_body, html_body, endorsed):
+def create_invalid_endorser_message(endorsements):
+    params = {
+        "endorsed": {},
+        "endorser": endorsements[0].endorser.json_data(),
+        "o365_endorsed_count": 0,
+        "google_endorsed_count": 0,
+        "total_endorsed_count": 0
+    }
+
+    for e in endorsements:
+        data = {
+            'service': e.get_category_code_display(),
+            'reason': e.reason
+        }
+
+        try:
+            params['endorsed'][e.endorsee.netid].append(data)
+        except KeyError:
+            params['endorsed'][e.endorsee.netid] = [data]
+
+        if e.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
+            params['google_endorsed_count'] += 1
+        elif e.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
+            params['o365_endorsed_count'] += 1
+
+    params["total_endorsed_count"] = (params["o365_endorsed_count"] +
+                                      params["google_endorsed_count"])
+    subject = "{0}{1}".format(
+        "Action Required: Services that you provisioned for other ",
+        "UW NetIDs will be revoked soon")
+
+    text_template = "email/invalid_endorser.txt"
+    html_template = "email/invalid_endorser.html"
+
+    return (subject,
+            loader.render_to_string(text_template, params),
+            loader.render_to_string(html_template, params))
+
+
+def notify_invalid_endorser(endorser, endorsements):
+    if not (endorsements and len(endorsements) > 0):
+        return
+
+    sent_date = timezone.now()
+    email = "{0}@uw.edu".format(endorser.netid)
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
+    (subject, text_body, html_body) = create_invalid_endorser_message(
+        endorsements)
+
+    try:
+        send_email(
+            sender, [email], subject, text_body, html_body, "Invalid endorser")
+        endorsements[0].endorser.datetime_emailed = sent_date
+        endorsements[0].endorser.save()
+        for endorsement in endorsements:
+            clear_endorsement(endorsement)
+    except EmailFailureException as ex:
+        pass
+
+
+def send_email(sender, recipients, subject, text_body, html_body, kind):
     message = EmailMultiAlternatives(
         subject, text_body, sender, recipients, headers={'Precedence': 'bulk'})
     message.attach_alternative(html_body, "text/html")
     try:
         message.send()
-        for svc in ['o365', 'google']:
-            if svc in endorsed:
-                for id in [x['id'] for x in endorsed[svc]]:
-                    EndorsementRecord.objects.emailed(id)
-
         logger.info(
-            "Endorsement email sent To: {0}, Status: {1}"
-            .format(','.join(recipients), subject))
-
+            "{0} email sent To: {1}, Status: {2}"
+            .format(kind, ','.join(recipients), subject))
     except Exception as ex:
         logger.error(
-            "Endorsement email failed: {0}, To: {1}, Status: {2}"
-            .format(ex, ','.join(recipients), subject))
+            "{0} email failed: {1}, To: {2}, Status: {3}"
+            .format(kind, ex, ','.join(recipients), subject))
+        raise EmailFailureException()
