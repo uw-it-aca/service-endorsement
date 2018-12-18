@@ -114,25 +114,6 @@ def notify_endorsees():
                 pass
 
 
-def send_endorsee_email(sender, recipients, subject,
-                        text_body, html_body, endorsers):
-    message = EmailMultiAlternatives(
-        subject, text_body, sender, recipients,
-        headers={'Precedence': 'bulk'}
-    )
-    message.attach_alternative(html_body, "text/html")
-
-    try:
-        message.send()
-        logger.info(
-            "Submission email sent To: {0}, Status: {1}"
-            .format(','.join(recipients), subject))
-    except Exception as ex:
-        logger.error(
-            "Submission email failed: {0}, To: {1}, Status: {2}"
-            .format(ex, ','.join(recipients), subject))
-
-
 def create_endorser_message(endorsed):
     sent_date = timezone.now()
     params = {
