@@ -46,7 +46,7 @@ def get_endorser_model(uwnetid):
 
 def get_endorsee_model(uwnetid):
     """
-    return an Endorsee object
+    return an Endorsee object accounting for netid, typically shared, changes
     @exception: DataFailureException
     """
     try:
@@ -54,19 +54,15 @@ def get_endorsee_model(uwnetid):
     except Endorsee.DoesNotExist:
         uwregid, display_name, email, is_person = get_endorsee_data(uwnetid)
         kerberos_active_permitted = is_valid_endorsee(uwnetid)
-        try:
-            user = Endorsee.objects.create(
-                netid=uwnetid,
-                regid=uwregid,
-                display_name=display_name,
-                is_person=is_person,
-                kerberos_active_permitted=kerberos_active_permitted)
+        user, created = Endorsee.objects.update_or_create(
+            regid=uwregid,
+            defaults={'netid': uwnetid,
+                      'display_name': display_name,
+                      'is_person': is_person,
+                      'kerberos_active_permitted': kerberos_active_permitted})
 
-            logger.info("Create endorsee: {0}".format(user))
-            return user
-        except IntegrityError:
-            transaction.commit()
-            return Endorsee.objects.get(netid=uwnetid)
+        logger.info("{} endorsee: {}".format(
+            'Created' if created else "Updated", user))
 
 
 def get_endorsee_email_model(endorsee, endorser, email=None):
