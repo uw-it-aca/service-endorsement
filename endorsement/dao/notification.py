@@ -25,7 +25,7 @@ def create_endorsee_message(endorser):
     try:
         params['o365_accept_url'] =\
             endorser['services']['o365']['accept_url']
-        services += "UW Microsoft"
+        services += "UW Office 365"
         params['o365_endorsed'] = True
     except KeyError:
         params['o365_endorsed'] = False
@@ -37,7 +37,7 @@ def create_endorsee_message(endorser):
         if len(services):
             services += " and "
 
-        services += "Google"
+        services += "UW G Suite"
         params['google_endorsed'] = True
     except KeyError:
         params['google_endorsed'] = False
@@ -45,7 +45,7 @@ def create_endorsee_message(endorser):
     params['both_endorsed'] = (params['google_endorsed'] > 0 and
                                params['o365_endorsed'] > 0)
 
-    subject = "Your new access to {0} tools".format(services)
+    subject = "Action Required: Your new access to {0}".format(services)
 
     text_template = "email/endorsee.txt"
     html_template = "email/endorsee.html"

@@ -64,6 +64,8 @@ def get_endorsee_model(uwnetid):
         logger.info("{} endorsee: {}".format(
             'Created' if created else "Updated", user))
 
+        return user
+
 
 def get_endorsee_email_model(endorsee, endorser, email=None):
     """
