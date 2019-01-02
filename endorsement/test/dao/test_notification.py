@@ -22,8 +22,9 @@ class TestNotificationDao(TransactionTestCase):
 
         notify_endorsees()
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject,
-                         'Your new access to UW Microsoft and Google tools')
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'Action Required: Your new access to UW Office 365 and UW G Suite')
         self.assertTrue('UW Office 365 and UW G Suite' in mail.outbox[0].body)
         self.assertTrue('Appropriate Use' in mail.outbox[0].alternatives[0][0])
 
