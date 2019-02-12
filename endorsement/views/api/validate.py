@@ -47,7 +47,8 @@ class Validate(RESTDispatch):
 
         endorsements = get_endorsements_by_endorser(endorser)
         max_netids = getattr(settings, "ENDORSER_LIMIT", 300)
-        netid_count = max_netids - endorsements.count()
+        netid_count = max_netids - endorsements.filter(
+            endorsee__is_person=True).count()
 
         for endorse_netid in netids:
             try:
