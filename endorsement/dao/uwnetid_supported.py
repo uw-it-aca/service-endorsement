@@ -17,10 +17,12 @@ def get_shared_netids_for_netid(netid):
     """
     Return supported resources
     """
+    supported_types = ['shared', 'administrator', 'support']
+
     try:
         shared = []
         for supported in get_supported_resources(netid):
-            if supported.is_shared_netid():
+            if supported.netid_type in supported_types:
                 shared.append(supported)
 
         return shared
