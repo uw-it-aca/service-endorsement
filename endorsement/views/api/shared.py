@@ -47,6 +47,9 @@ class Shared(RESTDispatch):
 
                 try:
                     endorsee = get_endorsee_model(shared.name)
+                    if not endorsee.kerberos_active_permitted:
+                        continue
+
                     data['name'] = endorsee.display_name
                     for endorsement in endorsements:
                         if endorsement.endorsee.id == endorsee.id:
