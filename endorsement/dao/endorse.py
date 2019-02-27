@@ -141,11 +141,7 @@ def store_office365_endorsement(endorser, endorsee, acted_as, reason):
     """
     _activate_category(endorsee.netid, Category.OFFICE_365_ENDORSEE)
     _activate_subscriptions(endorsee.netid, endorser.netid,
-                            [
-                                Subscription.SUBS_OFFICE_356_PILOT,
-                                Subscription.SUBS_CODE_FUTURE_OFFICE_365,
-                            ])
-
+                            [Subscription.SUBS_CODE_FUTURE_OFFICE_365])
     return store_endorsement(
         endorser, endorsee, acted_as, reason,
         EndorsementRecord.OFFICE_365_ENDORSEE)
