@@ -50,7 +50,13 @@ def get_endorsee_model(uwnetid):
     @exception: DataFailureException
     """
     try:
-        return Endorsee.objects.get(netid=uwnetid)
+        user = Endorsee.objects.get(netid=uwnetid)
+        if not user.kerberos_active_permitted:
+            kerberos_active_permitted = is_valid_endorsee(uwnetid)
+            if kerberos_active_permitted:
+                user.kerberos_active_permitted = kerberos_active_permitted
+                user.save()
+
     except Endorsee.DoesNotExist:
         uwregid, display_name, email, is_person = get_endorsee_data(uwnetid)
         kerberos_active_permitted = is_valid_endorsee(uwnetid)
@@ -64,7 +70,7 @@ def get_endorsee_model(uwnetid):
         logger.info("{} endorsee: {}".format(
             'Created' if created else "Updated", user))
 
-        return user
+    return user
 
 
 def get_endorsee_email_model(endorsee, endorser, email=None):
