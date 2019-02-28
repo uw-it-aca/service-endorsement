@@ -32,6 +32,7 @@ setup(
         'django-templatetag-handlebars',
         'unittest2',
         'pytz',
+        'lxml==4.2.5',
         'AuthZ-Group>=1.6',
         'UW-RestClients-Core<1.0,>=0.9.3',
         'UW-Restclients-PWS>=1.0.2,<2.0',
