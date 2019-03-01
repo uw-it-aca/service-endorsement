@@ -218,7 +218,7 @@ def is_office365_permitted(endorser, endorsee):
     except NoEndorsementException:
         return is_permitted(
             endorser, endorsee, [
-                Subscription.SUBS_CODE_OFFICE_365
+                Subscription.SUBS_CODE_FUTURE_OFFICE_365
             ]), False
 
 
