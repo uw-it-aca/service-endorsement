@@ -35,6 +35,7 @@ def is_valid_endorsee(uwnetid):
                  permit.is_category_faculty() or
                  permit.is_category_affiliate_employee() or
                  permit.is_category_department() or
+                 permit.is_category_course() or
                  permit.is_category_system_administrator())):
                 return True
 
