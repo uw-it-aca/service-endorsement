@@ -2,12 +2,23 @@
 {% tplhandlebars "shared-netids" %}
 
 <div class="form-group" id="shared-uwnetids">
+  <h2>Shared UW NetID Accounts</h2>
+  <p>
+    blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+  </p>
 
-    <p style="padding: 10px 10px 0 10px;">You may provision services for any Shared UW NetID and other types of NetID that you own.</p>
+  <div class="content"></div>
+</div>
 
-    <h3>UW NetIDs you own</h3>
+<div class="modal fade" id="shared_netid_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+{% endtplhandlebars %}
 
-  {{#if has_shared}}
+{% tplhandlebars "shared-netids-content" %}
   <div class="form-group">
     <div style="height: 400px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid grey;">
     <table class="table table-striped">
@@ -32,27 +43,18 @@
     </table>
     </div>
 <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
-  {{else}}
+{% endtplhandlebars %}
+
+{% tplhandlebars "no-shared-netids-content" %}
   <div class="no-endorsements">
       <p>You do not own any Shared UW NetIDs.</p>
       <p>Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view Shared UW NetIDs on which you are an administrator.</p>
   </div>
-  {{/if}}
-</div>
-
-<div class="modal fade" id="shared_netid_modal" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-    </div>
-  </div>
-</div>
 {% endtplhandlebars %}
-
 
 {% tplhandlebars "shared-loading" %}
 <div class="loading"><div></div></div>
 {% endtplhandlebars %}
-
 
 {% tplhandlebars "shared-failure" %}
 <div class="no-endorsements">We are unable to determine if you own any Shared UW NetIDs at this time.  Please try again later.</dev>

@@ -2,7 +2,14 @@
 {% tplhandlebars "endorsed-netids" %}
 
 <div class="form-group" id="uwnetids-endorsed">
-<h3>Accounts for which you have provisioned services</h3>
+  <h2>UW Affiliates and Sponsored UW NetID Accounts</h2>
+  <p>
+    blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+  </p>
+
+  {{#if loading}}
+  <div class="loading"></div>
+  {{else}}
 
   {{#if has_endorsed}}
   {{> endorsed_partial .}}
@@ -15,6 +22,7 @@
 
   {{#if has_endorsed}}
   <button type="button" name="ExportCSV" id="export_csv" class="btn btn-default btn-outline" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Exporting Accounts">Export Accounts as CSV</button>
+  {{/if}}
   {{/if}}
 
 </div>

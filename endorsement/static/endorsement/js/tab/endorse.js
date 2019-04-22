@@ -5,7 +5,7 @@ var ProvisionServices = {
     location_hash: '#provision',
 
     load: function () {
-        this._loadTab();
+        this._loadContent();
         this._registerEvents();
         this._enableCheckEligibility();
     },
@@ -17,20 +17,19 @@ var ProvisionServices = {
         }
     },
 
-    _loadTab: function () {
-        var tab_link_template = Handlebars.compile($("#provision-tab-link").html()),
-            tab_content_template = Handlebars.compile($("#provision-tab-content").html()),
-            context = {
-                tab_content_id: ProvisionServices.content_id
-            };
-        
-        $('.nav-tabs').append(tab_link_template(context));
-        $('.tab-content').append(tab_content_template(context));
+    _loadContent: function () {
+        var $panel = $('#' + ProvisionServices.content_id),
+            $content = $('.content', $panel),
+            panel_template = Handlebars.compile($("#endorse-panel").html()),
+            content_template = Handlebars.compile($("#endorse-input").html());
+
+        $panel.html(panel_template());
+        $content.html(content_template())
     },
 
     _registerEvents: function () {
         // delegated events within our content
-        $('.tab-pane#' + ProvisionServices.content_id).on('click', 'button#validate', function(e) {
+        $('#' + ProvisionServices.content_id).on('click', 'button#validate', function(e) {
             var $this = $(this);
 
             $this.button('loading');
@@ -104,6 +103,17 @@ var ProvisionServices = {
         }).on('endorse:UWNetIDsInvalidReasonError', function (e, $row, $td) {
             if ($('input[type="checkbox"]:checked', $row).length > 0) {
                 $td.addClass('error');
+            }
+        }).on('click', '.provision-toggle', function (e) {
+            var $link = $(this),
+                $div = $link.next();
+
+            if ($div.hasClass('visually-hidden')) {
+                $link.html($link.attr('data-conceal-text'));
+                $div.removeClass('visually-hidden');
+            } else {
+                $link.html($link.attr('data-reveal-text'));
+                $div.addClass('visually-hidden');
             }
         });
 
@@ -259,9 +269,10 @@ var ProvisionServices = {
     },
 
     _getNetidList: function () {
-        var netid_list = $('#netid_list').val().toLowerCase();
+        var netid_list = $('#netid_list').val();
+
         if (netid_list) {
-            return ProvisionServices._unique(netid_list
+            return ProvisionServices._unique(netid_list.toLowerCase()
                                 .replace(/\n/g, ' ')
                                 .replace(/([a-z0-9]+)(@(uw|washington|u\.washington)\.edu)?/g, '$1')
                                 .split(/[ ,]+/));

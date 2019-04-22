@@ -5,24 +5,30 @@
 
 
 <div class="container">
+ <h2>Manag Provisions</h2>
 
- <p style="padding: 30px 10px 10px 10px;">This tool allows you to manage non-employees' and Shared UW NetIDs' ability to access UW Office 365 and/or UW G Suite (Google).
-   </p>
+ <p>This tool allows you to manage non-employees' and Shared UW NetIDs' ability to access UW Office 365 and/or UW G Suite (Google).
+ </p>
 
-  <ul class="nav nav-tabs"></ul>
-  <div class="tab-content"></div>
+ <p>
+   <h3>Manage for:</h3>
+   <h3><a href="javascript:void(0);" target="_blank">Shared UW NetID Accounts</a></h3>
+   <h3><a href="javascript:void(0);" target="_blank">UW Affiliates and Sponsored UW NetID Accounts</a></h3>
+ </p>
+
+ <hr />
+
+ <div id="shared"></div>
+ <div id="provisioned"></div>
+ <div id="provision"></div>
 </div>
 
-{% include "handlebars/tab/endorse/tabs.html" %}
-
-{% include "handlebars/tab/endorsed/tabs.html" %}
-
-{% include "handlebars/tab/shared/tabs.html" %}
 {% include "handlebars/tab/shared/shared.html" %}
 {% include "handlebars/tab/shared/accept.html" %}
 {% include "handlebars/tab/shared/revoke.html" %}
 {% include "handlebars/tab/shared/provisioned.html" %}
 
+{% include "handlebars/tab/endorse/input.html" %}
 {% include "handlebars/tab/endorse/validated.html" %}
 {% include "handlebars/valid_partial.html" %}
 {% include "handlebars/reasons_partial.html" %}

@@ -5,7 +5,7 @@ var ManageProvisionedServices = {
     location_hash: '#provisioned',
 
     load: function () {
-        this._loadTab();
+        this._loadContent();
         this._registerEvents();
     },
 
@@ -15,15 +15,14 @@ var ManageProvisionedServices = {
         }
     },
 
-    _loadTab: function () {
-        var tab_link_template = Handlebars.compile($("#provisioned-tab-link").html()),
-            tab_content_template = Handlebars.compile($("#provisioned-tab-content").html()),
+    _loadContent: function () {
+        var content_template = Handlebars.compile($("#endorsed-netids").html()),
             context = {
-                tab_content_id: ManageProvisionedServices.content_id
+                has_endorsed: false
             };
         
-        $('.nav-tabs').append(tab_link_template(context));
-        $('.tab-content').append(tab_content_template(context));
+        $('#' + ManageProvisionedServices.content_id).append(content_template(context));
+        ManageProvisionedServices._getEndorsedUWNetIDs();
     },
 
     _registerEvents: function () {
@@ -51,16 +50,15 @@ var ManageProvisionedServices = {
         });
 
         // broader event scope
-        $(document).on('shown.bs.tab', 'a[href="#' + ManageProvisionedServices.content_id + '"]', function (e) {
-            ManageProvisionedServices._getEndorsedUWNetIDs();
-        });
+//        $(document).on('shown.bs.tab', 'a[href="#' + ManageProvisionedServices.content_id + '"]', function (e) {
+//        });
     },
 
     _getEndorsedUWNetIDs: function() {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
             $content = $('#' + ManageProvisionedServices.content_id);
 
-        $content.html($('#endorsed-loading').html());
+        $('.loading', $content).html($('#endorsed-loading').html());
 
         $.ajax({
             url: "/api/v1/endorsed/",
@@ -87,7 +85,7 @@ var ManageProvisionedServices = {
                 has_endorsed: (endorsed && Object.keys(endorsed.endorsed).length > 0),
                 endorsed: endorsed
             },
-            $panel = $('div.tab-pane#' + ManageProvisionedServices.content_id);
+            $panel = $('#' + ManageProvisionedServices.content_id);
 
         $panel.html(template(context));
         $panel.find('ul').each(function () {

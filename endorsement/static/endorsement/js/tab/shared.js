@@ -5,7 +5,7 @@ var ManageSharedNetids = {
     location_hash: '#shared',
 
     load: function () {
-        this._loadTab();
+        this._loadContent();
         this._registerEvents();
     },
 
@@ -15,29 +15,20 @@ var ManageSharedNetids = {
         }
     },
 
-    _loadTab: function () {
-        var tab_link_template = Handlebars.compile($("#shared-netids-tab-link").html()),
-            tab_content_template = Handlebars.compile($("#shared-netids-tab-content").html()),
-            context = {
-                tab_content_id: ManageSharedNetids.content_id
-            };
-        
-        $('.nav-tabs').append(tab_link_template(context));
-        $('.tab-content').append(tab_content_template(context));
+    _loadContent: function () {
+        var content_template = Handlebars.compile($("#shared-netids").html())
+
+        $('#' + ManageSharedNetids.content_id).append(content_template());
+        ManageSharedNetids._getSharedUWNetIDs();
     },
 
     _registerEvents: function () {
-        $('.tab-pane#' + ManageSharedNetids.content_id).on('click', 'button.confirm_revoke', function(e) {
+        $('#' + ManageSharedNetids.content_id).on('click', 'button.confirm_revoke', function(e) {
             Revoke.revoke($(this), '#shared_revoke_modal_content',
                           'endorse:SharedUWNetIDsRevokeStatus');
         });
 
-        $(document).on('shown.bs.tab', 'a[href="#' + ManageSharedNetids.content_id + '"]', function (e) {
-            // load once
-            if ($('#' + ManageSharedNetids.content_id + ' table').length === 0) {
-                ManageSharedNetids._getSharedUWNetIDs();
-            }
-        }).on('endorse:UWNetIDRevoking endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
+        $(document).on('endorse:UWNetIDRevoking endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
             ManageSharedNetids._enableSharedEndorsability();
         }).on('endorse:UWNetIDsInvalidReasonError', function (e, $row, $td) {
             if ($('input[type="checkbox"]:checked', $row).length > 0) {
@@ -64,7 +55,7 @@ var ManageSharedNetids = {
         }).on('endorse:UWNetIDsShared', function (e, shared) {
             ManageSharedNetids._displaySharedUWNetIDs(shared);
         }).on('endorse:UWNetIDsSharedError', function (e, error) {
-            $('#' + ManageSharedNetids.content_id).html($('#shared-failure').html());
+            $('#' + ManageSharedNetids.content_id + '.content').html($('#shared-failure').html());
         }).on('click', 'button#confirm_shared_endorse', function(e) {
             $(this).parents('.modal').modal('hide');
             $('button#shared_update').button('loading');
@@ -89,31 +80,40 @@ var ManageSharedNetids = {
     },
 
     _displaySharedUWNetIDs: function(shared) {
-        var source = $("#shared-netids").html(),
-            template = Handlebars.compile(source),
+        var $panel = $('#' + ManageSharedNetids.content_id),
+            $content = $('.content', $panel),
+            source,
+            template,
             context = {
-                has_shared: shared.shared && shared.shared.length > 0,
                 shared: shared
             };
 
-        $.each(context.shared.shared, function () {
-            var endorsements = this.endorsements,
-                svc;
+        if (shared.shared && shared.shared.length > 0) {
+            source = $("#shared-netids-content").html();
+            template = Handlebars.compile(source);
 
-            if (endorsements) {
-                for (svc in endorsements) {
-                    if (endorsements.hasOwnProperty(svc)) {
-                        if (endorsements[svc]) {
-                            if (endorsements[svc].hasOwnProperty('datetime_endorsed')) {
-                                endorsements[svc].date_endorsed = utc2localdate(endorsements[svc].datetime_endorsed);
+            $.each(context.shared.shared, function () {
+                var endorsements = this.endorsements,
+                    svc;
+
+                if (endorsements) {
+                    for (svc in endorsements) {
+                        if (endorsements.hasOwnProperty(svc)) {
+                            if (endorsements[svc]) {
+                                if (endorsements[svc].hasOwnProperty('datetime_endorsed')) {
+                                    endorsements[svc].date_endorsed = utc2localdate(endorsements[svc].datetime_endorsed);
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            source = $("#no-shared-netids-content").html();
+            template = Handlebars.compile(source);
+        }
 
-        $('div.tab-pane#' + ManageSharedNetids.content_id).html(template(context));
+        $content.html(template(context));
         ManageSharedNetids._enableSharedEndorsability();
     },
 
@@ -159,9 +159,9 @@ var ManageSharedNetids = {
 
     _getSharedUWNetIDs: function() {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-            $panel = $('.tab-pane#' + ManageSharedNetids.content_id);
+            $panel = $('#' + ManageSharedNetids.content_id);
 
-        $panel.html($('#shared-loading').html());
+        $('.content', $panel).html($('#shared-loading').html());
 
         $.ajax({
             url: "/api/v1/shared/",
@@ -182,7 +182,7 @@ var ManageSharedNetids = {
 
     _endorseSharedUWNetIDs: function(to_endorse) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-            $panel = $('.tab-pane#' + ManageSharedNetids.content_id);
+            $panel = $('#' + ManageSharedNetids.content_id);
 
         $.ajax({
             url: "/api/v1/endorse/",
