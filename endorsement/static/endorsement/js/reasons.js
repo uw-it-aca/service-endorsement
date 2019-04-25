@@ -7,7 +7,7 @@ var Reasons = {
 
     _registerEvents: function () {
         $('#app_content').on('change', '.displaying-reasons > select',  function(e) {
-            var $row = $(e.target).closest('tr'),
+            var $row = $(e.target).closest('div.row'),
                 $selected = $('option:selected', $(this)),
                 $panel = $row.parents('.tab-pane');
 

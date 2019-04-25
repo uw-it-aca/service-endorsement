@@ -1,18 +1,67 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "endorsers_partial" %}
-<div style="position: relative">
-          {{#if endorsement}}
-          <div class="row">
-          <div class="col-xs-6 text-center">
-            Provisioned<br />{{endorsement.date_endorsed}}
-          </div>
-          <div class="col-xs-6 text-center">
-          <button type="button" name="Revoke {{ endorsement.category_name }}" class="btn btn-primary confirm_revoke" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking">Revoke</button>
-          </div>
-          </div>
-          {{else}}
-          <input type="checkbox" id="endorse_{{svc}}_{{netid}}" value="{{netid}}" /><label for="endorse_{{svc}}_{{netid}}">Provision {{#equals svc 'o365'}}Office 365{{else}}G Suite{{/equals}}</label>
-          {{/if}}
+
+<div class="row {{#unless endorsement.endorsed}}un{{/unless}}endorsed-netid">
+
+<div class="col-xs-3 text-left">
+  <input type="checkbox" class="visually-hidden" id="endorse_{{svc}}_{{netid}}" value="{{netid}}" /><label for="endorse_{{svc}}_{{netid}}"><span class="significant">{{ endorsement.category_name }}</span></label>
+</div>
+
+<div class="col-xs-3 text-left">
+  {{#if endorsement.endorsed}}
+    {{#if  endorsement.datetime_endorsed}}
+      {{#if this.expired}}
+        <span class="fa fa-exclamation-triangle"></span> <span class="significant text-danger">Expired</span>
+        <br />Expired on {{endorsement.expires}} ({{endorsement.expires_relative}})
+      {{else}}
+      {{#if this.expiring}}
+        <span class="fa fa-exclamation-triangle"></span> <span class="significant text-danger">Expiring</span>
+        <br />Expires {{endorsement.expires}} ({{endorsement.expires_relative}})
+        <br /><span class="significant">Renewal may be required.</span>
+        <br />User may lose access and their files may be deleted.
+      {{else}}
+        <span class="fa fa-check"></span> <span class="significant">Provisioned</span>
+        <br />Renew by {{endorsement.expires}} ({{endorsement.expires_relative}})
+      {{/if}}
+      {{/if}}
+    {{else}}
+      <span class="fa fa-warning"></span> <span class="significant">Pending Acceptance</span>
+      {{#if endorsement.datetime_emailed}}
+      <br />The provisionee has yet to accept the terms and conditions of use. You can resend the acceptance link to the provisionee to complete the provisioning process.
+      {{else}}
+      <br />The provisionee will be receiving email soon instructing them to confirm the terms and conditions of use.
+      {{/if}}
+    {{/if}}
+  {{else}}
+  <span class="significant">Not Provisioned</span>
+  {{/if}}
+  {{#if endorsement.endorsers}}
+  <br />{{#if endorsement.endorsed}}Also{{else}}Already{{/if}} provisioned by <ul class="comma-list">
+    {{#each endorsement.endorsers}}
+    <li {{#equals this.netid netid}}class="current-endorsee"{{/equals}}>{{this.netid}}{{#if ../endorsement.accept_url}}{{#equals this.netid ../endorsement.endorser.netid}}<br />Pending acceptance <br /><a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ ../endorsement.accept_url }}" data-clipboard-msg="<span class='fa fa-check'></span> Acceptance link copied to clipboard" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy acceptance link</a>{{/equals}}{{/if}}</li>
+    {{/each}}
+  </ul>
+  {{/if}}
+</div>
+
+<div class="col-xs-3 text-left">
+  {{> reasons_partial endorsement=endorsement}}
+</div>
+
+<div class="col-xs-3 text-center">
+  {{#if endorsement.endorsed}}
+
+    {{#if  endorsement.datetime_endorsed}}
+      <button type="button" name="Renew {{ endorsement.category_name }}" class="btn btn-primary confirm_renew" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button>
+      <button type="button" name="Revoke {{ endorsement.category_name }}" class="btn confirm_revoke" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
+    {{else}}
+      <a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ endorsement.accept_url }}" data-clipboard-msg="<span class='fa fa-check'></span> Acceptance link copied to clipboard" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy Link</a>
+    {{/if}}
+  {{else}}
+  <button type="button" name="Provision service" class="btn confirm_provision" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
+  {{/if}}
+</div>
+
 </div>
 
 {% endtplhandlebars %}

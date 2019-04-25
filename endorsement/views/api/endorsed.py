@@ -34,9 +34,9 @@ class Endorsed(RESTDispatch):
 
         endorser = get_endorser_model(netid)
         endorsed = {}
-        shared_netids = [x.name for x in get_shared_netids_for_netid(netid)]
+        category_choices = dict(EndorsementRecord.CATEGORY_CODE_CHOICES)
         for er in get_endorsements_by_endorser(endorser):
-            if er.endorsee.netid in shared_netids:
+            if not er.endorsee.is_person:
                 continue
 
             endorsement_type = 'unknown'
@@ -44,28 +44,37 @@ class Endorsed(RESTDispatch):
                 endorsement_type = 'o365'
             elif er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
                 endorsement_type = 'google'
-
-            if er.endorsee.netid in endorsed:
-                endorsed[er.endorsee.netid][endorsement_type] = er.json_data()
-                if not endorsed[er.endorsee.netid]['reason']:
-                    endorsed[er.endorsee.netid]['reason'] = er.reason if (
-                        er.reason) else '',
             else:
+                continue
+
+            if er.endorsee.netid not in endorsed:
                 endorsed[er.endorsee.netid] = {
                     'name': er.endorsee.display_name,
-                    'reason': er.reason if er.reason else '',
-                    endorsement_type: er.json_data()
+                    'endorsements': {
+                        'o365': {
+                            'category_name': category_choices[
+                                    EndorsementRecord.OFFICE_365_ENDORSEE]
+                        },
+                        'google': {
+                            'category_name': category_choices[
+                                    EndorsementRecord.GOOGLE_SUITE_ENDORSEE]
+                        }
+                    }
                 }
 
-            endorsed[er.endorsee.netid][endorsement_type]['endorsed'] = True
+            endorsed[er.endorsee.netid]['endorsements'][
+                endorsement_type] = er.json_data()
+
+            endorsed[er.endorsee.netid]['endorsements'][
+                endorsement_type]['endorsed'] = True
 
             endorsers = []
             for ee in get_endorsements_for_endorsee(er.endorsee):
                 if er.category_code == ee.category_code:
                     endorsers.append(ee.endorser.json_data())
 
-            endorsed[er.endorsee.netid][endorsement_type]['endorsers'] =\
-                endorsers
+            endorsed[er.endorsee.netid]['endorsements'][
+                endorsement_type]['endorsers'] = endorsers
 
         log_resp_time(logger, "endorsed", timer)
         return self.json_response({

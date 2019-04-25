@@ -1,13 +1,24 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "shared-netids" %}
 
-<div class="form-group" id="shared-uwnetids">
-  <h2>Shared UW NetID Accounts</h2>
+<div id="shared-uwnetids">
+  <h3>UW NetIDs owned by you</h3>
   <p>
-    blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+    Provision, renew or revoke the provisions for your shared NetIDs and other types of NetIDs you own.  Go to <a href="https://uwnetid.washington.edu/manage/?shared" target="_blank">UW NetID management tool</a> to view details about the NetIDs you own.
   </p>
 
-  <div class="content"></div>
+  <div class="row provision-bar">
+    <span class="pull-right">
+      View <select class="provisioned-filter">
+        <option>All</option>
+        <option>Expiring</option>
+        <option>Provisioned</option>
+        <option>Unprovisioned</option>
+      </select>
+    </span>
+  </div>
+
+  <div class="form-group content"></div>
 </div>
 
 <div class="modal fade" id="shared_netid_modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -20,29 +31,32 @@
 
 {% tplhandlebars "shared-netids-content" %}
   <div class="form-group">
-    <div style="height: 400px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid grey;">
+    <div class="endorsed-netids-table">
     <table class="table table-striped">
-      <thead>
+      <thead class="thead-dark">
         <tr>
           <th>UW NetID</th>
           <th>Name</th>
-          <th>Reason for provisioning</th>
-          <th class="col-border-left">UW Office 365</th>
-          <th class="col-border-left">UW G Suite (Google)</th>
+          <th>Service</th>
         </tr>
       </thead>
       {{#each shared.shared}}
       <tr>
-        <td>{{netid}}</td>
-        <td>{{name}}</td>
-        <td id="reason-{{ netid }}">{{> reasons_partial endorsements=endorsements}}</td>
-        <td id="endorsers-o365-{{netid}}" class="col-border-left">{{> endorsers_partial endorsement=endorsements.o365 netid=netid svc="o365"}}</td>
-        <td id="endorsers-google-{{netid}}" class="col-border-left">{{> endorsers_partial endorsement=endorsements.google  netid=netid svc="google"}}</td>
+        <td class="endorsed-netid">{{netid}}</td>
+        <td class="endorsed-name">{{name}}</td>
+        <td class="endorsed-services" class="col-border-left">
+          <div style="position: relative">
+            {{#each endorsements}}
+              {{> endorsers_partial endorsement=this netid=netid svc=@key }}
+            {{/each}}
+          </div>
+        </td>
       </tr>
       {{/each}}
     </table>
     </div>
-<button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
+<!-- <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
+-->
 {% endtplhandlebars %}
 
 {% tplhandlebars "no-shared-netids-content" %}

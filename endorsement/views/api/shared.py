@@ -42,7 +42,18 @@ class Shared(RESTDispatch):
                     'netid': shared.name,
                     'name': None,
                     'role': shared.role,
-                    'endorsements': None
+                    'endorsements': {
+                        'o365': {
+                            'category_name': dict(
+                                EndorsementRecord.CATEGORY_CODE_CHOICES)[
+                                    EndorsementRecord.OFFICE_365_ENDORSEE]
+                        },
+                        'google': {
+                            'category_name': dict(
+                                EndorsementRecord.CATEGORY_CODE_CHOICES)[
+                                    EndorsementRecord.GOOGLE_SUITE_ENDORSEE]
+                        }
+                    }
                 }
 
                 try:
@@ -53,30 +64,25 @@ class Shared(RESTDispatch):
                     data['name'] = endorsee.display_name
                     for endorsement in endorsements:
                         if endorsement.endorsee.id == endorsee.id:
-                            all = {
-                                'o365': None,
-                                'google': None
-                            }
                             for er in get_endorsements_for_endorsee(endorsee):
                                 if (EndorsementRecord.OFFICE_365_ENDORSEE ==
                                         er.category_code):
-                                    all['o365'] = er.json_data()
-                                    all['o365']['endorser'] = \
-                                        endorser.json_data()
-                                    all['o365']['endorsers'] = [
+                                    e_data = er.json_data()
+                                    e_data['endorser'] = endorser.json_data()
+                                    e_data['endorsers'] = [
                                         endorser.json_data()
                                     ]
+                                    data['endorsements']['o365'] = e_data
 
                                 if (EndorsementRecord.GOOGLE_SUITE_ENDORSEE ==
                                         er.category_code):
-                                    all['google'] = er.json_data()
-                                    all['google']['endorser'] = \
-                                        endorser.json_data()
-                                    all['google']['endorsers'] = [
+                                    e_data = er.json_data()
+                                    e_data['endorser'] = endorser.json_data()
+                                    e_data['endorsers'] = [
                                         endorser.json_data()
                                     ]
+                                    data['endorsements']['google'] = e_data
 
-                            data['endorsements'] = all
                 except (UnrecognizedUWNetid, InvalidNetID):
                     pass
 

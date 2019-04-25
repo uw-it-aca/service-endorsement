@@ -1,10 +1,10 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "endorsed-netids" %}
 
-<div class="form-group" id="uwnetids-endorsed">
-  <h2>UW Affiliates and Sponsored UW NetID Accounts</h2>
+<div id="uwnetids-endorsed">
+  <h3>UW NetIDs owned by others</h3>
   <p>
-    blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
   </p>
 
   {{#if loading}}
@@ -12,7 +12,47 @@
   {{else}}
 
   {{#if has_endorsed}}
-  {{> endorsed_partial .}}
+  <div class="row provision-bar">
+      <span class="pull-left">
+        <a name="ExportCSV" id="export_csv" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Exporting Accounts"><span class="fa fa-download"></span> Export as CSV</a>
+      </span>
+    <span class="pull-right">
+      View <select class="provisioned-filter">
+        <option>All</option>
+        <option>Expiring</option>
+        <option>Provisioned</option>
+        <option>Unprovisioned</option>
+      </select>
+    </span>
+  </div>
+    </div>
+
+  <div class="form-group">
+    <div class="endorsed-netids-table">
+    <table class="table table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>UW NetID</th>
+          <th>Name</th>
+          <th>Service</th>
+        </tr>
+      </thead>
+      {{#each endorsed.endorsed}}
+      <tr>
+        <td class="endorsed-netid">{{@key}}</td>
+        <td class="endorsed-name">{{name}}</td>
+        <td class="endorsed-services" class="col-border-left">
+          <div style="position: relative">
+            {{#each this.endorsements}}
+              {{> endorsers_partial endorsement=this netid=netid svc=@key }}
+            {{/each}}
+          </div>
+        </td>
+      </tr>
+      {{/each}}
+    </table>
+  </div>
+</div>
 <!-- 
   <button type="button" name="Revoke" id="revoke" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Services">Revoke Endorsements</button>
 -->
@@ -20,9 +60,6 @@
   <div class="no-endorsements">You haven't provisioned services for any UW NetIDs.</dev>
   {{/if}}
 
-  {{#if has_endorsed}}
-  <button type="button" name="ExportCSV" id="export_csv" class="btn btn-default btn-outline" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Exporting Accounts">Export Accounts as CSV</button>
-  {{/if}}
   {{/if}}
 
 </div>

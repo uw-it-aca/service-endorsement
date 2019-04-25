@@ -29,7 +29,7 @@ a.dummy {
 /*********** Global Reset ***********/
 
 html, body {
-    font-family: 'Open Sans', Helvetica, arial, san-serif;
+    font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif;
     padding:0;
     margin:0;
     height: 100%;
@@ -49,8 +49,8 @@ img {
 
 .visually-hidden{
 	position: absolute;
-	left:-999px;
-	top:-999px;	
+	left:-9999px;
+	top:-9999px;
 }
 
 /*********** Spacing ***********/
@@ -83,7 +83,7 @@ img {
 h1, h2, h3, h4 { font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif; font-weight: bold; /*color: $uwpurple;*/ }
 
 h3 {
-    font-size: 1.4rem; 
+    font-size: 1.8rem;
 }
 
 h4 {
@@ -218,6 +218,13 @@ a {
     }
 }
 
+#uwnetids-input {
+   #netid_list { height: 6em; width: 81em }
+}
+
+.provisioned-filter { margin-right: 16px; margin-bottom: 18px; }
+#export_csv { margin-left: 16px; }
+
 #uwnetids-validated {
   .validation {
     table {
@@ -262,10 +269,31 @@ a {
   }
 }
 
+.endorsed-netids-table { height: 300px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid grey; 
+  thead { background-color: #eee; }
+  .endorsed-name { min-width: 200px; }
+  .endorsed-services { padding: 0;
+    .row {
+      margin: 0;
+      border-left: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      padding-top: 12px;
+      padding-bottom: 20px;
+      .significant {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
 #shared-uwnetids {
   button#shared_update {
     margin-top: 10px;
   }
+}
+
+#provision { margin-bottom: 38px;
+   .provision-toggle {color:#0077c2; }
 }
 
 #provisioned, #shared {
@@ -522,8 +550,8 @@ td.error {
 @media (max-width: 768px) {
 	.hide-sm {
 	position: absolute;
-	left:-999px;
-	top:-999px;	
+	left:-9999px;
+	top:-9999px;
 	}
 	.sitename{
 	font-size: 1.5em;}

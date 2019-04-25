@@ -5,15 +5,15 @@
 
 
 <div class="container">
- <h2>Manag Provisions</h2>
+ <h2 style="text-transform: uppercase;">Manage Provisions</h2>
 
  <p>This tool allows you to manage non-employees' and Shared UW NetIDs' ability to access UW Office 365 and/or UW G Suite (Google).
  </p>
 
  <p>
-   <h3>Manage for:</h3>
-   <h3><a href="javascript:void(0);" target="_blank">Shared UW NetID Accounts</a></h3>
-   <h3><a href="javascript:void(0);" target="_blank">UW Affiliates and Sponsored UW NetID Accounts</a></h3>
+   <h4>Manage for:</h4>
+   <h4><a href="javascript:void(0);" target="_blank">Shared UW NetID Accounts</a></h4>
+   <h4><a href="javascript:void(0);" target="_blank">UW Affiliates and Sponsored UW NetID Accounts</a></h4>
  </p>
 
  <hr />
@@ -28,7 +28,7 @@
 {% include "handlebars/tab/shared/revoke.html" %}
 {% include "handlebars/tab/shared/provisioned.html" %}
 
-{% include "handlebars/tab/endorse/input.html" %}
+{% include "handlebars/tab/endorse/endorse.html" %}
 {% include "handlebars/tab/endorse/validated.html" %}
 {% include "handlebars/valid_partial.html" %}
 {% include "handlebars/reasons_partial.html" %}
@@ -54,5 +54,5 @@
 <script src="{% static "endorsement/js/history.js" %}"></script>
 <script src="{% static "endorsement/js/notify.js" %}"></script>
 <script src="{% static "endorsement/js/datetime.js" %}"></script>
-<script src="{% static "vendor/js/moment.2.8.3.min.js" %}"></script>
+<script src="{% static "vendor/js/moment.2.24.0.min.js" %}"></script>
 {% endblock %}

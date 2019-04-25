@@ -1,0 +1,28 @@
+{% load templatetag_handlebars %}
+
+{% tplhandlebars "endorse-panel" %}
+  <a class="provision-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Add more NetIDs to list" data-conceal-text="<span class='fa fa-caret-down'></span> Add more NetIDs to list" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Add more NetIDs to list</a>
+  <div class="content visually-hidden">
+    <div class="endorse-input">
+      <div class="form-group" id="uwnetids-input">
+        <h3>Enter NetIDs to Add</h3>
+        <p>Eligible NetIDs can be provisioned for UW Services.</p>
+        <p>You will need to know each person's UW NetID and valid email address.  Each person will receive an email with terms and conditions that must be accepted in order to access service(s).</p>
+        <textarea id="netid_list" class="form-control" placeholder="Enter the UW NetID(s), @uw.edu, or @washington.edu email address(es) for which you want to provision services."></textarea>
+        <br />
+        <button type="button" name="ValidateUWNetids" id="validate" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Validating UW NetIDs">Add NetID(s) to list</button>
+      </div>
+
+      <div class="form-group" id="uwnetids-validated" style="display: none;">
+      </div>
+
+      <div class="form-group" id="uwnetids-endorsed" style="display: none;">
+      </div>
+    </div>
+    <div class="endorse-validate visually-hidden">
+    </div>
+  </div>
+{% endtplhandlebars %}
+
+{% tplhandlebars "endorse-input" %}
+{% endtplhandlebars %}

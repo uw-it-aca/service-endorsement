@@ -1,12 +1,12 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "reasons_partial" %}
 
-{{#endorsed endorsements}}
-{{reason endorsements}}<input type=hidden class="reason-editor" placeholder="Reason for provisioning" value="{{reason endorsements}}">
+{{#if endorsement.reason}}
+{{endorsement.reason}}<input type=hidden class="reason-editor" placeholder="Reason for provisioning" value="{{endorsement.reason}}">
 {{else}}
 <div class="displaying-reasons">
   <select required="required" style="width: 150px;">
-    <option selected disabled value=""></option>
+    <option selected disabled value="">-- Reason --</option>
     <option value="clinical">Clinical work</option>
     <option value="instructional">Instructional activities</option>
     <option value="research">Research</option>
@@ -22,6 +22,6 @@
   <input type=input class="reason-editor" placeholder="Reason for provisioning" value="" maxlength="64" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
 </div>
 <p style="font-size: small;"><a href="javascript:void(0);" class='apply-all{{#has_reason endorsements}} visually-hidden{{/has_reason}}'>Apply to all</a></p>
-{{/endorsed}}
+{{/if}}
 
 {% endtplhandlebars %}
