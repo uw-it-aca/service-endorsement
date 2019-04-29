@@ -104,21 +104,11 @@ var ProvisionServices = {
             if ($('input[type="checkbox"]:checked', $row).length > 0) {
                 $td.addClass('error');
             }
-        }).on('click', '.provision-toggle', function (e) {
-            var $link = $(this),
-                $div = $link.next(),
-                $window;
+        }).on('endorse:PanelToggleExposed', function (e, $div) {
+            var $window = $(window);
 
-            if ($div.hasClass('visually-hidden')) {
-                $link.html($link.attr('data-conceal-text'));
-                $div.removeClass('visually-hidden');
-                $window = $(window);
-                $window.scrollTop($window.scrollTop() + $div.height());
-                $('textarea', $div).focus();
-            } else {
-                $link.html($link.attr('data-reveal-text'));
-                $div.addClass('visually-hidden');
-            }
+            $window.scrollTop($window.scrollTop() + $div.height());
+            $('textarea', $div).focus();
         });
 
         // broader event scope
@@ -181,8 +171,6 @@ var ProvisionServices = {
             netid_count: validated.validated.length
         };
 
-        $('.endorse-input').addClass('visually-hidden')
-        $('.endorse-validate').removeClass('visually-hidden')
         $.each(context.netids, function () {
             this.valid_netid = (this.error === undefined);
 
@@ -196,7 +184,7 @@ var ProvisionServices = {
             }
         });
 
-        $('#wnetids-validated').html(template(context));
+        $('#uwnetids-validated').html(template(context));
 
         $endorsement_group.attr('disabled', true);
         ProvisionServices._showValidationStep();
@@ -356,7 +344,7 @@ var ProvisionServices = {
 
     _validateUWNetids: function(netids) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-            $panel = $('.tab-pane#' + ProvisionServices.content_id);
+            $panel = $('#' + ProvisionServices.content_id);
 
         $.ajax({
             url: "/api/v1/validate/",
@@ -380,7 +368,7 @@ var ProvisionServices = {
     _endorseUWNetIDs: function(endorsees) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
             endorsed = {},
-            $panel = $('.tab-pane#' + ProvisionServices.content_id);
+            $panel = $('#' + ProvisionServices.content_id);
 
         $.each(window.endorsement.validation.validated, function () {
             var endorsement = endorsees[this.netid];

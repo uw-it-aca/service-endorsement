@@ -1,7 +1,7 @@
 {% load templatetag_handlebars %}
 
 {% tplhandlebars "endorse-panel" %}
-  <a class="provision-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Add more NetIDs to list" data-conceal-text="<span class='fa fa-caret-down'></span> Add more NetIDs to list" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Add more NetIDs to list</a>
+  <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Add more NetIDs to list" data-conceal-text="<span class='fa fa-caret-down'></span> Add more NetIDs to list" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Add more NetIDs to list</a>
   <div class="content visually-hidden">
     <div class="endorse-input">
       <div class="form-group" id="uwnetids-input">
@@ -12,10 +12,8 @@
         <br />
         <button type="button" name="ValidateUWNetids" id="validate" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Validating UW NetIDs">Add NetID(s) to list</button>
       </div>
-
       <div class="form-group" id="uwnetids-validated" style="display: none;">
       </div>
-
       <div class="form-group" id="uwnetids-endorsed" style="display: none;">
       </div>
     </div>

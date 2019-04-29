@@ -1,0 +1,13 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "display_filter_partial" %}
+
+    <span class="pull-right">
+      View <select class="display-filter">
+        <option value="all">All</option>
+        <option value="expiring">Expiring</option>
+        <option value="endorsed">Provisioned</option>
+        <option value="unendorsed">Unprovisioned</option>
+      </select>
+    </span>
+
+{% endtplhandlebars %}

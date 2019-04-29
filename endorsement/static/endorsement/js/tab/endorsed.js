@@ -26,8 +26,12 @@ var ManageProvisionedServices = {
     },
 
     _registerEvents: function () {
+        $panel = $('#' + ManageProvisionedServices.content_id);
+
         // delegated events within our content
-        $('#' + ManageProvisionedServices.content_id).on('click', 'button.confirm_revoke', function(e) {
+        $panel.on('click', 'button.confirm_endorse', function(e) {
+            Endorse.endorse($(this), '#endorse_modal_content', 'endorse:UWNetIDsEndorseStatus');
+        }).on('click', 'button.confirm_revoke', function(e) {
             Revoke.revoke($(this), '#revoke_modal_content', 'endorse:UWNetIDsRevokeStatus');
         }).on('click', 'button.confirm_renew', function(e) {
             Renew.renew($(this), '#renew_modal_content', 'endorse:UWNetIDsRenewStatus');
@@ -59,6 +63,16 @@ var ManageProvisionedServices = {
                     $('.endorsed-' + id).html($("#unendorsed").html());
                 });
             });
+        }).on('change', 'select.display-filter', function(e) {
+            var display = $(this).find('option:selected').val(),
+                $rows = $panel.find('table tr td .row');
+
+            if (display === 'all') {
+                $rows.removeClass('visually-hidden');
+            } else {
+                $rows.addClass('visually-hidden');
+                $panel.find('table tr td .row.' + display + '_service').removeClass('visually-hidden');
+            }
         });
     },
 
@@ -102,7 +116,7 @@ var ManageProvisionedServices = {
                     var now = moment(),
                         provisioned = moment(endorsement.datetime_endorsed),
                         expires = moment(endorsement.datetime_endorsed).add(365, 'days'),
-                        expiring = moment(endorsement.datetime_endorsed).add(135, 'days');
+                        expiring = moment(endorsement.datetime_endorsed).add(30, 'days');
 
                     this.expires = expires.format('M/D/YYYY')
                     this.expires_relative = expires.fromNow()

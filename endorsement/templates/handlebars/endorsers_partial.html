@@ -1,10 +1,23 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "endorsers_partial" %}
 
-<div class="row {{#unless endorsement.endorsed}}un{{/unless}}endorsed-netid">
+<div class="row 
+{{#if endorsement.endorsed}}
+ {{#if expiring}}
+   expiring_service
+ {{else}}
+   {{#if endorsement.datetime_endorsed}}
+     endorsed_service
+   {{else}}
+     pending_service
+   {{/if}}
+ {{/if}}
+{{else}}
+  unendorsed_service
+{{/if}}">
 
 <div class="col-xs-3 text-left">
-  <input type="checkbox" class="visually-hidden" id="endorse_{{svc}}_{{netid}}" value="{{netid}}" /><label for="endorse_{{svc}}_{{netid}}"><span class="significant">{{ endorsement.category_name }}</span></label>
+  <input type="checkbox" class="aggregate_action visually-hidden" id="endorse_{{svc}}_{{netid}}" value="{{netid}}" /><label for="endorse_{{svc}}_{{netid}}"><span class="significant">{{ endorsement.category_name }}</span></label>
 </div>
 
 <div class="col-xs-3 text-left">
@@ -58,7 +71,7 @@
       <a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ endorsement.accept_url }}" data-clipboard-msg="<span class='fa fa-check'></span> Acceptance link copied to clipboard" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy Link</a>
     {{/if}}
   {{else}}
-  <button type="button" name="Provision service" class="btn confirm_provision" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
+  <button type="button" name="Provision service" class="btn confirm_endorse" disabled="disabled" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
   {{/if}}
 </div>
 

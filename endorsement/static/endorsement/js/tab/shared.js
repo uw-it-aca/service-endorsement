@@ -23,13 +23,30 @@ var ManageSharedNetids = {
     },
 
     _registerEvents: function () {
-        $('#' + ManageSharedNetids.content_id).on('click', 'button.confirm_revoke', function(e) {
+        var $panel = $('#' + ManageSharedNetids.content_id);
+
+        $panel.on('click', 'button.confirm_endorse', function(e) {
+            Endorse.endorse($(this), '#shared_endorse_modal_content',
+                            'endorse:SharedUWNetIDsEndorseStatus');
+        }).on('click', 'button.confirm_revoke', function(e) {
             Revoke.revoke($(this), '#shared_revoke_modal_content',
                           'endorse:SharedUWNetIDsRevokeStatus');
+        }).on('click', '#check_all', function(e) {
+            $panel.find('input[id^="endorse_"]').prop('checked', $(this).prop('checked'));
+            ManageSharedNetids._enableSharedEndorsability();
+        }).on('change', 'input[id^="endorse_"]', function(e) {
+            ManageSharedNetids._enableSharedEndorsability();
+        }).on('endorse:PanelToggleExposed', function (e) {
+            $panel.find('.aggregate_action').removeClass('visually-hidden');
+            ManageSharedNetids._enableSharedEndorsability();
+        }).on('endorse:PanelToggleHidden', function (e) {
+            $panel.find('.aggregate_action').addClass('visually-hidden');
+        }).on('endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
+            ManageSharedNetids._enableSharedEndorsability();
         });
 
-        $(document).on('endorse:UWNetIDRevoking endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
-            ManageSharedNetids._enableSharedEndorsability();
+        $(document).on('endorse:UWNetIDRevoking', function (e, $row) {
+            ManageSharedNetids._enableSharedEndorsability($row);
         }).on('endorse:UWNetIDsInvalidReasonError', function (e, $row, $td) {
             if ($('input[type="checkbox"]:checked', $row).length > 0) {
                 $td.addClass('error');
@@ -118,16 +135,56 @@ var ManageSharedNetids = {
     },
 
     _enableSharedEndorsability: function() {
-        var $button = $('button#shared_update'),
-            netids;
+        var $panel = $('#' + ManageSharedNetids.content_id);
 
-        $('td.error').removeClass('error');
-        netids = ManageSharedNetids._getSharedUWNetIDsToEndorse();
-        if (Object.keys(netids).length > 0 &&
-            $('td.error').length === 0) {
-            $button.removeAttr('disabled');
-        } else {
-            $button.attr('disabled', 'disabled');
+        // enable/disable Provision button
+        $panel.find('.displaying-reasons select').each(function () {
+            var $this = $(this);
+
+            if ($this.find('option:selected').val() != '') {
+                $this.closest('.row').find('button.confirm_endorse').removeAttr('disabled');
+            }
+        });
+
+        // fixup checkboxes, aggregate labels
+        if ($panel.find('.panel-toggle + .content.visually-hidden').length === 0) {
+            var $checked = $panel.find('.row:not(".visually-hidden") input[id^="endorse_"]:checked'),
+                is_checked = false,
+                is_indeterminate = false,
+                $check_all = $panel.find('input#check_all'),
+                n_total, n_renew = 0, n_revoke = 0, n_endorse = 0;
+
+            if ($checked.length > 0) {
+                total = $panel.find('.row:not(".visually-hidden") input[id^="endorse_"]').length;
+
+                if ($checked.length < total) {
+                    is_indeterminate = true;
+                } else {
+                    is_checked = true;
+                }
+            }
+
+            $check_all.prop('indeterminate', is_indeterminate);
+            $check_all.prop('checked', is_checked);
+
+            // fixup labels
+            $panel.find('.endorsed-services .row').removeClass('error');
+            $.each(['endorse', 'renew', 'revoke'], function (i, action) {
+                var $agg_button = $panel.find('.aggregate_' + action),
+                    $rows = $checked.closest('.row'),
+                    $enabled =  $rows.find('.confirm_' + action + ':enabled'),
+                    $disabled =  $rows.find('.confirm_' + action + ':disabled');
+
+                if ($enabled.length) {
+                    $agg_button.removeAttr('disabled');
+                    $agg_button.find('span').html('(' + $enabled.length + ') ');
+                } else {
+                    $agg_button.attr('disabled', 'disabled');
+                    $agg_button.find('span').html('');
+                }
+
+                $disabled.closest('.row').addClass('error');
+            })
         }
     },
 

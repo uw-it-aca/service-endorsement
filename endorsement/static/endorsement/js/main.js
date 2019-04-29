@@ -8,10 +8,13 @@ $(window.document).ready(function() {
     displayPageHeader();
 
     try {
-        common_tools = [Revoke,
+        common_tools = [Endorse,
+                        Revoke,
                         Reasons,
                         HashHistory,
-                        ClipboardCopy];
+                        ClipboardCopy,
+                        TogglePanel,
+                        DisplayFilterPanel];
         loadTools(common_tools);
 
         tabs = [ProvisionServices,

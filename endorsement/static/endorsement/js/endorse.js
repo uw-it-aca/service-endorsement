@@ -1,35 +1,35 @@
-// common service revocation javascript
+// common service endorse javascript
 
-var Revoke = {
+var Endorse = {
     load: function () {
         this._loadContainer();
         this._registerEvents();
     },
 
     _loadContainer: function () {
-        $('#app_content').append($("#revoke_modal_container").html());
+        $('#app_content').append($("#endorse_modal_container").html());
     },
 
     _registerEvents: function () {
-        $(document).on('click', 'button#revoke', function (e) {
+        $(document).on('click', 'button#endorse', function (e) {
             var $this = $(this),
                 netid = $this.attr('data-netid'),
                 service = $this.attr('data-service'),
                 event_id = $this.attr('data-event-id'),
-                to_revoke = {},
+                to_endorse = {},
                 $button = $('button[data-netid="' + netid + '"][data-service="' + service + '"]'),
                 $panel = $button.parents('.panel');
 
             $this.parents('.modal').modal('hide');
             $button.button('loading');
-            to_revoke[netid] = {};
-            to_revoke[netid][service] = false;
-            Revoke._revokeUWNetIDs(to_revoke, event_id, $panel);
+            to_endorse[netid] = {};
+            to_endorse[netid][service] = true;
+            Endorse._endorseUWNetID(to_endorse, event_id, $panel);
         });
     },
 
-    revoke: function ($button, content_id, event_id) {
-        var $modal = $('#revoke_modal');
+    endorse: function ($button, content_id, event_id) {
+        var $modal = $('#endorse_modal');
 
         $('.modal-content', $modal).html(
             Handlebars.compile($(content_id).html())({
@@ -42,13 +42,13 @@ var Revoke = {
         $modal.modal('show');
     },
 
-    _revokeUWNetIDs: function(revokees, event_id, $panel) {
+    _endorseUWNetID: function(endorsees, event_id, $panel) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
         $.ajax({
             url: "/api/v1/endorse/",
             dataType: "JSON",
-            data: JSON.stringify(revokees),
+            data: JSON.stringify(endorsees),
             type: "POST",
             accepts: {html: "application/json"},
             headers: {
@@ -56,8 +56,8 @@ var Revoke = {
             },
             success: function(results) {
                 $panel.trigger(event_id, [{
-                    revokees: revokees,
-                    revoked: results
+                    endorsees: endorsees,
+                    endorseded: results
                 }]);
             },
             error: function(xhr, status, error) {

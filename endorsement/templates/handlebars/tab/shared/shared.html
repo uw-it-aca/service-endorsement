@@ -8,14 +8,7 @@
   </p>
 
   <div class="row provision-bar">
-    <span class="pull-right">
-      View <select class="provisioned-filter">
-        <option>All</option>
-        <option>Expiring</option>
-        <option>Provisioned</option>
-        <option>Unprovisioned</option>
-      </select>
-    </span>
+    {{> display_filter_partial . }}
   </div>
 
   <div class="form-group content"></div>
@@ -37,7 +30,7 @@
         <tr>
           <th>UW NetID</th>
           <th>Name</th>
-          <th>Service</th>
+          <th><span class="aggregate_action visually-hidden"><input type="checkbox" id="check_all" class="aggregate_action visually-hidden" /> </span><label for="check_all">Service</label></th>
         </tr>
       </thead>
       {{#each shared.shared}}
@@ -47,7 +40,7 @@
         <td class="endorsed-services" class="col-border-left">
           <div style="position: relative">
             {{#each endorsements}}
-              {{> endorsers_partial endorsement=this netid=netid svc=@key }}
+              {{> endorsers_partial endorsement=this netid=../netid svc=@key }}
             {{/each}}
           </div>
         </td>
@@ -55,6 +48,13 @@
       {{/each}}
     </table>
     </div>
+    <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Bulk actions" data-conceal-text="<span class='fa fa-caret-down'></span> Bulk actions" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Bulk actions</a>
+    <div class="content visually-hidden">
+      <button disabled="disabled" class="btn aggregate_renew">Renew <span></span>Selected</button>
+      <button disabled="disabled" class="btn aggregate_revoke">Revoke <span></span>Selected</button>
+      <button disabled="disabled" class="btn aggregate_endorse">Provision <span></span>Selected</button>
+    </div>
+  </div>
 <!-- <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
 -->
 {% endtplhandlebars %}

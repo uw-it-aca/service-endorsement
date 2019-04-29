@@ -222,7 +222,7 @@ a {
    #netid_list { height: 6em; width: 81em }
 }
 
-.provisioned-filter { margin-right: 16px; margin-bottom: 18px; }
+.display-filter { margin-right: 16px; margin-bottom: 18px; }
 #export_csv { margin-left: 16px; }
 
 #uwnetids-validated {
@@ -270,7 +270,10 @@ a {
 }
 
 .endorsed-netids-table { height: 300px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid grey; 
-  thead { background-color: #eee; }
+  span.aggregate_action { padding-left: 8px; }
+  thead { background-color: #eee;
+    label { padding-left: 8px; font-weight: 900; }
+  }
   .endorsed-name { min-width: 200px; }
   .endorsed-services { padding: 0;
     .row {
@@ -292,9 +295,9 @@ a {
   }
 }
 
-#provision { margin-bottom: 38px;
-   .provision-toggle {color:#0077c2; }
-}
+.panel-toggle { color:#0077c2; display: inline-block; padding-top: 10px; }
+
+#provision { margin-bottom: 38px; }
 
 #provisioned, #shared {
   .loading {
@@ -490,7 +493,7 @@ input[type=checkbox][id^=revoke_]:checked + label:before { content: "\f00d"; col
 }
 **/
 
-td.error {
+td.error, .row.error {
     select {
         border: 1px solid red;
         + div {

@@ -18,9 +18,9 @@
 
  <hr />
 
- <div id="shared"></div>
- <div id="provisioned"></div>
- <div id="provision"></div>
+ <div id="shared" class="panel"></div>
+ <div id="provision" class="panel"></div>
+ <div id="provisioned" class="panel"></div>
 </div>
 
 {% include "handlebars/tab/shared/shared.html" %}
@@ -33,6 +33,8 @@
 {% include "handlebars/valid_partial.html" %}
 {% include "handlebars/reasons_partial.html" %}
 {% include "handlebars/endorse_result.html" %}
+{% include "handlebars/endorse.html" %}
+{% include "handlebars/endorse_modal.html" %}
 {% include "handlebars/revoke.html" %}
 {% include "handlebars/revoke_modal.html" %}
 
@@ -40,6 +42,7 @@
 {% include "handlebars/endorsed_partial.html" %}
 {% include "handlebars/endorsers_partial.html" %}
 {% include "handlebars/endorse_button_partial.html" %}
+{% include "handlebars/display_filter_partial.html" %}
 
 {% endblock %}
 
@@ -48,8 +51,11 @@
 <script src="{% static "endorsement/js/tab/endorse.js" %}"></script>
 <script src="{% static "endorsement/js/tab/endorsed.js" %}"></script>
 <script src="{% static "endorsement/js/tab/shared.js" %}"></script>
+<script src="{% static "endorsement/js/endorse.js" %}"></script>
 <script src="{% static "endorsement/js/revoke.js" %}"></script>
 <script src="{% static "endorsement/js/reasons.js" %}"></script>
+<script src="{% static "endorsement/js/toggle.js" %}"></script>
+<script src="{% static "endorsement/js/filter.js" %}"></script>
 <script src="{% static "endorsement/js/clipboard.js" %}"></script>
 <script src="{% static "endorsement/js/history.js" %}"></script>
 <script src="{% static "endorsement/js/notify.js" %}"></script>

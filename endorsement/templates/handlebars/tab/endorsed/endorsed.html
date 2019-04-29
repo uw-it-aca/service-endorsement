@@ -1,7 +1,7 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "endorsed-netids" %}
 
-<div id="uwnetids-endorsed">
+<div id="endorsed-uwnetids">
   <h3>UW NetIDs owned by others</h3>
   <p>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -16,14 +16,7 @@
       <span class="pull-left">
         <a name="ExportCSV" id="export_csv" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Exporting Accounts"><span class="fa fa-download"></span> Export as CSV</a>
       </span>
-    <span class="pull-right">
-      View <select class="provisioned-filter">
-        <option>All</option>
-        <option>Expiring</option>
-        <option>Provisioned</option>
-        <option>Unprovisioned</option>
-      </select>
-    </span>
+      {{> display_filter_partial . }}
   </div>
     </div>
 
@@ -44,7 +37,7 @@
         <td class="endorsed-services" class="col-border-left">
           <div style="position: relative">
             {{#each this.endorsements}}
-              {{> endorsers_partial endorsement=this netid=netid svc=@key }}
+              {{> endorsers_partial endorsement=this netid=@../key svc=@key }}
             {{/each}}
           </div>
         </td>

@@ -3,6 +3,7 @@ Handlebars.registerPartial('endorsed_partial', $("#endorsed-partial").html());
 Handlebars.registerPartial('reasons_partial', $("#reasons_partial").html());
 Handlebars.registerPartial('endorsers_partial', $("#endorsers_partial").html());
 Handlebars.registerPartial('endorse_button_partial', $("#endorse_button_partial").html());
+Handlebars.registerPartial('display_filter_partial', $("#display_filter_partial").html());
 
 Handlebars.registerHelper('endorsable', function(o365, google) {
     if ((o365 && this.o365.eligible) ||
