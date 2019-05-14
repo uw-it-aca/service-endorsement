@@ -69,8 +69,8 @@ class Endorse(RESTDispatch):
                         endorsee, endorser, email=to_endorse['email']).email
 
                 try:
-                    if to_endorse['o365']:
-                        reason = to_endorse['reason']
+                    if to_endorse['o365']['state']:
+                        reason = to_endorse['o365']['reason']
                         e = None
                         if to_endorse.get('store', False):
                             e = store_office365_endorsement(
@@ -81,7 +81,7 @@ class Endorse(RESTDispatch):
 
                         endorsements['o365'] = e.json_data()
                         endorsements['o365']['endorsed'] = True
-                        endorsements['reason'] = reason
+                        endorsements['o365']['reason'] = reason
                     else:
                         try:
                             clear_office365_endorsement(endorser, endorsee)
@@ -103,8 +103,8 @@ class Endorse(RESTDispatch):
                     }
 
                 try:
-                    if to_endorse['google']:
-                        reason = to_endorse['reason']
+                    if to_endorse['google']['state']:
+                        reason = to_endorse['google']['reason']
                         e = None
                         if to_endorse.get('store', False):
                             e = store_google_endorsement(
@@ -115,7 +115,7 @@ class Endorse(RESTDispatch):
 
                         endorsements['google'] = e.json_data()
                         endorsements['google']['endorsed'] = True
-                        endorsements['reason'] = reason
+                        endorsements['google']['reason'] = reason
                     else:
                         try:
                             clear_google_endorsement(endorser, endorsee)

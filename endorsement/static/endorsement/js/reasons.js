@@ -8,7 +8,7 @@ var Reasons = {
     _registerEvents: function () {
         $('#app_content').on('change', '.displaying-reasons > select',  function(e) {
             var $target = $(e.target),
-                $row = $target.closest('div.row'),
+                $row = $target.closest('tr'),
                 $selected = $('option:selected', $(this)),
                 $panel = $row.parents('.panel');
 
@@ -38,7 +38,7 @@ var Reasons = {
             $panel.trigger('endorse:UWNetIDChangedReason', [$row]);
         }).on('click', '.apply-all', function (e) {
             var $cell = $(e.target).closest('div'),
-                $row = $(e.target).closest('div.row'),
+                $row = $(e.target).closest('tr'),
                 $table = $(e.target).closest('table'),
                 $panel = $table.parents('.panel'),
                 $selected = $('option:selected', $cell),
@@ -69,7 +69,7 @@ var Reasons = {
 
             if ($target.hasClass('reason-editor')) {
                 if (e.which !== 13) {
-                    var $row = $(e.target).closest('div.row'),
+                    var $row = $(e.target).closest('tr'),
                         reason = $.trim($(e.target).val());
 
                     if (reason.length) {

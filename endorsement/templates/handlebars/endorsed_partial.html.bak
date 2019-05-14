@@ -1,0 +1,112 @@
+{% load templatetag_handlebars %}
+{% tplhandlebars "endorsed-partial" %}
+
+<div class="form-group">
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th data-csv-label="netid">UW NetID</th>
+      <th data-csv-label="name">Name</th>
+      <th data-csv-label="Service" class="col-border-left">Service</th>
+<!--      <th data-csv-label="UW Office 365 Reason">Your provision reason</th>
+      <th></th>
+      <th class="col-border-left" data-csv-label="UW G Suite Provsioned">UW G Suite (Google)</th>
+      <th data-csv-label="UW G Suite Reason">Your provision reason</th>
+      <th></th>
+-->
+    </tr>
+  </thead>
+  {{#each endorsed.endorsed}}
+  <tr>
+    <td>{{@key}}</td>
+    <td>{{name}}</td>
+    <table>
+    <tr>
+    <td class="result-status col-border-left endorsed-o365-{{ @key }}" data-csv-provisioned="o365-{{ @key }}">
+      {{#if o365}}
+        {{#if o365.error}}
+          {{o365.error}}
+        {{else}}
+          {{#if o365.endorsed}}
+            {{#if ../../../../can_revoke}}
+              Provisioned by <ul class="comma-list">
+              {{#each o365.endorsers}}
+                <li {{#equals this.netid ../../../o365.endorser.netid}}class="current-endorsee"{{/equals}}>{{this.netid}}{{#if ../o365.accept_url}}{{#equals this.netid ../../../../o365.endorser.netid}}<br />Pending acceptance <br /><a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ ../../../o365.accept_url }}" data-clipboard-msg="<span class='fa fa-check'></span> Acceptance link copied to clipboard" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy acceptance link</a>{{/equals}}{{/if}}</li>
+              {{/each}}
+              </ul>
+            {{else}}
+               Pending acceptance
+            {{/if}}
+          {{else}}
+            Not provisioned
+          {{/if}}
+        {{/if}}
+      {{else}}
+        {{#if ../../can_revoke}}
+          Not provisioned
+        {{else}}
+          Provisioned services unchanged
+        {{/if}}
+      {{/if}}
+    </td>
+    <td class="reason-o365-{{ @key }}" data-csv-reason="o365-{{ @key }}">{{o365.reason}}</td>
+    <td class="revoke-o365-{{ @key }}">
+      {{#if ../can_revoke}}
+        {{#if o365}}
+          {{#if o365.endorsed}}
+      <button type="button" name="Revoke {{ ../o365.category_name }}" class="btn btn-primary confirm_revoke" data-netid="{{ @key }}" data-service="o365" data-service-name="{{ ../o365.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Office 365">Revoke</button>
+         {{/if}}
+        {{/if}}
+      {{/if}}
+    </td>
+    </tr>
+    <tr>
+    <td class="result-status col-border-left endorsed-google-{{ @key }}" data-csv-provisioned="google-{{ @key }}">
+      {{#if google}}
+        {{#if google.error}}
+          {{google.error}}
+        {{else}}
+          {{#if google.endorsed}}
+            {{#if ../../../../can_revoke}}
+              Provisioned by <ul class="comma-list">
+              {{#each google.endorsers}}
+                <li {{#equals this.netid ../../../google.endorser.netid}}class="current-endorsee"{{/equals}}>{{this.netid}}{{#if ../google.accept_url}}{{#equals this.netid ../../../../google.endorser.netid}}<br />Pending acceptance<br /><a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ ../../../google.accept_url }}" data-clipboard-msg="<span class='fa fa-check'></span> Acceptance link copied to clipboard" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy acceptance link</a>{{/equals}}{{/if}}</li>
+              {{/each}}
+              </ul>
+            {{else}}
+               Pending acceptance
+            {{/if}}
+          {{else}}
+            Not provisioned
+          {{/if}}
+        {{/if}}
+      {{else}}
+        {{#if ../../can_revoke}}
+          Not provisioned
+        {{else}}
+          Provisioned services unchanged
+        {{/if}}
+      {{/if}}
+    </td>
+    <td class="reason-google-{{ @key }}" data-csv-reason="google-{{ @key }}">{{google.reason}}</td>
+    <td class="revoke-google-{{ @key }}">
+      {{#if ../can_revoke}}
+        {{#if google}}
+          {{#if google.endorsed}}
+      <button type="button" name="Revoke {{ ../google.category_name }}" class="btn btn-primary confirm_revoke" data-netid="{{ @key }}" data-service="google" data-service-name="{{ ../google.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Google">Revoke</button>
+         {{/if}}
+        {{/if}}
+      {{/if}}
+    </td>
+    </tr>
+    </table>
+  </tr>
+  {{/each}}
+</table>
+</div>
+
+{% endtplhandlebars %}
+
+{% tplhandlebars "unendorsed" %}
+Your provision has been revoked
+{% endtplhandlebars %}

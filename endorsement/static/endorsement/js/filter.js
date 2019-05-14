@@ -7,28 +7,32 @@ var DisplayFilterPanel = {
 
     _registerEvents: function () {
         $('#app_content').on('change', 'select.display-filter', function(e) {
-            var $panel = $(this).closest('.panel'),
-                display = $panel.find('option:selected').val(),
-                $rows = $panel.find('table tbody tr td .row');
+            var $this = $(this),
+                display = $('option:selected', $this).val(),
+                $panel = $this.closest('.panel'),
+                $rows = $('table tbody tr', $panel);
 
             if (display === 'all') {
-                $panel.find('table tbody tr').removeClass('visually-hidden');
                 $rows.removeClass('visually-hidden');
             } else {
                 $rows.addClass('visually-hidden');
-                $panel.find('table tbody tr td .row.' + display + '_service').removeClass('visually-hidden');
-                $panel.find('table tbody tr').each(function () {
-                    var $tr = $(this);
-
-                    $tr.addClass('visually-hidden');
-                    $tr.find('.row').each(function () {
-                        if ($(this).hasClass('visually-hidden') == false) {
-                            $tr.removeClass('visually-hidden');
-                            return false;
-                        }
-                    });
-                });
+                $('table tbody tr.' + display + '_service', $panel).removeClass('visually-hidden');
             }
-        })
+        }).on('mousedown', 'select.display-filter', function(e) {
+            var $this = $(this),
+                $panel = $this.closest('.panel');
+
+            $('option', $this).each(function () {
+                $option = $(this);
+
+                if ($option.val() != 'all') {
+                    if ($('table tbody tr.' + $option.val() + '_service', $panel).length === 0) {
+                        $option.attr('disabled', 'disabled');
+                    } else {
+                        $option.removeAttr('disabled');
+                    }
+                }
+            });
+        });
     }
 };

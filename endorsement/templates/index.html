@@ -12,14 +12,13 @@
 
  <p>
    <h4>Manage for:</h4>
-   <h4><a href="javascript:void(0);" target="_blank">Shared UW NetID Accounts</a></h4>
-   <h4><a href="javascript:void(0);" target="_blank">UW Affiliates and Sponsored UW NetID Accounts</a></h4>
+   <h4><a href="#shared">UW NetIDs you own</a></h4>
+   <h4><a href="#provisioned">UW NetIDs owned by others</a></h4>
  </p>
 
  <hr />
 
  <div id="shared" class="panel"></div>
- <div id="provision" class="panel"></div>
  <div id="provisioned" class="panel"></div>
 </div>
 
@@ -32,13 +31,17 @@
 {% include "handlebars/tab/endorse/validated.html" %}
 {% include "handlebars/valid_partial.html" %}
 {% include "handlebars/reasons_partial.html" %}
+{% include "handlebars/email_editor_partial.html" %}
 {% include "handlebars/endorse_result.html" %}
 {% include "handlebars/endorse.html" %}
 {% include "handlebars/endorse_modal.html" %}
 {% include "handlebars/revoke.html" %}
 {% include "handlebars/revoke_modal.html" %}
+{% include "handlebars/renew.html" %}
+{% include "handlebars/renew_modal.html" %}
 
 {% include "handlebars/tab/endorsed/endorsed.html" %}
+{% include "handlebars/tab/endorsed/accept.html" %}
 {% include "handlebars/endorsed_partial.html" %}
 {% include "handlebars/endorsers_partial.html" %}
 {% include "handlebars/endorse_button_partial.html" %}
@@ -53,7 +56,9 @@
 <script src="{% static "endorsement/js/tab/shared.js" %}"></script>
 <script src="{% static "endorsement/js/endorse.js" %}"></script>
 <script src="{% static "endorsement/js/revoke.js" %}"></script>
+<script src="{% static "endorsement/js/renew.js" %}"></script>
 <script src="{% static "endorsement/js/reasons.js" %}"></script>
+<script src="{% static "endorsement/js/emailedit.js" %}"></script>
 <script src="{% static "endorsement/js/toggle.js" %}"></script>
 <script src="{% static "endorsement/js/filter.js" %}"></script>
 <script src="{% static "endorsement/js/clipboard.js" %}"></script>

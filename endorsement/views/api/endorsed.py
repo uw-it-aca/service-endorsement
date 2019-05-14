@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
 from endorsement.dao.gws import is_valid_endorser
-from endorsement.dao.user import get_endorser_model
+from endorsement.dao.user import get_endorser_model, get_endorsee_email_model
 from endorsement.dao.endorse import (
     get_endorsements_by_endorser, get_endorsements_for_endorsee)
 from endorsement.dao.uwnetid_supported import get_shared_netids_for_netid
@@ -50,6 +50,8 @@ class Endorsed(RESTDispatch):
             if er.endorsee.netid not in endorsed:
                 endorsed[er.endorsee.netid] = {
                     'name': er.endorsee.display_name,
+                    'email': get_endorsee_email_model(
+                        er.endorsee, endorser).email,
                     'endorsements': {
                         'o365': {
                             'category_name': category_choices[

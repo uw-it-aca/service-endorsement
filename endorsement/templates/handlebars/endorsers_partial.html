@@ -1,44 +1,70 @@
 {% load templatetag_handlebars %}
+
 {% tplhandlebars "endorsers_partial" %}
 
-<div class="row 
-{{#if endorsement.endorsed}}
- {{#if expiring}}
-   expiring_service
- {{else}}
-   {{#if endorsement.datetime_endorsed}}
-     endorsed_service
-   {{else}}
-     pending_service
-   {{/if}}
- {{/if}}
-{{else}}
-  unendorsed_service
-{{/if}}">
+<tr class="{{#if endorsement.endorsed}}
+             {{#if expiring}}
+               expiring_service
+             {{else}}
+               {{#if endorsement.datetime_endorsed}}
+                 endorsed_service
+               {{else}}
+                 pending_service
+               {{/if}}
+             {{/if}}
+           {{else}}
+             unendorsed_service
+           {{/if}}" data-netid="{{ netid }}" data-netid-name="{{ name }}" data-netid-initial-email="{{ email }}" data-service="{{ svc }}" data-service-name="{{ endorsement.category_name }}">
 
-<div class="col-xs-3 text-left">
-  <input type="checkbox" class="aggregate_action visually-hidden" id="endorse_{{svc}}_{{netid}}" value="{{netid}}" /><label for="endorse_{{svc}}_{{netid}}"><span class="significant">{{ endorsement.category_name }}</span></label>
-</div>
+  <td class="endorsed-netid">{{ netid }}</td>
 
-<div class="col-xs-3 text-left">
+  <td class="endorsed-name">{{ name }}</td>
+
+  <td class="endorsed-aggregate aggregate_action visually-hidden">
+    <input type="checkbox" id="aggregate_{{ svc }}_{{ netid }}" value="{{ netid }}" />
+  </td>
+
+  <td class="endorsed-service">
+    <label for="aggregate_{{ svc }}_{{ netid }}"><span class="significant">{{ endorsement.category_name }}</span></label>
+  </td>
+
+  <td class="endorsed-status-icon">
   {{#if endorsement.endorsed}}
     {{#if  endorsement.datetime_endorsed}}
       {{#if this.expired}}
-        <span class="fa fa-exclamation-triangle"></span> <span class="significant text-danger">Expired</span>
+        <span class="fa fa-exclamation-triangle"></span>
+      {{else}}
+        {{#if this.expiring}}
+          <span class="fa fa-exclamation-triangle"></span>
+        {{else}}
+          <span class="fa fa-check"></span>
+        {{/if}}
+      {{/if}}
+    {{else}}
+      <span class="fa fa-warning"></span>
+    {{/if}}
+  {{/if}}
+  </td>
+
+  <td class="endorsed-status">
+  {{#if endorsement.endorsed}}
+    {{#if  endorsement.datetime_endorsed}}
+      {{#if this.expired}}
+        <span class="significant text-danger">Expired</span>
         <br />Expired on {{endorsement.expires}} ({{endorsement.expires_relative}})
       {{else}}
       {{#if this.expiring}}
-        <span class="fa fa-exclamation-triangle"></span> <span class="significant text-danger">Expiring</span>
+        <span class="significant text-danger">Expiring</span>
         <br />Expires {{endorsement.expires}} ({{endorsement.expires_relative}})
         <br /><span class="significant">Renewal may be required.</span>
         <br />User may lose access and their files may be deleted.
       {{else}}
-        <span class="fa fa-check"></span> <span class="significant">Provisioned</span>
+        <span class="significant">Provisioned</span>
         <br />Renew by {{endorsement.expires}} ({{endorsement.expires_relative}})
       {{/if}}
       {{/if}}
     {{else}}
-      <span class="fa fa-warning"></span> <span class="significant">Pending Acceptance</span>
+      <span class="significant">Pending Acceptance</span>
       {{#if endorsement.datetime_emailed}}
       <br />The provisionee has yet to accept the terms and conditions of use. You can resend the acceptance link to the provisionee to complete the provisioning process.
       {{else}}
@@ -55,26 +81,24 @@
     {{/each}}
   </ul>
   {{/if}}
-</div>
+  </td>
 
-<div class="col-xs-3 text-left">
-  {{> reasons_partial endorsement=endorsement}}
-</div>
+  <td class="endorsed-reason">
+    {{> reasons_partial endorsement=endorsement}}
+  </td>
 
-<div class="col-xs-3 text-center">
+  <td class="endorsed-action">
   {{#if endorsement.endorsed}}
 
     {{#if  endorsement.datetime_endorsed}}
-      <button type="button" name="Renew {{ endorsement.category_name }}" class="btn btn-primary confirm_renew" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button>
-      <button type="button" name="Revoke {{ endorsement.category_name }}" class="btn confirm_revoke" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
+      <button type="button" name="Renew {{ endorsement.category_name }}" class="btn btn-primary renew_service renew_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn revoke_service" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
     {{else}}
       <a class="copy_clipboard" data-toggle="tooltip" data-clipboard="{{ endorsement.accept_url }}" data-clipboard-msg="<span class='fa fa-check'></span> Acceptance link copied to clipboard" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy Link</a>
     {{/if}}
   {{else}}
-  <button type="button" name="Provision service" class="btn confirm_endorse" disabled="disabled" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
+  <button type="button" name="Provision service" class="btn endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
   {{/if}}
-</div>
-
-</div>
+  </td>
+</tr>
 
 {% endtplhandlebars %}

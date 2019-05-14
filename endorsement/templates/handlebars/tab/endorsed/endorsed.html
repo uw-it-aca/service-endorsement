@@ -3,47 +3,62 @@
 
 <div id="endorsed-uwnetids">
   <h3>UW NetIDs owned by others</h3>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  </p>
+  <p>Users outside the university, because of an established working relationship with UW, may be granted access to UW services. &nbsp;Manage those provision services here.</p>
 
   {{#if loading}}
   <div class="loading"></div>
   {{else}}
 
-  {{#if has_endorsed}}
-  <div class="row provision-bar">
-      <span class="pull-left">
-        <a name="ExportCSV" id="export_csv" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Exporting Accounts"><span class="fa fa-download"></span> Export as CSV</a>
-      </span>
-      {{> display_filter_partial . }}
+  <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Add more NeiDs to list" data-conceal-text="<span class='fa fa-caret-down'></span> Add more NeiDs to list" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Add more NeiDs to list</a>
+  <div class="content visually-hidden">
+      <div class="form-group" id="uwnetids-input">
+        <p>Eligible NetIDs may be provisioned for UW Services. &nbsp;You will need to know each person's UW NetID and valid email address.
+        &nbsp;Each person will receive an email with terms and conditions that must be accepted in order to access service(s).</p>
+        <textarea id="netid_list" class="form-control" placeholder="Enter the UW NetID(s), @uw.edu, or @washington.edu email address(es) for which you want to provision services."></textarea>
+        <br />
+        <button type="button" name="ValidateUWNetids" id="validate" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Validating UW NetIDs">Add NetID(s) to list</button>
+      </div>
+      <div class="form-group visually-hidden" id="uwnetids-validated">
+      </div>
   </div>
-    </div>
+
+  {{#if has_endorsed}}
+  <div class="row">
+    <span class="pull-right">
+      {{> display_filter_partial . }}
+    </span>
+  </div>
 
   <div class="form-group">
     <div class="endorsed-netids-table">
-    <table class="table table-striped">
-      <thead class="thead-dark">
-        <tr>
-          <th>UW NetID</th>
-          <th>Name</th>
-          <th>Service</th>
-        </tr>
-      </thead>
-      {{#each endorsed.endorsed}}
-      <tr>
-        <td class="endorsed-netid">{{@key}}</td>
-        <td class="endorsed-name">{{name}}</td>
-        <td class="endorsed-services" class="col-border-left">
-          <div style="position: relative">
-            {{#each this.endorsements}}
-              {{> endorsers_partial endorsement=this netid=@../key svc=@key }}
-            {{/each}}
-          </div>
-        </td>
-      </tr>
-      {{/each}}
-    </table>
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th>UW NetID</th>
+            <th>Name</th>
+            <th class="aggregate_action visually-hidden"><input type="checkbox" id="check_all" /></th>
+            <th><label class="significant" for="check_all">Service</label></th>
+            <th></th>
+            <th><span>Status</span></th>
+            <th><span>Provision Reason</span></th>
+            <th><span>Action</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each endorsed.endorsed}}
+          {{#each this.endorsements}}
+          {{> endorsers_partial endorsement=this netid=@../key email=../email svc=@key }}
+          {{/each}}
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <span class="pull-right">
+      <a name="ExportCSV" id="export_csv" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Exporting Accounts"><span class="fa fa-download"></span> Export as CSV</a>
+    </span>
   </div>
 </div>
 <!-- 
@@ -57,6 +72,42 @@
 
 </div>
 
+{% endtplhandlebars %}
+
+{% tplhandlebars "validated_content" %}
+  <div class="valid_netids">
+    {{#if netid_count}}
+    <p><span class="significant text-success"><span class="fa fa-check"></span> {{netid_count}} NetID{{plural netid_count '' 's'}} Added</span><br />
+    {{plural netid_count 'It is' 'They are'}} available to be provisioned during this session
+    {{#if netids_present_count}}({{ netids_present_count}} NetID{{plural netids_present_count '' 's'}} were already available){{/if}}.</p>
+    {{else}}
+      {{#if netids_present_count}}
+      <p>{{ netids_present_count}} NetID{{plural netids_present_count '' 's'}} are already available for provisioning.</p>
+      {{/if}}
+    {{/if}}
+  </div>
+  <div class="invalid_netids">
+    {{#if netid_error_count}}
+    <p><span  class="significant text-danger"><span class="fa fa-warning"></span> Error</span><br />
+    The following NetID{{ plural netid_error_count '' 's'}} could not be added:</p>
+    <table class="table borderless">
+      <tbody>
+        {{#each netid_errors}}
+        <tr>
+          <td>{{ @key }}</td>
+          <td>{{ this.error }}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+  </div>
+  <button type="button" name="BackToUWNetids" id="netid_input" class="btn btn-primary">Add more NetID(s) to list</button>
+{% endtplhandlebars %}
+
+
+{% tplhandlebars "endorsee-row" %}
+{{> endorsers_partial endorsement=endorsement netid=netid email=email name=name svc=service }}
 {% endtplhandlebars %}
 
 

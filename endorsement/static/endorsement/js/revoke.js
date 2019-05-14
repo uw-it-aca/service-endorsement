@@ -28,14 +28,14 @@ var Revoke = {
         });
     },
 
-    revoke: function ($button, content_id, event_id) {
+    revoke: function (content_id, $row, event_id) {
         var $modal = $('#revoke_modal');
 
         $('.modal-content', $modal).html(
             Handlebars.compile($(content_id).html())({
-                netid: $button.attr('data-netid'),
-                service: $button.attr('data-service'),
-                service_name: $button.attr('data-service-name'),
+                netid: $row.attr('data-netid'),
+                service: $row.attr('data-service'),
+                service_name: $row.attr('data-service-name'),
                 event_id: event_id
             }));
 

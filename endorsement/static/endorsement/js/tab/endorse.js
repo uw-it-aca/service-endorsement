@@ -10,13 +10,6 @@ var ProvisionServices = {
         this._enableCheckEligibility();
     },
 
-    focus: function () {
-        if (window.location.hash === this.location_hash) {
-            $('a[href="' + this.location_hash + '"]').tab('show');
-            $('#netid_list:visible').focus();
-        }
-    },
-
     _loadContent: function () {
         var $panel = $('#' + ProvisionServices.content_id),
             $content = $('.content', $panel),
@@ -54,28 +47,6 @@ var ProvisionServices = {
             $('.endorsement-group input:checked').prop('checked', false);
             ProvisionServices._enableCheckEligibility();
             ProvisionServices._showInputStep();
-        }).on('click', '.edit-email', function (e) {
-            var $row = $(e.target).closest('tr'),
-                $editor = $('.email-editor', $row);
-
-            if ($row.hasClass('unchecked')) {
-                return false;
-            }
-
-            $('.displaying-email', $row).addClass('visually-hidden');
-            $('.editing-email', $row).removeClass('visually-hidden');
-            $editor.val($('.shown-email', $row).html());
-            $editor.focus();
-        }).on('click', '.finish-edit-email', function (e) {
-            var $row = $(e.target).closest('tr');
-
-            ProvisionServices._finishEmailEdit($('.email-editor', $row));
-        }).on('keypress', '.email-editor', function (e) {
-            if (e.which == 13) {
-                ProvisionServices._finishEmailEdit($(e.target));
-            }
-        }).on('focusout', '.email-editor', function(e) {
-            ProvisionServices._finishEmailEdit($(e.target));
         }).on('click', 'button#endorse', function(e) {
             var $this = $(this);
 

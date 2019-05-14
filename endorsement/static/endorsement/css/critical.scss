@@ -219,7 +219,7 @@ a {
 }
 
 #uwnetids-input {
-   #netid_list { height: 6em; width: 81em }
+   #netid_list { height: 6em; }
 }
 
 .display-filter { margin-right: 16px; margin-bottom: 18px; }
@@ -269,24 +269,31 @@ a {
   }
 }
 
-.endorsed-netids-table { height: 300px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid grey; 
-  span.aggregate_action { padding-left: 8px; }
+.endorsed-netids-table { height: 310px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid #ddd; 
   thead { background-color: #eee;
-    label { padding-left: 8px; font-weight: 900; }
+     label { margin-bottom: 0; }
+     span { font-weight: 200; font-size: .9em; }
   }
-  .endorsed-name { min-width: 200px; }
-  .endorsed-services { padding: 0;
-    .row {
-      margin: 0;
-      border-left: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-      padding-top: 12px;
-      padding-bottom: 20px;
-      .significant {
-        font-weight: bold;
-      }
-    }
+  tr:nth-child(4n - 1), tr:nth-child(4n) { background: #f8f8f8; }
+  tr:nth-child(2n - 3):not(.visually-hidden) + tr {
+    .endorsed-netid, .endorsed-name { color: transparent; border-bottom: 1px solid #ddd; }
   }
+  .endorsed-netid { border-top: none; }
+  .endorsed-name { min-width: 200px; border-top: none; border-right: 1px solid #ddd; }
+  .endorsed-status-icon { padding-right: 0; }
+  .endorsed-service { white-space: nowrap; }
+  .endorsed-reason { min-width: 120px; }
+  .endorsed-action { white-space: nowrap; }
+  .aggregate_action { padding-right: 0; }
+}
+
+label.accept_responsibility {
+  font-weight: normal;
+}
+
+.table.borderless td {
+  border: none !important;
+  padding-bottom: 0;
 }
 
 #shared-uwnetids {
@@ -295,7 +302,7 @@ a {
   }
 }
 
-.panel-toggle { color:#0077c2; display: inline-block; padding-top: 10px; }
+.panel-toggle { color:#0077c2; display: inline-block; padding-top: 10px; margin-bottom: 10px; }
 
 #provision { margin-bottom: 38px; }
 
@@ -371,6 +378,8 @@ ul.comma-list { display: inline; list-style: none; padding: 0;
   li:last-child:after { content: ""; }
 }
 
+ul.email-list { list-style: none; padding: 0; }
+
 .no-endorsements {
   height: 8em;
   line-height: 8em;
@@ -381,11 +390,15 @@ ul.comma-list { display: inline; list-style: none; padding: 0;
   margin-bottom: 24px;
 }
 
+#endorse_modal {
+  h4 { font-size:1.1em; margin-top: 0; padding-top: 0; }
+}
+
 .modal-content {
   overflow: auto;
 }
 
-.shared-acceptance {
+.shared-acceptance, .endorsed-acceptance, .renew-acceptance {
   .row { margin-bottom: 12px; }
 }
 
@@ -486,6 +499,9 @@ input[type=checkbox][id^=revoke_]:checked + label:before { content: "\f00d"; col
 **/
 
 /***** EVERYTHING ELSE *****/
+.significant {
+  font-weight: bold !important;
+}
 /**
 .action {
     font-weight: 600;
@@ -493,7 +509,24 @@ input[type=checkbox][id^=revoke_]:checked + label:before { content: "\f00d"; col
 }
 **/
 
-td.error, .row.error {
+.email-editor {
+    position: static;
+    display: inline-block !important;
+    left: auto;
+    top: auto;
+    .edit-email {
+      .finish-email-edit { margin-left: 8px; }
+    }
+    .edit-email.error {
+      input { border: 1px solid red; }
+      span { display: inline-block !important; position: absolute; white-space: nowrap; color: red; font-size: small; }
+    }
+    .display-email { margin-left: 8px; font-style: italic;
+      .start-email-edit span { margin-left: 10px; }
+    }
+}
+
+td.error, tr.error {
     select {
         border: 1px solid red;
         + div {
@@ -504,23 +537,6 @@ td.error, .row.error {
     }
     .displaying-email {
         display: none;
-    }
-    .editing-email {
-        position: static;
-        left: auto;
-        top: auto;
-        .email-editor {
-            border: 1px solid red;
-        }
-        input + span {
-            display: inline !important;
-            white-space: nowrap;
-            color: red;
-            font-size: .9em;
-        }
-        .finish-edit-email {
-            display: none;
-        }
     }
 }
 

@@ -7,8 +7,10 @@
     Provision, renew or revoke the provisions for your shared NetIDs and other types of NetIDs you own.  Go to <a href="https://uwnetid.washington.edu/manage/?shared" target="_blank">UW NetID management tool</a> to view details about the NetIDs you own.
   </p>
 
-  <div class="row provision-bar">
-    {{> display_filter_partial . }}
+  <div class="row">
+    <span class="pull-right">
+      {{> display_filter_partial . }}
+    </span>
   </div>
 
   <div class="form-group content"></div>
@@ -25,34 +27,33 @@
 {% tplhandlebars "shared-netids-content" %}
   <div class="form-group">
     <div class="endorsed-netids-table">
-    <table class="table table-striped">
+    <table class="table">
       <thead class="thead-dark">
         <tr>
           <th>UW NetID</th>
           <th>Name</th>
-          <th><span class="aggregate_action visually-hidden"><input type="checkbox" id="check_all" class="aggregate_action visually-hidden" /> </span><label for="check_all">Service</label></th>
+          <th class="aggregate_action visually-hidden"><input type="checkbox" id="check_all" /></th>
+          <th><label class="significant" for="check_all">Service</label></th>
+          <th></th>
+          <th><span>Status</span></th>
+          <th><span>Provision Reason</span></th>
+          <th><span>Action</span></th>
         </tr>
       </thead>
+      <tbody>
       {{#each shared.shared}}
-      <tr>
-        <td class="endorsed-netid">{{netid}}</td>
-        <td class="endorsed-name">{{name}}</td>
-        <td class="endorsed-services" class="col-border-left">
-          <div style="position: relative">
-            {{#each endorsements}}
-              {{> endorsers_partial endorsement=this netid=../netid svc=@key }}
-            {{/each}}
-          </div>
-        </td>
-      </tr>
+          {{#each endorsements}}
+          {{> endorsers_partial endorsement=this netid=../netid svc=@key }}
+          {{/each}}
       {{/each}}
+      </tbody>
     </table>
     </div>
     <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Bulk actions" data-conceal-text="<span class='fa fa-caret-down'></span> Bulk actions" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Bulk actions</a>
     <div class="content visually-hidden">
-      <button disabled="disabled" class="btn aggregate_renew">Renew <span></span>Selected</button>
-      <button disabled="disabled" class="btn aggregate_revoke">Revoke <span></span>Selected</button>
-      <button disabled="disabled" class="btn aggregate_endorse">Provision <span></span>Selected</button>
+      <button disabled="disabled" class="btn aggregate_renew_service">Renew <span></span>Selected</button>
+      <button disabled="disabled" class="btn aggregate_revoke_service">Revoke <span></span>Selected</button>
+      <button disabled="disabled" class="btn aggregate_endorse_service">Provision <span></span>Selected</button>
     </div>
   </div>
 <!-- <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
@@ -64,6 +65,37 @@
       <p>You do not own any Shared UW NetIDs.</p>
       <p>Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view Shared UW NetIDs on which you are an administrator.</p>
   </div>
+{% endtplhandlebars %}
+
+{% tplhandlebars "shared_accept_single_modal_content" %}
+      <div class="modal-header">
+        <span>Confirm UW Shared NetID Provision Request</span>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>By selecting {{plural netid_count 'this' 'these'}} UW
+            NetID{{plural netid_count '' 's'}} to receive the services you have identified, you confirm that:</p>
+          <ol>
+              <li>The provisioning recipient associated with each UW NetID requires use of the service(s) to carry out official UW operations, and</li>
+              <li>You have authority to make this request in accord with the UW-IT guidelines for providing computing services to UW
+affiliates. For more information, visit: <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">https://itconnect.uw.edu/connect/email/resources/affiliate-access/</a>.</li>
+          </ol>
+
+        <p>
+            <label>
+                <input type="checkbox" class="accept_responsibility" />
+                I understand and accept these terms.
+            </label>
+        </p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
+        <button type="button" id="confirm_endorsement_responsibility" class="btn btn-primary" disabled="disabled">Provision services for {{plural netid_count 'this' 'these'}} UW NetID{{plural netid_count '' 's'}}</button>
+      </div>
+
 {% endtplhandlebars %}
 
 {% tplhandlebars "shared-loading" %}

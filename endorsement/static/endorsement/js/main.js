@@ -10,19 +10,17 @@ $(window.document).ready(function() {
     try {
         common_tools = [Endorse,
                         Revoke,
+                        Renew,
                         Reasons,
-                        HashHistory,
+                        EmailEdit,
                         ClipboardCopy,
                         TogglePanel,
                         DisplayFilterPanel];
         loadTools(common_tools);
 
-        tabs = [ProvisionServices,
-                ManageProvisionedServices,
+        tabs = [ManageProvisionedServices,
                 ManageSharedNetids];
         loadTools(tabs);
-
-        initialFocus(tabs);
     }
     catch (err) {
         if (err.name !== 'ReferenceError') {
@@ -46,15 +44,4 @@ var loadTools = function (tools) {
     $.each(tools, function () {
         this.load.apply(this);
     });
-};
-
-var initialFocus = function (tabs) {
-    if (window.location.hash.length === 0) {
-        HashHistory.replace('#provision');
-        $('#netid_list:visible').focus();
-    } else {
-        $.each(tabs, function () {
-            this.focus.apply(this);
-        });
-    }
 };

@@ -76,33 +76,6 @@
 <div class="modal fade" id="responsibility_modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <span>Confirm UW NetID provision request{{plural netid_count '' 's'}}</span>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>By selecting {{plural netid_count 'this' 'these'}} UW
-            NetID{{plural netid_count '' 's'}} to receive the services you have identified, you confirm that:</p>
-          <ol>
-              <li>The provisioning recipient associated with each UW NetID requires use of the service(s) to carry out official UW operations, and</li>
-              <li>You have authority to make this request in accord with the UW-IT guidelines for providing computing services to UW
-affiliates. For more information, visit: <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">https://itconnect.uw.edu/connect/email/resources/affiliate-access/</a>.</li>
-          </ol>
-
-        <p>
-            <label>
-                <input type="checkbox" id="accept_responsibility"  />
-                I understand and accept these terms.
-            </label>
-        </p>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
-        <button type="button" id="endorse" class="btn btn-primary" disabled="disabled">Provision services for {{plural netid_count 'this' 'these'}} UW NetID{{plural netid_count '' 's'}}</button>
-      </div>
     </div>
   </div>
 </div>

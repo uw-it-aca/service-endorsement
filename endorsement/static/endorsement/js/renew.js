@@ -1,20 +1,20 @@
-// common service endorse javascript
+// common service endorsement renewal javascript
 
-var Endorse = {
+var Renew = {
     load: function () {
         this._loadContainer();
         this._registerEvents();
     },
 
     _loadContainer: function () {
-        $('#app_content').append($("#endorse_modal_container").html());
+        $('#app_content').append($("#renew_modal_container").html());
     },
 
     _registerEvents: function () {
-        $(document).on('click', 'button#confirm_endorsement_responsibility', function (e) {
+        $(document).on('click', 'button#confirm_renew_responsibility', function (e) {
             var $button = $(this),
                 $rows = $button.data('$rows'),
-                to_endorse = {};
+                to_renew = {};
 
             $rows.each(function (i, row) {
                 var $row = $(row),
@@ -25,28 +25,28 @@ var Endorse = {
                     service_name = $row.attr('data-service-name'),
                     reason = Reasons.getReason($row);
 
-                if (!to_endorse.hasOwnProperty(netid)) {
-                    to_endorse[netid] = {};
+                if (!to_renew.hasOwnProperty(netid)) {
+                    to_renew[netid] = {};
                 }
 
                 if (email && email.length) {
-                    to_endorse[netid].email = email;
+                    to_renew[netid].email = email;
                 }
 
-                if (!to_endorse[netid].hasOwnProperty(service)) {
-                    to_endorse[netid][service] = {}
+                if (!to_renew[netid].hasOwnProperty(service)) {
+                    to_renew[netid][service] = {}
                 }
 
-                to_endorse[netid][service].state = true;
-                to_endorse[netid][service].reason = reason;
+                to_renew[netid][service].state = true;
+                to_renew[netid][service].reason = reason;
 
-                $('.endorse_' + service + '_' + netid, $row).button('loading');
+                $('.renew_' + service + '_' + netid, $row).button('loading');
             });
 
             $button.closest('.modal').modal('hide');
-            Endorse._endorseUWNetID(to_endorse);
-        }).on('change', '#endorse_modal input', function () {
-            var $accept_button = $(this).closest('#endorse_modal').find('button#confirm_endorsement_responsibility'),
+            Renew._renewUWNetID(to_renew);
+        }).on('change', '#renew_modal input', function () {
+            var $accept_button = $(this).closest('#renew_modal').find('button#confirm_renew_responsibility'),
                 $checkboxes = $('input.accept_responsibility'),
                 checked = 0;
 
@@ -64,25 +64,25 @@ var Endorse = {
         });
     },
 
-    endorse: function (modal_content_id, $rows) {
-        var $modal = $('#endorse_modal'),
+    renew: function (modal_content_id, $rows) {
+        var $modal = $('#renew_modal'),
             template = Handlebars.compile($('#' + modal_content_id).html()),
-            context = Endorse._endorseModalContext($rows);
+            context = Renew._renewModalContext($rows);
 
         $('.modal-content', $modal).html(template(context));
         $modal.modal('show');
-        $modal.find('button#confirm_endorsement_responsibility').data('$rows', $rows);
+        $modal.find('button#confirm_renew_responsibility').data('$rows', $rows);
     },
 
-    _endorseModalContext: function ($rows) {
-        var endorse_o365 = [],
-            endorse_google = [],
+    _renewModalContext: function ($rows) {
+        var renew_o365 = [],
+            renew_google = [],
             context = {
-                endorse_o365: [],
-                endorse_google: [],
-                endorse_netid_count: 0,
-                endorse_o365_netid_count: 0,
-                endorse_google_netid_count: 0
+                renew_o365: [],
+                renew_google: [],
+                renew_netid_count: 0,
+                renew_o365_netid_count: 0,
+                renew_google_netid_count: 0
             };
 
         $rows.each(function (i, row) {
@@ -94,50 +94,50 @@ var Endorse = {
                 service_name = $row.attr('data-service-name');
 
             if (service === 'o365') {
-                context.endorse_o365.push({
+                context.renew_o365.push({
                     netid: netid,
                     email: email
                 });
             }
 
             if (service === 'google') {
-                context.endorse_google.push({
+                context.renew_google.push({
                     netid: netid,
                     email: email
                 });
             }
         });
 
-        context.endorse_o365_netid_count = context.endorse_o365.length;
-        context.endorse_google_netid_count = context.endorse_google.length;
-        context.endorse_netid_count = context.endorse_google_netid_count + context.endorse_o365_netid_count;
+        context.renew_o365_netid_count = context.renew_o365.length;
+        context.renew_google_netid_count = context.renew_google.length;
+        context.renew_netid_count = context.renew_google_netid_count + context.renew_o365_netid_count;
         return context;
     },
 
-    _endorseUWNetID: function(endorsees) {
+    _renewUWNetID: function(renewees) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
-        $(document).trigger('endorse:UWNetIDsEndorseStart', [endorsees]);
+        $(document).trigger('endorse:UWNetIDsRenewStart', [renewees]);
 
         $.ajax({
-            url: "/api/v1/endorse/",
+            url: "/api/v1/renew/",
             dataType: "JSON",
-            data: JSON.stringify(endorsees),
+            data: JSON.stringify(renewees),
             type: "POST",
             accepts: {html: "application/json"},
             headers: {
                 "X-CSRFToken": csrf_token
             },
             success: function(results) {
-                $(document).trigger('endorse:UWNetIDsEndorseSuccess', [{
-                    endorsees: endorsees,
-                    endorseded: results
+                $(document).trigger('endorse:UWNetIDsRenewSuccess', [{
+                    renewees: renewees,
+                    renewed: results
                 }]);
             },
             error: function(xhr, status, error) {
                 var error_event_id = event_id + 'Error';
 
-                $(document).trigger('endorse:UWNetIDsEndorseError', [error]);
+                $(document).trigger('endorse:UWNetIDsRenewError', [error]);
             }
         });
     }
