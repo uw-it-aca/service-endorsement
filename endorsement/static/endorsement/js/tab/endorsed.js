@@ -166,22 +166,27 @@ var ManageProvisionedServices = {
 
                 // insert valid netid into endorsed list
                 $('tbody tr', $table).each(function () {
-                    if (true) {
+                    if (netid < $(this).attr('data-netid')) {
                         $row = $(this);
                         return false;
                     }
                 });
 
                 $.each(this.endorsements, function (svc, endorsement) {
-                    $row.before(row_template({
+                    var row_html = row_template({
                         netid: netid,
                         name: name,
                         email: email,
                         service: svc,
                         endorsement: endorsement
-                    }));
-                });
+                    });
 
+                    if ($row) {
+                        $row.before(row_html);
+                    } else {
+                        $('tbody').append(row_html);
+                    }
+                });
             } else {
                 context.netid_errors[this.netid] = this;
                 context.netid_error_count += 1;
