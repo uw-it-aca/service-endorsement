@@ -44,7 +44,7 @@ var Endorse = {
             });
 
             $button.closest('.modal').modal('hide');
-            Endorse._endorseUWNetID(to_endorse);
+            Endorse._endorseUWNetID(to_endorse, $rows.closest('div.panel'));
         }).on('change', '#endorse_modal input', function () {
             var $accept_button = $(this).closest('#endorse_modal').find('button#confirm_endorsement_responsibility'),
                 $checkboxes = $('input.accept_responsibility'),
@@ -114,10 +114,8 @@ var Endorse = {
         return context;
     },
 
-    _endorseUWNetID: function(endorsees) {
+    _endorseUWNetID: function(endorsees, $panel) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
-
-        $(document).trigger('endorse:UWNetIDsEndorseStart', [endorsees]);
 
         $.ajax({
             url: "/api/v1/endorse/",
@@ -129,15 +127,15 @@ var Endorse = {
                 "X-CSRFToken": csrf_token
             },
             success: function(results) {
-                $(document).trigger('endorse:UWNetIDsEndorseSuccess', [{
+                $panel.trigger('endorse:UWNetIDsEndorseSuccess', [{
                     endorsees: endorsees,
-                    endorseded: results
+                    endorsed: results
                 }]);
             },
             error: function(xhr, status, error) {
                 var error_event_id = event_id + 'Error';
 
-                $(document).trigger('endorse:UWNetIDsEndorseError', [error]);
+                $panel.trigger('endorse:UWNetIDsEndorseError', [error]);
             }
         });
     }

@@ -60,17 +60,67 @@ var ManageSharedNetids = {
         }).on('endorse:SharedUWNetIDsRevokeStatus', function (e, data) {
             ManageSharedNetids._updateSharedEndorsementStatus(data.revoked);
             ManageSharedNetids._enableSharedEndorsability();
-        }).on('endorse:UWNetIDsEndorseSuccess', function (e, netid, service, service_name) {
+        }).on('endorse:UWNetIDsShared', function (e, shared) {
+            ManageSharedNetids._displaySharedUWNetIDs(shared);
+        }).on('endorse:UWNetIDsSharedError', function (e, error) {
+            $('#' + ManageSharedNetids.content_id + '.content').html($('#shared-failure').html());
+        }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
+            var row_source = $('#endorsee-row').html(),
+                row_template = Handlebars.compile(row_source);
+
+            $.each(data.endorsed.endorsed, function (netid, endorsements) {
+                var name = endorsements.name,
+                    email = endorsements.email;
+
+                $.each(endorsements.endorsements, function (service, endorsement) {
+                    var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]');
+
+                    if ($row.length) {
+                        $row.replaceWith(row_template({
+                            netid: netid,
+                            email: email,
+                            name: name,
+                            service: service,
+                            endorsement: endorsement
+                        }));
+                    }
+                });
+            });
             // pause for shared endorse modal fade
+/*
             $('button#shared_update').button('reset');
             setTimeout(function () {
                 ManageSharedNetids._enableSharedEndorsability();
                 ManageSharedNetids._sharedEndorseSuccessModal(netid, service, service_name);
             }, 500);
-        }).on('endorse:UWNetIDsShared', function (e, shared) {
-            ManageSharedNetids._displaySharedUWNetIDs(shared);
-        }).on('endorse:UWNetIDsSharedError', function (e, error) {
-            $('#' + ManageSharedNetids.content_id + '.content').html($('#shared-failure').html());
+*/
+        }).on('endorse:UWNetIDsEndorseError', function (e, error) {
+            console.log('error: ' + error);
+        }).on('endorse:UWNetIDsRevokeStatus', function (e, data) {
+            var row_source = $('#endorsee-row').html(),
+                row_template = Handlebars.compile(row_source);
+
+            $.each(data.revokees, function (netid, endorsements) {
+                $.each(endorsements, function (endorsement, state) {
+                    var $row = $('tr[data-netid="' + netid + '"][data-service="' + endorsement + '"]');
+
+                    if ($row.length) {
+                        $row.replaceWith(row_template({
+                            netid: netid,
+                            name: $row.attr('data-netid-name'),
+                            email: $row.attr('data-netid-initial-email'),
+                            service: endorsement,
+                            endorsement: {
+                                category_name: $row.attr('data-service-name'),
+                                active: false,
+                                endorsers: []
+                            }
+                        }));
+                    }
+                });
+            });
+        }).on('endorse:UWNetIDsRevokeStatusError', function (e, error) {
+            console.log('error: ' + error);
         });
     },
 
