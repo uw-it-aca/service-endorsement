@@ -1,0 +1,20 @@
+{% load templatetag_handlebars %}
+
+{% tplhandlebars "enumerate_partial" %}
+      {{#gt netid_count 10}}
+        <ul class="comma-list">{{#if google_count}}<li>{{google_count}} {{ shared }}UW NetIDs to UW G Suite</li>{{/if}}{{#if o365_count}}<li>{{o365_count}} {{ shared }}UW NetIDs to UW Office 365</li>{{/if}}</ul>.
+      {{else}}
+        {{#if google_count}}
+        the {{ shared }}UW NetID{{plural google_count '' 's'}}
+        <ul class="comma-list">
+          {{#each google}}<li style="font-weight: bold;">{{this.netid}}</li>{{/each}}
+        </ul> to the UW G Suite service{{#if o365_count}} and{{else}}.{{/if}}
+        {{/if}}
+        {{#if o365_count}}
+        the {{ shared }}UW NetID{{plural o365_count '' 's'}}
+        <ul class="comma-list">
+          {{#each o365}}<li style="font-weight: bold;">{{this.netid}}</li>{{/each}}
+        </ul> to the UW Office 365 service.
+        {{/if}}
+      {{/gt}}
+{% endtplhandlebars %}

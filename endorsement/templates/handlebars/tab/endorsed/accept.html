@@ -11,23 +11,8 @@
   <div class="endorsed-acceptance container col-md-12">
     <div class="row">
       You are about to provision
-      {{#gt endorse_netid_count 10}}
-        <ul class="comma-list">{{#if endorse_google_netid_count}}<li>{{endorse_google_netid_count}} UW NetIDs to UW G Suite</li>{{/if}}{{#if endorse_o365_netid_count}}<li>{{endorse_o365_netid_count}} UW NetIDs to UW Office 365</li>{{/if}}</ul>.
-      {{else}}
-        {{#if endorse_google_netid_count}}
-        the UW NetID{{plural endorse_google_netid_count '' 's'}}
-        <ul class="comma-list">
-          {{#each endorse_google}}<li class="significant">{{this.netid}}</li>{{/each}}
-        </ul> to the UW G Suite service{{#if endorse_o365_netid_count}} and{{else}}.{{/if}}
-        {{/if}}
-        {{#if endorse_o365_netid_count}}
-        the UW NetID{{plural endorse_o365_netid_count '' 's'}}
-        <ul class="comma-list">
-          {{#each endorse_o365}}<li class="significant">{{this.netid}}</li>{{/each}}
-        </ul> to the UW Office 365 service.
-        {{/if}}
-      {{/gt}}
-        By selecting {{ plural endorse_netid_count 'this' 'these' }} UW NetID{{ plural endorse_netid_count '' 's' }}, you confirm that:
+      {{> enumerate_partial netid_count=endorse_netid_count google=endorse_google o365=endorse_o365 google_count=endorse_google_netid_count o365_count=endorse_o365_netid_count shared=''}}
+      By selecting {{ plural endorse_netid_count 'this' 'these' }} UW NetID{{ plural endorse_netid_count '' 's' }}, you confirm that:
     </div>
     <div class="row">
       <ol>

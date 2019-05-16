@@ -1,19 +1,17 @@
 {% load templatetag_handlebars %}
-{% tplhandlebars "shared_accept_modal_content" %}
-
-<!-- Responsibility Modal -->
+{% tplhandlebars "shared_renew_modal_content" %}
 <div class="modal-header">
-  <span class="significant">Confirm UW NetID Provision Request</span>
+  <span class="significant">Confirm Shared UW NetID Provision Renewal Request</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-  {{#if endorse_netid_count}}
-  <div class="shared-acceptance container col-md-12">
+
+  <div class="renew-acceptance container col-md-12">
     <div class="row">
-      You are about to provision
-      {{> enumerate_partial netid_count=endorse_netid_count google=endorse_google o365=endorse_o365 google_count=endorse_google_netid_count o365_count=endorse_o365_netid_count shared='Shared '}}
+      You are about to renew the provision of
+      {{> enumerate_partial netid_count=renew_netid_count google=renew_google o365=renew_o365 google_count=renew_google_netid_count o365_count=renew_o365_netid_count shared='Shared '}}
     </div>
     <div class="row">
       As the Shared UW NetID owner, you are responsible for proper use, account maintenance and file privileges.
@@ -21,13 +19,13 @@
     <div class="row">
       The use of 
       <ul class="comma-list">
-        {{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}
-        {{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}
+        {{#if renew_google_netid_count}}<li>UW G Suite</li>{{/if}}
+        {{#if renew_o365_netid_count}}<li>UW Office 365</li>{{/if}}
       </ul>
       <span style="font-weight: bold">by any individual acting as the Shared UW NetID</span> is bound by UW-IT's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures. For more information, visit UW-IT's Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">http://itconnect.uw.edu/work/appropriate-use/</a>.
     </div>
     <h3>Statement of agreement</h3>
-    {{#if endorse_google_netid_count}}
+    {{#if renew_google_netid_count}}
     <div class="row">
       <div class="col-md-1">
         <input type="checkbox" id="shared_accept_responsibility_A" class="accept_responsibility" />
@@ -39,7 +37,7 @@
       </div>
     </div>
     {{/if}}
-    {{#if endorse_o365_netid_count}}
+    {{#if renew_o365_netid_count}}
     <div class="row">
       <div class="col-md-1">
         <input type="checkbox" id="shared_accept_responsibility_B" class="accept_responsibility" />
@@ -52,12 +50,10 @@
     </div>
     {{/if}}
   </div>
-  {{/if}}
   <span style="display: block; line-height: 0;">&nbsp;</span>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
-  <button type="button" id="confirm_endorsement_responsibility" data-netid="{{ netid }}" data-service="{{ service }}" class="btn btn-primary" disabled="disabled">Provision services for {{plural endorse_netid_count 'this' 'these'}} Shared UW NetID{{plural endorse_netid_count '' 's'}}</button>
+  <button type="button" id="confirm_renew_responsibility" class="btn btn-primary" data-event-id="{{ event_id }}" disabled="disabled">Renew provision for {{plural renew_netid_count 'this' 'these'}} UW NetID{{plural renew_netid_count '' 's'}}</button>
 </div>
-
 {% endtplhandlebars %}

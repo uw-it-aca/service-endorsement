@@ -41,7 +41,7 @@ class Shared(RESTDispatch):
                 data = {
                     'netid': shared.name,
                     'name': None,
-                    'role': shared.role,
+                    'type': shared.netid_type,
                     'endorsements': {
                         'o365': {
                             'category_name': dict(

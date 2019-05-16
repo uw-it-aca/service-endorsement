@@ -26,7 +26,7 @@ var ManageProvisionedServices = {
         $panel.on('click', 'button.endorse_service', function(e) {
             Endorse.endorse('endorse_accept_modal_content', $(this).closest('tr'));
         }).on('click', 'button.revoke_service', function(e) {
-            Revoke.revoke('#revoke_modal_content', $(this).closest('tr'), 'endorse:UWNetIDsRevokeStatus');
+            Revoke.revoke('revoke_modal_content', $(this).closest('tr'));
         }).on('click', 'button.renew_service', function(e) {
             Renew.renew('renew_modal_content', $(this).closest('tr'));
         }).on('click', '#export_csv', function (e) {
@@ -37,16 +37,6 @@ var ManageProvisionedServices = {
             window.endorsed = endorsed;
         }).on('endorse:UWNetIDsEndorsedError', function (e, error) {
             $('#' + ManageProvisionedServices.content_id).html($('#endorsed-failure').html());
-        }).on('endorse:UWNetIDsRevokeStatus', function (e, data) {
-            $.each(data.revokees, function (netid, endorsements) {
-                $.each(endorsements, function (endorsement, state) {
-                    var id = endorsement + '-' + netid;
-
-                    $('.reason-' + id).html('');
-                    $('.revoke-' + id).html('');
-                    $('.endorsed-' + id).html($("#unendorsed").html());
-                });
-            });
         }).on('endorse:UWNetIDsRenewStatus', function (e, data) {
             $.each(data.renewees, function (netid, endorsements) {
                 $.each(endorsements, function (endorsement, state) {
@@ -90,6 +80,7 @@ var ManageProvisionedServices = {
                 $.each(endorsements.endorsements, function (service, endorsement) {
                     var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]');
 
+                    ManageProvisionedServices._fixEndorsementForContext(endorsement);
                     if ($row.length) {
                         $row.replaceWith(row_template({
                             netid: netid,
@@ -103,7 +94,7 @@ var ManageProvisionedServices = {
             });
         }).on('endorse:UWNetIDsEndorseError', function (e, error) {
             console.log('error: ' + error);
-        }).on('endorse:UWNetIDsRevokeStatus', function (e, data) {
+        }).on('endorse:UWNetIDsRevokeSuccess', function (e, data) {
             var row_source = $('#endorsee-row').html(),
                 row_template = Handlebars.compile(row_source);
 
@@ -126,7 +117,7 @@ var ManageProvisionedServices = {
                     }
                 });
             });
-        }).on('endorse:UWNetIDsRevokeStatusError', function (e, error) {
+        }).on('endorse:UWNetIDsRevokeError', function (e, error) {
             console.log('error: ' + error);
         });
     },
@@ -230,6 +221,8 @@ var ManageProvisionedServices = {
                         endorsement: endorsement
                     });
 
+                    ManageProvisionedServices._fixEndorsementForContext(endorsement);
+
                     if ($row) {
                         $row.before(row_html);
                     } else {
@@ -261,23 +254,7 @@ var ManageProvisionedServices = {
         // figure out renewal dates and expirations
         $.each(endorsed ? endorsed.endorsed : [], function (netid, data) {
             $.each(data.endorsements, function (service, endorsement) {
-                if (endorsement.datetime_endorsed) {
-                    var now = moment(),
-                        provisioned = moment(endorsement.datetime_endorsed),
-                        expires = moment(endorsement.datetime_endorsed).add(365, 'days'),
-                        expiring = moment(endorsement.datetime_endorsed).add(30, 'days');
-
-                    this.expires = expires.format('M/D/YYYY')
-                    this.expires_relative = expires.fromNow()
-                    
-                    if (now.isBetween(expiring, expires)) {
-                        this.expiring = this.expires;
-                    }
-
-                    if (now.isAfter(expires)) {
-                        this.expired = this.expires;
-                    }
-                }
+                ManageProvisionedServices._fixEndorsementForContext(endorsement);
             });
         });
 
@@ -289,6 +266,41 @@ var ManageProvisionedServices = {
                 pending.appendTo($(this));
             }
         });
+    },
+
+    _fixEndorsementForContext: function (endorsement) {
+        if (endorsement.hasOwnProperty('endorsers')) {
+            var remove = -1;
+
+            $.each(endorsement.endorsers, function (i, endorser) {
+                if (endorser.netid === window.user.netid) {
+                    remove = i;
+                    return false;
+                }
+            });
+
+            if (remove >= 0) {
+                endorsement.endorsers.splice(remove, 1);
+            }
+        }
+
+        if (endorsement.datetime_endorsed) {
+            var now = moment(),
+                provisioned = moment(endorsement.datetime_endorsed),
+                expires = moment(endorsement.datetime_endorsed).add(365, 'days'),
+                expiring = moment(endorsement.datetime_endorsed).add(30, 'days');
+
+            endorsement.expires = expires.format('M/D/YYYY')
+            endorsement.expires_relative = expires.fromNow()
+            
+            if (now.isBetween(expiring, expires)) {
+                endorsement.expiring = endorsement.expires;
+            }
+
+            if (now.isAfter(expires)) {
+                endorsement.expired = endorsement.expires;
+            }
+        }
     },
 
     _validateUWNetids: function(netids) {

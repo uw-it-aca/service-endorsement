@@ -62,6 +62,7 @@ class Endorse(RESTDispatch):
                 endorsee = get_endorsee_model(endorsee_netid)
                 endorsements = {
                     'name': endorsee.display_name,
+                    'is_person': endorsee.is_person,
                     'endorsements': {}
                 }
 

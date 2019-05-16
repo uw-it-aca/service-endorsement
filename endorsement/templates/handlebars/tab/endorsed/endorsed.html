@@ -47,7 +47,7 @@
         <tbody>
           {{#each endorsed.endorsed}}
           {{#each this.endorsements}}
-          {{> endorsers_partial endorsement=this netid=@../key email=../email svc=@key }}
+          {{> endorsers_partial endorsement=this netid=@../key name=../name email=../email svc=@key }}
           {{/each}}
           {{/each}}
         </tbody>

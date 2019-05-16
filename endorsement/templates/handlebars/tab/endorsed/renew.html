@@ -10,23 +10,8 @@
 
   <div class="renew-acceptance container col-md-12">
     <div class="row">
-      You are about to renew the provision
-      {{#gt renew_netid_count 10}}
-        <ul class="comma-list">{{#if renew_google_netid_count}}<li>{{renew_google_netid_count}} UW NetIDs to UW G Suite</li>{{/if}}{{#if renew_o365_netid_count}}<li>{{renew_o365_netid_count}} UW NetIDs to UW Office 365</li>{{/if}}</ul>.
-      {{else}}
-        {{#if renew_google_netid_count}}
-        for the UW NetID{{plural renew_google_netid_count '' 's'}}
-        <ul class="comma-list">
-          {{#each renew_google}}<li class="significant">{{this.netid}}</li>{{/each}}
-        </ul> to the UW G Suite service{{#if renew_o365_netid_count}} and{{else}}.{{/if}}
-        {{/if}}
-        {{#if renew_o365_netid_count}}
-        for the UW NetID{{plural renew_o365_netid_count '' 's'}}
-        <ul class="comma-list">
-          {{#each renew_o365}}<li class="significant">{{this.netid}}</li>{{/each}}
-        </ul> to the UW Office 365 service.
-        {{/if}}
-      {{/gt}}
+      You are about to renew the provision of
+      {{> enumerate_partial netid_count=renew_netid_count google=renew_google o365=renew_o365 google_count=renew_google_netid_count o365_count=renew_o365_netid_count shared=''}}
     </div>
     <div class="row">
       As the Sponsored UW NetID provisioner, you are responsible for the proper use, account maintenance, and file privileges of the provision.

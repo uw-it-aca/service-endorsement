@@ -13,41 +13,15 @@ var Renew = {
     _registerEvents: function () {
         $(document).on('click', 'button#confirm_renew_responsibility', function (e) {
             var $button = $(this),
-                $rows = $button.data('$rows'),
-                to_renew = {};
+                to_renew;
 
-            $rows.each(function (i, row) {
-                var $row = $(row),
-                    netid = $row.attr('data-netid'),
-                    netid_name = $row.attr('data-netid-name'),
-                    email = EmailEdit.getEditedEmail(netid),
-                    service = $row.attr('data-service'),
-                    service_name = $row.attr('data-service-name'),
-                    reason = Reasons.getReason($row);
-
-                if (!to_renew.hasOwnProperty(netid)) {
-                    to_renew[netid] = {};
-                }
-
-                if (email && email.length) {
-                    to_renew[netid].email = email;
-                }
-
-                if (!to_renew[netid].hasOwnProperty(service)) {
-                    to_renew[netid][service] = {}
-                }
-
-                to_renew[netid][service].state = true;
-                to_renew[netid][service].reason = reason;
-
-                $('.renew_' + service + '_' + netid, $row).button('loading');
-            });
-
-            $button.closest('.modal').modal('hide');
+            to_renew = Renew._gatherRenewals($button.data('$rows'));
             Renew._renewUWNetID(to_renew);
+            $button.closest('.modal').modal('hide');
         }).on('change', '#renew_modal input', function () {
-            var $accept_button = $(this).closest('#renew_modal').find('button#confirm_renew_responsibility'),
-                $checkboxes = $('input.accept_responsibility'),
+            var $modal = $(this).closest('#renew_modal'),
+                $accept_button = $('button#confirm_renew_responsibility', $modal),
+                $checkboxes = $('input.accept_responsibility', $modal),
                 checked = 0;
 
             $checkboxes.each(function () {
@@ -72,6 +46,39 @@ var Renew = {
         $('.modal-content', $modal).html(template(context));
         $modal.modal('show');
         $modal.find('button#confirm_renew_responsibility').data('$rows', $rows);
+    },
+
+    _gatherRenewals: function ($rows) {
+        to_renew = {};
+
+        $rows.each(function (i, row) {
+            var $row = $(row),
+                netid = $row.attr('data-netid'),
+                netid_name = $row.attr('data-netid-name'),
+                email = EmailEdit.getEditedEmail(netid),
+                service = $row.attr('data-service'),
+                service_name = $row.attr('data-service-name'),
+                reason = Reasons.getReason($row);
+
+            if (!to_renew.hasOwnProperty(netid)) {
+                to_renew[netid] = {};
+            }
+
+            if (email && email.length) {
+                to_renew[netid].email = email;
+            }
+
+            if (!to_renew[netid].hasOwnProperty(service)) {
+                to_renew[netid][service] = {}
+            }
+
+            to_renew[netid][service].state = true;
+            to_renew[netid][service].reason = reason;
+
+            $('.renew_' + service + '_' + netid, $row).button('loading');
+        });
+
+        return to_renew;
     },
 
     _renewModalContext: function ($rows) {
@@ -135,8 +142,6 @@ var Renew = {
                 }]);
             },
             error: function(xhr, status, error) {
-                var error_event_id = event_id + 'Error';
-
                 $(document).trigger('endorse:UWNetIDsRenewError', [error]);
             }
         });

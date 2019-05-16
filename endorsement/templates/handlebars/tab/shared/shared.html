@@ -43,7 +43,7 @@
       <tbody>
       {{#each shared.shared}}
           {{#each endorsements}}
-          {{> endorsers_partial endorsement=this netid=../netid svc=@key }}
+          {{> endorsers_partial endorsement=this netid=../netid name=../name svc=@key type=../type }}
           {{/each}}
       {{/each}}
       </tbody>
