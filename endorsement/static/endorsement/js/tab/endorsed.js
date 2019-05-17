@@ -59,7 +59,7 @@ var ManageProvisionedServices = {
         }).on('endorse:UWNetIDsValidatedError', function (e, error) {
             $('button#validate').button('reset');
             Notify.error('Validation error: ' + error);
-        }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
+        }).on('endorse:UWNetIDsEndorseSuccess endorse:UWNetIDsRenewSuccess', function (e, data) {
             var row_source = $('#endorsee-row').html(),
                 row_template = Handlebars.compile(row_source);
 

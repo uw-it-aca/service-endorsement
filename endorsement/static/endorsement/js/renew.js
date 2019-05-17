@@ -16,7 +16,7 @@ var Renew = {
                 to_renew;
 
             to_renew = Renew._gatherRenewals($button.data('$rows'));
-            Renew._renewUWNetID(to_renew);
+            Renew._renewUWNetID(to_renew, $button.data('$panel'));
             $button.closest('.modal').modal('hide');
         }).on('change', '#renew_modal input', function () {
             var $modal = $(this).closest('#renew_modal'),
@@ -45,40 +45,9 @@ var Renew = {
 
         $('.modal-content', $modal).html(template(context));
         $modal.modal('show');
-        $modal.find('button#confirm_renew_responsibility').data('$rows', $rows);
-    },
-
-    _gatherRenewals: function ($rows) {
-        to_renew = {};
-
-        $rows.each(function (i, row) {
-            var $row = $(row),
-                netid = $row.attr('data-netid'),
-                netid_name = $row.attr('data-netid-name'),
-                email = EmailEdit.getEditedEmail(netid),
-                service = $row.attr('data-service'),
-                service_name = $row.attr('data-service-name'),
-                reason = Reasons.getReason($row);
-
-            if (!to_renew.hasOwnProperty(netid)) {
-                to_renew[netid] = {};
-            }
-
-            if (email && email.length) {
-                to_renew[netid].email = email;
-            }
-
-            if (!to_renew[netid].hasOwnProperty(service)) {
-                to_renew[netid][service] = {}
-            }
-
-            to_renew[netid][service].state = true;
-            to_renew[netid][service].reason = reason;
-
-            $('.renew_' + service + '_' + netid, $row).button('loading');
-        });
-
-        return to_renew;
+        $modal.find('button#confirm_renew_responsibility')
+            .data('$rows', $rows)
+            .data('$panel', $rows.closest('div.panel'));
     },
 
     _renewModalContext: function ($rows) {
@@ -121,13 +90,51 @@ var Renew = {
         return context;
     },
 
-    _renewUWNetID: function(renewees) {
+    _gatherRenewals: function ($rows) {
+        to_renew = {};
+
+        $rows.each(function (i, row) {
+            var $row = $(row),
+                netid = $row.attr('data-netid'),
+                netid_name = $row.attr('data-netid-name'),
+                email = EmailEdit.getEditedEmail(netid),
+                service = $row.attr('data-service'),
+                service_name = $row.attr('data-service-name'),
+                store = ($row.attr('data-netid-type') !== undefined),
+                reason = Reasons.getReason($row);
+
+            if (!to_renew.hasOwnProperty(netid)) {
+                to_renew[netid] = {};
+            }
+
+            if (email && email.length) {
+                to_renew[netid].email = email;
+            }
+
+            if (!to_renew[netid].hasOwnProperty(service)) {
+                to_renew[netid][service] = {}
+            }
+
+            if (store) {
+                to_renew[netid].store = true;
+            }
+
+            to_renew[netid][service].state = true;
+            to_renew[netid][service].reason = reason;
+
+            $('.renew_' + service + '_' + netid, $row).button('loading');
+        });
+
+        return to_renew;
+    },
+
+    _renewUWNetID: function(renewees, $panel) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
         $(document).trigger('endorse:UWNetIDsRenewStart', [renewees]);
 
         $.ajax({
-            url: "/api/v1/renew/",
+            url: "/api/v1/endorse/",
             dataType: "JSON",
             data: JSON.stringify(renewees),
             type: "POST",
@@ -136,13 +143,13 @@ var Renew = {
                 "X-CSRFToken": csrf_token
             },
             success: function(results) {
-                $(document).trigger('endorse:UWNetIDsRenewSuccess', [{
-                    renewees: renewees,
-                    renewed: results
+                $panel.trigger('endorse:UWNetIDsRenewSuccess', [{
+                    endorsees: renewees,
+                    endorsed: results
                 }]);
             },
             error: function(xhr, status, error) {
-                $(document).trigger('endorse:UWNetIDsRenewError', [error]);
+                $panel.trigger('endorse:UWNetIDsRenewError', [error]);
             }
         });
     }
