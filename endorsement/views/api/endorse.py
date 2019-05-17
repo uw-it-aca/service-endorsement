@@ -71,9 +71,9 @@ class Endorse(RESTDispatch):
                         endorsee, endorser, email=to_endorse['email']).email
 
                 try:
+                    e = None
                     if to_endorse['o365']['state']:
                         reason = to_endorse['o365']['reason']
-                        e = None
                         if to_endorse.get('store', False):
                             e = store_office365_endorsement(
                                 endorser, endorsee, acted_as, reason)
@@ -116,9 +116,9 @@ class Endorse(RESTDispatch):
                     }
 
                 try:
+                    e = None
                     if to_endorse['google']['state']:
                         reason = to_endorse['google']['reason']
-                        e = None
                         if to_endorse.get('store', False):
                             e = store_google_endorsement(
                                 endorser, endorsee, acted_as, reason)
