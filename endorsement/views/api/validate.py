@@ -118,8 +118,8 @@ class Validate(RESTDispatch):
                     for e in endorsements:
                         if (e.category_code ==
                                 EndorsementRecord.GOOGLE_SUITE_ENDORSEE):
-                            valid['endorsements']['google']['endorsers'].append(
-                                e.endorser.netid)
+                            valid['endorsements']['google'][
+                                'endorsers'].append(e.endorser.netid)
 
                 except Exception as ex:
                     valid['endorsements']['google'] = {

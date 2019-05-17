@@ -70,13 +70,13 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
             'endorsements'])
         self.assertEqual(
             data['endorsed']['endorsee7'][
-            'endorsements']['o365']['category_code'], 235)
+                'endorsements']['o365']['category_code'], 235)
         self.assertEqual(
             data['endorsed']['endorsee7'][
-            'endorsements']['o365']['endorsee']['netid'], 'endorsee7')
+                'endorsements']['o365']['endorsee']['netid'], 'endorsee7')
         self.assertEqual(
             data['endorsed']['endorsee7'][
-            'endorsements']['o365']['endorser']['netid'],
+                'endorsements']['o365']['endorser']['netid'],
             'jfaculty')
         self.assertTrue('google' in data['endorsed']['endorsee7'][
             'endorsements'])
