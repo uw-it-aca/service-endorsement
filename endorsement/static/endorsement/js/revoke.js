@@ -15,7 +15,7 @@ var Revoke = {
             var $button = $(this),
                 to_revoke;
 
-            to_revoke = Revoke._gatherRevocations($button.data('$rows'));
+            to_revoke = Endorse._gatherEndorsementsByRow($button.data('$rows'), 'revoke', false, true);
             Revoke._revokeUWNetIDs(to_revoke, $button.data('$panel'));
             $button.closest('.modal').modal('hide');
         });
@@ -71,44 +71,6 @@ var Revoke = {
         context.revoke_google_netid_count = context.revoke_google.length;
         context.revoke_netid_count = context.revoke_google_netid_count + context.revoke_o365_netid_count;
         return context;
-    },
-
-    _gatherRevocations: function ($rows) {
-        var to_revoke = {};
-
-        $rows.each(function (i, row) {
-            var $row = $(row),
-                netid = $row.attr('data-netid'),
-                netid_name = $row.attr('data-netid-name'),
-                email = EmailEdit.getEditedEmail(netid),
-                service = $row.attr('data-service'),
-                service_name = $row.attr('data-service-name'),
-                store = ($row.attr('data-netid-type') !== undefined),
-                reason = Reasons.getReason($row);
-
-            if (!to_revoke.hasOwnProperty(netid)) {
-                to_revoke[netid] = {};
-            }
-
-            if (email && email.length) {
-                to_revoke[netid].email = email;
-            }
-
-            if (!to_revoke[netid].hasOwnProperty(service)) {
-                to_revoke[netid][service] = {}
-            }
-
-            if (store) {
-                to_revoke[netid].store = true;
-            }
-
-            to_revoke[netid][service].state = false;
-            to_revoke[netid][service].reason = reason;
-
-            $('.revoke_' + service + '_' + netid, $row).button('loading');
-        });
-
-        return to_revoke;
     },
 
     _revokeUWNetIDs: function(revokees, $panel) {

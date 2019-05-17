@@ -22,15 +22,6 @@
  <div id="provisioned" class="panel"></div>
 </div>
 
-{% include "handlebars/tab/shared/shared.html" %}
-{% include "handlebars/tab/shared/accept.html" %}
-{% include "handlebars/tab/shared/revoke.html" %}
-{% include "handlebars/tab/shared/renew.html" %}
-{% include "handlebars/tab/shared/provisioned.html" %}
-
-{% include "handlebars/tab/endorse/endorse.html" %}
-{% include "handlebars/tab/endorse/validated.html" %}
-{% include "handlebars/valid_partial.html" %}
 {% include "handlebars/reasons_partial.html" %}
 {% include "handlebars/email_editor_partial.html" %}
 {% include "handlebars/endorse_result.html" %}
@@ -38,11 +29,16 @@
 {% include "handlebars/revoke.html" %}
 {% include "handlebars/renew.html" %}
 
+{% include "handlebars/tab/shared/shared.html" %}
+{% include "handlebars/tab/shared/accept.html" %}
+{% include "handlebars/tab/shared/revoke.html" %}
+{% include "handlebars/tab/shared/renew.html" %}
+{% include "handlebars/tab/shared/provisioned.html" %}
+
 {% include "handlebars/tab/endorsed/endorsed.html" %}
 {% include "handlebars/tab/endorsed/accept.html" %}
 {% include "handlebars/tab/endorsed/revoke.html" %}
 {% include "handlebars/tab/endorsed/renew.html" %}
-{% include "handlebars/endorsed_partial.html" %}
 {% include "handlebars/endorsers_partial.html" %}
 {% include "handlebars/endorse_button_partial.html" %}
 {% include "handlebars/display_filter_partial.html" %}

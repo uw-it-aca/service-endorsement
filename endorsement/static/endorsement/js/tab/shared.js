@@ -54,8 +54,7 @@ var ManageSharedNetids = {
 
             ManageSharedNetids._endorseSharedUWNetIDs(shared);
         }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
-            ManageSharedNetids._updateEndorsementRows(data);
-
+            Endorse.updateEndorsementRows(data.endorsed.endorsed);
             ManageSharedNetids._enableSharedEndorsability();
 
             // pause for shared endorse modal fade
@@ -68,36 +67,12 @@ var ManageSharedNetids = {
         }).on('endorse:UWNetIDsEndorseError', function (e, error) {
             console.log('error: ' + error);
         }).on('endorse:UWNetIDsRevokeSuccess', function (e, data) {
-            var row_source = $('#endorsee-row').html(),
-                row_template = Handlebars.compile(row_source);
-
-            $.each(data.revokees, function (netid, endorsements) {
-                $.each(endorsements, function (service, endorsement) {
-                    var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]');
-
-                    if ($row.length) {
-                        ManageSharedNetids._fixEndorsementForRowContext(endorsement);
-                        $row.replaceWith(row_template({
-                            netid: netid,
-                            name: $row.attr('data-netid-name'),
-                            email: $row.attr('data-netid-initial-email'),
-                            type: $row.attr('data-netid-type'),
-                            service: service,
-                            endorsement: {
-                                category_name: $row.attr('data-service-name'),
-                                active: false,
-                                endorsers: []
-                            }
-                        }));
-                    }
-                });
-            });
-
+            Endorse.updateEndorsementRows(data.revoked.endorsed);
             ManageSharedNetids._enableSharedEndorsability();
         }).on('endorse:UWNetIDsRevokeError', function (e, error) {
             console.log('error: ' + error);
         }).on('endorse:UWNetIDsRenewSuccess', function (e, data) {
-            ManageSharedNetids._updateEndorsementRows(data);
+            Endorse.updateEndorsementRows(data.renewed.endorsed);
             ManageSharedNetids._enableSharedEndorsability();
         });
 
@@ -138,7 +113,7 @@ var ManageSharedNetids = {
                     for (svc in endorsements) {
                         if (endorsements.hasOwnProperty(svc)) {
                             if (endorsements[svc]) {
-                                ManageSharedNetids._fixEndorsementForRowContext(endorsements[svc]);
+                                Endorse.updateEndorsementForRowContext(endorsements[svc]);
                             }
                         }
                     }
@@ -151,72 +126,6 @@ var ManageSharedNetids = {
 
         $content.html(template(context));
         ManageSharedNetids._enableSharedEndorsability();
-    },
-
-    _updateEndorsementRows: function (data) {
-        var row_source = $('#endorsee-row').html(),
-            row_template = Handlebars.compile(row_source);
-
-        $.each(data.endorsed.endorsed, function (netid, endorsements) {
-            var name = endorsements.name,
-                email = endorsements.email;
-
-            if (endorsements.error) {
-                Notify.error('Error provisioning netid "' + netid + '"');
-                $('button.endorse_service', $('tr[data-netid="' + netid + '"]')).button('reset');
-            } else {
-                $.each(endorsements.endorsements, function (service, endorsement) {
-                    var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]');
-
-                    ManageSharedNetids._fixEndorsementForRowContext(endorsement);
-                    if ($row.length) {
-                        $row.replaceWith(row_template({
-                            netid: netid,
-                            email: email,
-                            name: name,
-                            type: $row.attr('data-netid-type'),
-                            service: service,
-                            endorsement: endorsement
-                        }));
-                    }
-                });
-            }
-        });
-    },
-
-    _fixEndorsementForRowContext: function (endorsement) {
-        if (endorsement.hasOwnProperty('endorsers')) {
-            var remove = -1;
-
-            $.each(endorsement.endorsers, function (i, endorser) {
-                if (endorser.netid === window.user.netid) {
-                    remove = i;
-                    return false;
-                }
-            });
-
-            if (remove >= 0) {
-                endorsement.endorsers.splice(remove, 1);
-            }
-        }
-
-        if (endorsement.hasOwnProperty('datetime_endorsed')) {
-            var now = moment(),
-                provisioned = moment(endorsement.datetime_endorsed),
-                expires = moment(endorsement.datetime_endorsed).add(365, 'days'),
-                expiring = moment(endorsement.datetime_endorsed).add(30, 'days');
-
-            endorsement.expires = expires.format('M/D/YYYY')
-            endorsement.expires_relative = expires.fromNow()
-                    
-            if (now.isBetween(expiring, expires)) {
-                endorsement.expiring = endorsement.expires;
-            }
-
-            if (now.isAfter(expires)) {
-                endorsement.expired = endorsement.expires;
-            }
-        }
     },
 
     _enableSharedEndorsability: function() {

@@ -49,7 +49,7 @@ var ManageProvisionedServices = {
             ManageProvisionedServices._enableCheckEligibility();
         }).on('click', 'button#validate', function(e) {
             $(this).button('loading');
-            ManageProvisionedServices._validateUWNetids(ProvisionServices._getNetidList());
+            ManageProvisionedServices._validateUWNetids(ManageProvisionedServices._getNetidList());
         }).on('click', 'button#netid_input', function(e) {
             $('#uwnetids-validated', $panel).addClass('visually-hidden');
             $('#uwnetids-input', $panel).removeClass('visually-hidden').focus();;
@@ -59,35 +59,16 @@ var ManageProvisionedServices = {
         }).on('endorse:UWNetIDsValidatedError', function (e, error) {
             $('button#validate').button('reset');
             Notify.error('Validation error: ' + error);
-        }).on('endorse:UWNetIDsEndorseSuccess endorse:UWNetIDsRenewSuccess', function (e, data) {
-            ManageProvisionedServices._updateEndorsementRows(data);
+        }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
+            Endorse.updateEndorsementRows(data.endorsed.endorsed);
+        }).on('endorse:UWNetIDsRenewSuccess', function (e, data) {
+            Endorse.updateEndorsementRows(data.renewed.endorsed);
         }).on('endorse:UWNetIDsEndorseError', function (e, error) {
-            console.log('error: ' + error);
+            Notify.error('Unable to Endorse at this time: ' + error);
         }).on('endorse:UWNetIDsRevokeSuccess', function (e, data) {
-            var row_source = $('#endorsee-row').html(),
-                row_template = Handlebars.compile(row_source);
-
-            $.each(data.revokees, function (netid, endorsements) {
-                $.each(endorsements, function (endorsement, state) {
-                    var $row = $('tr[data-netid="' + netid + '"][data-service="' + endorsement + '"]');
-
-                    if ($row.length) {
-                        $row.replaceWith(row_template({
-                            netid: netid,
-                            name: $row.attr('data-netid-name'),
-                            email: $row.attr('data-netid-initial-email'),
-                            service: endorsement,
-                            endorsement: {
-                                category_name: $row.attr('data-service-name'),
-                                active: false,
-                                endorsers: []
-                            }
-                        }));
-                    }
-                });
-            });
+            Endorse.updateEndorsementRows(data.revoked.endorsed);
         }).on('endorse:UWNetIDsRevokeError', function (e, error) {
-            console.log('error: ' + error);
+            Notify.error('Unable to Revoke at this time: ' + error);
         });
     },
 
@@ -190,7 +171,7 @@ var ManageProvisionedServices = {
                         endorsement: endorsement
                     });
 
-                    ManageProvisionedServices._fixEndorsementForContext(endorsement);
+                    Endorse.updateEndorsementForRowContext(endorsement);
 
                     if ($row) {
                         $row.before(row_html);
@@ -223,7 +204,7 @@ var ManageProvisionedServices = {
         // figure out renewal dates and expirations
         $.each(endorsed ? endorsed.endorsed : [], function (netid, data) {
             $.each(data.endorsements, function (service, endorsement) {
-                ManageProvisionedServices._fixEndorsementForContext(endorsement);
+                Endorse.updateEndorsementForRowContext(endorsement);
             });
         });
 
@@ -235,41 +216,6 @@ var ManageProvisionedServices = {
                 pending.appendTo($(this));
             }
         });
-    },
-
-    _fixEndorsementForContext: function (endorsement) {
-        if (endorsement.hasOwnProperty('endorsers')) {
-            var remove = -1;
-
-            $.each(endorsement.endorsers, function (i, endorser) {
-                if (endorser.netid === window.user.netid) {
-                    remove = i;
-                    return false;
-                }
-            });
-
-            if (remove >= 0) {
-                endorsement.endorsers.splice(remove, 1);
-            }
-        }
-
-        if (endorsement.datetime_endorsed) {
-            var now = moment(),
-                provisioned = moment(endorsement.datetime_endorsed),
-                expires = moment(endorsement.datetime_endorsed).add(365, 'days'),
-                expiring = moment(endorsement.datetime_endorsed).add(30, 'days');
-
-            endorsement.expires = expires.format('M/D/YYYY')
-            endorsement.expires_relative = expires.fromNow()
-            
-            if (now.isBetween(expiring, expires)) {
-                endorsement.expiring = endorsement.expires;
-            }
-
-            if (now.isAfter(expires)) {
-                endorsement.expired = endorsement.expires;
-            }
-        }
     },
 
     _validateUWNetids: function(netids) {
@@ -292,31 +238,6 @@ var ManageProvisionedServices = {
             error: function(xhr, status, error) {
                 $panel.trigger('endorse:UWNetIDsValidatedError', [error]);
             }
-        });
-    },
-
-    _updateEndorsementRows: function (data) {
-        var row_source = $('#endorsee-row').html(),
-            row_template = Handlebars.compile(row_source);
-
-        $.each(data.endorsed.endorsed, function (netid, endorsements) {
-            var name = endorsements.name,
-                email = endorsements.email;
-
-            $.each(endorsements.endorsements, function (service, endorsement) {
-                var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]');
-
-                ManageProvisionedServices._fixEndorsementForContext(endorsement);
-                if ($row.length) {
-                    $row.replaceWith(row_template({
-                        netid: netid,
-                        email: email,
-                        name: name,
-                        service: service,
-                        endorsement: endorsement
-                    }));
-                }
-            });
         });
     },
 

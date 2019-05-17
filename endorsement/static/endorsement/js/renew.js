@@ -15,7 +15,7 @@ var Renew = {
             var $button = $(this),
                 to_renew;
 
-            to_renew = Renew._gatherRenewals($button.data('$rows'));
+            to_renew = Endorse._gatherEndorsementsByRow($button.data('$rows'), 'renew', true, true);
             Renew._renewUWNetID(to_renew, $button.data('$panel'));
             $button.closest('.modal').modal('hide');
         }).on('change', '#renew_modal input', function () {
@@ -90,44 +90,6 @@ var Renew = {
         return context;
     },
 
-    _gatherRenewals: function ($rows) {
-        to_renew = {};
-
-        $rows.each(function (i, row) {
-            var $row = $(row),
-                netid = $row.attr('data-netid'),
-                netid_name = $row.attr('data-netid-name'),
-                email = EmailEdit.getEditedEmail(netid),
-                service = $row.attr('data-service'),
-                service_name = $row.attr('data-service-name'),
-                store = ($row.attr('data-netid-type') !== undefined),
-                reason = Reasons.getReason($row);
-
-            if (!to_renew.hasOwnProperty(netid)) {
-                to_renew[netid] = {};
-            }
-
-            if (email && email.length) {
-                to_renew[netid].email = email;
-            }
-
-            if (!to_renew[netid].hasOwnProperty(service)) {
-                to_renew[netid][service] = {}
-            }
-
-            if (store) {
-                to_renew[netid].store = true;
-            }
-
-            to_renew[netid][service].state = true;
-            to_renew[netid][service].reason = reason;
-
-            $('.renew_' + service + '_' + netid, $row).button('loading');
-        });
-
-        return to_renew;
-    },
-
     _renewUWNetID: function(renewees, $panel) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
@@ -144,8 +106,8 @@ var Renew = {
             },
             success: function(results) {
                 $panel.trigger('endorse:UWNetIDsRenewSuccess', [{
-                    endorsees: renewees,
-                    endorsed: results
+                    renewees: renewees,
+                    renewed: results
                 }]);
             },
             error: function(xhr, status, error) {

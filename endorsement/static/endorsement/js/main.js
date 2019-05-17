@@ -2,7 +2,7 @@
 
 $(window.document).ready(function() {
     var common_tools,
-        tabs;
+        panels;
 
 	$("span.warning").popover({'trigger':'hover'});
     displayPageHeader();
@@ -18,9 +18,9 @@ $(window.document).ready(function() {
                         DisplayFilterPanel];
         loadTools(common_tools);
 
-        tabs = [ManageProvisionedServices,
-                ManageSharedNetids];
-        loadTools(tabs);
+        panels = [ManageProvisionedServices,
+                  ManageSharedNetids];
+        loadTools(panels);
     }
     catch (err) {
         if (err.name !== 'ReferenceError') {

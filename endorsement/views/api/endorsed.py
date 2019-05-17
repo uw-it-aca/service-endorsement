@@ -68,9 +68,9 @@ class Endorsed(RESTDispatch):
                 endorsement_type] = er.json_data()
 
             endorsers = []
-            for ee in get_endorsements_for_endorsee(er.endorsee):
-                if er.category_code == ee.category_code:
-                    endorsers.append(ee.endorser.json_data())
+            for ee in get_endorsements_for_endorsee(
+                    er.endorsee, category_code=er.category_code):
+                endorsers.append(ee.endorser.json_data())
 
             endorsed[er.endorsee.netid]['endorsements'][
                 endorsement_type]['endorsers'] = endorsers

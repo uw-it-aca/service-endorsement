@@ -1,7 +1,7 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "reasons_partial" %}
 
-{{#if endorsement.reason}}
+{{#ifAndNot endorsement.reason endorsement.is_revoked}}
 {{endorsement.reason}}<input type=hidden class="reason-editor" placeholder="Reason for provisioning" value="{{endorsement.reason}}">
 {{else}}
 <div class="displaying-reasons">
@@ -22,6 +22,6 @@
   <input type=input class="reason-editor" placeholder="Reason for provisioning" value="" maxlength="64" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
 </div>
 <p style="font-size: small;"><a href="javascript:void(0);" class='apply-all{{#has_reason endorsements}} visually-hidden{{/has_reason}}'>Apply to all</a></p>
-{{/if}}
+{{/ifAndNot}}
 
 {% endtplhandlebars %}

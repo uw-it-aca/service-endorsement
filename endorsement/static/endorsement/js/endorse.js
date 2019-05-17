@@ -15,7 +15,7 @@ var Endorse = {
             var $button = $(this),
                 to_endorse;
 
-            to_endorse = Endorse._gatherEndorsements($button.data('$rows'));
+            to_endorse = Endorse._gatherEndorsementsByRow($button.data('$rows'), 'endorse', true, false);
             Endorse._endorseUWNetIDs(to_endorse, $button.data('$panel'));
             $button.closest('.modal').modal('hide');
         }).on('change', '#endorse_modal input', function () {
@@ -48,6 +48,81 @@ var Endorse = {
         $modal.find('button#confirm_endorsement_responsibility')
             .data('$rows', $rows)
             .data('$panel', $rows.closest('div.panel'));
+    },
+
+    updateEndorsementRows: function (endorsements) {
+        var row_source = $('#endorsee-row').html(),
+            row_template = Handlebars.compile(row_source);
+
+        $.each(endorsements, function (netid, data) {
+            if (data.error) {
+                Notify.error('Error provisioning netid "' + netid + '"');
+                $('button.endorse_service', $('tr[data-netid="' + netid + '"]')).button('reset');
+                return true;
+            }
+
+            $.each(data.endorsements, function (service, endorsement) {
+                var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]'),
+                    type,
+                    context;
+
+                if ($row.length === 0) {
+                    return true;
+                }
+
+                Endorse.updateEndorsementForRowContext(endorsement);
+
+                context = {
+                    netid: netid,
+                    name: data.name ? data.name : $row.attr('data-netid-name'),
+                    email: data.email ? data.email : $row.attr('data-netid-initial-email'),
+                    service: service,
+                    endorsement: endorsement
+                };
+
+                type = $row.attr('data-netid-type');
+                if (type) {
+                    context.type = type;
+                }
+
+                $row.replaceWith(row_template(context));
+            });
+        });
+    },
+
+    updateEndorsementForRowContext: function (endorsement) {
+        if (endorsement.hasOwnProperty('endorsers')) {
+            var remove = -1;
+
+            $.each(endorsement.endorsers, function (i, endorser) {
+                if (endorser.netid === window.user.netid) {
+                    remove = i;
+                    return false;
+                }
+            });
+
+            if (remove >= 0) {
+                endorsement.endorsers.splice(remove, 1);
+            }
+        }
+
+        if (endorsement.hasOwnProperty('datetime_endorsed')) {
+            var now = moment(),
+                provisioned = moment(endorsement.datetime_endorsed),
+                expires = moment(endorsement.datetime_endorsed).add(365, 'days'),
+                expiring = moment(endorsement.datetime_endorsed).add(30, 'days');
+
+            endorsement.expires = expires.format('M/D/YYYY')
+            endorsement.expires_relative = expires.fromNow()
+
+            if (now.isBetween(expiring, expires)) {
+                endorsement.expiring = endorsement.expires;
+            }
+
+            if (now.isAfter(expires)) {
+                endorsement.expired = endorsement.expires;
+            }
+        }
     },
 
     _endorseModalContext: function ($rows) {
@@ -88,8 +163,8 @@ var Endorse = {
         return context;
     },
 
-    _gatherEndorsements: function ($rows) {
-        var to_endorse = {};
+    _gatherEndorsementsByRow: function ($rows, action, state, store) {
+        var collection = {};
 
         $rows.each(function (i, row) {
             var $row = $(row),
@@ -98,32 +173,31 @@ var Endorse = {
                 email = EmailEdit.getEditedEmail(netid),
                 service = $row.attr('data-service'),
                 service_name = $row.attr('data-service-name'),
-                store = ($row.attr('data-netid-type') !== undefined),
                 reason = Reasons.getReason($row);
 
-            if (!to_endorse.hasOwnProperty(netid)) {
-                to_endorse[netid] = {};
+            if (!collection.hasOwnProperty(netid)) {
+                collection[netid] = {};
             }
 
             if (email && email.length) {
-                to_endorse[netid].email = email;
+                collection[netid].email = email;
             }
 
-            if (!to_endorse[netid].hasOwnProperty(service)) {
-                to_endorse[netid][service] = {}
+            if (!collection[netid].hasOwnProperty(service)) {
+                collection[netid][service] = {}
             }
 
-            if (store) {
-                to_endorse[netid].store = true;
+            if (store || $row.attr('data-netid-type') !== undefined) {
+                collection[netid].store = true;
             }
 
-            to_endorse[netid][service].state = true;
-            to_endorse[netid][service].reason = reason;
+            collection[netid][service].state = state;
+            collection[netid][service].reason = reason;
 
-            $('.endorse_' + service + '_' + netid, $row).button('loading');
+            $('.' + action + '_' + service + '_' + netid, $row).button('loading');
         });
 
-        return to_endorse;
+        return collection;
     },
 
     _endorseUWNetIDs: function(endorsees, $panel) {

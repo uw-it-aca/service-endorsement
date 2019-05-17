@@ -1,5 +1,4 @@
 Handlebars.registerPartial('validation_partial', $("#validation_partial").html());
-Handlebars.registerPartial('endorsed_partial', $("#endorsed-partial").html());
 Handlebars.registerPartial('reasons_partial', $("#reasons_partial").html());
 Handlebars.registerPartial('endorsement_row_partial', $("#endorsement_row_partial").html());
 Handlebars.registerPartial('endorse_button_partial', $("#endorse_button_partial").html());
@@ -80,4 +79,8 @@ Handlebars.registerHelper('equals', function(a, b, options) {
 
 Handlebars.registerHelper('gt', function(a, b, options) {
     return (a > b) ? options.fn(this) : options.inverse(this);
+});
+
+Handlebars.registerHelper('ifAndNot', function(a, b, options) {
+    return (a && !b) ? options.fn(this) : options.inverse(this);
 });
