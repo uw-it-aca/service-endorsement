@@ -112,8 +112,8 @@ var Endorse = {
                 expires = moment(endorsement.datetime_endorsed).add(365, 'days'),
                 expiring = moment(endorsement.datetime_endorsed).add(30, 'days');
 
-            endorsement.expires = expires.format('M/D/YYYY')
-            endorsement.expires_relative = expires.fromNow()
+            endorsement.expires = expires.format('M/D/YYYY');
+            endorsement.expires_relative = expires.fromNow();
 
             if (now.isBetween(expiring, expires)) {
                 endorsement.expiring = endorsement.expires;
@@ -184,7 +184,7 @@ var Endorse = {
             }
 
             if (!collection[netid].hasOwnProperty(service)) {
-                collection[netid][service] = {}
+                collection[netid][service] = {};
             }
 
             if (store || $row.attr('data-netid-type') !== undefined) {

@@ -10,7 +10,7 @@ var ManageSharedNetids = {
     },
 
     _loadContent: function () {
-        var content_template = Handlebars.compile($("#shared-netids").html())
+        var content_template = Handlebars.compile($("#shared-netids").html());
 
         $('#' + ManageSharedNetids.content_id).append(content_template());
         ManageSharedNetids._getSharedUWNetIDs();
@@ -20,7 +20,7 @@ var ManageSharedNetids = {
         var $panel = $('#' + ManageSharedNetids.content_id);
 
         $panel.on('click', 'button.endorse_service', function(e) {
-            Endorse.endorse('shared_accept_modal_content', $(this).closest('tr'))
+            Endorse.endorse('shared_accept_modal_content', $(this).closest('tr'));
         }).on('click', 'button.aggregate_endorse_service', function(e) {
             Endorse.endorse('shared_accept_modal_content',
                             $('input[id^="aggregate_"]:checked').closest('tr'));
@@ -135,7 +135,7 @@ var ManageSharedNetids = {
         $('.displaying-reasons select', $panel).each(function () {
             var $this = $(this);
 
-            if ($('option:selected', $this).val() != '') {
+            if ($('option:selected', $this).val() !== '') {
                 $('button.endorse_service', $this.closest('tr')).removeAttr('disabled');
             }
         });
@@ -186,7 +186,7 @@ var ManageSharedNetids = {
                 }
 
                 $disabled.closest('tr').addClass('error');
-            })
+            });
         }
     },
 

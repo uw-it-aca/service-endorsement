@@ -52,7 +52,7 @@ var ManageProvisionedServices = {
             ManageProvisionedServices._validateUWNetids(ManageProvisionedServices._getNetidList());
         }).on('click', 'button#netid_input', function(e) {
             $('#uwnetids-validated', $panel).addClass('visually-hidden');
-            $('#uwnetids-input', $panel).removeClass('visually-hidden').focus();;
+            $('#uwnetids-input', $panel).removeClass('visually-hidden').focus();
         }).on('endorse:UWNetIDsValidated', function (e, validated) {
             $('button#validate').button('reset');
             ManageProvisionedServices._displayValidationResult(validated);
@@ -75,12 +75,11 @@ var ManageProvisionedServices = {
     _getNetidList: function () {
         var netid_list = $('#netid_list').val();
 
-        return (netid_list)
-            ? ManageProvisionedServices._unique(
-                netid_list.toLowerCase()
-                    .replace(/\n/g, ' ')
-                    .replace(/([a-z0-9]+)(@(uw|washington|u\.washington)\.edu)?/g, '$1')
-                    .split(/[ ,]+/))
+        return (netid_list) ? ManageProvisionedServices._unique(
+            netid_list.toLowerCase()
+                .replace(/\n/g, ' ')
+                .replace(/([a-z0-9]+)(@(uw|washington|u\.washington)\.edu)?/g, '$1')
+                .split(/[ ,]+/))
             : [];
     },
 

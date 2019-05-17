@@ -48,11 +48,11 @@ var EmailEdit = {
 
         if (EmailEdit._validEmailAddress($edit.val())) {
             $edit_email.removeClass('error');
-            $icon.removeClass("fa-minus-circle failure")
+            $icon.removeClass("fa-minus-circle failure");
             $icon.addClass('fa-check success');
         } else {
             $icon.removeClass('fa-check success');
-            $icon.addClass("fa-minus-circle failure")
+            $icon.addClass("fa-minus-circle failure");
             $edit_email.addClass('error');
         }
     },

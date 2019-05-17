@@ -20,6 +20,6 @@ var TogglePanel = {
                 $div.addClass('visually-hidden');
                 $panel.trigger('endorse:PanelToggleHidden', [$div]);
             }
-        })
+        });
     }
 };
