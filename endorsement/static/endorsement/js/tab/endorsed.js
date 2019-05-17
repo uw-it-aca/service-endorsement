@@ -37,16 +37,6 @@ var ManageProvisionedServices = {
             window.endorsed = endorsed;
         }).on('endorse:UWNetIDsEndorsedError', function (e, error) {
             $('#' + ManageProvisionedServices.content_id).html($('#endorsed-failure').html());
-        }).on('endorse:UWNetIDsRenewStatus', function (e, data) {
-            $.each(data.renewees, function (netid, endorsements) {
-                $.each(endorsements, function (endorsement, state) {
-                    var id = endorsement + '-' + netid;
-
-                    $('.reason-' + id).html('');
-                    $('.revoke-' + id).html('');
-                    $('.endorsed-' + id).html($("#unendorsed").html());
-                });
-            });
         }).on('endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e, $row) {
             $('button.endorse_service', $row).removeAttr('disabled');
         }).on('endorse:PanelToggleExposed', function (e, $div) {

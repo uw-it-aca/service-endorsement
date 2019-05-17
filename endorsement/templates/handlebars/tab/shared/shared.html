@@ -4,7 +4,7 @@
 <div id="shared-uwnetids">
   <h3>UW NetIDs owned by you</h3>
   <p>
-    Provision, renew or revoke the provisions for your shared NetIDs and other types of NetIDs you own.  Go to <a href="https://uwnetid.washington.edu/manage/?shared" target="_blank">UW NetID management tool</a> to view details about the NetIDs you own.
+    You may manage provisioned services for any Shared UW NetID and other types of NetIDs that <a href="https://uwnetid.washington.edu/manage/?shared" target="_blank">you own</a>.
   </p>
 
   <div class="row">
@@ -43,7 +43,7 @@
       <tbody>
       {{#each shared.shared}}
           {{#each endorsements}}
-          {{> endorsers_partial endorsement=this netid=../netid name=../name svc=@key type=../type }}
+          {{> endorsement_row_partial endorsement=this netid=../netid name=../name svc=@key type=../type }}
           {{/each}}
       {{/each}}
       </tbody>

@@ -3,7 +3,7 @@
 
 <div id="endorsed-uwnetids">
   <h3>UW NetIDs owned by others</h3>
-  <p>Users outside the university, because of an established working relationship with UW, may be granted access to UW services. &nbsp;Manage those provision services here.</p>
+  <p>Users outside the university, because of an established working relationship with UW, may be granted access to UW services. &nbsp;Manage those provisioned services here.</p>
 
   {{#if loading}}
   <div class="loading"></div>
@@ -47,7 +47,7 @@
         <tbody>
           {{#each endorsed.endorsed}}
           {{#each this.endorsements}}
-          {{> endorsers_partial endorsement=this netid=@../key name=../name email=../email svc=@key }}
+          {{> endorsement_row_partial endorsement=this netid=@../key name=../name email=../email svc=@key }}
           {{/each}}
           {{/each}}
         </tbody>
@@ -107,7 +107,7 @@
 
 
 {% tplhandlebars "endorsee-row" %}
-{{> endorsers_partial endorsement=endorsement netid=netid email=email name=name svc=service }}
+{{> endorsement_row_partial endorsement=endorsement netid=netid email=email name=name svc=service }}
 {% endtplhandlebars %}
 
 

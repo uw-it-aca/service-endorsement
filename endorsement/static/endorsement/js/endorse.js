@@ -51,9 +51,7 @@ var Endorse = {
     },
 
     _endorseModalContext: function ($rows) {
-        var endorse_o365 = [],
-            endorse_google = [],
-            context = {
+        var context = {
                 endorse_o365: [],
                 endorse_google: [],
                 endorse_netid_count: 0,
