@@ -60,28 +60,7 @@ var ManageProvisionedServices = {
             $('button#validate').button('reset');
             Notify.error('Validation error: ' + error);
         }).on('endorse:UWNetIDsEndorseSuccess endorse:UWNetIDsRenewSuccess', function (e, data) {
-            var row_source = $('#endorsee-row').html(),
-                row_template = Handlebars.compile(row_source);
-
-            $.each(data.endorsed.endorsed, function (netid, endorsements) {
-                var name = endorsements.name,
-                    email = endorsements.email;
-
-                $.each(endorsements.endorsements, function (service, endorsement) {
-                    var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]');
-
-                    ManageProvisionedServices._fixEndorsementForContext(endorsement);
-                    if ($row.length) {
-                        $row.replaceWith(row_template({
-                            netid: netid,
-                            email: email,
-                            name: name,
-                            service: service,
-                            endorsement: endorsement
-                        }));
-                    }
-                });
-            });
+            ManageProvisionedServices._updateEndorsementRows(data);
         }).on('endorse:UWNetIDsEndorseError', function (e, error) {
             console.log('error: ' + error);
         }).on('endorse:UWNetIDsRevokeSuccess', function (e, data) {
@@ -313,6 +292,31 @@ var ManageProvisionedServices = {
             error: function(xhr, status, error) {
                 $panel.trigger('endorse:UWNetIDsValidatedError', [error]);
             }
+        });
+    },
+
+    _updateEndorsementRows: function (data) {
+        var row_source = $('#endorsee-row').html(),
+            row_template = Handlebars.compile(row_source);
+
+        $.each(data.endorsed.endorsed, function (netid, endorsements) {
+            var name = endorsements.name,
+                email = endorsements.email;
+
+            $.each(endorsements.endorsements, function (service, endorsement) {
+                var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]');
+
+                ManageProvisionedServices._fixEndorsementForContext(endorsement);
+                if ($row.length) {
+                    $row.replaceWith(row_template({
+                        netid: netid,
+                        email: email,
+                        name: name,
+                        service: service,
+                        endorsement: endorsement
+                    }));
+                }
+            });
         });
     },
 

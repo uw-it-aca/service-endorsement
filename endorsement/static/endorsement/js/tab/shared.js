@@ -53,35 +53,8 @@ var ManageSharedNetids = {
             var shared = ManageSharedNetids._getSharedUWNetIDsToEndorse();
 
             ManageSharedNetids._endorseSharedUWNetIDs(shared);
-        }).on('endorse:UWNetIDsEndorseSuccess endorse:UWNetIDsRenewSuccess', function (e, data) {
-            var row_source = $('#endorsee-row').html(),
-                row_template = Handlebars.compile(row_source);
-
-            $.each(data.endorsed.endorsed, function (netid, endorsements) {
-                var name = endorsements.name,
-                    email = endorsements.email;
-
-                if (endorsements.error) {
-                    Notify.error('Error provisioning netid "' + netid + '"');
-                    $('button.endorse_service', $('tr[data-netid="' + netid + '"]')).button('reset');
-                } else {
-                    $.each(endorsements.endorsements, function (service, endorsement) {
-                        var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]');
-
-                        ManageSharedNetids._fixEndorsementForRowContext(endorsement);
-                        if ($row.length) {
-                            $row.replaceWith(row_template({
-                                netid: netid,
-                                email: email,
-                                name: name,
-                                type: $row.attr('data-netid-type'),
-                                service: service,
-                                endorsement: endorsement
-                            }));
-                        }
-                    });
-                }
-            });
+        }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
+            ManageSharedNetids._updateEndorsementRows(data);
 
             ManageSharedNetids._enableSharedEndorsability();
 
@@ -123,6 +96,9 @@ var ManageSharedNetids = {
             ManageSharedNetids._enableSharedEndorsability();
         }).on('endorse:UWNetIDsRevokeError', function (e, error) {
             console.log('error: ' + error);
+        }).on('endorse:UWNetIDsRenewSuccess', function (e, data) {
+            ManageSharedNetids._updateEndorsementRows(data);
+            ManageSharedNetids._enableSharedEndorsability();
         });
 
         $(document).on('endorse:UWNetIDRevoking', function (e, $row) {
@@ -175,6 +151,37 @@ var ManageSharedNetids = {
 
         $content.html(template(context));
         ManageSharedNetids._enableSharedEndorsability();
+    },
+
+    _updateEndorsementRows: function (data) {
+        var row_source = $('#endorsee-row').html(),
+            row_template = Handlebars.compile(row_source);
+
+        $.each(data.endorsed.endorsed, function (netid, endorsements) {
+            var name = endorsements.name,
+                email = endorsements.email;
+
+            if (endorsements.error) {
+                Notify.error('Error provisioning netid "' + netid + '"');
+                $('button.endorse_service', $('tr[data-netid="' + netid + '"]')).button('reset');
+            } else {
+                $.each(endorsements.endorsements, function (service, endorsement) {
+                    var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]');
+
+                    ManageSharedNetids._fixEndorsementForRowContext(endorsement);
+                    if ($row.length) {
+                        $row.replaceWith(row_template({
+                            netid: netid,
+                            email: email,
+                            name: name,
+                            type: $row.attr('data-netid-type'),
+                            service: service,
+                            endorsement: endorsement
+                        }));
+                    }
+                });
+            }
+        });
     },
 
     _fixEndorsementForRowContext: function (endorsement) {
