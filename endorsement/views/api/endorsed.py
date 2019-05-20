@@ -3,11 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
+from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.dao.gws import is_valid_endorser
-from endorsement.dao.user import get_endorser_model
+from endorsement.dao.user import get_endorser_model, get_endorsee_email_model
 from endorsement.dao.endorse import (
     get_endorsements_by_endorser, get_endorsements_for_endorsee)
-from endorsement.dao.uwnetid_supported import get_shared_netids_for_netid
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time
 from endorsement.views.rest_dispatch import (
@@ -34,9 +34,9 @@ class Endorsed(RESTDispatch):
 
         endorser = get_endorser_model(netid)
         endorsed = {}
-        shared_netids = [x.name for x in get_shared_netids_for_netid(netid)]
+        category_choices = dict(EndorsementRecord.CATEGORY_CODE_CHOICES)
         for er in get_endorsements_by_endorser(endorser):
-            if er.endorsee.netid in shared_netids:
+            if not er.endorsee.is_person:
                 continue
 
             endorsement_type = 'unknown'
@@ -44,28 +44,40 @@ class Endorsed(RESTDispatch):
                 endorsement_type = 'o365'
             elif er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
                 endorsement_type = 'google'
-
-            if er.endorsee.netid in endorsed:
-                endorsed[er.endorsee.netid][endorsement_type] = er.json_data()
-                if not endorsed[er.endorsee.netid]['reason']:
-                    endorsed[er.endorsee.netid]['reason'] = er.reason if (
-                        er.reason) else '',
             else:
-                endorsed[er.endorsee.netid] = {
-                    'name': er.endorsee.display_name,
-                    'reason': er.reason if er.reason else '',
-                    endorsement_type: er.json_data()
-                }
+                continue
 
-            endorsed[er.endorsee.netid][endorsement_type]['endorsed'] = True
+            try:
+                if er.endorsee.netid not in endorsed:
+                    endorsed[er.endorsee.netid] = {
+                        'name': er.endorsee.display_name,
+                        'email': get_endorsee_email_model(
+                            er.endorsee, endorser).email,
+                        'endorsements': {
+                            'o365': {
+                                'category_name': category_choices[
+                                    EndorsementRecord.OFFICE_365_ENDORSEE]
+                            },
+                            'google': {
+                                'category_name': category_choices[
+                                    EndorsementRecord.GOOGLE_SUITE_ENDORSEE]
+                            }
+                        }
+                    }
+            except UnrecognizedUWNetid as err:
+                logger.error('UnrecognizedUWNetid: {}'.format(err))
+                continue
+
+            endorsed[er.endorsee.netid]['endorsements'][
+                endorsement_type] = er.json_data()
 
             endorsers = []
-            for ee in get_endorsements_for_endorsee(er.endorsee):
-                if er.category_code == ee.category_code:
-                    endorsers.append(ee.endorser.json_data())
+            for ee in get_endorsements_for_endorsee(
+                    er.endorsee, category_code=er.category_code):
+                endorsers.append(ee.endorser.json_data())
 
-            endorsed[er.endorsee.netid][endorsement_type]['endorsers'] =\
-                endorsers
+            endorsed[er.endorsee.netid]['endorsements'][
+                endorsement_type]['endorsers'] = endorsers
 
         log_resp_time(logger, "endorsed", timer)
         return self.json_response({

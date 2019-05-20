@@ -27,8 +27,9 @@ class TestEndorsementEndorsedAPI(EndorsementApiTest):
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertTrue('endorsee7' in data['endorsed'])
-        self.assertTrue('o365' in data['endorsed']['endorsee7'])
-        self.assertTrue(data['endorsed']['endorsee7']['o365']['endorsed'])
-        self.assertTrue(
-            data['endorsed']['endorsee7']['o365']['category_code'], 235)
-        self.assertFalse('google' in data['endorsed']['endorsee7'])
+        self.assertTrue('o365' in data['endorsed']['endorsee7'][
+            'endorsements'])
+        self.assertTrue('google' in data['endorsed']['endorsee7'][
+            'endorsements'])
+        self.assertTrue(data['endorsed']['endorsee7']['endorsements'][
+            'o365']['category_code'], 235)

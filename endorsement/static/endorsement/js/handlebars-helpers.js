@@ -1,8 +1,10 @@
 Handlebars.registerPartial('validation_partial', $("#validation_partial").html());
-Handlebars.registerPartial('endorsed_partial', $("#endorsed-partial").html());
 Handlebars.registerPartial('reasons_partial', $("#reasons_partial").html());
-Handlebars.registerPartial('endorsers_partial', $("#endorsers_partial").html());
+Handlebars.registerPartial('endorsement_row_partial', $("#endorsement_row_partial").html());
 Handlebars.registerPartial('endorse_button_partial', $("#endorse_button_partial").html());
+Handlebars.registerPartial('display_filter_partial', $("#display_filter_partial").html());
+Handlebars.registerPartial('email_editor_partial', $("#email_editor_partial").html());
+Handlebars.registerPartial('enumerate_partial', $("#enumerate_partial").html());
 
 Handlebars.registerHelper('endorsable', function(o365, google) {
     if ((o365 && this.o365.eligible) ||
@@ -77,4 +79,8 @@ Handlebars.registerHelper('equals', function(a, b, options) {
 
 Handlebars.registerHelper('gt', function(a, b, options) {
     return (a > b) ? options.fn(this) : options.inverse(this);
+});
+
+Handlebars.registerHelper('ifAndNot', function(a, b, options) {
+    return (a && !b) ? options.fn(this) : options.inverse(this);
 });

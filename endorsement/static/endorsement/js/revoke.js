@@ -11,38 +11,69 @@ var Revoke = {
     },
 
     _registerEvents: function () {
-        $(document).on('click', 'button#revoke', function (e) {
-            var $this = $(this),
-                netid = $this.attr('data-netid'),
-                service = $this.attr('data-service'),
-                event_id = $this.attr('data-event-id'),
-                to_revoke = {},
-                $button = $('button[data-netid="' + netid + '"][data-service="' + service + '"]'),
-                $panel = $button.parents('.tab-pane');
+        $(document).on('click', 'button#confirm_revoke', function (e) {
+            var $button = $(this),
+                to_revoke;
 
-            $this.parents('.modal').modal('hide');
-            $button.button('loading');
-            to_revoke[netid] = {};
-            to_revoke[netid][service] = false;
-            Revoke._revokeUWNetIDs(to_revoke, event_id, $panel);
+            to_revoke = Endorse._gatherEndorsementsByRow($button.data('$rows'), 'revoke', false, true);
+            Revoke._revokeUWNetIDs(to_revoke, $button.data('$panel'));
+            $button.closest('.modal').modal('hide');
         });
     },
 
-    revoke: function ($button, content_id, event_id) {
-        var $modal = $('#revoke_modal');
+    revoke: function (modal_content_id, $rows) {
+        var $modal = $('#revoke_modal'),
+            template = Handlebars.compile($('#' + modal_content_id).html()),
+            context = Revoke._revokeModalContext($rows);
 
-        $('.modal-content', $modal).html(
-            Handlebars.compile($(content_id).html())({
-                netid: $button.attr('data-netid'),
-                service: $button.attr('data-service'),
-                service_name: $button.attr('data-service-name'),
-                event_id: event_id
-            }));
-
+        $('.modal-content', $modal).html(template(context));
         $modal.modal('show');
+        $modal.find('button#confirm_revoke')
+            .data('$rows', $rows)
+            .data('$panel', $rows.closest('div.panel'));
     },
 
-    _revokeUWNetIDs: function(revokees, event_id, $panel) {
+    _revokeModalContext: function ($rows) {
+        var revoke_o365 = [],
+            revoke_google = [],
+            context = {
+                revoke_o365: [],
+                revoke_google: [],
+                revoke_netid_count: 0,
+                revoke_o365_netid_count: 0,
+                revoke_google_netid_count: 0
+            };
+
+        $rows.each(function (i, row) {
+            var $row = $(row),
+                netid = $row.attr('data-netid'),
+                netid_name = $row.attr('data-netid-name'),
+                email = $row.attr('data-netid-initial-email'),
+                service = $row.attr('data-service'),
+                service_name = $row.attr('data-service-name');
+
+            if (service === 'o365') {
+                context.revoke_o365.push({
+                    netid: netid,
+                    email: email
+                });
+            }
+
+            if (service === 'google') {
+                context.revoke_google.push({
+                    netid: netid,
+                    email: email
+                });
+            }
+        });
+
+        context.revoke_o365_netid_count = context.revoke_o365.length;
+        context.revoke_google_netid_count = context.revoke_google.length;
+        context.revoke_netid_count = context.revoke_google_netid_count + context.revoke_o365_netid_count;
+        return context;
+    },
+
+    _revokeUWNetIDs: function(revokees, $panel) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
         $.ajax({
@@ -55,7 +86,7 @@ var Revoke = {
                 "X-CSRFToken": csrf_token
             },
             success: function(results) {
-                $panel.trigger(event_id, [{
+                $panel.trigger('endorse:UWNetIDsRevokeSuccess', [{
                     revokees: revokees,
                     revoked: results
                 }]);
@@ -63,7 +94,7 @@ var Revoke = {
             error: function(xhr, status, error) {
                 var error_event_id = event_id + 'Error';
 
-                $panel.trigger(error_event_id, [error]);
+                $panel.trigger('endorse:UWNetIDsRevokeError', [error]);
             }
         });
     }

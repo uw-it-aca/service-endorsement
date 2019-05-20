@@ -11,6 +11,7 @@ import logging
 
 
 logger = logging.getLogger(__name__)
+logging.captureWarnings(True)
 
 
 def create_endorsee_message(endorser):

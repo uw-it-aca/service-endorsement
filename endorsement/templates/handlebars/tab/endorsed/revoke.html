@@ -1,8 +1,8 @@
 {% load templatetag_handlebars %}
 
-{% tplhandlebars "shared_revoke_modal_content" %}
+{% tplhandlebars "revoke_modal_content" %}
 <div class="modal-header">
-  <span class="significant">Revoke Shared UW NetID Provision</span>
+  <span class="significant">Revoke your UW NetID Provision</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
@@ -11,11 +11,11 @@
   <div class="shared-acceptance container col-md-12">
     <div class="row">
       You are revoking your provision of
-      {{> enumerate_partial netid_count=revoke_netid_count google=revoke_google o365=revoke_o365 google_count=revoke_google_netid_count o365_count=revoke_o365_netid_count shared='Shared '}}
+      {{> enumerate_partial netid_count=revoke_netid_count google=revoke_google o365=revoke_o365 google_count=revoke_google_netid_count o365_count=revoke_o365_netid_count shared=''}}
     </div>
     <div class="row">
       <p>
-        {{plural revoke_netid_count 'This' 'These'}} Shared UW NetID{{plural revoke_netid_count '' 's'}} will no longer have access th{{plural revoke_netid_count 'is' 'ese'}} service{{plural revoke_netid_count '' 's'}}.
+        Note that {{plural revoke_netid_count 'this' 'these'}} UW NetID{{plural revoke_netid_count '' 's'}} may continue to have access to th{{plural revoke_netid_count 'is' 'ese'}} service{{plural revoke_netid_count '' 's'}} if provisioned by someone else or if they have another eligible role at the UW.
       </p>
     </div>
   </div>

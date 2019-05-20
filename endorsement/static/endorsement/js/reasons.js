@@ -7,9 +7,10 @@ var Reasons = {
 
     _registerEvents: function () {
         $('#app_content').on('change', '.displaying-reasons > select',  function(e) {
-            var $row = $(e.target).closest('tr'),
+            var $target = $(e.target),
+                $row = $target.closest('tr'),
                 $selected = $('option:selected', $(this)),
-                $panel = $row.parents('.tab-pane');
+                $panel = $row.parents('.panel');
 
             if ($selected.val() === 'other') {
                 var $editor = $('.reason-editor', $row),
@@ -34,13 +35,13 @@ var Reasons = {
                 }
             }
 
-            $panel.trigger('endorse:UWNetIDChangedReason');
+            $panel.trigger('endorse:UWNetIDChangedReason', [$row]);
         }).on('click', '.apply-all', function (e) {
-            var $td = $(e.target).closest('td'),
+            var $cell = $(e.target).closest('div'),
                 $row = $(e.target).closest('tr'),
                 $table = $(e.target).closest('table'),
-                $panel = $table.parents('.tab-pane'),
-                $selected = $('option:selected', $td),
+                $panel = $table.parents('.panel'),
+                $selected = $('option:selected', $cell),
                 value = $selected.val(),
                 $options = $('option[value=' + value + ']', $table);
         
@@ -64,7 +65,7 @@ var Reasons = {
             $panel.trigger('endorse:UWNetIDApplyAllReasons');
         }).on('input', function (e) {
             var $target = $(e.target),
-                $panel = $target.parents('.tab-pane');
+                $panel = $target.parents('.panel');
 
             if ($target.hasClass('reason-editor')) {
                 if (e.which !== 13) {
@@ -88,7 +89,7 @@ var Reasons = {
     getReason: function ($context) {
         var $selected = $('.displaying-reasons select option:selected', $context),
             reason = ($selected.length === 0 || $selected.val() === 'other') ? $.trim($('.reason-editor', $context).val()) : $selected.html(),
-            $panel = $context.parents('.tab-pane');
+            $panel = $context.parents('.panel');
 
         if (reason.length === 0 || $selected.val() === '') {
             $panel.trigger('endorse:UWNetIDsInvalidReasonError',

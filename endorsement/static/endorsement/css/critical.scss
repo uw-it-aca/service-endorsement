@@ -29,7 +29,7 @@ a.dummy {
 /*********** Global Reset ***********/
 
 html, body {
-    font-family: 'Open Sans', Helvetica, arial, san-serif;
+    font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif;
     padding:0;
     margin:0;
     height: 100%;
@@ -49,8 +49,8 @@ img {
 
 .visually-hidden{
 	position: absolute;
-	left:-999px;
-	top:-999px;	
+	left:-9999px;
+	top:-9999px;
 }
 
 /*********** Spacing ***********/
@@ -83,7 +83,7 @@ img {
 h1, h2, h3, h4 { font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif; font-weight: bold; /*color: $uwpurple;*/ }
 
 h3 {
-    font-size: 1.4rem; 
+    font-size: 1.8rem;
 }
 
 h4 {
@@ -218,6 +218,13 @@ a {
     }
 }
 
+#uwnetids-input {
+   #netid_list { height: 6em; }
+}
+
+.display-filter { margin-right: 16px; margin-bottom: 18px; }
+#export_csv { margin-left: 16px; }
+
 #uwnetids-validated {
   .validation {
     table {
@@ -262,11 +269,42 @@ a {
   }
 }
 
+.endorsed-netids-table { height: 310px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid #ddd; 
+  thead { background-color: #eee;
+     label { margin-bottom: 0; }
+     span { font-weight: 200; font-size: .9em; }
+  }
+  tr:nth-child(4n - 1), tr:nth-child(4n) { background: #f8f8f8; }
+  tr:nth-child(2n - 3):not(.visually-hidden) + tr {
+    .endorsed-netid, .endorsed-name { color: transparent; border-bottom: 1px solid #ddd; }
+  }
+  .endorsed-netid { border-top: none; }
+  .endorsed-name { min-width: 200px; border-top: none; border-right: 1px solid #ddd; }
+  .endorsed-status-icon { padding-right: 0; }
+  .endorsed-service { white-space: nowrap; }
+  .endorsed-reason { min-width: 120px; }
+  .endorsed-action { white-space: nowrap; }
+  .aggregate_action { padding-right: 0; }
+}
+
+label.accept_responsibility {
+  font-weight: normal;
+}
+
+.table.borderless td {
+  border: none !important;
+  padding-bottom: 0;
+}
+
 #shared-uwnetids {
   button#shared_update {
     margin-top: 10px;
   }
 }
+
+.panel-toggle { color:#0077c2; display: inline-block; padding-top: 10px; margin-bottom: 10px; }
+
+#provision { margin-bottom: 38px; }
 
 #provisioned, #shared {
   .loading {
@@ -340,6 +378,8 @@ ul.comma-list { display: inline; list-style: none; padding: 0;
   li:last-child:after { content: ""; }
 }
 
+ul.email-list { list-style: none; padding: 0; }
+
 .no-endorsements {
   height: 8em;
   line-height: 8em;
@@ -350,11 +390,15 @@ ul.comma-list { display: inline; list-style: none; padding: 0;
   margin-bottom: 24px;
 }
 
+#endorse_modal {
+  h4 { font-size:1.1em; margin-top: 0; padding-top: 0; }
+}
+
 .modal-content {
   overflow: auto;
 }
 
-.shared-acceptance {
+.shared-acceptance, .endorsed-acceptance, .renew-acceptance {
   .row { margin-bottom: 12px; }
 }
 
@@ -455,6 +499,9 @@ input[type=checkbox][id^=revoke_]:checked + label:before { content: "\f00d"; col
 **/
 
 /***** EVERYTHING ELSE *****/
+.significant {
+  font-weight: bold !important;
+}
 /**
 .action {
     font-weight: 600;
@@ -462,7 +509,24 @@ input[type=checkbox][id^=revoke_]:checked + label:before { content: "\f00d"; col
 }
 **/
 
-td.error {
+.email-editor {
+    position: static;
+    display: inline-block !important;
+    left: auto;
+    top: auto;
+    .edit-email {
+      .finish-email-edit { margin-left: 8px; }
+    }
+    .edit-email.error {
+      input { border: 1px solid red; }
+      span { display: inline-block !important; position: absolute; white-space: nowrap; color: red; font-size: small; }
+    }
+    .display-email { margin-left: 8px; font-style: italic;
+      .start-email-edit span { margin-left: 10px; }
+    }
+}
+
+td.error, tr.error {
     select {
         border: 1px solid red;
         + div {
@@ -473,23 +537,6 @@ td.error {
     }
     .displaying-email {
         display: none;
-    }
-    .editing-email {
-        position: static;
-        left: auto;
-        top: auto;
-        .email-editor {
-            border: 1px solid red;
-        }
-        input + span {
-            display: inline !important;
-            white-space: nowrap;
-            color: red;
-            font-size: .9em;
-        }
-        .finish-edit-email {
-            display: none;
-        }
     }
 }
 
@@ -522,8 +569,8 @@ td.error {
 @media (max-width: 768px) {
 	.hide-sm {
 	position: absolute;
-	left:-999px;
-	top:-999px;	
+	left:-9999px;
+	top:-9999px;
 	}
 	.sitename{
 	font-size: 1.5em;}
