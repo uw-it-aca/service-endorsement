@@ -18,8 +18,19 @@
 
  <hr />
 
- <div id="shared" class="panel"></div>
- <div id="provisioned" class="panel"></div>
+ <div id="shared-uwnetids">
+   <h3>UW NetIDs owned by you</h3>
+   <p>
+     You may manage provisioned services for any Shared UW NetID and other types of NetIDs that <a href="https://uwnetid.washington.edu/manage/?shared" target="_blank">you own</a>.
+   </p>
+   <div id="shared" class="panel"></div>
+ </div>
+
+ <div id="endorsed-uwnetids">
+   <h3>UW NetIDs owned by others</h3>
+   <p>Users outside the university, because of an established working relationship with UW, may be granted access to UW services. &nbsp;Manage those provisioned services here.</p>
+   <div id="provisioned" class="panel"></div>
+ </div>
 </div>
 
 {% include "handlebars/reasons_partial.html" %}

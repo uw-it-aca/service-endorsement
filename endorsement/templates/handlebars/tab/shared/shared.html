@@ -1,12 +1,6 @@
 {% load templatetag_handlebars %}
 {% tplhandlebars "shared-netids" %}
 
-<div id="shared-uwnetids">
-  <h3>UW NetIDs owned by you</h3>
-  <p>
-    You may manage provisioned services for any Shared UW NetID and other types of NetIDs that <a href="https://uwnetid.washington.edu/manage/?shared" target="_blank">you own</a>.
-  </p>
-
   <div class="row">
     <span class="pull-right">
       {{> display_filter_partial . }}
@@ -14,7 +8,6 @@
   </div>
 
   <div class="form-group content"></div>
-</div>
 
 <div class="modal fade" id="shared_netid_modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
