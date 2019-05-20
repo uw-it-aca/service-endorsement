@@ -10,12 +10,11 @@ var ManageProvisionedServices = {
     },
 
     _loadContent: function () {
-        var content_template = Handlebars.compile($("#endorsed-netids").html()),
-            context = {
-                has_endorsed: false
-            };
-        
-        $('#' + ManageProvisionedServices.content_id).append(content_template(context));
+        var source = $("#endorsed-loading").html(),
+            template = Handlebars.compile(source),
+            $panel = $('#' + ManageProvisionedServices.content_id);
+
+        $panel.html(template());
         ManageProvisionedServices._getEndorsedUWNetIDs();
     },
 
@@ -92,8 +91,6 @@ var ManageProvisionedServices = {
     _getEndorsedUWNetIDs: function() {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
             $content = $('#' + ManageProvisionedServices.content_id);
-
-        $('.loading', $content).html($('#endorsed-loading').html());
 
         $.ajax({
             url: "/api/v1/endorsed/",

@@ -5,10 +5,6 @@
   <h3>UW NetIDs owned by others</h3>
   <p>Users outside the university, because of an established working relationship with UW, may be granted access to UW services. &nbsp;Manage those provisioned services here.</p>
 
-  {{#if loading}}
-  <div class="loading"></div>
-  {{else}}
-
   <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Add more NeiDs to list" data-conceal-text="<span class='fa fa-caret-down'></span> Add more NeiDs to list" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Add more NeiDs to list</a>
   <div class="content visually-hidden">
       <div class="form-group" id="uwnetids-input">
@@ -66,8 +62,6 @@
 -->
   {{else}}
   <div class="no-endorsements">You haven't provisioned services for any UW NetIDs.</dev>
-  {{/if}}
-
   {{/if}}
 
 </div>
