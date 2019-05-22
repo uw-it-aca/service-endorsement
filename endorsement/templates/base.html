@@ -12,58 +12,18 @@
 
     {% load static %}
 
-
-    <!-- stylesheets -->
-    <!-- critical (above the fold styles) -->
-{% if request.is_mobile %}
-    {% compress css inline %}
-    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap-3.3.7.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendor/css/ionicons-2.0.1.min.css' %}">
-    <link rel="stylesheet" href="{% static 'endorsement/css/loading.scss' %}" type="text/x-scss">
-    <link rel="stylesheet" href="{% static 'endorsement/css/critical.scss' %}" type="text/x-scss">
-    {% endcompress %}
-    <!-- async (mobile) -->
-    {% compress css %}
-    <link rel="stylesheet" href="{% static 'endorsement/css/mobile.scss' %}" type="text/x-scss">
-    {% endcompress %}
-{% endif %}
+{% compress css inline %}
+<link rel="stylesheet" href="{% static 'vendor/css/bootstrap-3.3.7.min.css' %}">
+<link rel="stylesheet" href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}">
+<link rel="stylesheet" href="{% static 'vendor/css/ionicons-2.0.1.min.css' %}">
+<link rel="stylesheet" href="{% static 'endorsement/css/loading.scss' %}" type="text/x-scss">
+<link rel="stylesheet" href="{% static 'endorsement/css/critical.scss' %}" type="text/x-scss">
+<link rel="stylesheet" href="{% static 'endorsement/css/mobile.scss' %}" type="text/x-scss">
+<link rel="stylesheet" href="{% static 'endorsement/css/tablet.scss' %}" type="text/x-scss">
+<link rel="stylesheet" href="{% static 'endorsement/css/desktop.scss' %}" type="text/x-scss">
+{% endcompress %} 
 
 
-{% if request.is_tablet %}
-    <!-- critical (above the fold styles) -->
-    {% compress css inline %}
-    <!-- inline -->
-    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap-3.3.7.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendor/css/ionicons-2.0.1.min.css' %}">
-    <link rel="stylesheet" href="{% static 'endorsement/css/loading.scss' %}" type="text/x-scss">
-    <link rel="stylesheet" href="{% static 'endorsement/css/critical.scss' %}" type="text/x-scss">
-    {% endcompress %}
-    <!-- async (mobile + tablet) -->
-    {% compress css %}
-    <link rel="stylesheet" href="{% static 'endorsement/css/mobile.scss' %}" type="text/x-scss">
-    <link rel="stylesheet" href="{% static 'endorsement/css/tablet.scss' %}" type="text/x-scss">
-    {% endcompress %}
-{% endif %}
-
-{% if is_desktop %}
-    <!-- critical (above the fold styles) -->
-    {% compress css inline %}
-    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap-3.3.7.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendor/css/font-awesome-4.2.0.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendor/css/ionicons-2.0.1.min.css' %}">
-    <link rel="stylesheet" href="{% static 'endorsement/css/loading.scss' %}" type="text/x-scss">
-    <link rel="stylesheet" href="{% static 'endorsement/css/critical.scss' %}" type="text/x-scss">
-    <link rel="stylesheet" href="{% static 'endorsement/css/mobile.scss' %}" type="text/x-scss">
-    <link rel="stylesheet" href="{% static 'endorsement/css/tablet.scss' %}" type="text/x-scss">
-    <link rel="stylesheet" href="{% static 'endorsement/css/desktop.scss' %}" type="text/x-scss">
-    {% endcompress %}
-
-    <!-- async (mobile + tablet + desktop) -->
-    {% compress css %}
-    {% endcompress %}
-{% endif %}
 
 <!-- Google Fonts -->
 <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
