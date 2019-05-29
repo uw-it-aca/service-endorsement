@@ -37,17 +37,16 @@ var Reasons = {
 
             $panel.trigger('endorse:UWNetIDChangedReason', [$row]);
         }).on('click', '.apply-all', function (e) {
-            var $cell = $(e.target).closest('div'),
-                $row = $(e.target).closest('tr'),
+            var $reason = $(e.target).closest('div.endorse-reason'),
                 $table = $(e.target).closest('table'),
                 $panel = $table.parents('.panel'),
-                $selected = $('option:selected', $cell),
+                $selected = $('option:selected', $reason),
                 value = $selected.val(),
                 $options = $('option[value=' + value + ']', $table);
         
             $options.prop('selected', true);
             if (value === 'other') {
-                var $editor = $('.reason-editor', $row),
+                var $editor = $('.reason-editor', $reason),
                     reason = $.trim($editor.val());
 
                 if (reason.length) {

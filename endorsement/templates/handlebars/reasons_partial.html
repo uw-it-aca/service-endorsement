@@ -4,24 +4,26 @@
 {{#ifAndNot endorsement.reason endorsement.is_revoked}}
 {{endorsement.reason}}<input type=hidden class="reason-editor" placeholder="Reason for provisioning" value="{{endorsement.reason}}">
 {{else}}
-<div class="displaying-reasons">
-  <select required="required" style="width: 150px;">
-    <option selected disabled value="">-- Select --</option>
-    <option value="clinical">Clinical work</option>
-    <option value="instructional">Instructional activities</option>
-    <option value="research">Research</option>
-    <option value="mentoring">Student mentoring</option>
-    <option value="consulting">Third-party consulting</option>
-    <option value="advancement">University Advancement support</option>
-    <option value="volunteer">Volunteer work</option>
-    <option value="other">Other...</option>
-  </select>
-  <div style="display: none;"><br />Provide reason</div>
+<div class="endorse-reason">
+  <div class="displaying-reasons">
+    <select required="required" style="width: 150px;">
+      <option selected disabled value="">-- Select --</option>
+      <option value="clinical">Clinical work</option>
+      <option value="instructional">Instructional activities</option>
+      <option value="research">Research</option>
+      <option value="mentoring">Student mentoring</option>
+      <option value="consulting">Third-party consulting</option>
+      <option value="advancement">University Advancement support</option>
+      <option value="volunteer">Volunteer work</option>
+      <option value="other">Other...</option>
+    </select>
+    <div style="display: none;"><br />Provide reason</div>
+  </div>
+  <div class="editing-reason visually-hidden">
+    <input type=input class="reason-editor" placeholder="Reason for provisioning" value="" maxlength="64" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
+  </div>
+  <p style="font-size: small;"><a href="javascript:void(0);" class='apply-all{{#has_reason endorsements}} visually-hidden{{/has_reason}}'>Apply to all</a></p>
 </div>
-<div class="editing-reason visually-hidden">
-  <input type=input class="reason-editor" placeholder="Reason for provisioning" value="" maxlength="64" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
-</div>
-<p style="font-size: small;"><a href="javascript:void(0);" class='apply-all{{#has_reason endorsements}} visually-hidden{{/has_reason}}'>Apply to all</a></p>
 {{/ifAndNot}}
 
 {% endtplhandlebars %}
