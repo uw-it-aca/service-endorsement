@@ -44,6 +44,8 @@ var ManageProvisionedServices = {
         }).on('click', 'button#validate', function(e) {
             $(this).button('loading');
             ManageProvisionedServices._validateUWNetids(ManageProvisionedServices._getNetidList());
+        }).on('click', 'button.button_url', function(e) {
+            location.href = $(this).attr('data-url');
         }).on('click', 'button#netid_input', function(e) {
             $('#uwnetids-validated', $panel).addClass('visually-hidden');
             $('#uwnetids-input', $panel).removeClass('visually-hidden').focus();
