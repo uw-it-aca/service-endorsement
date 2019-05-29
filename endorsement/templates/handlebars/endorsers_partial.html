@@ -92,7 +92,7 @@
   {{#if endorsement.endorsers}}
   <br />{{#if endorsement.datetime_endorsed}}Also{{else}}Already{{/if}} provisioned by <ul class="comma-list">
     {{#each endorsement.endorsers}}
-    <li>{{netid}}</li>
+    <li>{{ this }}</li>
     {{/each}}
   </ul>
   {{/if}}
@@ -108,7 +108,7 @@
       <button type="button" name="Renew {{ endorsement.category_name }}" class="btn btn-primary renew_service renew_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
     {{else}}
       {{#if endorsement.accept_id}}
-        <button type="button" class="btn copy_clipboard" data-toggle="tooltip" data-clipboard="{{ endorsement.accept_url }}" data-clipboard-msg="<span class='fa fa-check'></span> Acceptance link copied to clipboard" title="Copy acceptance link to clipboard" href="javascript:void(0);">Copy Link</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
+        <button type="button" class="btn button_url" data-url="mailto:{{ email }}?subject=Provision%20Request%20Confirmation&body='To%20accept%20terms%20of%20service%20visit%20{{ endorsement.accept_url }}'">Send Reminder</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
       {{else}}
         <button type="button" name="Provision service" class="btn endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
       {{/if}}
