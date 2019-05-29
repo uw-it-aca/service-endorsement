@@ -268,7 +268,13 @@ a {
   }
 }
 
-.endorsed-netids-table { height: 310px; scroll: auto; overflow: hidden; overflow-y: scroll; border: 1px solid #ddd; 
+.endorsed-netids-table { border: 1px solid #ddd; 
+
+  table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }
+  thead { flex: 0 0 auto; }
+  tbody { flex: 1 1 auto; display: block; overflow-y: auto; overflow-x: hidden; height: 280px; }
+  tr { width: 100%; display: table; table-layout: fixed; }
+
   thead { background-color: #eee;
      label { margin-bottom: 0; }
      span { font-weight: 200; font-size: .9em; }
@@ -279,11 +285,11 @@ a {
   }
   .endorsed-netid { border-top: none; }
   .endorsed-name { min-width: 200px; border-top: none; border-right: 1px solid #ddd; }
-  .endorsed-status-icon { padding-right: 0; }
-  .endorsed-service { white-space: nowrap; }
+  .endorsed-service-name { white-space: nowrap; }
+  .endorsed-status-icon { width: 20px; }
   .endorsed-reason { min-width: 120px; }
   .endorsed-action { white-space: nowrap; }
-  .aggregate_action { padding-right: 0; }
+  .aggregate_action { margin-right: 10px; }
 }
 
 label.accept_responsibility {

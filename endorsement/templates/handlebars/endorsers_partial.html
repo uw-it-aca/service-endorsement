@@ -29,12 +29,8 @@
 
   <td class="endorsed-name">{{ name }}</td>
 
-  <td class="endorsed-aggregate aggregate_action visually-hidden">
-    <input type="checkbox" id="aggregate_{{ svc }}_{{ netid }}" value="{{ netid }}" />
-  </td>
-
-  <td class="endorsed-service">
-    <label for="aggregate_{{ svc }}_{{ netid }}"><span class="significant">{{ endorsement.category_name }}</span></label>
+  <td class="endorsed-service-name">
+    <label><input class="aggregate_action visually-hidden" type="checkbox" id="aggregate_{{ svc }}_{{ netid }}" value="{{ netid }}" /><span class="significant">{{ endorsement.category_name }}</span></label>
   </td>
 
   <td class="endorsed-status-icon">
