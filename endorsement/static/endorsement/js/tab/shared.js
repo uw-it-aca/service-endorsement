@@ -22,20 +22,26 @@ var ManageSharedNetids = {
         $panel.on('click', 'button.endorse_service', function(e) {
             Endorse.endorse('shared_accept_modal_content', $(this).closest('tr'));
         }).on('click', 'button.aggregate_endorse_service', function(e) {
-            Endorse.endorse('shared_accept_modal_content',
-                            $('input[id^="aggregate_"]:checked').closest('tr'));
+            var $checked_rows = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel).closest('tr'),
+                $to_endorse = $checked_rows.find('.endorse_service:enabled').closest('tr');
+
+            Endorse.endorse('shared_accept_modal_content', $to_endorse);
         }).on('click', 'button.revoke_service', function(e) {
             Revoke.revoke('shared_revoke_modal_content', $(this).closest('tr'));
         }).on('click', 'button.aggregate_revoke_service', function(e) {
-            Revoke.revoke('shared_revoke_modal_content',
-                          $('input[id^="aggregate_"]:checked').closest('tr'));
+            var $checked_rows = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel).closest('tr'),
+                $to_revoke = $checked_rows.find('.revoke_service:enabled').closest('tr');
+
+            Revoke.revoke('shared_revoke_modal_content', $to_revoke);
         }).on('click', 'button.renew_service', function(e) {
             Renew.renew('shared_renew_modal_content', $(this).closest('tr'));
         }).on('click', 'button.aggregate_renew_service', function(e) {
-            Renew.renew('shared_renew_modal_content',
-                        $('input[id^="aggregate_"]:checked').closest('tr'));
+            var $checked_rows = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel).closest('tr'),
+                $to_renew = $checked_rows.find('.renew_service:enabled').closest('tr');
+
+            Renew.renew('shared_renew_modal_content', $to_renew);
         }).on('click', '#check_all', function(e) {
-            $('input[id^="aggregate_"]', $panel).prop('checked', $(this).prop('checked'));
+            $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).prop('checked', $(this).prop('checked'));
             ManageSharedNetids._enableSharedEndorsability();
         }).on('change', 'input[id^="aggregate_"]', function(e) {
             ManageSharedNetids._enableSharedEndorsability();
@@ -89,6 +95,8 @@ var ManageSharedNetids = {
             ManageSharedNetids._displaySharedUWNetIDs(shared);
         }).on('endorse:UWNetIDsSharedError', function (e, error) {
             $('#' + ManageSharedNetids.content_id + '.content').html($('#shared-failure').html());
+        }).on('endorse:DisplayFilterChange', function (e) {
+            ManageSharedNetids._enableSharedEndorsability();
         });
     },
 
@@ -143,7 +151,7 @@ var ManageSharedNetids = {
         // fixup checkboxes, aggregate labels
         if ($('.panel-toggle + div.content', $panel).hasClass('visually-hidden') === false) {
             var $checked = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel),
-                $rows = $checked.closest('tr'),
+                $rows = $checked.closest('tr:not(".visually-hidden")'),
                 is_checked = false,
                 is_indeterminate = false,
                 $check_all = $('input#check_all', $panel),
