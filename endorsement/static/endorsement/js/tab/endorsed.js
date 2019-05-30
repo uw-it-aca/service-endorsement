@@ -275,7 +275,7 @@ var ManageProvisionedServices = {
                 }
 
                 if (n === 'reason') {
-                    row.push(Reasons.getReason($td))
+                    row.push(Reasons.getReason($td));
                 } else if (n === 'status') {
                     row.push($('> span', $td).html());
                 } else {
