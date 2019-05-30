@@ -283,6 +283,7 @@ a {
   tr:nth-child(2n - 3):not(.visually-hidden) + tr {
     .endorsed-netid, .endorsed-name { color: transparent; border-bottom: 1px solid #ddd; }
   }
+  tr.new_netid { background: #efffef; }
   .endorsed-netid { border-top: none; }
   .endorsed-name { min-width: 200px; border-top: none; border-right: 1px solid #ddd; }
   .endorsed-service-name { width: 130px;  white-space: nowrap; }

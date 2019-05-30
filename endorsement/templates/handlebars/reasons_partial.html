@@ -22,7 +22,7 @@
   <div class="editing-reason visually-hidden">
     <input type=input class="reason-editor" placeholder="Reason for provisioning" value="" maxlength="64" style="width: 180px;"> <i class="fa fa-check success finish-edit-reason"></i>
   </div>
-  <p style="font-size: small;"><a href="javascript:void(0);" class='apply-all{{#has_reason endorsements}} visually-hidden{{/has_reason}}'>Apply to all</a></p>
+  <p class="apply-reason {{#has_reason endorsements}}visually-hidden{{/has_reason}}" style="font-size: small;">Apply to <a href="javascript:void(0);" class='apply-all'>all</a> or <a href="javascript:void(0);" class='apply-unset'>unselected</a></p>
 </div>
 {{/ifAndNot}}
 

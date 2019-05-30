@@ -66,8 +66,7 @@
   <div class="valid_netids">
     {{#if netid_count}}
     <p><span class="significant text-success"><span class="fa fa-check"></span> {{netid_count}} NetID{{plural netid_count '' 's'}} Added</span><br />
-    {{plural netid_count 'It is' 'They are'}} available to be provisioned during this session
-    {{#if netids_present_count}}({{ netids_present_count}} NetID{{plural netids_present_count '' 's'}} were already available){{/if}}.</p>
+    {{plural netid_count 'It is' 'They are'}} available to be provisioned during this session{{#if netids_present_count}} ({{ netids_present_count}} NetID{{plural netids_present_count '' 's'}} were already available){{/if}}.</p>
     {{else}}
       {{#if netids_present_count}}
       <p>{{ netids_present_count}} NetID{{plural netids_present_count '' 's'}} are already available for provisioning.</p>
@@ -95,7 +94,7 @@
 
 
 {% tplhandlebars "endorsee-row" %}
-{{> endorsement_row_partial endorsement=endorsement netid=netid email=email name=name svc=service }}
+{{> endorsement_row_partial endorsement=endorsement netid=netid email=email name=name svc=service new_netid=true }}
 {% endtplhandlebars %}
 
 

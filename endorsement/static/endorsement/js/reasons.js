@@ -19,10 +19,10 @@ var Reasons = {
                 $('.editing-reason', $row).removeClass('visually-hidden');
                 if (reason.length) {
                     $('.finish-edit-reason', $row).removeClass('visually-hidden');
-                    $('.apply-all', $row).removeClass('visually-hidden');
+                    $('.apply-reason', $row).removeClass('visually-hidden');
                 } else {
                     $('.finish-edit-reason', $row).addClass('visually-hidden');
-                    $('.apply-all', $row).addClass('visually-hidden');
+                    $('.apply-reason', $row).addClass('visually-hidden');
                 }
 
                 $($editor, $row).focus();
@@ -30,21 +30,29 @@ var Reasons = {
                 if ($selected.val().length > 0) {
                     $('.editing-reason', $row).addClass('visually-hidden');
                     if ($('.displaying-reasons').length > 1) {
-                        $('.apply-all.visually-hidden', $row).removeClass('visually-hidden');
+                        $('.apply-reason.visually-hidden', $row).removeClass('visually-hidden');
                     }
                 }
             }
 
             $panel.trigger('endorse:UWNetIDChangedReason', [$row]);
-        }).on('click', '.apply-all', function (e) {
-            var $reason = $(e.target).closest('div.endorse-reason'),
-                $table = $(e.target).closest('table'),
+        }).on('click', '.apply-all, .apply-unset', function (e) {
+            var $target = $(e.target),
+                $reason = $target.closest('div.endorse-reason'),
+                $table = $target.closest('table'),
                 $panel = $table.parents('.panel'),
                 $selected = $('option:selected', $reason),
-                value = $selected.val(),
-                $options = $('option[value=' + value + ']', $table);
-        
-            $options.prop('selected', true);
+                value = $selected.val();
+
+            if ($target.hasClass('apply-unset')) {
+                $('option[value=""]:selected', $table)
+                    .closest('select')
+                    .find('option[value=' + value + ']')
+                    .prop('selected', true);
+            } else {
+                $('option[value=' + value + ']', $table).prop('selected', true);
+            }
+
             if (value === 'other') {
                 var $editor = $('.reason-editor', $reason),
                     reason = $.trim($editor.val());
@@ -53,12 +61,12 @@ var Reasons = {
                     $('.reason-editor', $table).val(reason);
                     $('.editing-reason', $table).removeClass('visually-hidden');
                     $('.finish-edit-reason', $table).removeClass('visually-hidden');
-                    $('.apply-all', $table).removeClass('visually-hidden');
+                    $('.apply-reason', $table).removeClass('visually-hidden');
                 }
             } else {
                 $('select.error', $table).removeClass('error');
                 $('.editing-reason').addClass('visually-hidden');
-                $('.apply-all', $table).removeClass('visually-hidden');
+                $('.apply-reason', $table).removeClass('visually-hidden');
             }
 
             $panel.trigger('endorse:UWNetIDApplyAllReasons');
@@ -73,10 +81,10 @@ var Reasons = {
 
                     if (reason.length) {
                         $('.finish-edit-reason', $row).removeClass('visually-hidden');
-                        $('.apply-all', $row).removeClass('visually-hidden');
+                        $('.apply-reason', $row).removeClass('visually-hidden');
                     } else {
                         $('.finish-edit-reason', $row).addClass('visually-hidden');
-                        $('.apply-all', $row).addClass('visually-hidden');
+                        $('.apply-reason', $row).addClass('visually-hidden');
                     }
                 }
 
