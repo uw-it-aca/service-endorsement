@@ -18,6 +18,8 @@ var DisplayFilterPanel = {
                 $rows.addClass('visually-hidden');
                 $('table tbody tr.' + display + '_service', $panel).removeClass('visually-hidden');
             }
+
+            $panel.trigger('endorse:DisplayFilterChange');
         }).on('mousedown', 'select.display-filter', function(e) {
             var $this = $(this),
                 $panel = $this.closest('.panel');
