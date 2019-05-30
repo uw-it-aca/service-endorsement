@@ -28,7 +28,6 @@ var ManageProvisionedServices = {
         }).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
             $('button#confirm_endorsements').button('reset');
             ManageProvisionedServices._displayEndorsedUWNetIDs(endorsed);
-            window.endorsed = endorsed;
         }).on('endorse:UWNetIDsEndorsedError', function (e, error) {
             $('#' + ManageProvisionedServices.content_id).html($('#endorsed-failure').html());
         }).on('endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e, $row) {
@@ -239,87 +238,52 @@ var ManageProvisionedServices = {
     },
 
     _exportProvisionedToCSV: function() {
-        var $table = $('#provisioned table'),
-            endorsed = window.endorsed.endorsed,
+        var $table = $('.csv_table'),
             colDelim = ',',
             rowDelim = '\r\n',
-            data = [[]],
+            data = [],
             fields = [],
             csv,
             downlink;
 
         // csv header fields
-        $('thead tr th', $table).each(function (i) {
+        $('thead tr th[data-csv-label]', $table).each(function (i) {
             var label = $(this).attr('data-csv-label');
 
             if (label !== undefined) {
-                data[0].push(label);
-                fields.push(i);
+                fields.push(label);
             }
         });
 
+        data.push(fields);
+
         // collect csv data from table
         $('tr', $table).each(function () {
-            var $cols = $(this).find('td'),
+            var $tr = $(this),
+                row = [],
                 msg;
 
-            if ($cols.length) {
-                var row = [];
+            $.each(fields, function(i, n) {
+                var $td = $('td[data-csv-' + n + ']', $tr);
 
-                $.each(fields, function(i, n) {
-                    var $col = $($cols.get(n)),
-                        provisioned = $col.attr('data-csv-provisioned'),
-                        reason = $col.attr('data-csv-reason'),
-                        endorsement,
-                        context;
-
-                    if (provisioned) {
-                        msg = '';
-                        context = provisioned.split('-');
-                        endorsement = endorsed[context[1]] && endorsed[context[1]][context[0]];
-
-                        if (endorsement) {
-                            if (endorsement.datetime_endorsed) {
-                                msg += 'provisioned ' +  utc2local(endorsement.datetime_endorsed);
-                            } else {
-                                msg += 'pending acceptance';
-                            }
-
-                            if (endorsement.hasOwnProperty('endorsers') && endorsement.endorsers.length > 1) {
-                                msg += " (also provisioned by ";
-
-                                $.each(endorsement.endorsers, function (i) {
-                                    if (this.netid != endorsement.endorser.netid) {
-                                        if (i > 0) {
-                                            msg += ', ';
-                                        }
-
-                                        msg += this.netid;
-                                    }
-                                });
-
-                                msg += ')';
-                            }
-
-                        } else {
-                            msg += 'not provisioned';
-                        }
-
-                        row.push(msg);
-                    } else if (reason) {
-                        msg = '';
-                        context = reason.split('-');
-                        endorsement = endorsed[context[1]] && endorsed[context[1]][context[0]];
-                        if (endorsement) {
-                            msg += endorsement.reason;
-                        }
-
-                        row.push(msg);
+                if ($td.length === 0) {
+                    if (row.length) {
+                        row.push('');
                     } else {
-                        row.push($col.html());
+                        return false;
                     }
-                });
+                }
 
+                if (n === 'reason') {
+                    row.push(Reasons.getReason($td));
+                } else if (n === 'status') {
+                    row.push($('> span', $td).html());
+                } else {
+                    row.push($td.attr('data-csv-' + n));
+                }
+            });
+
+            if (row.length) {
                 data.push(row);
             }
         });

@@ -86,8 +86,10 @@ var Reasons = {
     },
 
     getReason: function ($context) {
-        var $selected = $('.displaying-reasons select option:selected', $context),
-            reason = ($selected.length === 0 || $selected.val() === 'other') ? $.trim($('.reason-editor', $context).val()) : $selected.html(),
+        var $select = $('.displaying-reasons select', $context),
+            $selected = $('option:selected', $select),
+
+            reason = ($select.prop('selectedIndex') === 0) ? "" : ($selected.length === 0 || $selected.val() === 'other') ? $.trim($('.reason-editor', $context).val()) : $selected.html(),
             $panel = $context.parents('.panel');
 
         if (reason.length === 0 || $selected.val() === '') {

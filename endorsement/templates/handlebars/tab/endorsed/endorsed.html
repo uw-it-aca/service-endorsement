@@ -24,15 +24,15 @@
 
   <div class="form-group">
     <div class="endorsed-netids-table">
-      <table class="table">
+      <table class="table csv_table">
         <thead class="thead-dark">
           <tr>
-            <th>UW NetID</th>
-            <th>Name</th>
-            <th><input class="aggregate-action visually-hidden" type="checkbox" id="check_all" /><label class="significant" for="check_all">Service</label></th>
+            <th data-csv-label="netid">UW NetID</th>
+            <th data-csv-label="name">Name</th>
+            <th data-csv-label="service" class="endorsed-service-name"><input class="aggregate-action visually-hidden" type="checkbox" id="check_all" /><label class="significant" for="check_all">Service</label></th>
             <th class="endorsed-status-icon"></th>
-            <th><span>Status</span></th>
-            <th><span>Provision Reason</span></th>
+            <th data-csv-label="status"><span>Status</span></th>
+            <th data-csv-label="reason"><span>Provision Reason</span></th>
             <th><span>Action</span></th>
           </tr>
         </thead>

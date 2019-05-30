@@ -285,7 +285,7 @@ a {
   }
   .endorsed-netid { border-top: none; }
   .endorsed-name { min-width: 200px; border-top: none; border-right: 1px solid #ddd; }
-  .endorsed-service-name { white-space: nowrap; }
+  .endorsed-service-name { width: 130px;  white-space: nowrap; }
   .endorsed-status-icon { width: 20px; }
   .endorsed-reason { min-width: 120px; }
   .endorsed-action { white-space: nowrap; }

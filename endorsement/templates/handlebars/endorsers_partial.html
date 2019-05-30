@@ -25,11 +25,11 @@
     data-service-name="{{ endorsement.category_name }}"
     {{#if type}}data-netid-type="{{ type }}"{{/if}}>
 
-  <td class="endorsed-netid">{{ netid }}</td>
+  <td class="endorsed-netid" data-csv-netid="{{ netid }}">{{ netid }}</td>
 
-  <td class="endorsed-name">{{ name }}</td>
+  <td class="endorsed-name" data-csv-name="{{ name }}">{{ name }}</td>
 
-  <td class="endorsed-service-name">
+  <td class="endorsed-service-name" data-csv-service="{{ endorsement.category_name }}">
     <label><input class="aggregate_action visually-hidden" type="checkbox" id="aggregate_{{ svc }}_{{ netid }}" value="{{ netid }}" /><span class="significant">{{ endorsement.category_name }}</span></label>
   </td>
 
@@ -53,7 +53,7 @@
   {{/unless}}
   </td>
 
-  <td class="endorsed-status">
+  <td class="endorsed-status" data-csv-status>
   {{#if  endorsement.is_revoked}}
     <span class="significant">Not Provisioned</span>
   {{else}}
@@ -88,13 +88,13 @@
   {{#if endorsement.endorsers}}
   <br />{{#if endorsement.datetime_endorsed}}Also{{else}}Already{{/if}} provisioned by <ul class="comma-list">
     {{#each endorsement.endorsers}}
-    <li>{{ this }}</li>
+    <li>{{ netid }}</li>
     {{/each}}
   </ul>
   {{/if}}
   </td>
 
-  <td class="endorsed-reason">
+  <td class="endorsed-reason" data-csv-reason>
     {{> reasons_partial endorsement=endorsement}}
   </td>
 
