@@ -96,7 +96,7 @@ class Validate(RESTDispatch):
                         if (e.category_code ==
                                 EndorsementRecord.OFFICE_365_ENDORSEE):
                             valid['endorsements']['o365']['endorsers'].append(
-                                e.endorser.netid)
+                                e.endorser.json_data())
 
                 except Exception as ex:
                     valid['endorsements']['o365'] = {
@@ -119,7 +119,7 @@ class Validate(RESTDispatch):
                         if (e.category_code ==
                                 EndorsementRecord.GOOGLE_SUITE_ENDORSEE):
                             valid['endorsements']['google'][
-                                'endorsers'].append(e.endorser.netid)
+                                'endorsers'].append(e.endorser.json_data())
 
                 except Exception as ex:
                     valid['endorsements']['google'] = {
