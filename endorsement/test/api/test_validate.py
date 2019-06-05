@@ -38,7 +38,7 @@ class TestEndorsementValidateAPI(EndorsementApiTest):
             'google']['endorsers']), 1)
         self.assertEqual(
             data['validated'][0]['endorsements'][
-                'google']['endorsers'][0], 'jstaff')
+                'google']['endorsers'][0]['netid'], 'jstaff')
 
         self.assertTrue('o365' in data['validated'][0]['endorsements'])
         self.assertFalse(data['validated'][0]['endorsements'][
