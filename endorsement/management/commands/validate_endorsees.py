@@ -17,9 +17,9 @@ class Command(BaseCommand):
             for netid in get_kerberos_inactive_netids_for_category(category):
                 try:
                     endorsee = Endorsee.objects.get(netid=netid)
-                    for endorsement in ER.get_endorsements_for_endorsee(
+                    for e in ER.objects.get_endorsements_for_endorsee(
                             endorsee, category_code=category):
-                        inactive.append(endorsement)
+                        inactive.append(e)
                 except Endorsee.DoesNotExist:
                     pass
 
