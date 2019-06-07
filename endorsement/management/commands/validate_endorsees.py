@@ -1,9 +1,13 @@
 from django.core.management.base import BaseCommand
 from django.core.mail import mail_managers
 from django.template import loader
-from endorsement.models import Endorsee, EndorsementRecord as ER
+from endorsement.models import EndorsementRecord as ER
 from uw_uwnetid.models import Category
 from endorsement.dao.prt import get_kerberos_inactive_netids_for_category
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -31,3 +35,6 @@ class Command(BaseCommand):
             mail_managers(
                 'PRT discovered {} inactive kerberos '.format(
                     len(endorsements)), body)
+
+            logger.info('Found {} inactive kerberos endorsees'.format(
+                len(endorsements)))

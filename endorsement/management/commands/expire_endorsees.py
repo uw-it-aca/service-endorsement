@@ -30,18 +30,16 @@ class Command(BaseCommand):
         endorsements = EndorsementRecord.objects.filter(
             datetime_endorsed__lt=now-timedelta(days=lifetime),
             is_deleted__isnull=True)
-        endorsees = list(set([e.endorsee.netid for e in endorsements]))
-        for netid in endorsees:
-            endorsee = get_endorsee_model(netid)
+
+        if len(endorsements):
             body = loader.render_to_string('email/expired_endorsee.txt',
                                            {
                                                'lifetime': lifetime,
-                                               'endorsee': endorsee,
                                                'endorsements': endorsements
                                            })
             mail_managers(
-                'Provisioned services for {0} expiring'.format(
-                    endorsee.netid), body)
+                'PRT {} services expiring'.format(
+                    len(endorsements)), body)
 
-            logger.info('expired endorsments ({0}) for {1}'.format(
-                len(endorsements), netid))
+            logger.info('expiring {} endorsments'.format(
+                len(endorsements)))
