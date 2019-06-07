@@ -10,24 +10,24 @@ class Command(BaseCommand):
     help = 'Identify and act on provisionees who are no longer valid'
 
     def handle(self, *args, **options):
-        inactive = []
+        categories = [
+            Category.GOOGLE_SUITE_ENDORSEE, Category.OFFICE_365_ENDORSEE
+        ]
+        netids = []
 
-        for category in [
-                Category.GOOGLE_SUITE_ENDORSEE, Category.OFFICE_365_ENDORSEE]:
-            for netid in get_kerberos_inactive_netids_for_category(category):
-                try:
-                    endorsee = Endorsee.objects.get(netid=netid)
-                    for e in ER.objects.get_endorsements_for_endorsee(
-                            endorsee, category_code=category):
-                        inactive.append(e)
-                except Endorsee.DoesNotExist:
-                    pass
+        for category in categories:
+            netids += list(
+                set(get_kerberos_inactive_netids_for_category(
+                    category)) - set(netids))
 
-        if len(inactive):
+        endorsements = ER.objects.filter(
+            endorsee__netid__in=netids, category_code__in=categories)
+
+        if len(endorsements):
             body = loader.render_to_string('email/ineligible_endorsee.txt',
                                            {
-                                               'endorsements': inactive
+                                               'endorsements': endorsements
                                            })
             mail_managers(
                 'PRT discovered {} inactive kerberos '.format(
-                    len(inactive)), body)
+                    len(endorsements)), body)

@@ -40,7 +40,8 @@ class Command(BaseCommand):
                                                'endorsements': endorsements
                                            })
             mail_managers(
-                'Provisioned services for {0} expiring'.format(endorsee), body)
+                'Provisioned services for {0} expiring'.format(
+                    endorsee.netid), body)
 
             logger.info('expired endorsments ({0}) for {1}'.format(
                 len(endorsements), netid))
