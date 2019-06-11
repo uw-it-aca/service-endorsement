@@ -5,6 +5,7 @@ from endorsement.models import EndorsementRecord as ER
 from uw_uwnetid.models import Category
 from endorsement.dao.prt import get_kerberos_inactive_netids_for_category
 import logging
+import urllib3
 
 
 logger = logging.getLogger(__name__)
@@ -14,6 +15,8 @@ class Command(BaseCommand):
     help = 'Identify and act on provisionees who are no longer valid'
 
     def handle(self, *args, **options):
+        urllib3.disable_warnings()
+
         categories = [
             Category.GOOGLE_SUITE_ENDORSEE, Category.OFFICE_365_ENDORSEE
         ]

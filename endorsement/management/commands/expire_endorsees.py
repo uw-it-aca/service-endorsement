@@ -41,5 +41,5 @@ class Command(BaseCommand):
                 'PRT {} services expiring'.format(
                     len(endorsements)), body)
 
-            logger.info('expiring {} endorsments'.format(
-                len(endorsements)))
+            for e in endorsements:
+                logger.info('expiring: {}'.format(e))
