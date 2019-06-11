@@ -39,5 +39,5 @@ class Command(BaseCommand):
                 'PRT discovered {} inactive kerberos '.format(
                     len(endorsements)), body)
 
-            logger.info('Found {} inactive kerberos endorsees'.format(
-                len(endorsements)))
+            for e in endorsements:
+                logger.info('invalid endorsee: {}'.format(e))
