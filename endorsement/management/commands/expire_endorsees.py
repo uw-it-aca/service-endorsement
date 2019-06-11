@@ -1,12 +1,11 @@
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.core.mail import mail_managers
 from django.template import loader
 from endorsement.models import EndorsementRecord
-from endorsement.dao.user import get_endorsee_model
 from datetime import datetime, timedelta
 import pytz
 import logging
+import urllib3
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +24,7 @@ class Command(BaseCommand):
                 self.default_lifetime))
 
     def handle(self, *args, **options):
+        urllib3.disable_warnings()
         lifetime = options.get('lifetime', self.default_lifetime)
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
         endorsements = EndorsementRecord.objects.filter(
