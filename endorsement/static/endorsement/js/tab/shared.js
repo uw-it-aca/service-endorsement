@@ -27,19 +27,19 @@ var ManageSharedNetids = {
 
             Endorse.endorse('shared_accept_modal_content', $to_endorse);
         }).on('click', 'button.revoke_service', function(e) {
-            Revoke.revoke('shared_revoke_modal_content', $(this).closest('tr'));
+            Revoke.revoke($(this).closest('tr'));
         }).on('click', 'button.aggregate_revoke_service', function(e) {
             var $checked_rows = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel).closest('tr'),
                 $to_revoke = $checked_rows.find('.revoke_service:enabled').closest('tr');
 
-            Revoke.revoke('shared_revoke_modal_content', $to_revoke);
+            Revoke.revoke($to_revoke);
         }).on('click', 'button.renew_service', function(e) {
-            Renew.renew('shared_renew_modal_content', $(this).closest('tr'));
+            Renew.renew($(this).closest('tr'));
         }).on('click', 'button.aggregate_renew_service', function(e) {
             var $checked_rows = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel).closest('tr'),
                 $to_renew = $checked_rows.find('.renew_service:enabled').closest('tr');
 
-            Renew.renew('shared_renew_modal_content', $to_renew);
+            Renew.renew($to_renew);
         }).on('click', '#check_all', function(e) {
             $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).prop('checked', $(this).prop('checked'));
             ManageSharedNetids._enableSharedEndorsability();
@@ -134,6 +134,7 @@ var ManageSharedNetids = {
 
         $content.html(template(context));
         ManageSharedNetids._enableSharedEndorsability();
+        Endorse.updateExpireWarning();
     },
 
     _enableSharedEndorsability: function() {
@@ -285,6 +286,7 @@ var ManageSharedNetids = {
             template = Handlebars.compile(source),
             $modal = $('#shared_netid_modal'),
             context = {
+                unique: [],
                 endorse_o365: [],
                 endorse_google: [],
                 endorse_netid_count: 0,
@@ -293,6 +295,10 @@ var ManageSharedNetids = {
             };
 
         $.each(endorsements, function (netid, services) {
+            if (context.unique.indexOf(netid) < 0) {
+                context.unique.push(netid);
+            }
+
             if (services.endorsements.hasOwnProperty('o365')) {
                 context.endorse_o365.push({
                     netid: netid

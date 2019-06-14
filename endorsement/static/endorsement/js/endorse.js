@@ -88,6 +88,8 @@ var Endorse = {
                 $row.replaceWith(row_template(context));
             });
         });
+
+        Endorse.updateExpireWarning();
     },
 
     updateEndorsementForRowContext: function (endorsement) {
@@ -125,14 +127,22 @@ var Endorse = {
         }
     },
 
+    udpateExpireWarning: function () {
+        if ($('.expiring-service').length > 0) {
+            $('.expiring_netids').addClass('visually-hidden')
+        } else {
+            $('.expiring_netids').removeClass('visually-hidden')
+        }
+    },
+
     _endorseModalContext: function ($rows) {
         var context = {
-                endorse_o365: [],
-                endorse_google: [],
-                endorse_netid_count: 0,
-                endorse_o365_netid_count: 0,
-                endorse_google_netid_count: 0
-            };
+            unique: [],
+            endorse_o365: [],
+            endorse_google: [],
+            endorse_o365_netid_count: 0,
+            endorse_google_netid_count: 0
+        };
 
         $rows.each(function (i, row) {
             var $row = $(row),
@@ -141,6 +151,10 @@ var Endorse = {
                 email = $row.attr('data-netid-initial-email'),
                 service = $row.attr('data-service'),
                 service_name = $row.attr('data-service-name');
+
+            if (context.unique.indexOf(netid) < 0) {
+                context.unique.push(netid);
+            }
 
             if (service === 'o365') {
                 context.endorse_o365.push({
@@ -159,12 +173,12 @@ var Endorse = {
 
         context.endorse_o365_netid_count = context.endorse_o365.length;
         context.endorse_google_netid_count = context.endorse_google.length;
-        context.endorse_netid_count = context.endorse_google_netid_count + context.endorse_o365_netid_count;
         return context;
     },
 
     _gatherEndorsementsByRow: function ($rows, action, state, store) {
-        var collection = {};
+        var collection = {
+        };
 
         $rows.each(function (i, row) {
             var $row = $(row),

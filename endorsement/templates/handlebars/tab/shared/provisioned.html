@@ -9,8 +9,8 @@
 </div>
 <div class="modal-body">
   <div>
-    You have agreed to comply with all relevant state and federal laws, and we are in the process of provisioning access to
-    {{> enumerate_partial netid_count=endorse_netid_count google=endorse_google o365=endorse_o365 google_count=endorse_google_netid_count o365_count=endorse_o365_netid_count shared='Shared '}}
+    You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. Access to
+    <ul class="comma-list">{{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}{{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}</ul> for the{{#gt unique.length 1}} {{ unique.length }}{{/gt}}UW NetID{{plural unique.length '' 's'}} {{#gt unique.length 1}}{{else}} <ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/gt}} has been provisioned.
   </div>
   <br /> 
   {{#if endorse_o365_netid_count}}

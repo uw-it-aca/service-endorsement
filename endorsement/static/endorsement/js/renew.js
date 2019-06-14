@@ -38,9 +38,9 @@ var Renew = {
         });
     },
 
-    renew: function (modal_content_id, $rows) {
+    renew: function ($rows) {
         var $modal = $('#renew_modal'),
-            template = Handlebars.compile($('#' + modal_content_id).html()),
+            template = Handlebars.compile($('#renew_modal_content').html()),
             context = Renew._renewModalContext($rows);
 
         $('.modal-content', $modal).html(template(context));
@@ -50,10 +50,46 @@ var Renew = {
             .data('$panel', $rows.closest('div.panel'));
     },
 
+    _successModal: function (renewed) {
+        var source = $("#renew_success_modal_content").html(),
+            template = Handlebars.compile(source),
+            $modal = $('#renew_success_modal'),
+            context = {
+                renewal_date: moment().add(1, 'Y').format('MM/DD/YYYY'),
+                unique: [],
+                renew_o365: [],
+                renew_google: [],
+                renew_netid_count: 0
+            };
+
+        $.each(renewed, function (netid, services) {
+            if (context.unique.indexOf(netid) < 0) {
+                context.unique.push(netid);
+            }
+
+            if (services.endorsements.hasOwnProperty('o365')) {
+                context.renew_o365.push({
+                    netid: netid
+                });
+            }
+
+            if (services.endorsements.hasOwnProperty('google')) {
+                context.renew_google.push({
+                    netid: netid
+                });
+            }
+        });
+
+        $('.modal-content', $modal).html(template(context));
+        $modal.modal('show');
+    },
+
     _renewModalContext: function ($rows) {
         var renew_o365 = [],
             renew_google = [],
             context = {
+                renewer: window.user.netid,
+                unique: [],
                 renew_o365: [],
                 renew_google: [],
                 renew_netid_count: 0,
@@ -68,6 +104,10 @@ var Renew = {
                 email = $row.attr('data-netid-initial-email'),
                 service = $row.attr('data-service'),
                 service_name = $row.attr('data-service-name');
+
+            if (context.unique.indexOf(netid) < 0) {
+                context.unique.push(netid);
+            }
 
             if (service === 'o365') {
                 context.renew_o365.push({
@@ -84,9 +124,6 @@ var Renew = {
             }
         });
 
-        context.renew_o365_netid_count = context.renew_o365.length;
-        context.renew_google_netid_count = context.renew_google.length;
-        context.renew_netid_count = context.renew_google_netid_count + context.renew_o365_netid_count;
         return context;
     },
 
@@ -105,6 +142,14 @@ var Renew = {
                 "X-CSRFToken": csrf_token
             },
             success: function(results) {
+
+                // pause for renew modal fade
+                if (results.endorsed) {
+                    setTimeout(function () {
+                        Renew._successModal(results.endorsed);
+                    }, 500);
+                }
+
                 $panel.trigger('endorse:UWNetIDsRenewSuccess', [{
                     renewees: renewees,
                     renewed: results

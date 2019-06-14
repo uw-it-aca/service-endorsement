@@ -2,14 +2,12 @@
 {% tplhandlebars "endorsed-netids" %}
 
 
-  <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Add more NeiDs to list" data-conceal-text="<span class='fa fa-caret-down'></span> Add more NeiDs to list" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Add more NeiDs to list</a>
+  <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Add UW NetIDs to provision" data-conceal-text="<span class='fa fa-caret-down'></span> Add UW NetIDs to provision" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Add UW NetIDs to provision</a>
   <div class="content visually-hidden">
       <div class="form-group" id="uwnetids-input">
-        <p>Eligible NetIDs may be provisioned for UW Services. &nbsp;You will need to know each person's UW NetID and valid email address.
-        &nbsp;Each person will receive an email with terms and conditions that must be accepted in order to access service(s).</p>
-        <textarea id="netid_list" class="form-control" placeholder="Enter the UW NetID(s), @uw.edu, or @washington.edu email address(es) for which you want to provision services."></textarea>
+        <textarea id="netid_list" class="form-control" placeholder="Enter the UW NetID(s), @uw.edu, or @washington.edu email address(es) for which you want to provision access to UW-IT services."></textarea>
         <br />
-        <button type="button" name="ValidateUWNetids" id="validate" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Validating UW NetIDs">Add NetID(s) to list</button>
+        <button type="button" name="ValidateUWNetids" id="validate" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Validating UW NetIDs">Add UW NetID(s) to list</button>
       </div>
       <div class="form-group visually-hidden" id="uwnetids-validated">
       </div>
@@ -89,7 +87,7 @@
     </table>
     {{/if}}
   </div>
-  <button type="button" name="BackToUWNetids" id="netid_input" class="btn btn-primary">Add more NetID(s) to list</button>
+  <button type="button" name="BackToUWNetids" id="netid_input" class="btn btn-primary">Add more UW NetID(s) to list</button>
 {% endtplhandlebars %}
 
 

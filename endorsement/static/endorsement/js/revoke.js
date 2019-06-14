@@ -21,9 +21,9 @@ var Revoke = {
         });
     },
 
-    revoke: function (modal_content_id, $rows) {
+    revoke: function ($rows) {
         var $modal = $('#revoke_modal'),
-            template = Handlebars.compile($('#' + modal_content_id).html()),
+            template = Handlebars.compile($('#revoke_modal_content').html()),
             context = Revoke._revokeModalContext($rows);
 
         $('.modal-content', $modal).html(template(context));
@@ -33,15 +33,23 @@ var Revoke = {
             .data('$panel', $rows.closest('div.panel'));
     },
 
+    _successModal: function (revoked) {
+        var source = $("#revoke_success_modal_content").html(),
+            template = Handlebars.compile(source),
+            $modal = $('#revoke_success_modal');
+
+        $('.modal-content', $modal).html(template());
+        $modal.modal('show');
+    },
+
     _revokeModalContext: function ($rows) {
         var revoke_o365 = [],
             revoke_google = [],
             context = {
+                unique: [],
                 revoke_o365: [],
                 revoke_google: [],
-                revoke_netid_count: 0,
-                revoke_o365_netid_count: 0,
-                revoke_google_netid_count: 0
+                revoke_netid_count: 0
             };
 
         $rows.each(function (i, row) {
@@ -51,6 +59,10 @@ var Revoke = {
                 email = $row.attr('data-netid-initial-email'),
                 service = $row.attr('data-service'),
                 service_name = $row.attr('data-service-name');
+
+            if (context.unique.indexOf(netid) < 0) {
+                context.unique.push(netid);
+            }
 
             if (service === 'o365') {
                 context.revoke_o365.push({
@@ -67,9 +79,6 @@ var Revoke = {
             }
         });
 
-        context.revoke_o365_netid_count = context.revoke_o365.length;
-        context.revoke_google_netid_count = context.revoke_google.length;
-        context.revoke_netid_count = context.revoke_google_netid_count + context.revoke_o365_netid_count;
         return context;
     },
 
@@ -86,6 +95,13 @@ var Revoke = {
                 "X-CSRFToken": csrf_token
             },
             success: function(results) {
+                // pause for renew modal fade
+                if (results.endorsed) {
+                    setTimeout(function () {
+                        Revoke._successModal(results.endorsed);
+                    }, 500);
+                }
+
                 $panel.trigger('endorse:UWNetIDsRevokeSuccess', [{
                     revokees: revokees,
                     revoked: results

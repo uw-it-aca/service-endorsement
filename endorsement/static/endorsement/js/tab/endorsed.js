@@ -20,13 +20,14 @@ var ManageProvisionedServices = {
         $panel.on('click', 'button.endorse_service', function(e) {
             Endorse.endorse('endorse_accept_modal_content', $(this).closest('tr'));
         }).on('click', 'button.revoke_service', function(e) {
-            Revoke.revoke('revoke_modal_content', $(this).closest('tr'));
+            Revoke.revoke($(this).closest('tr'));
         }).on('click', 'button.renew_service', function(e) {
-            Renew.renew('renew_modal_content', $(this).closest('tr'));
+            Renew.renew($(this).closest('tr'));
         }).on('click', '#export_csv', function (e) {
             ManageProvisionedServices._exportProvisionedToCSV();
         }).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
             $('button#confirm_endorsements').button('reset');
+            Endorse.updateExpireWarning();
             ManageProvisionedServices._displayEndorsedUWNetIDs(endorsed);
         }).on('endorse:UWNetIDsEndorsedError', function (e, error) {
             $('#' + ManageProvisionedServices.content_id).html($('#endorsed-failure').html());

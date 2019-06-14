@@ -5,10 +5,13 @@
 
 
 <div class="container">
+ <div class="expiring_netids visually-hidden">
+   <span class="significant">You have expiring UW-IT services.</span> Provisioned UW-IT services must be reviewed, renewed, and/or revoked at least annually.  To avoid loss of access to UW-IT services and data deletion, review and take action on the UW NetIDs highlighted below.
+ </div>
+
  <h2 style="text-transform: uppercase;">Manage Provisions</h2>
 
- <p>Grant, revoke, and renew access to UW services for NetIDs you own and are owned by others.
- </p>
+ <p>Grant, revoke, and renew access to UW-IT services for UW NetIDs you own and UW NetIDs owned by others.</p>
 
  <p>
    <h4>Manage for:</h4>
@@ -19,16 +22,15 @@
  <hr />
 
  <div id="shared-uwnetids">
-   <h3>UW NetIDs owned by you</h3>
-   <p>
-     You may manage provisioned services for any Shared UW NetID and other types of NetIDs that <a href="https://uwnetid.washington.edu/manage/?shared" target="_blank">you own</a>.
+   <h3>UW NetIDs you own</h3>
+   <p>Manage access to provisioned UW-IT services for UW NetIDs you own (Shared, Admin, etc.). <a href="https://uwnetid.washington.edu/manage/?shared" target="_blank">Learn more.</a>.
    </p>
    <div id="shared" class="panel"></div>
  </div>
 
  <div id="endorsed-uwnetids">
    <h3>UW NetIDs owned by others</h3>
-   <p>Users outside the university, because of an established working relationship with UW, may be granted access to UW services. &nbsp;Manage those provisioned services here.</p>
+   <p>Manage access to UW-IT services for UW affiliates working on behalf of the UW (alumni, retirees, consultants, etc.). &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">Learn more.</a></p>
    <div id="provisioned" class="panel"></div>
  </div>
 </div>
@@ -42,14 +44,10 @@
 
 {% include "handlebars/tab/shared/shared.html" %}
 {% include "handlebars/tab/shared/accept.html" %}
-{% include "handlebars/tab/shared/revoke.html" %}
-{% include "handlebars/tab/shared/renew.html" %}
 {% include "handlebars/tab/shared/provisioned.html" %}
 
 {% include "handlebars/tab/endorsed/endorsed.html" %}
 {% include "handlebars/tab/endorsed/accept.html" %}
-{% include "handlebars/tab/endorsed/revoke.html" %}
-{% include "handlebars/tab/endorsed/renew.html" %}
 {% include "handlebars/endorsers_partial.html" %}
 {% include "handlebars/endorse_button_partial.html" %}
 {% include "handlebars/display_filter_partial.html" %}
