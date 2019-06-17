@@ -127,7 +127,7 @@ var Endorse = {
         }
     },
 
-    udpateExpireWarning: function () {
+    updateExpireWarning: function () {
         if ($('.expiring-service').length > 0) {
             $('.expiring_netids').addClass('visually-hidden')
         } else {
