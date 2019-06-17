@@ -46,7 +46,7 @@ var initDataTable = function () {
                     .change(function () {
                         var api = $('#endorsee-table').dataTable().api();
 
-                        api.column(6).search(this.checked ? 'false' : '').draw();
+                        api.column(7).search(this.checked ? 'false' : '').draw();
                     });
             },
         dom: 'Bfrti',
@@ -74,14 +74,14 @@ var displayEndorsedUWNetIDs = function(endorsements) {
     if (endorsements.endorsements.endorsements.length) {
         $.each(endorsements.endorsements.endorsements, function () {
             api.row.add([
-                endorsee_template(this),
-                endorsee_shared_template(this),
+                endorsee_template(this).trim(),
+                endorsee_shared_template(this).trim(),
                 this.endorser.netid,
                 this.category_name,
                 this.reason,
                 this.datetime_emailed,
                 datetime_endorsed_template(this),
-                revoked_template(this),
+                revoked_template(this).trim(),
                 this.datetime_expired
             ]);
         });
