@@ -1,6 +1,6 @@
-{% load templatetag_handlebars %}
+{% verbatim %}
 
-{% tplhandlebars "email_editor_partial" %}
+<script id="email_editor_partial" type="text/x-handlebars-template">
 <div class="email-editor email-edit-{{ netid }}">
   <div class="edit-email {{#if email}}visually-hidden{{else}}error{{/if}}">
     <input type=input placeholder="Email address required" value="{{ email }}" style="width: 160px;"><a href="javascript:void(0);" class="finish-email-edit"><i class="fa fa-minus-circle failure"></i></a><br /><span style="display: none;">Valid email required</span>
@@ -9,4 +9,5 @@
     <span class="shown-email">{{email}}</span> <a href="javascript:void(0);" class="start-email-edit"><span style="font-size: small;">Edit</span></a>
   </div>
 </div>
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

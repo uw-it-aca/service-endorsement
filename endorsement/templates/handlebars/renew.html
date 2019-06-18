@@ -1,5 +1,5 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "renew_modal_container" %}
+{% verbatim %}
+<script id="renew_modal_container" type="text/x-handlebars-template">
   <!-- Renew Endorsement Confirmation Modal -->
   <div class="modal fade" id="renew_modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -11,9 +11,9 @@
       <div class="modal-content"></div>
     </div>
   </div>
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "renew_modal_content" %}
+<script id="renew_modal_content" type="text/x-handlebars-template">
 <div class="modal-header">
   <span class="significant">Confirm UW NetID Provision Renewal Request</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -58,10 +58,9 @@
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
   <button type="button" id="confirm_renew_responsibility" class="btn btn-primary" data-event-id="{{ event_id }}" disabled="disabled">Renew provision for {{plural unique.length 'this' 'these'}} UW NetID{{plural unique.length '' 's'}}</button>
 </div>
-{% endtplhandlebars %}
+</script>
 
-
-{% tplhandlebars "renew_success_modal_content" %}
+<script id="renew_success_modal_content" type="text/x-handlebars-template">
 <div class="modal-header">
   <span class="significant">Confirm UW NetID Provision Renewal Request</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -86,4 +85,5 @@
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
 </div>
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

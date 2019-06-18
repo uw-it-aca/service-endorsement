@@ -1,5 +1,5 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "display_filter_partial" %}
+{% verbatim %}
+<script id="display_filter_partial" type="text/x-handlebars-template">
 
 View <select class="display-filter">
   <option value="all">All</option>
@@ -9,4 +9,5 @@ View <select class="display-filter">
   <option value="unendorsed">Unprovisioned</option>
 </select>
 
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

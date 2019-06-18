@@ -1,5 +1,5 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "endorsed-netids" %}
+{% verbatim %}
+<script id="endorsed-netids" type="text/x-handlebars-template">
 
 
   <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Add UW NetIDs to provision" data-conceal-text="<span class='fa fa-caret-down'></span> Add UW NetIDs to provision" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Add UW NetIDs to provision</a>
@@ -57,10 +57,9 @@
   {{else}}
   <div class="no-endorsements">You haven't provisioned services for any UW NetIDs.</dev>
   {{/if}}
+</script>
 
-{% endtplhandlebars %}
-
-{% tplhandlebars "validated_content" %}
+<script id="validated_content" type="text/x-handlebars-template">
   <div class="valid_netids">
     {{#if netid_count}}
     <p><span class="significant text-success"><span class="fa fa-check"></span> {{netid_count}} NetID{{plural netid_count '' 's'}} Added</span><br />
@@ -88,19 +87,20 @@
     {{/if}}
   </div>
   <button type="button" name="BackToUWNetids" id="netid_input" class="btn btn-primary">Add more UW NetID(s) to list</button>
-{% endtplhandlebars %}
+</script>
 
 
-{% tplhandlebars "endorsee-row" %}
+<script id="endorsee-row" type="text/x-handlebars-template">
 {{> endorsement_row_partial endorsement=endorsement netid=netid email=email name=name svc=service new_netid=true }}
-{% endtplhandlebars %}
+</script>
 
 
-{% tplhandlebars "endorsed-loading" %}
+<script id="endorsed-loading" type="text/x-handlebars-template">
 <div class="loading"><div></div></div>
-{% endtplhandlebars %}
+</script>
 
 
-{% tplhandlebars "endorsed-failure" %}
+<script id="endorsed-failure" type="text/x-handlebars-template">
 <div class="no-endorsements">We are unable to determine provisioned services at this time.  Please try again later.</dev>
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

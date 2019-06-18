@@ -1,9 +1,10 @@
-{% load templatetag_handlebars %}
+{% verbatim %}
 
-{% tplhandlebars "shared-netids-tab-link" %}
+<script id="shared-netids-tab-link" type="text/x-handlebars-template">
 <li><a href="#{{ tab_content_id }}" data-toggle="tab" class="shared-endorse"><h2>Provision services for Shared UW NetIDs you own</h2></a></li>
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "shared-netids-tab-content" %}
+<script id="shared-netids-tab-content" type="text/x-handlebars-template">
 <div class="tab-pane" id="{{ tab_content_id }}"></div>
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

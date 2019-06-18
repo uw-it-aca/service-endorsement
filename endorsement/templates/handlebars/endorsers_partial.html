@@ -1,6 +1,6 @@
-{% load templatetag_handlebars %}
+{% verbatim %}
 
-{% tplhandlebars "endorsement_row_partial" %}
+<script id="endorsement_row_partial" type="text/x-handlebars-template">
 
 <tr class="{{#if is_revoked}}
              unendorsed_service
@@ -115,4 +115,5 @@
   </td>
 </tr>
 
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

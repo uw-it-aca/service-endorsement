@@ -1,6 +1,6 @@
-{% load templatetag_handlebars %}
+{% verbatim %}
 
-{% tplhandlebars "enumerate_partial" %}
+<script id="enumerate_partial" type="text/x-handlebars-template">
       {{#gt netid_count 10}}
         <ul class="comma-list">{{#if google_count}}<li>{{google_count}} {{ shared }}UW NetIDs to UW G Suite</li>{{/if}}{{#if o365_count}}<li>{{o365_count}} {{ shared }}UW NetIDs to UW Office 365</li>{{/if}}</ul>.
       {{else}}
@@ -17,4 +17,5 @@
         </ul> to the UW Office 365 service.
         {{/if}}
       {{/gt}}
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

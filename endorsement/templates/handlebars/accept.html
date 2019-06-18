@@ -1,6 +1,5 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "endorse-accept" %}
-  
+{% verbatim %}
+<script id="endorse-accept" type="text/x-handlebars-template">
 <div class="card">
   <p>The UW employee {{ endorser.name }} ({{ endorser.netid }}) has requested that you be given access through the University of Washington to {{ category_name }}.</p>
 
@@ -13,5 +12,6 @@
 
   <button type="button" name="AcceptProvisionRequest" id="accept" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Saving">Agree</button>
 </div>
+</script>
+{% endverbatim %}
 
-{% endtplhandlebars %}
