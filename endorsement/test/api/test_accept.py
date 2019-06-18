@@ -1,5 +1,5 @@
 import json
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from endorsement.models.core import EndorsementRecord
 from endorsement.test.api import EndorsementApiTest
 from endorsement.exceptions import NoEndorsementException

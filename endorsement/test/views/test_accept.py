@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from userservice.user import get_original_user
 from endorsement.test.views import require_url, TestViewApi
 from endorsement.models.core import EndorsementRecord
