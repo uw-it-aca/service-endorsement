@@ -129,10 +129,10 @@ var Endorse = {
 
     updateExpireWarning: function () {
         if ($('.expiring-service').length > 0) {
-            $('.expiring_netids').removeClass('visually-hidden')
+            $('.expiring_netids').removeClass('visually-hidden');
 
         } else {
-            $('.expiring_netids').addClass('visually-hidden')
+            $('.expiring_netids').addClass('visually-hidden');
         }
     },
 
