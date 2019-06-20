@@ -1,4 +1,4 @@
-FROM acait/django-container:backwards-compat-python2 as django
+FROM acait/django-container:develop as django
 
 USER root
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev -y
