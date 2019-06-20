@@ -125,6 +125,8 @@ var ManageProvisionedServices = {
 
     _displayValidationResult: function(validated) {
         var $panel = $('#' + ManageProvisionedServices.content_id),
+            $table = $('.endorsed-netids-table table', $panel),
+            $no_endorsements = $('.no-endorsements', $panel),
             source = $("#validated_content").html(),
             template = Handlebars.compile(source),
             row_source = $('#endorsee-row').html(),
@@ -138,12 +140,15 @@ var ManageProvisionedServices = {
                 netid_error_count: 0
             };
 
+        if ($no_endorsements.length && validated.validated.length) {
+            $no_endorsements.addClass('visually-hidden');
+        }
+
         $.each(validated.validated, function () {
             var netid = this.netid,
                 name = this.name,
                 email = this.email,
                 present = ($('.endorsed-netids-table tr[data-netid="' + netid + '"]', $panel).length > 0),
-                $table = $('.endorsed-netids-table table', $panel),
                 $row;
 
             if (present) {

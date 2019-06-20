@@ -396,6 +396,11 @@ ul.email-list { list-style: none; padding: 0; }
   margin-bottom: 24px;
 }
 
+.no-endorsements:not(.visually-hidden) + div {
+    display: none;
+}
+
+
 #endorse_modal {
   h4 { font-size:1.1em; margin-top: 0; padding-top: 0; }
 }

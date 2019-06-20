@@ -12,8 +12,8 @@
       <div class="form-group visually-hidden" id="uwnetids-validated">
       </div>
   </div>
-
-  {{#if has_endorsed}}
+  <div class="no-endorsements{{#if has_endorsed}} visually-hidden{{/if}}">You haven't provisioned services for any UW NetIDs.</div>
+  <div>
   <div class="row">
     <span class="pull-right">
       {{> display_filter_partial . }}
@@ -35,11 +35,13 @@
           </tr>
         </thead>
         <tbody>
+          {{#if has_endorsed}}
           {{#each endorsed.endorsed}}
           {{#each this.endorsements}}
           {{> endorsement_row_partial endorsement=this netid=@../key name=../name email=../email svc=@key }}
           {{/each}}
           {{/each}}
+          {{/if}}
         </tbody>
       </table>
     </div>
@@ -53,10 +55,8 @@
 </div>
 <!-- 
   <button type="button" name="Revoke" id="revoke" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Services">Revoke Endorsements</button>
--->
-  {{else}}
-  <div class="no-endorsements">You haven't provisioned services for any UW NetIDs.</dev>
-  {{/if}}
+  -->
+</div>
 
 {% endtplhandlebars %}
 
