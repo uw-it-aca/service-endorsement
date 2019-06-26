@@ -1,21 +1,19 @@
 // common service endorsement renewal javascript
+/* jshint esversion: 6 */
 
-var Renew = {
-    load: function () {
-        this._loadContainer();
-        this._registerEvents();
-    },
+import { Endorse } from "./endorse.js";
 
-    _loadContainer: function () {
+var Renew = (function () {
+    var _loadContainer = function () {
         $('#app_content').append($("#renew_modal_container").html());
     },
 
-    _registerEvents: function () {
+    _registerEvents = function () {
         $(document).on('click', 'button#confirm_renew_responsibility', function (e) {
             var $button = $(this),
                 to_renew;
 
-            to_renew = Endorse._gatherEndorsementsByRow($button.data('$rows'), 'renew', true, true);
+            to_renew = Endorse.gatherEndorsementsByRow($button.data('$rows'), 'renew', true, true);
             Renew._renewUWNetID(to_renew, $button.data('$panel'));
             $button.closest('.modal').modal('hide');
         }).on('change', '#renew_modal input', function () {
@@ -38,19 +36,7 @@ var Renew = {
         });
     },
 
-    renew: function ($rows) {
-        var $modal = $('#renew_modal'),
-            template = Handlebars.compile($('#renew_modal_content').html()),
-            context = Renew._renewModalContext($rows);
-
-        $('.modal-content', $modal).html(template(context));
-        $modal.modal('show');
-        $modal.find('button#confirm_renew_responsibility')
-            .data('$rows', $rows)
-            .data('$panel', $rows.closest('div.panel'));
-    },
-
-    _successModal: function (renewed) {
+    _successModal = function (renewed) {
         var source = $("#renew_success_modal_content").html(),
             template = Handlebars.compile(source),
             $modal = $('#renew_success_modal'),
@@ -84,7 +70,7 @@ var Renew = {
         $modal.modal('show');
     },
 
-    _renewModalContext: function ($rows) {
+    _renewModalContext = function ($rows) {
         var renew_o365 = [],
             renew_google = [],
             context = {
@@ -127,7 +113,7 @@ var Renew = {
         return context;
     },
 
-    _renewUWNetID: function(renewees, $panel) {
+    _renewUWNetID = function(renewees, $panel) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
         $(document).trigger('endorse:UWNetIDsRenewStart', [renewees]);
@@ -159,5 +145,25 @@ var Renew = {
                 $panel.trigger('endorse:UWNetIDsRenewError', [error]);
             }
         });
-    }
-};
+    };
+
+    return {
+        load: function () {
+            _loadContainer();
+            _registerEvents();
+        },
+        renew: function ($rows) {
+            var $modal = $('#renew_modal'),
+                template = Handlebars.compile($('#renew_modal_content').html()),
+                context = Renew._renewModalContext($rows);
+
+            $('.modal-content', $modal).html(template(context));
+            $modal.modal('show');
+            $modal.find('button#confirm_renew_responsibility')
+                .data('$rows', $rows)
+                .data('$panel', $rows.closest('div.panel'));
+        }
+    };
+}());
+
+export { Renew };

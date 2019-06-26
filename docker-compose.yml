@@ -13,3 +13,13 @@ services:
       - ./endorsement:/app/endorsement
     ports:
       - "8000:8000"
+  devtools:
+    restart: always
+    container_name: devtools
+    image: node:8.15.1-jessie
+    volumes:
+      - ./package.json:/devtools/service-endorsement/package.json
+      - ./webpack.config.js:/devtools/service-endorsement/webpack.config.js
+      - ./endorsement:/devtools/service-endorsement/endorsement
+    working_dir: /devtools/service-endorsement
+    command: bash -c "yes yes | npm install; npx webpack --watch --mode=development"

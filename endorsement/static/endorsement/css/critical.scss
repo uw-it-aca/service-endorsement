@@ -268,7 +268,7 @@ a {
   }
 }
 
-.endorsed-netids-table { border: 1px solid #ddd; 
+.endorsed-netids-table, .shared-netids-table { border: 1px solid #ddd; 
 
   table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }
   thead { flex: 0 0 auto; }
@@ -395,6 +395,11 @@ ul.email-list { list-style: none; padding: 0; }
   border-bottom: 1px solid #ddd;
   margin-bottom: 24px;
 }
+
+.no-endorsements:not(.visually-hidden) + div {
+    display: none;
+}
+
 
 #endorse_modal {
   h4 { font-size:1.1em; margin-top: 0; padding-top: 0; }

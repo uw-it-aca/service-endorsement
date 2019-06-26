@@ -26,7 +26,7 @@ setup(
         'Django>=2.2,<2.3',
         'ordereddict',
         'simplejson',
-        'django-compressor==2.2',
+        'django-webpack-loader',
         'django-userservice<4.0,>3.1',
         'urllib3>=1.25.3,<1.26',
         'unittest2',

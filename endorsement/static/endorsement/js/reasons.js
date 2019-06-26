@@ -1,11 +1,8 @@
-// 
+// manage endorsemnt reason input
+/* jshint esversion: 6 */
 
-var Reasons = {
-    load: function () {
-        this._registerEvents();
-    },
-
-    _registerEvents: function () {
+var Reasons = (function () {
+    var _registerEvents = function () {
         $('#app_content').on('change', '.displaying-reasons > select',  function(e) {
             var $target = $(e.target),
                 $row = $target.closest('tr'),
@@ -91,20 +88,26 @@ var Reasons = {
                 $panel.trigger('endorse:UWNetIDReasonEdited');
             }
         });
-    },
+    };
 
-    getReason: function ($context) {
-        var $select = $('.displaying-reasons select', $context),
-            $selected = $('option:selected', $select),
+    return {
+        load: function () {
+            _registerEvents();
+        },
+        getReason: function ($context) {
+            var $select = $('.displaying-reasons select', $context),
+                $selected = $('option:selected', $select),
+                reason = ($select.prop('selectedIndex') === 0) ? "" : ($selected.length === 0 || $selected.val() === 'other') ? $.trim($('.reason-editor', $context).val()) : $selected.html(),
+                $panel = $context.parents('.panel');
 
-            reason = ($select.prop('selectedIndex') === 0) ? "" : ($selected.length === 0 || $selected.val() === 'other') ? $.trim($('.reason-editor', $context).val()) : $selected.html(),
-            $panel = $context.parents('.panel');
+            if (reason.length === 0 || $selected.val() === '') {
+                $panel.trigger('endorse:UWNetIDsInvalidReasonError',
+                               [$selected.closest('tr'), $selected.cosest('td')]);
+            }
 
-        if (reason.length === 0 || $selected.val() === '') {
-            $panel.trigger('endorse:UWNetIDsInvalidReasonError',
-                           [$selected.closest('tr'), $selected.closest('td')]);
+            return reason;
         }
+    };
+}());
 
-        return reason;
-    }
-};
+export { Reasons };

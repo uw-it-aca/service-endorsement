@@ -1,11 +1,8 @@
-// 
+// support toggle of hisden div
+/* jshint esversion: 6 */
 
-var TogglePanel = {
-    load: function () {
-        this._registerEvents();
-    },
-
-    _registerEvents: function () {
+var TogglePanel = (function () {
+    var _registerEvents = function () {
         $(document).on('click', '.panel-toggle', function (e) {
             var $link = $(this),
                 $div = $link.next(),
@@ -21,5 +18,13 @@ var TogglePanel = {
                 $panel.trigger('endorse:PanelToggleHidden', [$div]);
             }
         });
-    }
-};
+    };
+
+    return {
+        load: function () {
+            _registerEvents();
+        }
+    };
+}());
+
+export { TogglePanel };
