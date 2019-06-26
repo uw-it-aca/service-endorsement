@@ -25,8 +25,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'compressor',
-    'templatetag_handlebars',
     'userservice',
     'django_client_logger',
     'supporttools',
@@ -42,7 +40,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_mobileesp.middleware.UserAgentDetectionMiddleware',
     'userservice.user.UserServiceMiddleware',
 ]
 
@@ -82,8 +79,6 @@ STATIC_ROOT = ''
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
-    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 
