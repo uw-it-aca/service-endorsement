@@ -21,7 +21,7 @@ before_script:
   - npm install jsdom
   - npm install sinon
   - npm install coveralls
-  - npm install -g webpack
+  - npm install -g --save-dev webpack
   - npm install -g webpack-cli
   - cp travis-ci/manage.py manage.py
   - python manage.py migrate
