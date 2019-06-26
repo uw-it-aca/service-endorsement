@@ -29,7 +29,7 @@ script:
   - pycodestyle endorsement/ --exclude=migrations,endorsement/static/vendor,endorsement/static/images,endorsement/static/fonts
   - jshint endorsement/static/endorsement/js/ --verbose
 #  - mocha endorsement/static/js/test/ --recursive
-  - webpack --mode=production
+  - npx webpack --mode=production
   - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
 after_script:
   - coveralls
