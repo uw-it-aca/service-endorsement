@@ -9,6 +9,7 @@ addons:
       - gcc-4.8
       - unixodbc-dev
 install:
+  - sudo apt-get install -qq python-dev libxml2-dev libxmlsec1-dev
   - pip install pycodestyle
 before_script:
   - pip install coveralls
