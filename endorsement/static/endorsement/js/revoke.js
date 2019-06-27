@@ -115,7 +115,7 @@ var Revoke = (function () {
             $modal.modal('show');
             $modal.find('button#confirm_revoke')
                 .data('$rows', $rows)
-                .data('$panel', $rows.closest('div.panel'));
+                .data('$panel', $rows.closest('div.netid-panel'));
         }
     };
 }());

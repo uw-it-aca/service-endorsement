@@ -161,7 +161,7 @@ var Renew = (function () {
             $modal.modal('show');
             $modal.find('button#confirm_renew_responsibility')
                 .data('$rows', $rows)
-                .data('$panel', $rows.closest('div.panel'));
+                .data('$panel', $rows.closest('div.netid-panel'));
         }
     };
 }());

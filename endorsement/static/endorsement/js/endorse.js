@@ -119,7 +119,7 @@ var Endorse = (function () {
             $modal.modal('show');
             $modal.find('button#confirm_endorsement_responsibility')
                 .data('$rows', $rows)
-                .data('$panel', $rows.closest('div.panel'));
+                .data('$panel', $rows.closest('div.netid-panel'));
         },
 
         gatherEndorsementsByRow = function ($rows, action, state, store) {

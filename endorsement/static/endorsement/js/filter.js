@@ -6,7 +6,7 @@ var DisplayFilterPanel = (function () {
         $('#app_content').on('change', 'select.display-filter', function(e) {
             var $this = $(this),
                 display = $('option:selected', $this).val(),
-                $panel = $this.closest('.panel'),
+                $panel = $this.closest('.netid-panel'),
                 $rows = $('table tbody tr', $panel);
 
             if (display === 'all') {
@@ -19,7 +19,7 @@ var DisplayFilterPanel = (function () {
             $panel.trigger('endorse:DisplayFilterChange');
         }).on('mousedown', 'select.display-filter', function(e) {
             var $this = $(this),
-                $panel = $this.closest('.panel');
+                $panel = $this.closest('.netid-panel');
 
             $('option', $this).each(function () {
                 var $option = $(this);

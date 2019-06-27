@@ -6,7 +6,7 @@ var TogglePanel = (function () {
         $(document).on('click', '.panel-toggle', function (e) {
             var $link = $(this),
                 $div = $link.next(),
-                $panel = $link.closest('.panel');
+                $panel = $link.closest('.netid-panel');
 
             if ($div.hasClass('visually-hidden')) {
                 $link.html($link.attr('data-conceal-text'));

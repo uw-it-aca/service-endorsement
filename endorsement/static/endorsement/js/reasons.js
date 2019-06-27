@@ -7,7 +7,7 @@ var Reasons = (function () {
             var $target = $(e.target),
                 $row = $target.closest('tr'),
                 $selected = $('option:selected', $(this)),
-                $panel = $row.parents('.panel');
+                $panel = $row.parents('.netid-panel');
 
             if ($selected.val() === 'other') {
                 var $editor = $('.reason-editor', $row),
@@ -37,7 +37,7 @@ var Reasons = (function () {
             var $target = $(e.target),
                 $reason = $target.closest('div.endorse-reason'),
                 $table = $target.closest('table'),
-                $panel = $table.parents('.panel'),
+                $panel = $table.parents('.netid-panel'),
                 $selected = $('option:selected', $reason),
                 value = $selected.val();
 
@@ -69,7 +69,7 @@ var Reasons = (function () {
             $panel.trigger('endorse:UWNetIDApplyAllReasons');
         }).on('input', function (e) {
             var $target = $(e.target),
-                $panel = $target.parents('.panel');
+                $panel = $target.parents('.netid-panel');
 
             if ($target.hasClass('reason-editor')) {
                 if (e.which !== 13) {
@@ -98,7 +98,7 @@ var Reasons = (function () {
             var $select = $('.displaying-reasons select', $context),
                 $selected = $('option:selected', $select),
                 reason = ($select.prop('selectedIndex') === 0) ? "" : ($selected.length === 0 || $selected.val() === 'other') ? $.trim($('.reason-editor', $context).val()) : $selected.html(),
-                $panel = $context.parents('.panel');
+                $panel = $context.parents('.netid-panel');
 
             if (reason.length === 0 || $selected.val() === '') {
                 $panel.trigger('endorse:UWNetIDsInvalidReasonError',
