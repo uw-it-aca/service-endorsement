@@ -1,25 +1,20 @@
-dist: trusty
-sudo: required
-
-env:
-  - COVERAGE_FILE=endorsement/.coverage
-
-services:
-  - docker
-
+dist: xenial
+sudo: false
+language: python
+python:
+  - "3.6"
 install:
-  - docker-compose build
-
+  - pip install pycodestyle
 before_script:
-  - npm install coveralls
-  - docker-compose run --rm --no-deps -u root --entrypoint='bash -c ". bin/activate && bin/python manage.py migrate"' app
-
+  - pip install coveralls
+  - npm install
+  - pip install .
+  - cp travis-ci/manage.py manage.py
+  - python manage.py migrate
+  - npx webpack --watch --mode=development
 script:
-  - docker-compose run --rm --no-deps -u root --entrypoint='bash -c "pip install pycodestyle && /usr/local/bin/pycodestyle endorsement/ --exclude=migrations,statics"' app
-  - docker-compose run --rm --no-deps -u root --entrypoint='bash -c "apt-get install -y nodejs npm && npm install -g jshint && yes yes | npm install && npx webpack --mode=development && jshint endorsement/static/endorsement/js --verbose"' app
-  - docker-compose run --rm --no-deps -u root --entrypoint='bash -c ". bin/activate && export COVERAGE_FILE=${COVERAGE_FILE} && pip install coverage && pip install python-coveralls && coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement"' app
-
-after_script:
-  - mv ${COVERAGE_FILE} .
+  - pycodestyle endorsement/ --exclude=migrations,static
+  - ./node_modules/.bin/eslint --ext .js endorsement/static/endorsement/js/
+  - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
+after_success:
   - coveralls
-notifications:
