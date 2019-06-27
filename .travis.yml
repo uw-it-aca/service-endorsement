@@ -1,37 +1,25 @@
-dist: xenial
-sudo: false
-language: python
+dist: trusty
+sudo: required
+
+env:
+  - COVERAGE_FILE=endorsement/.coverage
+
 services:
-  - memcached
-python:
-  - "3.6"
+  - docker
 
 install:
-  - sudo apt-get install -qq python-dev libxml2-dev libxmlsec1-dev
+  - docker-compose build
+
 before_script:
-  - pip install -r requirements.txt
-  - pip install coverage
-  - pip install python-coveralls
-  - pip install pycodestyle
-  - pip install pytz
-  - npm install jquery
-  - npm install -g jshint
-  - npm install -g mocha
-  - npm install -g istanbul
-  - npm install jsdom
-  - npm install sinon
   - npm install coveralls
-  - npm install -g npx
-  - npm install -g webpack
-  - cp travis-ci/manage.py manage.py
-  - python manage.py migrate
+  - docker-compose run --rm --no-deps -u root --entrypoint='bash -c ". bin/activate && bin/python manage.py migrate"' app
 
 script:
-  - pycodestyle endorsement/ --exclude=migrations,endorsement/static/vendor,endorsement/static/images,endorsement/static/fonts
-  - jshint endorsement/static/endorsement/js/ --verbose
-#  - mocha endorsement/static/js/test/ --recursive
-  - npx webpack --mode=development
-  - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
+  - docker-compose run --rm --no-deps -u root --entrypoint='bash -c "pip install pycodestyle && /usr/local/bin/pycodestyle endorsement/ --exclude=migrations,statics"' app
+  - docker-compose run --rm --no-deps -u root --entrypoint='bash -c "apt-get install -y nodejs npm && npm install -g jshint && jshint endorsement/static/endorsement/js --verbose"' app
+  - docker-compose run --rm --no-deps -u root --entrypoint='bash -c ". bin/activate && export COVERAGE_FILE=${COVERAGE_FILE} && pip install coverage && pip install python-coveralls && coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement"' app
+
 after_script:
+  - mv ${COVERAGE_FILE} .
   - coveralls
 notifications:
