@@ -3,6 +3,11 @@ sudo: false
 language: python
 python:
   - "3.6"
+addons:
+  apt:
+    packages:
+      - gcc-4.8
+      - unixodbc-dev
 install:
   - pip install pycodestyle
 before_script:
