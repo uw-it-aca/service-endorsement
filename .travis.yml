@@ -17,10 +17,10 @@ before_script:
   - pip install .
   - cp travis-ci/manage.py manage.py
   - python manage.py migrate
-  - npx webpack --mode=development
+  - npx webpack --verbose --mode=development
 script:
   - pycodestyle endorsement/ --exclude=migrations,static
-  - ./node_modules/.bin/eslint --ext .js endorsement/static/endorsement/js/
+  - jshint endorsement/static/endorsement/js/ --verbose
   - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
 after_success:
   - coveralls
