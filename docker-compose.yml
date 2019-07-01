@@ -5,6 +5,7 @@ services:
     environment:
       - ENV=localdev
       - PORT=8000
+      - REMOTE_USER=jstaff
     restart: always
     container_name: app
     build:

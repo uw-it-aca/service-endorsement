@@ -19,8 +19,6 @@ RUN . /app/bin/activate && pip install django-webpack-loader
 #     ./bin/npm install less -g 
 # RUN . /app/bin/activate && python manage.py collectstatic --noinput && python manage.py compress
 
-ENV REMOTE_USER jstaff
-
 FROM node:8.15.1-jessie AS wpack
 ADD . /app/
 WORKDIR /app/

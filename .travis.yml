@@ -1,27 +1,10 @@
-dist: xenial
 sudo: false
-language: python
-python:
-  - "3.6"
-addons:
-  apt:
-    packages:
-      - gcc-4.8
-      - unixodbc-dev
+services:
+  - docker
 install:
-  - sudo apt-get install -qq python-dev libxml2-dev libxmlsec1-dev
-  - pip install pycodestyle
-before_script:
-  - pip install coveralls
-  - npm install
-  - pip install .
-  - cp travis-ci/manage.py manage.py
-  - cp travis-ci/settings.py project/settings.py
-  - python manage.py migrate
-  - npx webpack --verbose --mode=development
+  - docker-compose up --build
 script:
-  - pycodestyle endorsement/ --exclude=migrations,static
-  - ./node_modules/.bin/jshint endorsement/static/endorsement/js/ --verbose
-  - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
+  - docker exec -u root app bash -c '. docker/test.sh'
 after_success:
+  - docker cp app:/app/.coverage ./.coverage
   - coveralls
