@@ -8,7 +8,7 @@ apt-get install -y nodejs npm
 npm install -g jshint
 
 
-TEST='pycodestyle endorsement/ --exclude=migrations,static'
+TEST='. bin/activate && pycodestyle endorsement/ --exclude=migrations,static'
 echo TEST: ${TEST}
 eval $TEST
 
