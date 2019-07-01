@@ -3,8 +3,7 @@
 # test script for service-endorsement
 
 # install test tooling
-pip install pycodestyle
-pip install coveralls
+. activate && pip install pycodestyle coveralls
 apt-get install -y nodejs npm
 npm install -g jshint
 
