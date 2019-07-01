@@ -2,7 +2,7 @@ sudo: false
 services:
   - docker
 install:
-  - docker-compose up --build
+  - docker-compose up --build -d
 script:
   - docker exec -u root app bash -c '. docker/test.sh'
 after_success:
