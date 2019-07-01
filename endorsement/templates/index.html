@@ -2,12 +2,15 @@
 {% load static %}
 
 {% block content %}
+<div class="expiring_netids visually-hidden">
+  <span class="significant"><i class="fa fa-exclamation-triangle"></i> You have expiring UW-IT services.</span> Provisioned UW-IT services must be reviewed, renewed, and/or revoked at least annually.  To avoid loss of access to UW-IT services and data deletion, review and take action on the UW NetIDs highlighted below.
+  <button type="button" class="close" aria-label="Close">
+    <span aria-hidden="true">×</span>
+  </button>
+</div>
 
-
+<!-- <a class="close_expiring_netids" href="#"><i class="fa fa-window-close"></i></a> -->
 <div class="container">
- <div class="expiring_netids visually-hidden">
-   <span class="significant">You have expiring UW-IT services.</span> Provisioned UW-IT services must be reviewed, renewed, and/or revoked at least annually.  To avoid loss of access to UW-IT services and data deletion, review and take action on the UW NetIDs highlighted below.
- </div>
 
  <h2 style="text-transform: uppercase;">Manage Provisions</h2>
 

@@ -520,7 +520,9 @@ input[type=checkbox][id^=revoke_]:checked + label:before { content: "\f00d"; col
 }
 **/
 
-.expiring_netids { margin: 20px; padding: 10px; border: 1px solid $uwpurple; font-size: 1.25em; background-color: #fffacd; }
+.expiring_netids { padding: 12px 18%; font-size: 1.1em; background-color: #4e6b86; color: white; width: 100%;
+    button.close { position: absolute; right: 10px; }
+ }
 
 .email-editor {
     position: static;
