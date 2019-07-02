@@ -1,10 +1,10 @@
 sudo: false
 services:
   - docker
-install:
-  - docker-compose up --build -d
 script:
+  - docker-compose up --build -d
+  - docker ps
   - docker exec -u root app bash -c '. docker/test.sh'
-after_success:
   - docker cp app:/app/.coverage ./.coverage
+after_success:
   - coveralls
