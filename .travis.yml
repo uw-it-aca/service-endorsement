@@ -1,8 +1,10 @@
 sudo: false
 services:
   - docker
-script:
+install:
   - docker-compose up --build -d
+  - sleep 15
+script:
   - docker ps
   - docker exec -u root devtools bash -c 'ls -l /devtools/service-endorsement/endorsement/static'
   - docker exec -u root app bash -c 'ls -l /app/endorsement/static'
