@@ -4,6 +4,8 @@ services:
 script:
   - docker-compose up --build -d
   - docker ps
+  - docker exec -u root app bash -c 'ls -l /app/endorsement/static/webpack-stats.json'
+  - docker exec -u root app bash -c 'cat /app/endorsement/static/webpack-stats.json'
   - docker exec -u root app bash -c '. docker/test.sh'
   - docker cp app:/app/.coverage ./.coverage
 after_success:
