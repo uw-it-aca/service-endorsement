@@ -6,8 +6,6 @@ install:
   - sleep 15
 script:
   - docker ps
-  - docker exec -u root devtools bash -c 'ls -l /devtools/service-endorsement/endorsement/static'
-  - docker exec -u root app bash -c 'ls -l /app/endorsement/static'
   - docker exec -u root app bash -c '. docker/test.sh'
   - docker cp app:/app/.coverage ./.coverage
 after_success:

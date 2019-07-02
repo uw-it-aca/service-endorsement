@@ -24,7 +24,7 @@ ADD . /app/
 WORKDIR /app/
 RUN npm install .
 # RUN npm install handlebars-loader --save
-RUN npx webpack --verbose --mode=production
+RUN npx webpack --mode=production
 
 FROM django
 
