@@ -34,6 +34,9 @@ var Endorse = (function () {
             } else {
                 $accept_button.attr('disabled', 'disabled');
             }
+        }).on('click', '.expiring_netids button.close', function (e) {
+            // make sure it stays hidden
+            $('.expiring_netids').hide();
         });
     },
 
