@@ -268,11 +268,11 @@ a {
   }
 }
 
-.endorsed-netids-table { border: 1px solid #ddd; 
+.endorsed-netids-table, .shared-netids-table { border: 1px solid #ddd; 
 
   table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }
   thead { flex: 0 0 auto; }
-  tbody { flex: 1 1 auto; display: block; overflow-y: auto; overflow-x: hidden; height: 280px; }
+  tbody { flex: 1 1 auto; display: block; overflow-y: scroll; overflow-x: hidden; height: 280px; }
   tr { width: 100%; display: table; table-layout: fixed; }
 
   thead { background-color: #eee;
@@ -309,6 +309,8 @@ label.accept_responsibility {
 }
 
 .panel-toggle { color:#0077c2; display: inline-block; padding-top: 10px; margin-bottom: 10px; }
+
+.netid-panel { margin-bottom: 40px; }
 
 #provision { margin-bottom: 38px; }
 

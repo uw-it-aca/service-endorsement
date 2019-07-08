@@ -1,4 +1,17 @@
 // javascript for service endorsement manager
+/* jshint esversion: 6 */
+
+import { Endorse } from "./endorse.js";
+import { Revoke } from "./revoke.js";
+import { Renew } from "./renew.js";
+import { Reasons } from "./reasons.js";
+import { EmailEdit } from "./emailedit.js";
+import { ClipboardCopy } from "./clipboard.js";
+import { TogglePanel } from "./toggle.js";
+import { DisplayFilterPanel } from "./filter.js";
+import { HandlebarsHelpers } from "./handlebars-helpers.js";
+import { ManageProvisionedServices } from "./tab/endorsed.js";
+import { ManageSharedNetids } from "./tab/shared.js";
 
 $(window.document).ready(function() {
     var common_tools,
@@ -25,7 +38,7 @@ $(window.document).ready(function() {
     catch (err) {
         if (err.name !== 'ReferenceError') {
             // not a 401, 404 response
-            console.error(err);
+            console.log(err);
         }
     }
 });
@@ -33,6 +46,7 @@ $(window.document).ready(function() {
 var displayPageHeader = function() {
     var source = $("#page-top").html();
     var template = Handlebars.compile(source);
+
     $("#top_banner").html(template({
         netid: window.user.netid
     }));

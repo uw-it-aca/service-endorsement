@@ -1,8 +1,8 @@
-from django.conf.urls import  include, url
+from django.urls import include, re_path
 
 
 urlpatterns = [
-    url(r'^', include('endorsement.urls')),
-    url(r'^support', include('userservice.urls')),
-    url(r'^logging/', include('django_client_logger.urls')),
+    re_path(r'^support', include('userservice.urls')),
+    re_path(r'^logging/', include('django_client_logger.urls')),
+    re_path(r'^', include('endorsement.urls')),
 ]

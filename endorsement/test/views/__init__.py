@@ -1,6 +1,6 @@
 from unittest2 import skipIf
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.test import Client
 from django.test import TestCase

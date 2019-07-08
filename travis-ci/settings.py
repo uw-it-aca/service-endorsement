@@ -1,5 +1,5 @@
 """
-Django 1.9 settings for travis_ci project
+Django 2.2 settings for travis_ci project
 """
 
 import os
@@ -25,24 +25,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'compressor',
-    'templatetag_handlebars',
+    'webpack_loader',
     'userservice',
     'django_client_logger',
     'supporttools',
     'endorsement',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.PersistentRemoteUserMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_mobileesp.middleware.UserAgentDetectionMiddleware',
     'userservice.user.UserServiceMiddleware',
 ]
 
@@ -82,8 +79,6 @@ STATIC_ROOT = ''
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
-    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 
@@ -109,7 +104,6 @@ WSGI_APPLICATION = 'travis-ci.wsgi.application'
 COMPRESS_ENABLED = False
 COMPRESS_OFFLINE = False
 
-AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.all_ok.AllOK'
 USERSERVICE_ADMIN_GROUP=''
 RESTCLIENTS_ADMIN_GROUP=''
 PROVISION_ADMIN_GROUP='u_acadev_provision_support'

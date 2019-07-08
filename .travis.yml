@@ -1,34 +1,12 @@
 sudo: false
-language: python
 services:
-  - memcached
-python:
-  - "2.7"
-  - "3.6"
-
+  - docker
 install:
-  - sudo apt-get install -qq python-dev libxml2-dev libxmlsec1-dev
-before_script:
-  - pip install -r requirements.txt
-  - pip install coverage
-  - pip install python-coveralls
-  - pip install pycodestyle
-  - pip install pytz
-  - npm install jquery
-  - npm install -g jshint
-  - npm install -g mocha
-  - npm install -g istanbul
-  - npm install jsdom
-  - npm install sinon
-  - npm install coveralls
-  - cp travis-ci/manage.py manage.py
-  - python manage.py migrate
-
+  - docker-compose up --build -d
+  - sleep 15
 script:
-  - pycodestyle endorsement/ --exclude=migrations,endorsement/static/vendor,endorsement/static/images,endorsement/static/fonts
-  - jshint endorsement/static/endorsement/js/ --verbose
-#  - mocha endorsement/static/js/test/ --recursive
-  - coverage run --source=endorsement/ --omit=endorsement/migrations/* manage.py test endorsement
-after_script:
+  - docker ps
+  - docker exec -u root app bash -c '. docker/test.sh'
+  - docker cp app:/app/.coverage ./.coverage
+after_success:
   - coveralls
-notifications:

@@ -1,5 +1,5 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "shared-netids" %}
+{% verbatim %}
+<script id="shared-netids" type="text/x-handlebars-template">
 
   <div class="row">
     <span class="pull-right">
@@ -15,13 +15,13 @@
     </div>
   </div>
 </div>
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "shared-netids-content" %}
+<script id="shared-netids-content" type="text/x-handlebars-template">
   <div class="form-group">
-    <div class="endorsed-netids-table">
+    <div class="shared-netids-table">
     <table class="table ">
-      <thead class="thead-dark">
+      <thead class="thead-light">
         <tr>
           <th>UW NetID</th>
           <th>Name</th>
@@ -43,23 +43,23 @@
     </div>
     <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Bulk actions" data-conceal-text="<span class='fa fa-caret-down'></span> Bulk actions" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Bulk actions</a>
     <div class="content visually-hidden">
-      <button disabled="disabled" class="btn aggregate_renew_service">Renew <span></span>Selected</button>
-      <button disabled="disabled" class="btn aggregate_revoke_service">Revoke <span></span>Selected</button>
-      <button disabled="disabled" class="btn aggregate_endorse_service">Provision <span></span>Selected</button>
+      <button disabled="disabled" class="btn btn-default aggregate_renew_service">Renew <span></span>Selected</button>
+      <button disabled="disabled" class="btn btn-default aggregate_revoke_service">Revoke <span></span>Selected</button>
+      <button disabled="disabled" class="btn btn-default aggregate_endorse_service">Provision <span></span>Selected</button>
     </div>
   </div>
 <!-- <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
 -->
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "no-shared-netids-content" %}
+<script id="no-shared-netids-content" type="text/x-handlebars-template">
   <div class="no-endorsements">
       <p>You do not own any Shared UW NetIDs.</p>
       <p>Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view Shared UW NetIDs on which you are an administrator.</p>
   </div>
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "shared_accept_single_modal_content" %}
+<script id="shared_accept_single_modal_content" type="text/x-handlebars-template">
       <div class="modal-header">
         <span>Confirm UW Shared NetID Provision Request</span>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -88,12 +88,13 @@ affiliates. For more information, visit: <a href="https://itconnect.uw.edu/conne
         <button type="button" id="confirm_endorsement_responsibility" class="btn btn-primary" disabled="disabled">Provision services for {{plural netid_count 'this' 'these'}} UW NetID{{plural netid_count '' 's'}}</button>
       </div>
 
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "shared-loading" %}
+<script id="shared-loading" type="text/x-handlebars-template">
 <div class="loading"><div></div></div>
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "shared-failure" %}
+<script id="shared-failure" type="text/x-handlebars-template">
 <div class="no-endorsements">We are unable to determine if you own any Shared UW NetIDs at this time.  Please try again later.</dev>
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

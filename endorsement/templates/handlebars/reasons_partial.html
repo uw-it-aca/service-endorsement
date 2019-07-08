@@ -1,5 +1,5 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "reasons_partial" %}
+{% verbatim %}
+<script id="reasons_partial" type="text/x-handlebars-template">
 
 {{#ifAndNot endorsement.reason endorsement.is_revoked}}
 {{endorsement.reason}}<input type=hidden class="reason-editor" placeholder="Reason for provisioning" value="{{endorsement.reason}}">
@@ -25,5 +25,5 @@
   <p class="apply-reason {{#has_reason endorsements}}visually-hidden{{/has_reason}}" style="font-size: small;">Apply to <a href="javascript:void(0);" class='apply-all'>all</a> or <a href="javascript:void(0);" class='apply-unset'>unselected</a></p>
 </div>
 {{/ifAndNot}}
-
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

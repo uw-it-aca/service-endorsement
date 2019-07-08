@@ -1,0 +1,25 @@
+ingress:
+  enabled: true
+  hosts:
+    prereq:
+      host: prt-test.aca-aws.s.uw.edu
+      paths:
+        - "/"
+database:
+  secretName: prt-test-rds
+  hostname: prt-test-rds.default.svc.cluster.local
+  name: prttest
+image:
+  repository: 847518396864.dkr.ecr.us-west-2.amazonaws.com/service-endorsement-prt-test-provisioner-web-ecr
+repo: service-endorsement
+clusterName: prt-test
+environmentVariables:
+  - name: AUTH
+    value: MOCK_SAML
+  - name: CLUSTER_CNAME
+    value: prt-test.aca-aws.s.uw.edu
+environmentVariablesSecrets:
+  djangoSecret:
+    name: DJANGO_SECRET
+    secretName: prt-test-django-secret
+    secretKey: django-secret

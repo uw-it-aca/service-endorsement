@@ -1,23 +1,24 @@
 // javascript to Manage Shared Netids
+/* jshint esversion: 6 */
 
-var ManageSharedNetids = {
-    content_id: 'shared',
-    location_hash: '#shared',
+import { Endorse } from "../endorse.js";
+import { Revoke } from "../revoke.js";
+import { Renew } from "../renew.js";
+import { Reasons } from "../reasons.js";
 
-    load: function () {
-        this._loadContent();
-        this._registerEvents();
-    },
+var ManageSharedNetids = (function () {
+    var content_id = 'shared',
+        location_hash = '#' + content_id,
 
-    _loadContent: function () {
+    _loadContent = function () {
         var content_template = Handlebars.compile($("#shared-netids").html());
 
-        $('#' + ManageSharedNetids.content_id).append(content_template());
-        ManageSharedNetids._getSharedUWNetIDs();
+        $(location_hash).append(content_template());
+        _getSharedUWNetIDs();
     },
 
-    _registerEvents: function () {
-        var $panel = $('#' + ManageSharedNetids.content_id);
+    _registerEvents = function () {
+        var $panel = $(location_hash);
 
         $panel.on('click', 'button.endorse_service', function(e) {
             Endorse.endorse('shared_accept_modal_content', $(this).closest('tr'));
@@ -42,66 +43,66 @@ var ManageSharedNetids = {
             Renew.renew($to_renew);
         }).on('click', '#check_all', function(e) {
             $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).prop('checked', $(this).prop('checked'));
-            ManageSharedNetids._enableSharedEndorsability();
+            _enableSharedEndorsability();
         }).on('change', 'input[id^="aggregate_"]', function(e) {
-            ManageSharedNetids._enableSharedEndorsability();
+            _enableSharedEndorsability();
         }).on('endorse:PanelToggleExposed', function (e, $div) {
             $('.aggregate_action', $panel).removeClass('visually-hidden');
             $('input[id^="aggregate_"]', $panel).prop('checked', false);
-            ManageSharedNetids._enableSharedEndorsability();
+            _enableSharedEndorsability();
         }).on('endorse:PanelToggleHidden', function (e, $div) {
             $('.aggregate_action', $panel).addClass('visually-hidden');
         }).on('endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
-            ManageSharedNetids._enableSharedEndorsability();
+            _enableSharedEndorsability();
         }).on('click', 'button#confirm_shared_endorse', function(e) {
             $(this).parents('.modal').modal('hide');
             $('button#shared_update').button('loading');
-            var shared = ManageSharedNetids._getSharedUWNetIDsToEndorse();
+            var shared = _getSharedUWNetIDsToEndorse();
 
-            ManageSharedNetids._endorseSharedUWNetIDs(shared);
+            _endorseSharedUWNetIDs(shared);
         }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.endorsed.endorsed);
-            ManageSharedNetids._enableSharedEndorsability();
+            _enableSharedEndorsability();
 
             // pause for shared endorse modal fade
             if (data.endorsed.endorsed) {
                 setTimeout(function () {
-                    ManageSharedNetids._enableSharedEndorsability();
-                    ManageSharedNetids._sharedEndorseSuccessModal(data.endorsed.endorsed);
+                    _enableSharedEndorsability();
+                    _sharedEndorseSuccessModal(data.endorsed.endorsed);
                 }, 500);
             }
         }).on('endorse:UWNetIDsEndorseError', function (e, error) {
             console.log('error: ' + error);
         }).on('endorse:UWNetIDsRevokeSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.revoked.endorsed);
-            ManageSharedNetids._enableSharedEndorsability();
+            _enableSharedEndorsability();
         }).on('endorse:UWNetIDsRevokeError', function (e, error) {
             console.log('error: ' + error);
         }).on('endorse:UWNetIDsRenewSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.renewed.endorsed);
-            ManageSharedNetids._enableSharedEndorsability();
+            _enableSharedEndorsability();
         });
 
         $(document).on('endorse:UWNetIDRevoking', function (e, $row) {
-            ManageSharedNetids._enableSharedEndorsability($row);
+            _enableSharedEndorsability($row);
         }).on('endorse:UWNetIDsInvalidReasonError', function (e, $row, $td) {
             if ($('input[type="checkbox"]:checked', $row).length > 0) {
                 $td.addClass('error');
                 $('button#shared_update').attr('disabled', 'disabled');
             }
         }).on('change', 'input[id^="endorse_"]', function (e) {
-            ManageSharedNetids._enableSharedEndorsability();
+            _enableSharedEndorsability();
         }).on('endorse:UWNetIDsShared', function (e, shared) {
-            ManageSharedNetids._displaySharedUWNetIDs(shared);
+            _displaySharedUWNetIDs(shared);
         }).on('endorse:UWNetIDsSharedError', function (e, error) {
-            $('#' + ManageSharedNetids.content_id + '.content').html($('#shared-failure').html());
+            $(location_hash + '.content').html($('#shared-failure').html());
         }).on('endorse:DisplayFilterChange', function (e) {
-            ManageSharedNetids._enableSharedEndorsability();
+            _enableSharedEndorsability();
         });
     },
 
-    _displaySharedUWNetIDs: function(shared) {
-        var $panel = $('#' + ManageSharedNetids.content_id),
+    _displaySharedUWNetIDs = function(shared) {
+        var $panel = $(location_hash),
             $content = $('.content', $panel),
             source,
             template,
@@ -133,12 +134,12 @@ var ManageSharedNetids = {
         }
 
         $content.html(template(context));
-        ManageSharedNetids._enableSharedEndorsability();
+        _enableSharedEndorsability();
         Endorse.updateExpireWarning();
     },
 
-    _enableSharedEndorsability: function() {
-        var $panel = $('#' + ManageSharedNetids.content_id);
+    _enableSharedEndorsability = function() {
+        var $panel = $(location_hash);
 
         // enable/disable Provision button
         $('.displaying-reasons select', $panel).each(function () {
@@ -162,7 +163,7 @@ var ManageSharedNetids = {
             $('.aggregate_action', $panel).removeClass('visually-hidden');
 
             if ($checked.length > 0) {
-                total = $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).length;
+                var total = $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).length;
 
                 if ($checked.length < total) {
                     is_indeterminate = true;
@@ -175,7 +176,7 @@ var ManageSharedNetids = {
             $check_all.prop('checked', is_checked);
 
             // fixup error labels
-            $('.endorsed-netids-table > table > tbody > tr', $panel).removeClass('error');
+            $('.shared-netids-table > table > tbody > tr', $panel).removeClass('error');
             $.each(['endorse', 'renew', 'revoke'], function (i, action) {
                 var $agg_button = $('.aggregate_' + action + '_service', $panel),
                     $enabled =  $('.' + action + '_service:enabled', $rows),
@@ -199,7 +200,7 @@ var ManageSharedNetids = {
         }
     },
 
-    _getSharedUWNetIDsToEndorse: function () {
+    _getSharedUWNetIDsToEndorse = function () {
         var aggregate = {
             'endorse': {},
             'revoke': {},
@@ -258,9 +259,9 @@ var ManageSharedNetids = {
         return aggregate;
     },
 
-    _getSharedUWNetIDs: function() {
+    _getSharedUWNetIDs = function() {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-            $panel = $('#' + ManageSharedNetids.content_id);
+            $panel = $(location_hash);
 
         $('.content', $panel).html($('#shared-loading').html());
 
@@ -281,7 +282,7 @@ var ManageSharedNetids = {
         });
     },
 
-    _sharedEndorseSuccessModal: function (endorsements) {
+    _sharedEndorseSuccessModal = function (endorsements) {
         var source = $("#shared_provisioned_modal_content").html(),
             template = Handlebars.compile(source),
             $modal = $('#shared_netid_modal'),
@@ -318,5 +319,14 @@ var ManageSharedNetids = {
 
         $('.modal-content', $modal).html(template(context));
         $modal.modal('show');
-    }
-};
+    };
+
+    return {
+        load: function () {
+            _loadContent();
+            _registerEvents();
+        }
+    };
+}());
+
+export { ManageSharedNetids };

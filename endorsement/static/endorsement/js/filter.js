@@ -1,15 +1,12 @@
-// 
+// manage visible table rows
+/* jshint esversion: 6 */
 
-var DisplayFilterPanel = {
-    load: function () {
-        this._registerEvents();
-    },
-
-    _registerEvents: function () {
+var DisplayFilterPanel = (function () {
+    var _registerEvents = function () {
         $('#app_content').on('change', 'select.display-filter', function(e) {
             var $this = $(this),
                 display = $('option:selected', $this).val(),
-                $panel = $this.closest('.panel'),
+                $panel = $this.closest('.netid-panel'),
                 $rows = $('table tbody tr', $panel);
 
             if (display === 'all') {
@@ -22,10 +19,10 @@ var DisplayFilterPanel = {
             $panel.trigger('endorse:DisplayFilterChange');
         }).on('mousedown', 'select.display-filter', function(e) {
             var $this = $(this),
-                $panel = $this.closest('.panel');
+                $panel = $this.closest('.netid-panel');
 
             $('option', $this).each(function () {
-                $option = $(this);
+                var $option = $(this);
 
                 if ($option.val() != 'all') {
                     if ($('table tbody tr.' + $option.val() + '_service', $panel).length === 0) {
@@ -36,5 +33,13 @@ var DisplayFilterPanel = {
                 }
             });
         });
-    }
-};
+    };
+
+    return {
+        load: function () {
+            _registerEvents();
+        }
+    };
+}());
+
+export { DisplayFilterPanel };

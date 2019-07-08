@@ -1,8 +1,8 @@
-from django.conf.urls import include, url
-from django.contrib import admin
+from django.urls import include, re_path
+
 
 urlpatterns = [
-    url(r'^support', include('userservice.urls')),
-    url(r'^logging/', include('django_client_logger.urls')),
-    url(r'^', include('endorsement.urls')),
+    re_path(r'^support', include('userservice.urls')),
+    re_path(r'^logging/', include('django_client_logger.urls')),
+    re_path(r'^', include('endorsement.urls')),
 ]

@@ -1,5 +1,5 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "shared_accept_modal_content" %}
+{% verbatim %}
+<script id="shared_accept_modal_content" type="text/x-handlebars-template">
 
 <!-- Responsibility Modal -->
 <div class="modal-header">
@@ -44,5 +44,5 @@
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
   <button type="button" id="confirm_endorsement_responsibility" data-netid="{{ netid }}" data-service="{{ service }}" class="btn btn-primary" disabled="disabled">Provision access to UW-IT services for {{plural unique.length 'this' 'these'}} UW NetID{{plural unique.length '' 's'}}</button>
 </div>
-
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

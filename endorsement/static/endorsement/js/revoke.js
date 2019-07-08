@@ -1,39 +1,25 @@
 // common service revocation javascript
+/* jshint esversion: 6 */
 
-var Revoke = {
-    load: function () {
-        this._loadContainer();
-        this._registerEvents();
-    },
+import { Endorse } from "./endorse.js";
 
-    _loadContainer: function () {
+var Revoke = (function () {
+    var _loadContainer = function () {
         $('#app_content').append($("#revoke_modal_container").html());
     },
 
-    _registerEvents: function () {
+    _registerEvents = function () {
         $(document).on('click', 'button#confirm_revoke', function (e) {
             var $button = $(this),
                 to_revoke;
 
-            to_revoke = Endorse._gatherEndorsementsByRow($button.data('$rows'), 'revoke', false, true);
-            Revoke._revokeUWNetIDs(to_revoke, $button.data('$panel'));
+            to_revoke = Endorse.gatherEndorsementsByRow($button.data('$rows'), 'revoke', false, true);
+            _revokeUWNetIDs(to_revoke, $button.data('$panel'));
             $button.closest('.modal').modal('hide');
         });
     },
 
-    revoke: function ($rows) {
-        var $modal = $('#revoke_modal'),
-            template = Handlebars.compile($('#revoke_modal_content').html()),
-            context = Revoke._revokeModalContext($rows);
-
-        $('.modal-content', $modal).html(template(context));
-        $modal.modal('show');
-        $modal.find('button#confirm_revoke')
-            .data('$rows', $rows)
-            .data('$panel', $rows.closest('div.panel'));
-    },
-
-    _successModal: function (revoked) {
+    _successModal = function (revoked) {
         var source = $("#revoke_success_modal_content").html(),
             template = Handlebars.compile(source),
             $modal = $('#revoke_success_modal');
@@ -42,7 +28,7 @@ var Revoke = {
         $modal.modal('show');
     },
 
-    _revokeModalContext: function ($rows) {
+    _revokeModalContext = function ($rows) {
         var revoke_o365 = [],
             revoke_google = [],
             context = {
@@ -82,7 +68,7 @@ var Revoke = {
         return context;
     },
 
-    _revokeUWNetIDs: function(revokees, $panel) {
+    _revokeUWNetIDs = function(revokees, $panel) {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
         $.ajax({
@@ -98,7 +84,7 @@ var Revoke = {
                 // pause for renew modal fade
                 if (results.endorsed) {
                     setTimeout(function () {
-                        Revoke._successModal(results.endorsed);
+                        _successModal(results.endorsed);
                     }, 500);
                 }
 
@@ -113,5 +99,25 @@ var Revoke = {
                 $panel.trigger('endorse:UWNetIDsRevokeError', [error]);
             }
         });
-    }
-};
+    };
+
+    return {
+        load: function () {
+            _loadContainer();
+            _registerEvents();
+        },
+        revoke: function ($rows) {
+            var $modal = $('#revoke_modal'),
+                template = Handlebars.compile($('#revoke_modal_content').html()),
+                context = _revokeModalContext($rows);
+
+            $('.modal-content', $modal).html(template(context));
+            $modal.modal('show');
+            $modal.find('button#confirm_revoke')
+                .data('$rows', $rows)
+                .data('$panel', $rows.closest('div.netid-panel'));
+        }
+    };
+}());
+
+export { Revoke };

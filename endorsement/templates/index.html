@@ -26,15 +26,15 @@
 
  <div id="shared-uwnetids">
    <h3>UW NetIDs you own</h3>
-   <p>Manage access to provisioned UW-IT services for UW NetIDs you own (Shared, Admin, etc.). <a href="https://itconnect.uw.edu/connect/email/resources/endorse-uw-netids/" target="_blank">Learn more.</a>
+   <p>Manage access to provisioned UW-IT services for UW NetIDs you own (Shared, Admin, etc.). &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/endorse-uw-netids/" target="_blank">Learn more.</a>
    </p>
-   <div id="shared" class="panel"></div>
+   <div id="shared" class="netid-panel"></div>
  </div>
 
  <div id="endorsed-uwnetids">
    <h3>UW NetIDs owned by others</h3>
    <p>Manage access to UW-IT services for UW affiliates working on behalf of the UW (alumni, retirees, consultants, etc.). &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">Learn more.</a></p>
-   <div id="provisioned" class="panel"></div>
+   <div id="provisioned" class="netid-panel"></div>
  </div>
 </div>
 
@@ -56,22 +56,4 @@
 {% include "handlebars/display_filter_partial.html" %}
 {% include "handlebars/enumerate_partial.html" %}
 
-{% endblock %}
-
-{% block extra_js %}
-<script src="{% static "endorsement/js/main.js" %}"></script>
-<script src="{% static "endorsement/js/tab/endorsed.js" %}"></script>
-<script src="{% static "endorsement/js/tab/shared.js" %}"></script>
-<script src="{% static "endorsement/js/endorse.js" %}"></script>
-<script src="{% static "endorsement/js/revoke.js" %}"></script>
-<script src="{% static "endorsement/js/renew.js" %}"></script>
-<script src="{% static "endorsement/js/reasons.js" %}"></script>
-<script src="{% static "endorsement/js/emailedit.js" %}"></script>
-<script src="{% static "endorsement/js/toggle.js" %}"></script>
-<script src="{% static "endorsement/js/filter.js" %}"></script>
-<script src="{% static "endorsement/js/clipboard.js" %}"></script>
-<script src="{% static "endorsement/js/history.js" %}"></script>
-<script src="{% static "endorsement/js/notify.js" %}"></script>
-<script src="{% static "endorsement/js/datetime.js" %}"></script>
-<script src="{% static "vendor/js/moment.2.24.0.min.js" %}"></script>
 {% endblock %}

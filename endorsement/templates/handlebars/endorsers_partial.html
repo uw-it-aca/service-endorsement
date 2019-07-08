@@ -1,6 +1,6 @@
-{% load templatetag_handlebars %}
+{% verbatim %}
 
-{% tplhandlebars "endorsement_row_partial" %}
+<script id="endorsement_row_partial" type="text/x-handlebars-template">
 
 <tr class="{{#if is_revoked}}
              unendorsed_service
@@ -101,18 +101,19 @@
   <td class="endorsed-action">
   {{#unless endorsement.is_revoked}}  
     {{#if  endorsement.datetime_endorsed}}
-      <button type="button" name="Renew {{ endorsement.category_name }}" class="btn btn-primary renew_service renew_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
+      <button type="button" name="Renew {{ endorsement.category_name }}" class="btn btn-primary renew_service renew_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn btn-default revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
     {{else}}
       {{#if endorsement.accept_id}}
-        <button type="button" class="btn button_url" data-url="mailto:{{ email }}?subject=UW-IT%20Computing%20Services%20-%20Provision%20Request%20Confirmation&body=Greetings,%0D%0A%0D%0AI%20provisioned%20you%20access%20to%20UW-IT%20computing%20services.%20To%20accept%20the%20terms%20of%20service%20and%20begin%20using%20the%20UW-IT%20computing%20services,%20click%20here:%20{{ endorsement.accept_url }}" name="Resend {{ endorsement.category_name }} confirmation to {{ email }}">Resend Link</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
+        <button type="button" class="btn btn-default button_url" data-url="mailto:{{ email }}?subject=UW-IT%20Computing%20Services%20-%20Provision%20Request%20Confirmation&body=Greetings,%0D%0A%0D%0AI%20provisioned%20you%20access%20to%20UW-IT%20computing%20services.%20To%20accept%20the%20terms%20of%20service%20and%20begin%20using%20the%20UW-IT%20computing%20services,%20click%20here:%20{{ endorsement.accept_url }}" name="Resend {{ endorsement.category_name }} confirmation to {{ email }}">Resend Link</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn btn-default revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
       {{else}}
-        <button type="button" name="Provision service" class="btn endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
+        <button type="button" name="Provision service" class="btn btn-default endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
       {{/if}}
     {{/if}}
   {{else}}
-      <button type="button" name="Provision service" class="btn endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
+      <button type="button" name="Provision service" class="btn btn-default endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
   {{/unless}}
   </td>
 </tr>
 
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}
