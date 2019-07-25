@@ -221,7 +221,6 @@ a {
    #netid_list { height: 6em; }
 }
 
-.display-filter { margin-right: 16px; margin-bottom: 18px; }
 #export_csv { margin-left: 16px; }
 
 #uwnetids-validated {
@@ -308,7 +307,8 @@ label.accept_responsibility {
   }
 }
 
-.panel-toggle { color:#0077c2; display: inline-block; padding-top: 10px; margin-bottom: 10px; }
+.form-group { margin-top: 15px; }
+.panel-toggle { color:#0077c2; display: inline-block; margin-bottom: 10px; }
 
 .netid-panel { margin-bottom: 40px; }
 

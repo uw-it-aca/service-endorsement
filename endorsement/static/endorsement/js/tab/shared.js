@@ -103,7 +103,7 @@ var ManageSharedNetids = (function () {
 
     _displaySharedUWNetIDs = function(shared) {
         var $panel = $(location_hash),
-            $content = $('.content', $panel),
+            $content = $('.form-group.content', $panel),
             source,
             template,
             context = {
@@ -151,7 +151,7 @@ var ManageSharedNetids = (function () {
         });
 
         // fixup checkboxes, aggregate labels
-        if ($('.panel-toggle + div.content', $panel).hasClass('visually-hidden') === false) {
+        if ($('.panel-toggle + .form-group.content', $panel).hasClass('visually-hidden') === false) {
             var $checked = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel),
                 $rows = $checked.closest('tr:not(".visually-hidden")'),
                 is_checked = false,
@@ -263,7 +263,7 @@ var ManageSharedNetids = (function () {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
             $panel = $(location_hash);
 
-        $('.content', $panel).html($('#shared-loading').html());
+        $('.form-group.content', $panel).html($('#shared-loading').html());
 
         $.ajax({
             url: "/api/v1/shared/",

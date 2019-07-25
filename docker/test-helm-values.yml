@@ -12,10 +12,14 @@ database:
 image:
   repository: 847518396864.dkr.ecr.us-west-2.amazonaws.com/service-endorsement-prt-test-provisioner-web-ecr
 repo: service-endorsement
+branch: develop
 clusterName: prt-test
+certs:
+  mounted: true
+  certPath: /certs/provision-test.uw.edu-uwca.cert
+  keyPath: /certs/provision-test.uw.edu-uwca.key
+  secretName: provision-test-uwca
 environmentVariables:
-  - name: AUTH
-    value: MOCK_SAML
   - name: CLUSTER_CNAME
     value: prt-test.aca-aws.s.uw.edu
 environmentVariablesSecrets:
