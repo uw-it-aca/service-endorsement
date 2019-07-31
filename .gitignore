@@ -79,4 +79,4 @@ share/
 
 # webpack
 bundles/
-webpack-status
+webpack-stats.json
