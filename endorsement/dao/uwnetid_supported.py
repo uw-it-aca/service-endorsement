@@ -18,11 +18,15 @@ def get_shared_netids_for_netid(netid):
     Return supported resources
     """
     supported_types = ['shared', 'administrator', 'support']
+    # length based on
+    # https://wiki.cac.washington.edu/display/SMW/UW+NetID+Namespace
+    max_length = 29
 
     try:
         shared = []
         for supported in get_supported_resources(netid):
-            if supported.netid_type in supported_types:
+            if (supported.netid_type in supported_types and
+                    len(supported.netid_type) <= max_length):
                 shared.append(supported)
 
         return shared
