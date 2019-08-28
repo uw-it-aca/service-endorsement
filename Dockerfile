@@ -1,7 +1,7 @@
 FROM acait/django-container:develop as django
 
 USER root
-RUN apt-get update && apt-get install mysql-client libmysqlclient-dev -y
+RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
 USER acait
 
 ADD --chown=acait:acait endorsement/VERSION /app/endorsement/
