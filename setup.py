@@ -31,6 +31,7 @@ setup(
         'urllib3>=1.25.3,<1.26',
         'unittest2',
         'pytz',
+        'psycopg2',
         'lxml==4.2.5,<4.3',
         'UW-RestClients-Core<1.1.1,<2.0',
         'UW-Restclients-PWS>=2.0.2,<3.0',
