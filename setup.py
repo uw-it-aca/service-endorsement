@@ -34,7 +34,7 @@ setup(
         'psycopg2',
         'lxml==4.2.5,<4.3',
         'UW-RestClients-Core<1.1.1,<2.0',
-        'UW-Restclients-PWS>=2.0.2,<3.0',
+        'UW-Restclients-PWS==2.0.2',
         'UW-RestClients-GWS>=2.0.1,<3.0',
         'UW-RestClients-UWNetID>=1.0.4,<2.0',
         'UW-RestClients-Django-Utils>=2.1.4,<3.0',
