@@ -159,11 +159,10 @@ var ManageSharedNetids = (function () {
                 $check_all = $('input#check_all', $panel),
                 n_total, n_renew = 0, n_revoke = 0, n_endorse = 0;
 
-
-            $('.aggregate_action', $panel).removeClass('visually-hidden');
-
             if ($checked.length > 0) {
                 var total = $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).length;
+
+                $('.aggregate_action', $panel).removeClass('visually-hidden');
 
                 if ($checked.length < total) {
                     is_indeterminate = true;
