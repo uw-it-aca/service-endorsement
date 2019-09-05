@@ -14,7 +14,7 @@ var Renew = (function () {
                 to_renew;
 
             to_renew = Endorse.gatherEndorsementsByRow($button.data('$rows'), 'renew', true, true);
-            Renew._renewUWNetID(to_renew, $button.data('$panel'));
+            _renewUWNetID(to_renew, $button.data('$panel'));
             $button.closest('.modal').modal('hide');
         }).on('change', '#renew_modal input', function () {
             var $modal = $(this).closest('#renew_modal'),
@@ -132,7 +132,7 @@ var Renew = (function () {
                 // pause for renew modal fade
                 if (results.endorsed) {
                     setTimeout(function () {
-                        Renew._successModal(results.endorsed);
+                        _successModal(results.endorsed);
                     }, 500);
                 }
 
@@ -155,7 +155,7 @@ var Renew = (function () {
         renew: function ($rows) {
             var $modal = $('#renew_modal'),
                 template = Handlebars.compile($('#renew_modal_content').html()),
-                context = Renew._renewModalContext($rows);
+                context = _renewModalContext($rows);
 
             $('.modal-content', $modal).html(template(context));
             $modal.modal('show');
