@@ -1,5 +1,6 @@
 {% extends wrapper_template %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% block content %}
 <style>
 .current_message { background-color: #fbfbe3; }
@@ -49,10 +50,7 @@ h4 {font-weight: 900;}
 {% endblock %}
 
 {% block extra_js%}
-<script src="{% static "endorsement/js/endorsee.js" %}"></script>
-<script src="{% static "endorsement/js/clipboard.js" %}"></script>
-<script src="{% static "endorsement/js/notify.js" %}"></script>
-<script src="{% static "endorsement/js/datetime.js" %}"></script>
+{% render_bundle 'endorsee' 'js' %}
 
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>

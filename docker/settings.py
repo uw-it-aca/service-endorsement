@@ -2,6 +2,17 @@ from .base_settings import *
 
 ALLOWED_HOSTS = ['*']
 
+CACHES = {
+    'default' : {
+        'BACKEND' : 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION' : 'prt_sessions'
+    }
+}
+
+if os.getenv("ENV") == "prod":
+    INSTALLED_APPS += ['rc_django',]
+    RESTCLIENTS_DAO_CACHE_CLASS='endorsement.cache.ProvisionCache'
+
 INSTALLED_APPS += [
     'webpack_loader',
     'endorsement',
@@ -35,3 +46,17 @@ if os.getenv("ENV") == "localdev":
     DEBUG = True
 
 PROVISION_ADMIN_GROUP = 'u_acadev_provision_support'
+
+USERSERVICE_VALIDATION_MODULE = "endorsement.userservice_validation.validate"
+USERSERVICE_OVERRIDE_AUTH_MODULE = "endorsement.userservice_validation.can_override_user"
+USERSERVICE_ADMIN_GROUP='u_acadev_provision_support'
+RESTCLIENTS_ADMIN_GROUP='u_acadev_provision_support'
+AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.uw_group_service.UWGroupService'
+
+RESTCLIENTS_DEFAULT_TIMEOUT = 3
+
+RESTCLIENTS_PRT_DAO_CLASS = 'Live'
+RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
+
+SUPPORTTOOLS_PARENT_APP = "PRT"
+SUPPORTTOOLS_PARENT_APP_URL = "/"

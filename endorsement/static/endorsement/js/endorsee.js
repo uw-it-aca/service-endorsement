@@ -1,4 +1,7 @@
 // javascript for service endorsement manager
+/* jshint esversion: 6 */
+import { DateTime } from "./datetime.js";
+import { ClipboardCopy } from "./clipboard.js";
 
 $(window.document).ready(function() {
     registerEvents();
@@ -127,10 +130,10 @@ var searchEndorsee = function (search_string) {
         success: function(results) {
             // localize date
             $.each(results.endorsements, function () {
-                this.datetime_endorsed = utc2local(this.datetime_endorsed);
-                this.datetime_emailed = utc2local(this.datetime_emailed);
-                this.datetime_renewed = utc2local(this.datetime_renewed);
-                this.datetime_expired = utc2local(this.datetime_expired);
+                this.datetime_endorsed = DateTime.utc2local(this.datetime_endorsed);
+                this.datetime_emailed = DateTime.utc2local(this.datetime_emailed);
+                this.datetime_renewed = DateTime.utc2local(this.datetime_renewed);
+                this.datetime_expired = DateTime.utc2local(this.datetime_expired);
             });
 
             $(document).trigger('endorse:UWNetIDsEndorseeResult', [{

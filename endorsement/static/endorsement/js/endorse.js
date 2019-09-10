@@ -3,6 +3,7 @@
 
 import { Reasons } from "./reasons.js";
 import { EmailEdit } from "./emailedit.js";
+import { Notify } from "./notify.js";
 
 var Endorse = (function () {
     var _loadContainer = function () {

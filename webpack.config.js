@@ -12,7 +12,8 @@ module.exports = {
 
     entry: {
         main: ['./endorsement/static/endorsement/js/main.js', './endorsement/static/endorsement/css/critical.scss'],
-        handlebars: ['./endorsement/static/endorsement/js/handlebars-helpers.js']
+        handlebars: ['./endorsement/static/endorsement/js/handlebars-helpers.js'],
+        endorsee: ['./endorsement/static/endorsement/js/endorsee.js']
     },
 
     optimization: {
