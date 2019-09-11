@@ -14,6 +14,7 @@ if os.getenv("ENV") == "prod":
     RESTCLIENTS_DAO_CACHE_CLASS='endorsement.cache.ProvisionCache'
 
 INSTALLED_APPS += [
+    'django_prometheus',
     'webpack_loader',
     'endorsement',
     'userservice',
@@ -21,9 +22,14 @@ INSTALLED_APPS += [
     'supporttools'
 ]
 
-MIDDLEWARE += [
-    'userservice.user.UserServiceMiddleware'
-]
+MIDDLEWARE = ['django_prometheus.middleware.PrometheusBeforeMiddleware'] +\
+             MIDDLEWARE +\
+             ['userservice.user.UserServiceMiddleware',
+              'django_prometheus.middleware.PrometheusAfterMiddleware']
+
+if not os.getenv("ENV") == "localdev":
+    DATABASES['default']['ENGINE'] = 'django_prometheus.db.backends.postgresql'
+
 
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'supporttools.context_processors.supportools_globals',
