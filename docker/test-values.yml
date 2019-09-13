@@ -26,6 +26,10 @@ branch: test
 image:
   repository: registry.hub.docker.com/acait/prt-test
 commitHash: '20190911.1'
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
 certs:
   mounted: true
   certPath: /certs/provision-test.uw.edu-uwca.cert
