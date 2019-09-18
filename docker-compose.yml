@@ -5,7 +5,7 @@ services:
     environment:
       - ENV=localdev
       - PORT=8000
-      - REMOTE_USER=jstaff
+      - AUTH=SAML_MOCK
     restart: always
     container_name: app
     build:

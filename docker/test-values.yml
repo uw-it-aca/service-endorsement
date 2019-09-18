@@ -22,10 +22,10 @@ database:
   hostname: 172.18.1.12
   secretName: prt-db-test
 repo: prt
-branch: test
+instance: test
 image:
   repository: registry.hub.docker.com/acait/prt-test
-commitHash: '20190911.1'
+commitHash: '20190918.1'
 metrics:
   enabled: true
   serviceMonitor:

@@ -9,6 +9,16 @@ CACHES = {
     }
 }
 
+if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
+    MOCK_SAML_ATTRIBUTES = {
+        'uwnetid': ['jstaff'],
+        'affiliations': ['employee', 'member'],
+        'eppn': ['jstaff@washington.edu'],
+        'scopedAffiliations': ['employee@washington.edu', 'member@washington.edu'],
+        'isMemberOf': ['u_test_group', 'u_test_another_group',
+                       'u_acadev_provision_support'],
+    }
+
 if os.getenv("ENV") == "prod":
     INSTALLED_APPS += ['rc_django',]
     RESTCLIENTS_DAO_CACHE_CLASS='endorsement.cache.ProvisionCache'
