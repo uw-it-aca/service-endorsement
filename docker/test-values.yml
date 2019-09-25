@@ -19,8 +19,14 @@ ingress:
 database:
   engine: postgres
   name: uw_service_endorsement
-  hostname: 172.18.1.12
+  hostname: prt-db-host-test
   secretName: prt-db-test
+externalService:
+  enabled: true
+  name: prt-db-host-test
+  type: ClusterIP
+  serviceAddress: 172.18.1.12
+  servicePort: 5432
 repo: prt
 instance: test
 image:
@@ -30,6 +36,17 @@ metrics:
   enabled: true
   serviceMonitor:
     enabled: true
+cronjob:
+  enabled: true
+  jobs:
+    - name: notify-endorsers
+      schedule: "*/5 * * * *"
+      command: '["bash"]'
+      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsers)"]'
+    - name: notify-endorsees
+      schedule: "*/5 * * * *"
+      command: '["bash"]'
+      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsees)"]'
 certs:
   mounted: true
   certPath: /certs/provision-test.uw.edu-uwca.cert
