@@ -76,3 +76,13 @@ RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
 
 SUPPORTTOOLS_PARENT_APP = "PRT"
 SUPPORTTOOLS_PARENT_APP_URL = "/"
+
+EMAIL_HOST = 'appsubmit.cac.washington.edu'
+EMAIL_PORT = 587
+if os.getenv("SAFE_EMAIL_RECIPIENT", None):
+    SAFE_EMAIL_RECIPIENT = os.getenv("SAFE_EMAIL_RECIPIENT")
+    EMAIL_BACKEND = 'saferecipient.EmailBackend'
+    EMAIL_NOREPLY_ADDRESS = 'Service Endorsement <endorsement-noreply@uw.edu>'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_REPLY_ADDRESS = 'UW-IT <help@uw.edu>'
