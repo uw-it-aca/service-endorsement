@@ -18,4 +18,4 @@ def get_kerberos_inactive_netids_for_category(category):
     if response.status != 200:
         raise DataFailureException(url, response.status, response.data)
 
-    return response.data.strip().split('\n')
+    return response.data.decode('utf-8').strip().split('\n')
