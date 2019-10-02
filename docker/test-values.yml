@@ -39,6 +39,18 @@ metrics:
 cronjob:
   enabled: true
   jobs:
+    - name: expire-endorsees
+      schedule: "5 0 * * 1-5"
+      command: '["bash"]'
+      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expire_endorsees)"]'
+    - name: validate-endorsees
+      schedule: "10 4 * * 1-5"
+      command: '["bash"]'
+      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_endorsees)"]'
+    - name: validate-endorsers
+      schedule: "25 4 * * 1-5"
+      command: '["bash"]'
+      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_endorsers)"]'
     - name: notify-endorsers
       schedule: "*/5 * * * *"
       command: '["bash"]'

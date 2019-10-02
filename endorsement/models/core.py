@@ -80,7 +80,8 @@ class Endorsee(ExportModelOperationsMixin('endorsee'), models.Model):
         db_table = 'uw_service_endorsement_endorsee'
 
 
-class EndorseeEmail(ExportModelOperationsMixin('endorsee_email'), models.Model):
+class EndorseeEmail(
+        ExportModelOperationsMixin('endorsee_email'), models.Model):
     """
     Distinct from Endorsee model in that endorsee could be person
     which includes email, or entity (shared, etc) netid without email
@@ -182,7 +183,8 @@ class EndorsementRecordManager(models.Manager):
             is_deleted__isnull=True)
 
 
-class EndorsementRecord(ExportModelOperationsMixin('endorsement_record'), models.Model):
+class EndorsementRecord(
+        ExportModelOperationsMixin('endorsement_record'), models.Model):
     GOOGLE_SUITE_ENDORSEE = Category.GOOGLE_SUITE_ENDORSEE
     OFFICE_365_ENDORSEE = Category.OFFICE_365_ENDORSEE
 

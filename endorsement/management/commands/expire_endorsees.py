@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     help = 'alert menagement to expired endorsements'
 
-    default_lifetime = 360
+    # actual expiration happens after one year plus 90 days grace period
+    default_lifetime = 455
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -35,10 +36,12 @@ class Command(BaseCommand):
             body = loader.render_to_string('email/expired_endorsee.txt',
                                            {
                                                'lifetime': lifetime,
-                                               'endorsements': endorsements
+                                               'endorsements': endorsements,
+                                               'expired_count': len(
+                                                   endorsements)
                                            })
             mail_managers(
-                'PRT {} services expiring'.format(
+                'PRT {} services expired'.format(
                     len(endorsements)), body)
 
             for e in endorsements:
