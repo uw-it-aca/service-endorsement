@@ -183,8 +183,16 @@ var Endorse = (function () {
             if (endorsement.hasOwnProperty('datetime_endorsed')) {
                 var now = moment(),
                     provisioned = moment(endorsement.datetime_endorsed),
-                    expires = moment(endorsement.datetime_endorsed).add(365, 'days'),
-                    expiring = moment(endorsement.datetime_endorsed).add(30, 'days');
+                    expiring,
+                    expires;
+
+                if (endorsement.datetime_notice_1_emailed) {
+                    expiring = moment(endorsement.datetime_notice_1_emailed);
+                    expires = moment(endorsement.datetime_notice_1_emailed).add(90, 'days');
+               } else {
+                    expiring = moment(endorsement.datetime_endorsed).add(275, 'days');
+                    expires = moment(endorsement.datetime_endorsed).add(365, 'days');
+                }
 
                 endorsement.expires = expires.format('M/D/YYYY');
                 endorsement.expires_relative = expires.fromNow();
