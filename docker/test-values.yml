@@ -19,19 +19,19 @@ ingress:
 database:
   engine: postgres
   name: uw_service_endorsement
-  hostname: prt-db-host-test
-  secretName: prt-db-test
+  hostname: provision-db-test-service
+  secretName: provision-db-test
 externalService:
   enabled: true
-  name: prt-db-host-test
+  name: provision-db-test-service
   type: ClusterIP
-  serviceAddress: 172.18.1.12
+  serviceAddress: 172.18.1.14
   servicePort: 5432
 repo: prt
 instance: test
 image:
   repository: registry.hub.docker.com/acait/prt-test
-commitHash: '20191002.2'
+commitHash: '20191008.1'
 metrics:
   enabled: true
   serviceMonitor:
