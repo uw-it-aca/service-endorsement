@@ -206,6 +206,10 @@ class EndorsementRecord(
                                  unique=True)
     datetime_created = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
+    datetime_notice_1_emailed = models.DateTimeField(null=True)
+    datetime_notice_2_emailed = models.DateTimeField(null=True)
+    datetime_notice_3_emailed = models.DateTimeField(null=True)
+    datetime_notice_4_emailed = models.DateTimeField(null=True)
     datetime_endorsed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
@@ -256,6 +260,14 @@ class EndorsementRecord(
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired),
+            "datetime_notice_1_emailed": datetime_to_str(
+                self.datetime_notice_1_emailed),
+            "datetime_notice_2_emailed": datetime_to_str(
+                self.datetime_notice_2_emailed),
+            "datetime_notice_3_emailed": datetime_to_str(
+                self.datetime_notice_3_emailed),
+            "datetime_notice_4_emailed": datetime_to_str(
+                self.datetime_notice_4_emailed),
             "is_revoked": self.is_deleted,
             "accept_url": self.accept_url()
         }

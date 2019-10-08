@@ -62,6 +62,10 @@ def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
         en.datetime_endorsed = now
         en.acted_as = acted_as
         en.datetime_emailed = None
+        en.datetime_reminder_1_emailed = None
+        en.datetime_reminder_2_emailed = None
+        en.datetime_reminder_3_emailed = None
+        en.datetime_reminder_4_emailed = None
         en.datetime_renewed = now if en.is_deleted else None
         en.datetime_expired = None
         en.is_deleted = None
@@ -75,6 +79,10 @@ def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
             datetime_endorsed=now,
             acted_as=acted_as,
             datetime_emailed=None,
+            datetime_reminder_1_emailed=None,
+            datetime_reminder_2_emailed=None,
+            datetime_reminder_3_emailed=None,
+            datetime_reminder_4_emailed=None,
             datetime_renewed=None,
             datetime_expired=None,
             is_deleted=None)

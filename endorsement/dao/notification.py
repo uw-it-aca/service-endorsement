@@ -7,6 +7,9 @@ from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.exceptions import EmailFailureException
+from endorsement.policy import (
+    endorsements_to_warn, DEFAULT_ENDORSEMENT_LIFETIME, NOTICE_1_DAYS_PRIOR,
+    NOTICE_2_DAYS_PRIOR, NOTICE_3_DAYS_PRIOR, NOTICE_4_DAYS_PRIOR)
 import logging
 
 
@@ -247,6 +250,57 @@ def notify_invalid_endorser(endorser, endorsements):
             clear_endorsement(endorsement)
     except EmailFailureException as ex:
         pass
+
+
+def create_expire_notice_message(notice_level, lifetime, endorsed):
+    context = {
+        'endorser': endorsed[0].endorser,
+        'notice_time': globals()['NOTICE_{}_DAYS_PRIOR'.format(notice_level)],
+        'lifetime': lifetime,
+        'expiring': endorsed,
+        'expiring_count': len(endorsed)
+    }
+    subject = "{0}{1}".format(
+        "Action Required: Services that you provisioned for other ",
+        "UW NetIDs will be revoked soon")
+    text_template = "email/notice_{}.txt".format(notice_level)
+    html_template = "email/notice_{}.html".format(notice_level)
+
+    return (subject,
+            loader.render_to_string(text_template, context),
+            loader.render_to_string(html_template, context))
+
+
+def warn_endorsers(notice_level, lifetime):
+    endorsements = endorsements_to_warn(notice_level, lifetime)
+
+    if len(endorsements):
+        endorsers = {}
+        for e in endorsements:
+            endorsers[e.endorser.id] = 1
+
+        for endorser in endorsers.keys():
+            endorsed = endorsements.filter(endorser=endorser)
+
+            sent_date = timezone.now()
+            email = "{0}@uw.edu".format(endorsed[0].endorser.netid)
+            sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                             "provision-noreply@uw.edu")
+
+            try:
+                (subject, text_body, html_body) = create_expire_notice_message(
+                    notice_level, lifetime, endorsed)
+                send_email(
+                    sender, [email], subject, text_body, html_body,
+                    "Invalid endorser")
+
+                sent_date = {
+                    'datetime_notice_{}_emailed'.format(
+                        notice_level): timezone.now()
+                }
+                endorsed.update(**sent_date)
+            except EmailFailureException as ex:
+                pass
 
 
 def send_email(sender, recipients, subject, text_body, html_body, kind):
