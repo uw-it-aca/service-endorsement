@@ -83,6 +83,10 @@ var displayEndorsedUWNetIDs = function(endorsements) {
                 this.category_name,
                 this.reason,
                 this.datetime_emailed,
+                this.datetime_notice_1_emailed,
+                this.datetime_notice_2_emailed,
+                this.datetime_notice_3_emailed,
+                this.datetime_notice_4_emailed,
                 datetime_endorsed_template(this),
                 revoked_template(this).trim(),
                 this.datetime_expired

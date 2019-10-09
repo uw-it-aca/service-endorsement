@@ -13,7 +13,8 @@ module.exports = {
     entry: {
         main: ['./endorsement/static/endorsement/js/main.js', './endorsement/static/endorsement/css/critical.scss'],
         handlebars: ['./endorsement/static/endorsement/js/handlebars-helpers.js'],
-        endorsee: ['./endorsement/static/endorsement/js/endorsee.js']
+        endorsee: ['./endorsement/static/endorsement/js/endorsee.js'],
+        statistics: ['./endorsement/static/endorsement/js/statistics.js']
     },
 
     optimization: {
