@@ -43,19 +43,19 @@ cronjob:
       schedule: "5 0 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expire_endorsees)"]'
-    - name: expire-endorsees
+    - name: expiration-notice-1
       schedule: "10 0 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 1)"]'
-    - name: expire-endorsees
+    - name: expiration-notice-2
       schedule: "15 0 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 2)"]'
-    - name: expire-endorsees
+    - name: expiration-notice-3
       schedule: "20 0 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 3)"]'
-    - name: expire-endorsees
+    - name: expiration-notice-4
       schedule: "25 0 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 4)"]'
