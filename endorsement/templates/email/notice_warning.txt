@@ -1,0 +1,16 @@
+Hello {{endorser.display_name}} ({{endorser.netid}})
+
+It has recently come to our attention that {{ expiring_count }} provisionee netid{{expiring_count|pluralize}}
+{{expiring_count|pluralize:"is,are"}} within {{notice_time}} days of {{expiring_count|pluralize:"its,their"}} provisioned service lifetime of {{lifetime}} day{{lifetime|pluralize}}.
+
+Unless you take action to renew {{expiring_count|pluralize:"it,them"}}, the following endorsement{{expiring_count|pluralize}} will expire,
+and thus be revoked in {{notice_time}} days:
+
+Provisionee    Service        Provisioned    Reason
+-------------  -------------  ------------   --------------------------------{%for e in expiring %}
+{{e.endorsee.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.datetime_endorsed|date:"M d, Y"|ljust:"15"}}{{e.reason|ljust:"40"}}{% endfor %}
+
+Thank you,
+UW-IT Help Center
+help@uw.edu
+------ 
