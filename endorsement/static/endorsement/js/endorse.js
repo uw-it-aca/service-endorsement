@@ -197,7 +197,8 @@ var Endorse = (function () {
                 endorsement.expires = expires.format('M/D/YYYY');
                 endorsement.expires_relative = expires.fromNow();
 
-                if (now.isBetween(expiring, expires)) {
+                console.log('debug: now: ' + now.format() + ' expiring: ' + expiring.format() + ' expires: ' + expires.format() );
+                if (now.isBetween(expiring, expires, null, '[)')) {
                     endorsement.expiring = endorsement.expires;
                 }
 

@@ -40,9 +40,11 @@ class Statistics(RESTDispatch):
                     datetime_emailed__isnull=False,
                     datetime_endorsed__isnull=True).count()
                 stats['Provisioned'] = EndorsementRecord.objects.filter(
+                    is_deleted__isnull=True,
                     datetime_emailed__isnull=False,
                     datetime_endorsed__isnull=False).count()
                 stats['Un Emailed'] = EndorsementRecord.objects.filter(
+                    is_deleted__isnull=True,
                     datetime_emailed__isnull=True,
                     datetime_endorsed__isnull=True).count()
             else:
