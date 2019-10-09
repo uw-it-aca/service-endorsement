@@ -263,8 +263,12 @@ def create_expire_notice_message(notice_level, lifetime, endorsed):
     subject = "{0}{1}".format(
         "Action Required: Services that you provisioned for other ",
         "UW NetIDs will be revoked soon")
-    text_template = "email/notice_{}.txt".format(notice_level)
-    html_template = "email/notice_{}.html".format(notice_level)
+    if notice_level < 4:
+        text_template = "email/notice_warning.txt"
+        html_template = "email/notice_warning.html"
+    else:
+        text_template = "email/notice_warning_final.txt"
+        html_template = "email/notice_warning_final.html"
 
     return (subject,
             loader.render_to_string(text_template, context),
