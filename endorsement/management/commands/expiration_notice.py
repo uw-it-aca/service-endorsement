@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = 'alert endorsers to expiring endorsements'
 
     def add_arguments(self, parser):
-        parser.add_argument('notice_level', nargs="", type=int)
+        parser.add_argument('notice_level', type=int)
         parser.add_argument(
             '--lifetime', dest='lifetime',
             default=DEFAULT_ENDORSEMENT_LIFETIME, type=int,
