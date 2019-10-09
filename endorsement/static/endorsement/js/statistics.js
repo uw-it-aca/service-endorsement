@@ -6,6 +6,7 @@ $(window.document).ready(function() {
     registerEvents();
     getEndorsementServiceStats();
     getEndorsementSharedStats();
+    getEndorsementPendingStats();
 });
 
 var registerEvents = function() {
@@ -13,6 +14,8 @@ var registerEvents = function() {
         displayServiceStats(stats.service);
     }).on('endorse:EndorsementStatsSharedResult', function (e, stats) {
         displaySharedStats(stats.shared);
+    }).on('endorse:EndorsementStatsPendingResult', function (e, stats) {
+        displayPendingStats(stats.pending);
     });
 };
 
@@ -75,6 +78,39 @@ var getEndorsementSharedStats = function () {
         },
         error: function(xhr, status, error) {
             displayStatsSharedError(xhr.responseJSON);
+        }
+    });
+};
+
+
+var displayPendingStats = function (stats) {
+    pieChartFromSimpleDict('pending_container', 'Pending Provisions', 'Emails', stats);
+};
+
+
+var displayStatsPendingError = function (json) {
+    $('#pending_container').html('ERROR: ' + JSON.stringify(json));
+};
+
+
+var getEndorsementPendingStats = function () {
+    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+
+    $.ajax({
+        url: "/api/v1/stats/pending",
+        dataType: "JSON",
+        type: "GET",
+        accepts: {html: "application/json"},
+        headers: {
+            "X-CSRFToken": csrf_token
+        },
+        success: function(results) {
+            $(document).trigger('endorse:EndorsementStatsPendingResult', [{
+                pending: results
+            }]);
+        },
+        error: function(xhr, status, error) {
+            displayStatsPendingError(xhr.responseJSON);
         }
     });
 };

@@ -29,11 +29,22 @@ class Statistics(RESTDispatch):
                         category_code=code[0]).count()
             elif self.kwargs['type'] == 'shared':
                 stats['Shared'] = EndorsementRecord.objects.filter(
-                        is_deleted__isnull=True,
-                        endorsee__is_person__isnull=True).count()
+                    is_deleted__isnull=True,
+                    endorsee__is_person=False).count()
                 stats['Personal'] = EndorsementRecord.objects.filter(
-                        is_deleted__isnull=True,
-                        endorsee__is_person__isnull=False).count()
+                    is_deleted__isnull=True,
+                    endorsee__is_person=True).count()
+            elif self.kwargs['type'] == 'pending':
+                stats['Pending'] = EndorsementRecord.objects.filter(
+                    is_deleted__isnull=True,
+                    datetime_emailed__isnull=False,
+                    datetime_endorsed__isnull=True).count()
+                stats['Provisioned'] = EndorsementRecord.objects.filter(
+                    datetime_emailed__isnull=False,
+                    datetime_endorsed__isnull=False).count()
+                stats['Un Emailed'] = EndorsementRecord.objects.filter(
+                    datetime_emailed__isnull=True,
+                    datetime_endorsed__isnull=True).count()
             else:
                 raise Exception('Unrecognized statistic type')
 
