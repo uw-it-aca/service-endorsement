@@ -194,7 +194,6 @@ var Endorse = (function () {
                     expires = moment(endorsement.datetime_endorsed).add(365, 'days');
                 }
 
-                console.log('debug: now: ' + now.format() + '\n    expiring: ' + expiring.format() + '\n    expires: ' + expires.format());
                 endorsement.expires = expires.format('M/D/YYYY');
                 endorsement.expires_relative = expires.fromNow();
 
