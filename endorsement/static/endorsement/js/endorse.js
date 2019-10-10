@@ -180,8 +180,8 @@ var Endorse = (function () {
                 }
             }
 
-            if (endorsement.hasOwnProperty('datetime_endorsed')) {
-                var now = moment(),
+            if (endorsement.hasOwnProperty('datetime_endorsed') && endorsement.datetime_endorsed) {
+                var now = moment.utc(),
                     provisioned = moment(endorsement.datetime_endorsed),
                     expiring,
                     expires;
@@ -194,10 +194,10 @@ var Endorse = (function () {
                     expires = moment(endorsement.datetime_endorsed).add(365, 'days');
                 }
 
+                console.log('debug: now: ' + now.format() + '\n    expiring: ' + expiring.format() + '\n    expires: ' + expires.format());
                 endorsement.expires = expires.format('M/D/YYYY');
                 endorsement.expires_relative = expires.fromNow();
 
-                console.log('debug: now: ' + now.format() + ' expiring: ' + expiring.format() + ' expires: ' + expires.format() );
                 if (now.isBetween(expiring, expires, null, '[)')) {
                     endorsement.expiring = endorsement.expires;
                 }
