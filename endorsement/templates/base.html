@@ -85,8 +85,9 @@
 
     {% include "handlebars/page-top.html" %}
 
-    {% render_bundle 'main' 'js' %}
     {% render_bundle 'handlebars' %}
+    {% render_bundle 'main' 'js' %}
+    {% block extra_js %}{% endblock %}
 
   </body>
 </html>
