@@ -148,4 +148,8 @@ class TestProvisioneExpirationNotices(TestCase):
                     'datetime_notice_2_emailed')-timedelta(days=23))
 
         warn_endorsers(4, DEFAULT_ENDORSEMENT_LIFETIME)
+        print("Subject: {0}".format(mail.outbox[-1].subject))
+        print("Text: {0}".format(mail.outbox[-1].body))
+        print("HTML: {0}".format(mail.outbox[-1].alternatives[0][0]))
+
         self.assertEqual(len(mail.outbox), 8)

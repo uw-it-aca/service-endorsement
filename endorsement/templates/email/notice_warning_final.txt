@@ -1,16 +1,17 @@
-Hi Provision Requester {{endorser.display_name}} ({{endorser.netid}})
+Hello {{endorser.display_name}} ({{endorser.netid}})
 
 It has recently come to our attention that {{ expiring_count }} provisionee netid{{expiring_count|pluralize}}
 {{expiring_count|pluralize:"has,have"}} reached the end of {{expiring_count|pluralize:"its,their"}} provisioned service lifetime
 of {{lifetime}} days.
 
-Unless you take action to renew {{expiring_count|pluralize:"it,them"}} now, the following endorsement{{expiring_count|pluralize}} will expire,
-and thus be revoked today.
+The following endorsement{{expiring_count|pluralize}} {{expiring_count|pluralize:"has,have"}} now expired and thus been revoked today.
 
 Provisionee    Service        Provisioned    Reason
 -------------  -------------  ------------   --------------------------------{%for e in expiring %}
 {{e.endorsee.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.datetime_endorsed|date:"M d, Y"|ljust:"15"}}{{e.reason|ljust:"40"}}{% endfor %}
 
-Sincerely,
 
-Your Provision Request Tool
+Thank you,
+UW-IT Help Center
+help@uw.edu
+------ 

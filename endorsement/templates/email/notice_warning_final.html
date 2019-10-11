@@ -1,5 +1,5 @@
 <p>
-Hi Provision Requester {{endorser.display_name}} ({{endorser.netid}}),
+Hello {{endorser.display_name}} ({{endorser.netid}}),
 </p>
 <p>
 It has recently come to our attention that {{ expiring_count }} provisionee netid{{expiring_count|pluralize}}
@@ -7,8 +7,8 @@ It has recently come to our attention that {{ expiring_count }} provisionee neti
 of {{lifetime}} days.
 </p>
 <p>
-Unless you take action to renew {{expiring_count|pluralize:"it,them"}} now, the following endorsement{{expiring_count|pluralize}} will expire,
-and thus be revoked today.
+The following endorsement{{expiring_count|pluralize}} {{expiring_count|pluralize:"has,have"}} now expired 
+and thus been revoked.
 </p>
 <table>
 <thead>
@@ -21,9 +21,8 @@ and thus be revoked today.
 {% endfor %}
 </tbody>
 </table>
-<p>
-Sincerely,
-</p>
-<p>
-Your Provision Request Tool
-</p>
+<br />
+Thank you,<br />
+UW-IT Help Center<br />
+help@uw.edu<br />
+------
