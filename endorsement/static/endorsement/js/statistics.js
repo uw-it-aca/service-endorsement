@@ -8,7 +8,7 @@ $(window.document).ready(function() {
     getEndorsementSharedStats();
     getEndorsementPendingStats();
     getEndorsementEndorsersStats();
-    getEndorsementRateStats()
+    getEndorsementRateStats($('select#daily-rate option:selected').val())
 });
 
 var registerEvents = function() {
@@ -22,6 +22,10 @@ var registerEvents = function() {
         displayEndorsersStats(stats.endorsers);
     }).on('endorse:EndorsementStatsRateResult', function (e, stats) {
         displayRateStats(stats.rate);
+    }).on('change', 'select#daily-rate', function (e) {
+        var period = $('option:selected', $(this)).val()
+
+        getEndorsementRateStats(period)
     });
 };
 
@@ -166,54 +170,93 @@ var getEndorsementEndorsersStats = function () {
 
 var displayRateStats = function (stats) {
     var categories = [],
-        data = [];
+        series = [],
+        pie_data = [];
 
-    $.each(stats.data, function () {
-        categories.push(this[0]);
-        data.push(this[1]);
+    $.each(stats.fields, function (i, name) {
+        series.push({
+            type: 'column',
+            stack: 'provisioned',
+            name: name,
+            data: []
+        });
+        series.push({
+            type: 'column',
+            stack: 'revoked',
+            name: 'Revoked ' + name,
+            data: []
+        });
     });
 
-    barChart('rate_container', 'Provisioning Daily Rate', 'Provision Requests', 'Requests', categories, data);
-};
+    $.each(stats.data, function () {
+        var data = this;
 
+        categories.push(data[0]);
+        $.each(stats.fields, function (i) {
+            series[i * 2].data.push(data[1][i]);
+            series[(i * 2) + 1].data.push(data[2][i]);
+        });
+    });
 
-var barChart = function (container, title, yTitle, seriesName, categories, data) {
-    Highcharts.chart(container, {
+    // pie chart distribution data
+    $.each(stats.fields, function (i, name) {
+        var n = 0;
+
+        $.each(series[i * 2].data, function () {
+            n += this;
+        });
+
+        pie_data.push({
+            name: name,
+            y: n,
+            color: Highcharts.getOptions().colors[i * 2]
+        });
+    });
+
+    series.push({
+        type: 'pie',
+        name: 'Distribution',
+        data: pie_data,
+        center: [60, 35],
+        size: 80,
+        showInLegent: false,
+        dataLabels: {
+            enabled: false
+        }
+    });
+
+    Highcharts.chart('rate_container', {
         chart: {
-            type: 'column'
+            type: 'column',
+            zoomType: 'x'
+        },
+        labels: {
+            items: [{
+                html: 'Total Provisioned',
+                style: {
+                    left: '22px',
+                    top: '-10px'
+                }
+            }]
+        },
+        credits: {
+            enabled: false
         },
         title: {
-            text: title
+            text: null
         },
-        xAxis: {
-            categories: categories,
-            crosshair: true
-        },
-        yAxis: {
-            min: 0,
-            allowDecimals: false,
-            title: {
-                text: yTitle
+        xAxis: [
+            {
+                categories: categories,
+                crosshair: true
             }
-        },
-        tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y} Requests</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-        },
+        ],
         plotOptions: {
             column: {
-                pointPadding: 0.2,
-                borderWidth: 0
+                stacking: 'normal',
             }
         },
-        series: [{
-            name: seriesName,
-            data: data
-        }]
+        series: series
     });
 };
 
@@ -223,11 +266,11 @@ var displayStatRateError = function (json) {
 };
 
 
-var getEndorsementRateStats = function () {
+var getEndorsementRateStats = function (period) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
     $.ajax({
-        url: "/api/v1/stats/rate/180",
+        url: "/api/v1/stats/rate/" + parseInt(period),
         dataType: "JSON",
         type: "GET",
         accepts: {html: "application/json"},
@@ -248,25 +291,22 @@ var getEndorsementRateStats = function () {
 
 var pieChartFromStats = function (container, title, series_name, stats) {
     var data = [],
-        total = parseFloat(stats.total),
         key;
 
-    if (total > 0) {
-        if ($.type(stats.data) === 'array') {
-            $.each(stats.data, function (i, v) {
-                data.push({
-                    name: v[0],
-                    y: (parseFloat(v[1])/total) * 100
-                });
+    if ($.type(stats.data) === 'array') {
+        $.each(stats.data, function (i, v) {
+            data.push({
+                name: v[0],
+                y: v[1]
             });
-        } else if ($.type(stats.data) === 'object') {
-            $.each(stats.data, function (k, v) {
-                data.push({
-                    name: k,
-                    y: (parseFloat(v)/total) * 100
-                });
+        });
+    } else if ($.type(stats.data) === 'object') {
+        $.each(stats.data, function (k, v) {
+            data.push({
+                name: k,
+                y: v
             });
-        }
+        });
     }
 
     pieChart(container, title, series_name, data);

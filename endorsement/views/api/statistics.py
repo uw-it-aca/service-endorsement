@@ -90,37 +90,68 @@ class Statistics(RESTDispatch):
                     'total': len(data),
                     'data': data
                 }
-            elif re.match(r'^rate\/([0-9]+)$', self.kwargs['type']):
+            else:
+                m = re.match(r'^rate\/([0-9]+)$', self.kwargs['type'])
+                if not m:
+                    raise Exception('Unrecognized statistic type')
+
                 m = re.match(r'^rate\/([0-9]+)$', self.kwargs['type'])
                 days = int(m.group(1))
                 now = timezone.now()
                 span = now - timedelta(days=days)
-                endorsements = EndorsementRecord.objects.filter(
-                    is_deleted__isnull=True, datetime_created__gt=span)
+                shared_endorsements = EndorsementRecord.objects.filter(
+                    endorsee__is_person=False,
+                    datetime_endorsed__gte=span,
+                    datetime_created__isnull=True)
+                personal_endorsements = EndorsementRecord.objects.filter(
+                    endorsee__is_person=True,
+                    datetime_created__gte=span)
 
                 data = []
+                time_start = time(hour=0, minute=0, second=0)
+                time_end = time(hour=23, minute=59, second=59)
                 while span <= now:
                     dt = date(year=span.year, month=span.month, day=span.day)
-                    range_start = timezone.make_aware(datetime.combine(
-                        dt, time(hour=0, minute=0, second=0)))
-                    range_end = timezone.make_aware(datetime.combine(
-                        dt, time(hour=23, minute=59, second=59)))
+                    range_start = timezone.make_aware(
+                        datetime.combine(dt, time_start))
+                    range_end = timezone.make_aware(
+                        datetime.combine(dt, time_end))
+                    shared_range = shared_endorsements.filter(
+                        datetime_endorsed__range=(range_start, range_end))
+                    personal_range = personal_endorsements.filter(
+                        datetime_created__range=(range_start, range_end))
 
-                    data.append([
-                        dt.strftime('%D'),
-                        endorsements.filter(
-                            datetime_created__range=(
-                                range_start, range_end)).count()
-                    ])
+                    n = [[], []]
+                    for code in EndorsementRecord.CATEGORY_CODE_CHOICES:
+                        n[0].append(
+                            shared_range.filter(
+                                category_code=code[0],
+                                is_deleted__isnull=True).count())
+                        n[0].append(
+                            personal_range.filter(
+                                category_code=code[0],
+                                is_deleted__isnull=True).count())
+                        n[1].append(
+                            shared_range.filter(
+                                category_code=code[0],
+                                is_deleted__isnull=False).count())
+                        n[1].append(
+                            personal_range.filter(
+                                category_code=code[0],
+                                is_deleted__isnull=False).count())
 
+                    data.append([dt.strftime('%D'), n[0], n[1]])
                     span += timedelta(days=1)
 
+                fields = []
+                for code in EndorsementRecord.CATEGORY_CODE_CHOICES:
+                    fields.append('Shared {}'.format(code[1]))
+                    fields.append('Personal {}'.format(code[1]))
+
                 stats = {
-                    'total': len(data),
+                    'fields': fields,
                     'data': data
                 }
-            else:
-                raise Exception('Unrecognized statistic type')
 
         except Exception:
             log_data_error_response(logger, timer)
