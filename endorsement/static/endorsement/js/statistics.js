@@ -61,7 +61,7 @@ var getEndorsementServiceStats = function () {
 
 
 var displaySharedStats = function (stats) {
-    pieChartFromStats('shared_container', 'Provisioned Netids by Type', 'Netids', stats);
+    pieChartFromStats('shared_container', 'Provisionees by Type', 'Netids', stats);
 };
 
 
@@ -136,7 +136,7 @@ var displayEndorsersStats = function (stats) {
         top_stats.total += this[1];
     });
 
-    pieChartFromStats('endorsers_container', 'Top 10 Endorsers', 'Endorser', top_stats);
+    pieChartFromStats('endorsers_container', 'Top 10 Provisioners', 'Provisioner', top_stats);
 };
 
 
