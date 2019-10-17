@@ -2,7 +2,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: Build image
     args: ['build', '-t', 'gcr.io/${_PROJECT_ID}/${_APP_NAME}:${SHORT_SHA}', '.']
-
+ 
   - name: 'gcr.io/cloud-builders/docker'
     id: Push image
     args: ['push', 'gcr.io/${_PROJECT_ID}/${_APP_NAME}:${SHORT_SHA}']
