@@ -1,0 +1,39 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build image
+    args: ['build', '-t', 'gcr.io/${_PROJECT_ID}/${_APP_NAME}:${SHORT_SHA}', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Push image
+    args: ['push', 'gcr.io/${_PROJECT_ID}/${_APP_NAME}:${SHORT_SHA}']
+
+  - name: gcr.io/cloud-builders/git
+    id: Clone release values repo
+    args: ['clone', '--depth', '1', 'https://github.com/uw-it-aca/${_FLUX_REPO_NAME}']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Update release values
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+       cd ${_FLUX_REPO_NAME} && \
+       sed "s/___GOOGLE_CLOUD_PROJECT_ID___/${_PROJECT_ID}/g" releases/${_HELM_RELEASE_INSTANCE}/${_APP_NAME}.yaml.tpl | \
+       sed "s/___COMMIT_SHA___/${SHORT_SHA}/g" | \
+       sed "s/__HELM_RELEASE_INSTANCE__/${_HELM_RELEASE_INSTANCE}/g" > releases/${_HELM_RELEASE_INSTANCE}/${_APP_NAME}.yaml
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Push release values
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+      set -x && \
+      cd ${_FLUX_REPO_NAME} && \
+      git add releases/${_HELM_RELEASE_INSTANCE}/${_APP_NAME}.yaml && \
+      git commit -m "Deploying image gcr.io/${_PROJECT_ID}/${_APP_NAME}:${SHORT_SHA}
+      Built from commit ${COMMIT_SHA} of repository $REPO_NAME, branch $BRANCH_NAME
+      Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
+      git push origin master
+substitutions:
+  _FLUX_REPO_NAME: 'gcp-flux-dev'
