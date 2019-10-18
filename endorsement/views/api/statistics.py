@@ -90,6 +90,22 @@ class Statistics(RESTDispatch):
                     'total': len(data),
                     'data': data
                 }
+            elif self.kwargs['type'] == 'reasons':
+                reasons = {}
+                for e in EndorsementRecord.objects.filter(
+                        is_deleted__isnull=True):
+                    if e.reason in reasons:
+                        reasons[e.reason] += 1
+                    else:
+                        reasons[e.reason] = 1
+
+                data = sorted(
+                    reasons.items(), key=lambda kv: kv[1], reverse=True)
+
+                stats = {
+                    'total': len(data),
+                    'data': data
+                }
             else:
                 m = re.match(r'^rate\/([0-9]+)$', self.kwargs['type'])
                 if not m:

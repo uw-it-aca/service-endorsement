@@ -9,6 +9,7 @@ $(window.document).ready(function() {
     getEndorsementPendingStats();
     getEndorsementEndorsersStats();
     getEndorsementRateStats($('select#daily-rate option:selected').val())
+    getEndorsementReasonStats();
 });
 
 var registerEvents = function() {
@@ -22,6 +23,8 @@ var registerEvents = function() {
         displayEndorsersStats(stats.endorsers);
     }).on('endorse:EndorsementStatsRateResult', function (e, stats) {
         displayRateStats(stats.rate);
+    }).on('endorse:EndorsementStatsReasonsResult', function (e, stats) {
+        displayReasonStats(stats.reasons);
     }).on('change', 'select#daily-rate', function (e) {
         var period = $('option:selected', $(this)).val()
 
@@ -163,6 +166,48 @@ var getEndorsementEndorsersStats = function () {
         },
         error: function(xhr, status, error) {
             displayStatsEndorsersError(xhr.responseJSON);
+        }
+    });
+};
+
+
+var displayReasonStats = function (stats) {
+    var top_stats = {
+        total: 0,
+        data: stats.data.slice(0,10)
+    };
+
+    $.each(top_stats.data, function () {
+        top_stats.total += this[1];
+    });
+
+    pieChartFromStats('reasons_container', 'Top 10 Reasons', 'Reason', top_stats);
+};
+
+
+var displayStatsReasonsError = function (json) {
+    $('#reasons_container').html('ERROR: ' + JSON.stringify(json));
+};
+
+
+var getEndorsementReasonStats = function () {
+    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+
+    $.ajax({
+        url: "/api/v1/stats/reasons",
+        dataType: "JSON",
+        type: "GET",
+        accepts: {html: "application/json"},
+        headers: {
+            "X-CSRFToken": csrf_token
+        },
+        success: function(results) {
+            $(document).trigger('endorse:EndorsementStatsReasonsResult', [{
+                reasons: results
+            }]);
+        },
+        error: function(xhr, status, error) {
+            displayStatsReasonsError(xhr.responseJSON);
         }
     });
 };
