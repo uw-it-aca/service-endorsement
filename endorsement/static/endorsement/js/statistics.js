@@ -8,7 +8,7 @@ $(window.document).ready(function() {
     getEndorsementSharedStats();
     getEndorsementPendingStats();
     getEndorsementEndorsersStats();
-    getEndorsementRateStats($('select#daily-rate option:selected').val())
+    getEndorsementRateStats($('select#daily-rate option:selected').val());
     getEndorsementReasonStats();
 });
 
@@ -26,9 +26,9 @@ var registerEvents = function() {
     }).on('endorse:EndorsementStatsReasonsResult', function (e, stats) {
         displayReasonStats(stats.reasons);
     }).on('change', 'select#daily-rate', function (e) {
-        var period = $('option:selected', $(this)).val()
+        var period = $('option:selected', $(this)).val();
 
-        getEndorsementRateStats(period)
+        getEndorsementRateStats(period);
     });
 };
 

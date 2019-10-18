@@ -19,3 +19,4 @@ eval $TEST
 TEST='. bin/activate && coverage run --source=endorsement/ '--omit=endorsement/migrations/*' manage.py test endorsement'
 echo TEST: ${TEST}
 eval $TEST
+cp .coverage /coverage/.coverage
