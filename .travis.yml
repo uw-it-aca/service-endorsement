@@ -2,20 +2,21 @@ sudo: false
 services:
 - docker
 before_install:
-- export TRAVIS_REPO="acait/prt"
-- export TRAVIS_TAG="${TRAVIS_REPO}:$(git rev-parse --short=7 HEAD)"
+- export IMAGE_REPO="acait/prt"
+- export IMAGE_TAG="${IMAGE_REPO}:$(git rev-parse --short=7 HEAD)"
 install:
-- docker build -t $TRAVIS_TAG .
+- docker build -t "$IMAGE_TAG" .
 script:
-- docker run -u root -it -v /tmp:/coverage -e "ENV=localdev" -e "AUTH=SAML_MOCK" ${TRAVIS_TAG} bash -c ". ./docker/test.sh"
+- docker run -u root -it -v /tmp:/coverage -e "ENV=localdev" -e "AUTH=SAML_MOCK" "$IMAGE_TAG" bash -c ". ./docker/test.sh"
 - cp /tmp/.coverage ./.coverage
 after_success:
 - coveralls
 - |
   if [ "$TRAVIS_BRANCH" == "develop" ]; then
-    docker images "${TRAVIS_REPO}";
+    echo "Pushing $IMAGE_TAG";
+    docker images "$IMAGE_REPO";
     echo -n "$DOCKER_PASSWORD" | docker login --username="$DOCKER_USER" --password-stdin;
-    docker push "${TRAVIS_TAG}";
+    docker push "$IMAGE_TAG";
   fi
 env:
   global:
