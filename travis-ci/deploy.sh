@@ -40,9 +40,11 @@ gcloud version
 
 if [ ! -d $HOME/helm/bin ]; then
     echo "INSTALL helm"
-    mkdir $HOME/helm && pushd $HOME/helm 
-    curl -Lso ${HELM_TGZ} ${HELM_URL}/${HELM_TGZ} && tar xzf ${HELM_TGZ}
-    mkdir $HOME/helm/bin && mv ./linux-amd64/helm ./bin/helm
+    if [ ! -d $HOME/helm ]; then mkdir $HOME/helm ; fi
+    pushd $HOME/helm
+    curl -Lso ${HELM_TGZ} ${HELM_URL}/${HELM_TGZ}
+    tar xzf ${HELM_TGZ}
+    mv ./linux-amd64/helm ./bin/helm
     popd
 fi
 echo "CONFIGURE helm"
