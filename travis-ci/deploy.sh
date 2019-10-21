@@ -35,11 +35,12 @@ docker push "$IMAGE_TAG";
 echo "######################################"
 
 echo "##########################"
-echo "INSTALL and configure gcloud"
 if [ ! -d $HOME/google-cloud-sdk/bin ]; then
+  echo "INSTALL gcloud sdk"
   rm -rf $HOME/google-cloud-sdk;
   curl https://sdk.cloud.google.com | bash > /dev/null;
 fi
+echo "CONFIGURE gcloud sdk"
 source $HOME/google-cloud-sdk/path.bash.inc
 gcloud components update kubectl
 gcloud version
