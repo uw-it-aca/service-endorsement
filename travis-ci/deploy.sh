@@ -7,7 +7,7 @@
 if [ "$TRAVIS_BRANCH" = "develop" ]; then
     INSTANCE="test"
     GCP_PROJECT="uwit-mci-0010"
-else if [ "$TRAVIS_BRANCH" = "master" ]; then
+elif [ "$TRAVIS_BRANCH" = "master" ]; then
     INSTANCE="prod"
     GCP_PROJECT="uwit-mci-0011"
 else
