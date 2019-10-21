@@ -22,3 +22,4 @@ env:
 cache:
   directories:
     - $HOME/google-cloud-sdk
+    - $HOME/helm

@@ -21,8 +21,8 @@ HELM_URL=https://storage.googleapis.com/kubernetes-helm
 HELM_TGZ=helm-v2.14.3-linux-amd64.tar.gz
 HELM_CHART_REPO=https://github.com/uw-it-aca/django-production-chart.git
 HELM_RELEASE=${APP_NAME}-prod-${INSTANCE}
-CLOUDSDK_CORE_DISABLE_PROMPTS=1
-GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
+export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
+export CLOUDSDK_CORE_DISABLE_PROMPTS=1
 
 echo "##########################"
 echo "DEPLOY $HELM_RELEASE"
@@ -36,9 +36,9 @@ echo "######################################"
 
 echo "##########################"
 if [ ! -d $HOME/google-cloud-sdk/bin ]; then
-  echo "INSTALL gcloud sdk"
-  rm -rf $HOME/google-cloud-sdk;
-  curl https://sdk.cloud.google.com | bash > /dev/null;
+    echo "INSTALL gcloud sdk"
+    rm -rf $HOME/google-cloud-sdk
+    curl https://sdk.cloud.google.com | bash > /dev/null
 fi
 echo "CONFIGURE gcloud sdk"
 source $HOME/google-cloud-sdk/path.bash.inc
