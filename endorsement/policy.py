@@ -1,6 +1,4 @@
-from django.template import loader
 from django.utils import timezone
-from django.core.mail import mail_managers
 from endorsement.models import EndorsementRecord
 from endorsement.dao.endorse import clear_endorsement
 from datetime import timedelta
@@ -81,8 +79,6 @@ def _endorsements_to_expire(now, gracetime=DEFAULT_ENDORSEMENT_GRACETIME):
     return EndorsementRecord.objects.filter(**filter)
 
 
-
-
 def expire_endorsments(gracetime, lifetime):
     """
     """
@@ -90,4 +86,3 @@ def expire_endorsments(gracetime, lifetime):
     if len(endorsements):
         for e in endorsements:
             clear_endorsement(e)
-            logger.info('expire: {}'.format(e))
