@@ -2,10 +2,7 @@
 
 # travis test script for django app
 
-#
-# PRECONDITION: env var DJANGO_APP 
-# exists in the calling travis shell
-#
+DJANGO_APP=$1
 
 # install test tooling
 source bin/activate

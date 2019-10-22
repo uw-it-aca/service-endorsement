@@ -21,7 +21,7 @@ install:
   - docker build -t "$IMAGE_TAG" .
 
 script:
-  - docker run -u root -it -v /tmp:/coverage -e "ENV=localdev" -e "AUTH=SAML_MOCK" "$IMAGE_TAG" bash -c ". ./travis-ci/test.sh"
+  - docker run -u root -it -v /tmp:/coverage -e "ENV=localdev" -e "AUTH=SAML_MOCK" "$IMAGE_TAG" bash -c ". ./travis-ci/test.sh $DJANGO_APP"
   - cp /tmp/.coverage ./.coverage
 
 after_success:
