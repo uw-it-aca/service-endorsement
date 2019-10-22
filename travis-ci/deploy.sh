@@ -42,9 +42,9 @@ if [ ! -d $HOME/helm/bin ]; then
     echo "INSTALL helm"
     if [ ! -d $HOME/helm ]; then mkdir $HOME/helm ; fi
     pushd $HOME/helm
+    mkdir ./bin
     curl -Lso ${HELM_TGZ} ${HELM_URL}/${HELM_TGZ}
     tar xzf ${HELM_TGZ}
-    ls -l
     mv ./linux-amd64/helm ./bin/helm
     popd
 fi
