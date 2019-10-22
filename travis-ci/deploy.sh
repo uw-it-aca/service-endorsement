@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 
 #
-# gather pieces and configure environment for helm release
+# gather tools and configure environment for helm release
 #
 
+#
+# PRECONDITION: env vars RELEASE_NAME, COMMIT_HASH and IMAGE_TAG
+# exist in the calling travis shell
+#
+
+#
+# map branch to GCP/MCI project
+#
 if [ "$TRAVIS_BRANCH" = "develop" ]; then
     INSTANCE="test"
     GCP_PROJECT="uwit-mci-0010"
@@ -15,18 +23,34 @@ else
     exit 1
 fi
 
+GCP_HOSTNAME="gcr.io"
 HELM_URL=https://storage.googleapis.com/kubernetes-helm
 HELM_TGZ=helm-v2.14.3-linux-amd64.tar.gz
 HELM_CHART_REPO=https://github.com/uw-it-aca/django-production-chart.git
-HELM_RELEASE=${APP_NAME}-prod-${INSTANCE}
+HELM_RELEASE=${RELEASE_NAME}-prod-${INSTANCE}
 export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
 export CLOUDSDK_CORE_DISABLE_PROMPTS=1
 
-echo "DEPLOYING $HELM_RELEASE in $GCP_PROJECT"
+echo "#####################################"
+echo "DEPLOY $HELM_RELEASE in $GCP_PROJECT"
+echo "#####################################"
 
-echo "PUSH image $IMAGE_TAG to repository"
-echo -n "$DOCKER_PASS" | docker login --username="$DOCKER_USER" --password-stdin;
-docker push "$IMAGE_TAG";
+if [ -n "$DOCKER_USER" ]; then
+    REPO_TAG="${DOCKER_USER}/${RELEASE_NAME}:${COMMIT_HASH}"
+    echo -n "$DOCKER_PASS" | docker login --username="$DOCKER_USER" --password-stdin;
+else
+    REPO_TAG="${GCP_HOSTNAME}/${GCP_PROJECT}/${RELEASE_NAME}:${COMMIT_HASH}"
+
+    #
+    # do GCP authentication magic here?
+    #
+fi
+
+if [ -n "$REPO_TAG" ]; then
+    echo "PUSH image $IMAGE_TAG to $REPO_TAG"
+    docker tag "$IMAGE_TAG" "$REPO_TAG"
+    docker push "$REPO_TAG"
+fi
 
 if [ ! -d $HOME/google-cloud-sdk/bin ]; then
     echo "INSTALL gcloud sdk"
