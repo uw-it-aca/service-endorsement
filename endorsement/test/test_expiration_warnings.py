@@ -70,7 +70,8 @@ class TestProvisioneExpirationNotices(TestCase):
         endorsements.update(datetime_notice_4_emailed=now)
 
     def test_expiration_and_notices(self):
-        # notice one days prior to expiration: two first notices, no expirations
+        # notice one days prior to expiration:
+        #     two first notices, no expirations
         now = timezone.now() - timedelta(days=NOTICE_1_DAYS_PRIOR)
         self._notice_and_expire(now, [0, 2, 0, 0, 0])
 

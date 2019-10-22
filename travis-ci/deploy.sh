@@ -74,10 +74,10 @@ if [ ! -d $HOME/helm/bin ]; then
 fi
 echo "CONFIGURE helm"
 export PATH=$HOME/helm/bin:$PATH
-helm init --client-only;
+helm init --client-only
 
 echo "CLONE chart $HELM_CHART_REPO"
-git clone --depth 1 "$HELM_CHART_REPO" --branch master;
+git clone --depth 1 "$HELM_CHART_REPO" --branch master ./django-production-chart
 
 echo "DEPLOY release $HELM_RELEASE"
-echo helm upgrade $HELM_RELEASE ./django-production-chart --install --set commitHash=$COMMIT_HASH -f docker/${INSTANCE}-values.yml --dry-run --debug;
+echo helm upgrade $HELM_RELEASE ./django-production-chart --install --set commitHash=$COMMIT_HASH -f docker/${INSTANCE}-values.yml --dry-run --debug
