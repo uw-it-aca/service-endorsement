@@ -13,9 +13,8 @@ npm install -g jshint
 function run_test {
     echo "##########################"
     echo "TEST: $1"
-    echo "##########################"
     eval $1
-    if [ $? != 0 ] ; then exit 1; fi
+    if [ $? != 0 ] ; then exit; fi
 }
 
 run_test "pycodestyle ${DJANGO_APP}/ --exclude=migrations,static"
