@@ -44,6 +44,7 @@ if [ ! -d $HOME/helm/bin ]; then
     pushd $HOME/helm
     curl -Lso ${HELM_TGZ} ${HELM_URL}/${HELM_TGZ}
     tar xzf ${HELM_TGZ}
+    ls -l
     mv ./linux-amd64/helm ./bin/helm
     popd
 fi
