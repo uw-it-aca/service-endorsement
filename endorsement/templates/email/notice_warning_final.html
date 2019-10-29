@@ -2,17 +2,14 @@
 Hello {{endorser.display_name}} ({{endorser.netid}}),
 </p>
 <p>
-It has recently come to our attention that {{ expiring_count }} provisionee netid{{expiring_count|pluralize}}
-{{expiring_count|pluralize:"has,have"}} reached the end of {{expiring_count|pluralize:"its,their"}} provisioned service lifetime
-of {{lifetime}} days.
+You are receiving this message because you used the Provisioning Request Tool (PRT) to provision access to {{expiring_count|pluralize:"a ,"}}UW-IT service{{expiring_count|pluralize}} to another UW NetID (retiree, alumni, Sponsored, Shared, and/or Admin).
 </p>
 <p>
-The following endorsement{{expiring_count|pluralize}} {{expiring_count|pluralize:"has,have"}} now expired 
-and thus been revoked.
+Access to provisioned UW-IT services lasts for {{lifetime}} day{{lifetime|pluralize}} and must be renewed or revoked annually.  Access to provisioned UW-IT services for the following ({{expiring_count}}) UW NetID{{expiring_count|pluralize}} has expired and the associated UW-IT service account (e.g. UW G Suite or UW Office 365) is in the process of being deleted.
 </p>
 <table>
 <thead>
-<tr><th>Provisionee</th><th>Service</th><th>Provisioned</th><th>Reason</th></tr>
+<tr><th>UW NetID</th><th>UW-IT Service</th><th>Date Provisioned</th><th>Reason</th></tr>
 <thead>
 <tbody>
 {%for e in expiring %}
@@ -21,8 +18,8 @@ and thus been revoked.
 {% endfor %}
 </tbody>
 </table>
-<br />
+<p>
+If you have any questions, please contact <a href="mailto:help@uw.edu" target="_blank">help@uw.edu</a> or 206-221-5000.
+</p>
 Thank you,<br />
-UW-IT Help Center<br />
-help@uw.edu<br />
-------
+UW-IT<br />

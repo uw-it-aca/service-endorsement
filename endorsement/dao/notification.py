@@ -262,14 +262,14 @@ def create_expire_notice_message(notice_level, lifetime, endorsed):
     }
     if notice_level < 4:
         subject = "{0}{1}".format(
-            "Action Required: Services that you provisioned for other ",
-            "UW NetIDs will be revoked soon")
+            "Action Required: UW-IT services that you provisioned access to ",
+            "for other UW NetIDs will expire soon")
         text_template = "email/notice_warning.txt"
         html_template = "email/notice_warning.html"
     else:
         subject = "{0}{1}".format(
-            "Action Required: Services that you provisioned for other ",
-            "UW NetIDs have been revoked")
+            "Action Required: UW-IT services that you provisioned access to ",
+            "for other UW NetIDs have expired")
         text_template = "email/notice_warning_final.txt"
         html_template = "email/notice_warning_final.html"
 
