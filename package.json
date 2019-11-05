@@ -1,0 +1,38 @@
+{
+  "name": "service-endorsement",
+  "version": "2.0.0",
+  "description": "[![Build Status](https://travis-ci.org/uw-it-aca/service-endorsement.svg?branch=master)](https://travis-ci.org/uw-it-aca/service-endorsement) # service-endorsement Provisioning Request Tool",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uw-it-aca/service-endorsement.git"
+  },
+  "author": "Michael Seibel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uw-it-aca/service-endorsement/issues"
+  },
+  "homepage": "https://github.com/uw-it-aca/service-endorsement#readme",
+  "devDependencies": {
+    "axios": "^0.18.1",
+    "clean-webpack-plugin": "^2.0.1",
+    "css-loader": "^2.1.0",
+    "jshint": "^2.10.2",
+    "mini-css-extract-plugin": "^0.6.0",
+    "node-sass": "^4.12.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "stylelint": "^10.1.0",
+    "stylelint-config-sass-guidelines": "^6.0.0",
+    "stylelint-scss": "^3.8.0",
+    "terser-webpack-plugin": "^1.2.3",
+    "webpack": "^4.29.5",
+    "webpack-bundle-tracker": "^0.4.2-beta",
+    "webpack-cli": "^3.3.1"
+  },
+  "dependencies": {}
+}

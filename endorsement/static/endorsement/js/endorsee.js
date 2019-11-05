@@ -1,4 +1,7 @@
 // javascript for service endorsement manager
+/* jshint esversion: 6 */
+import { DateTime } from "./datetime.js";
+import { ClipboardCopy } from "./clipboard.js";
 
 $(window.document).ready(function() {
     registerEvents();
@@ -46,7 +49,7 @@ var initDataTable = function () {
                     .change(function () {
                         var api = $('#endorsee-table').dataTable().api();
 
-                        api.column(6).search(this.checked ? 'false' : '').draw();
+                        api.column(11).search(this.checked ? 'false' : '').draw();
                     });
             },
         dom: 'Bfrti',
@@ -74,20 +77,24 @@ var displayEndorsedUWNetIDs = function(endorsements) {
     if (endorsements.endorsements.endorsements.length) {
         $.each(endorsements.endorsements.endorsements, function () {
             api.row.add([
-                endorsee_template(this),
-                endorsee_shared_template(this),
+                endorsee_template(this).trim(),
+                endorsee_shared_template(this).trim(),
                 this.endorser.netid,
                 this.category_name,
                 this.reason,
                 this.datetime_emailed,
+                this.datetime_notice_1_emailed,
+                this.datetime_notice_2_emailed,
+                this.datetime_notice_3_emailed,
+                this.datetime_notice_4_emailed,
                 datetime_endorsed_template(this),
-                revoked_template(this),
+                revoked_template(this).trim(),
                 this.datetime_expired
             ]);
         });
 
         if ($('#show-revoked input:checked').length) {
-            api.columns([7]).search('false').draw();
+            api.columns([11]).search('false').draw();
         } else {
             api.draw(true);
         }
@@ -127,10 +134,10 @@ var searchEndorsee = function (search_string) {
         success: function(results) {
             // localize date
             $.each(results.endorsements, function () {
-                this.datetime_endorsed = utc2local(this.datetime_endorsed);
-                this.datetime_emailed = utc2local(this.datetime_emailed);
-                this.datetime_renewed = utc2local(this.datetime_renewed);
-                this.datetime_expired = utc2local(this.datetime_expired);
+                this.datetime_endorsed = DateTime.utc2local(this.datetime_endorsed);
+                this.datetime_emailed = DateTime.utc2local(this.datetime_emailed);
+                this.datetime_renewed = DateTime.utc2local(this.datetime_renewed);
+                this.datetime_expired = DateTime.utc2local(this.datetime_expired);
             });
 
             $(document).trigger('endorse:UWNetIDsEndorseeResult', [{

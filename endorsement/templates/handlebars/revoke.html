@@ -1,9 +1,66 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "revoke_modal_container" %}
+{% verbatim %}
+<script id="revoke_modal_container" type="text/x-handlebars-template">
   <!-- Revoke Confirmation Modal -->
   <div class="modal fade" id="revoke_modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content"></div>
     </div>
   </div>
-{% endtplhandlebars %}
+  <div class="modal fade" id="revoke_success_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+</script>
+
+<script id="revoke_modal_content" type="text/x-handlebars-template">
+<div class="modal-header">
+  <span class="significant">Confirm UW NetID Provision Revoke Request</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="shared-acceptance container col-md-12">
+    <div class="row">
+      You are about to revoke the provision for {{#gt unique.length 1}}{{unique.length}} {{/gt}}UW NetID{{plural unique.length '' 's'}}{{#gt unique.length 1}}{{else}} <ul class="comma-list">{{#each unique}}<li class="significant">{{this}}</li>{{/each}}</ul>{{/gt}} to
+      <ul class="comma-list">
+        {{#if revoke_google.length}}<li class="significant">UW G Suite</li>{{/if}}
+        {{#if revoke_o365.length}}<li class="significant">UW Office 365</li>{{/if}}
+      </ul>.
+    </div>
+    <div class="row">
+      <p>
+        Are you sure?
+      </p>
+    </div>
+  </div>
+  <span style="display: block; line-height: 0;">&nbsp;</span>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
+  <button type="button" id="confirm_revoke" class="btn btn-primary" data-netid="{{ netid }}" data-service="{{ service }}" data-event-id="{{ event_id }}">Yes, revoke</button>
+</div>
+</script>
+
+
+<script id="revoke_success_modal_content" type="text/x-handlebars-template">
+<div class="modal-header">
+  <span class="significant">Confirm UW NetID Provision Revoke Request</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="shared-acceptance container col-md-12">
+    <div class="row">
+      You have successfully revoked your provision.
+    </div>
+  </div>
+  <span style="display: block; line-height: 0;">&nbsp;</span>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+</div>
+</script>
+{% endverbatim %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% load templatetag_handlebars %}
+{% load render_bundle from webpack_loader %}
 
 {% block content %}
 
@@ -15,9 +15,8 @@
 
 {% include "handlebars/accept.html" %}
 {% include "handlebars/accepted.html" %}
-
 {% endblock %}
 
-{% block extra_js%}
-<script src="{% static "endorsement/js/accept.js" %}"></script>
+{% block extra_js %}
+{% render_bundle 'accept' 'js' %}
 {% endblock %}

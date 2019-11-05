@@ -1,7 +1,7 @@
 // javascript for service endorsement manager
+/* jshint esversion: 6 */
 
 $(window.document).ready(function() {
-    displayPageHeader();
     displayPageBody();
     registerEvents();
 });

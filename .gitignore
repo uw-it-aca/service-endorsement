@@ -76,3 +76,7 @@ db.sqlite3
 pip-selfcheck.json
 share/
 .ipynb_checkpoints
+
+# webpack
+bundles/
+webpack-stats.json

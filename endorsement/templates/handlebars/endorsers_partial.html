@@ -1,18 +1,119 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "endorsers_partial" %}
-<div style="position: relative">
-          {{#if endorsement}}
-          <div class="row">
-          <div class="col-xs-6 text-center">
-            Provisioned<br />{{endorsement.date_endorsed}}
-          </div>
-          <div class="col-xs-6 text-center">
-          <button type="button" name="Revoke {{ endorsement.category_name }}" class="btn btn-primary confirm_revoke" data-netid="{{ netid }}" data-service="{{svc}}" data-service-name="{{ endorsement.category_name }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking">Revoke</button>
-          </div>
-          </div>
-          {{else}}
-          <input type="checkbox" id="endorse_{{svc}}_{{netid}}" value="{{netid}}" /><label for="endorse_{{svc}}_{{netid}}">Provision {{#equals svc 'o365'}}Office 365{{else}}G Suite{{/equals}}</label>
-          {{/if}}
-</div>
+{% verbatim %}
 
-{% endtplhandlebars %}
+<script id="endorsement_row_partial" type="text/x-handlebars-template">
+
+<tr class="{{#if is_revoked}}
+             unendorsed_service
+           {{else}}
+             {{#if expiring}}
+               expiring_service
+             {{else}}
+               {{#if endorsement.datetime_endorsed}}
+                 endorsed_service
+               {{else}}
+                 {{#if endorsement.accept_url}}
+                   pending_service
+                 {{else}}
+                   unendorsed_service
+                 {{/if}}
+               {{/if}}
+             {{/if}}
+           {{/if}}{{#if new_netid}} new_netid{{/if}}" data-netid="{{ netid }}"
+    data-netid-name="{{ name }}"
+    data-netid-initial-email="{{ email }}"
+    data-service="{{ svc }}"
+    data-service-name="{{ endorsement.category_name }}"
+    {{#if type}}data-netid-type="{{ type }}"{{/if}}>
+
+  <td class="endorsed-netid" data-csv-netid="{{ netid }}">{{ netid }}</td>
+
+  <td class="endorsed-name" data-csv-name="{{ name }}">{{ name }}</td>
+
+  <td class="endorsed-service-name" data-csv-service="{{ endorsement.category_name }}">
+    <label><input class="aggregate_action visually-hidden" type="checkbox" id="aggregate_{{ svc }}_{{ netid }}" value="{{ netid }}" /><span class="significant">{{ endorsement.category_name }}</span></label>
+  </td>
+
+  <td class="endorsed-status-icon">
+  {{#unless endorsement.is_revoked}}
+    {{#if endorsement.datetime_endorsed}}
+      {{#if this.expired}}
+        <span class="fa fa-exclamation-triangle text-warning"></span>
+      {{else}}
+        {{#if this.expiring}}
+        <span class="fa fa-exclamation-triangle text-warning"></span>
+        {{else}}
+          <span class="fa fa-check text-success"></span>
+        {{/if}}
+      {{/if}}
+    {{else}}
+      {{#if endorsement.accept_id}}
+        <span class="fa fa-exclamation-triangle text-warning"></span>
+      {{/if}}
+    {{/if}}
+  {{/unless}}
+  </td>
+
+  <td class="endorsed-status" data-csv-status>
+  {{#if  endorsement.is_revoked}}
+    <span class="significant">Not Provisioned</span>
+  {{else}}
+    {{#if  endorsement.datetime_endorsed}}
+      {{#if this.expired}}
+        <span class="significant text-danger">Expired</span>
+        <br />Expired on {{endorsement.expires}} ({{endorsement.expires_relative}})
+      {{else}}
+        {{#if this.expiring}}
+          <span class="significant text-danger expiring-service">Expiring</span>
+          <br />Expires {{endorsement.expires}} ({{endorsement.expires_relative}})
+          <br /><span class="significant">Renewal may be required.</span>
+          <br />User may lose access and their files may be deleted.
+        {{else}}
+          <span class="significant">Provisioned</span>
+          <br />Renew by {{endorsement.expires}} ({{endorsement.expires_relative}})
+        {{/if}}
+      {{/if}}
+    {{else}}
+      {{#if endorsement.accept_id}}
+        <span class="significant">Pending Acceptance</span>
+        {{#if endorsement.datetime_emailed}}
+        <br />The provisionee has yet to accept the terms and conditions of use. You can resend the acceptance link to the provisionee to complete the provisioning process.
+        {{else}}
+        <br />The provisionee will be receiving email soon instructing them to confirm the terms and conditions of use.
+        {{/if}}
+      {{else}}
+        <span class="significant">Not Provisioned</span>
+      {{/if}}
+      {{/if}}
+  {{/if}}
+  {{#if endorsement.endorsers}}
+  <br />{{#if endorsement.datetime_endorsed}}Also{{else}}Already{{/if}} provisioned by <ul class="comma-list">
+    {{#each endorsement.endorsers}}
+    <li>{{ netid }}</li>
+    {{/each}}
+  </ul>
+  {{/if}}
+  </td>
+
+  <td class="endorsed-reason" data-csv-reason>
+    {{> reasons_partial endorsement=endorsement}}
+  </td>
+
+  <td class="endorsed-action">
+  {{#unless endorsement.is_revoked}}  
+    {{#if  endorsement.datetime_endorsed}}
+      <button type="button" name="Renew {{ endorsement.category_name }}" class="btn btn-primary renew_service renew_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn btn-default revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
+    {{else}}
+      {{#if endorsement.accept_id}}
+        <button type="button" class="btn btn-default button_url" data-url="mailto:{{ email }}?subject=UW-IT%20Computing%20Services%20-%20Provision%20Request%20Confirmation&body=Greetings,%0D%0A%0D%0AI%20provisioned%20you%20access%20to%20UW-IT%20computing%20services.%20To%20accept%20the%20terms%20of%20service%20and%20begin%20using%20the%20UW-IT%20computing%20services,%20click%20here:%20{{ endorsement.accept_url }}" name="Resend {{ endorsement.category_name }} confirmation to {{ email }}">Resend Link</button>&nbsp;<button type="button" name="Revoke {{ endorsement.category_name }}" class="btn btn-default revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ endorsement.category_name }}">Revoke</button>
+      {{else}}
+        <button type="button" name="Provision service" class="btn btn-default endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
+      {{/if}}
+    {{/if}}
+  {{else}}
+      <button type="button" name="Provision service" class="btn btn-default endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
+  {{/unless}}
+  </td>
+</tr>
+
+</script>
+{% endverbatim %}

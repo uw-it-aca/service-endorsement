@@ -1,6 +1,6 @@
-{% load templatetag_handlebars %}
+{% verbatim %}
 
-{% tplhandlebars "shared_provisioned_modal_content" %}
+<script id="shared_provisioned_modal_content" type="text/x-handlebars-template">
 <div class="modal-header">
   <span style="font-weight: bold;">Access to provisioned services</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -9,16 +9,8 @@
 </div>
 <div class="modal-body">
   <div>
-    You have agreed to comply with all relevant state and federal laws, and we are in the process of provisioning access to
-    {{#single_endorsement endorse_o365 endorse_google}}
-    <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}{{#if endorse_google_netid_count}}<li>UW G Suite (Google){{/if}}</ul> for Shared UW NetID <span style="font-weight: bold;">{{#each endorse_google}}{{this}}{{/each}}</span>.
-    {{else}}
-      {{#gt endorse_netid_count 10}}
-    <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>UW Office 365 for {{endorse_o365_netid_count}} UW NetID{{plural endorse_o365_netid_count '' 's'}}</li>{{/if}}{{#if endorse_google_netid_count}}<li>UW G Suite (Google) for {{endorse_google_netid_count}} UW NetID{{plural endorse_google_netid_count '' 's'}}</li>{{/if}}</ul>.
-      {{else}}
-    <ul class="comma-list">{{#if endorse_o365_netid_count}}<li>UW Office 365 for Shared UW NetID{{plural endorse_o365_netid_count '' 's'}} <ul class="comma-list" style="font-weight: bold;">{{#each endorse_o365}}<li>{{this}}</li>{{/each}}</ul></li>{{/if}}{{#if endorse_google_netid_count}}<li>UW G Suite (Google) for Shared UW NetID{{plural endorse_google_netid_count '' 's'}} <ul class="comma-list" style="font-weight: bold;">{{#each endorse_google}}<li>{{this}}</li>{{/each}}</ul></li>{{/if}}</ul>.
-      {{/gt}}
-    {{/single_endorsement}}
+    You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. Access to
+    <ul class="comma-list">{{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}{{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}</ul> for the{{#gt unique.length 1}} {{ unique.length }}{{/gt}}UW NetID{{plural unique.length '' 's'}} {{#gt unique.length 1}}{{else}} <ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/gt}} has been provisioned.
   </div>
   <br /> 
   {{#if endorse_o365_netid_count}}
@@ -31,4 +23,5 @@
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
 </div>
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

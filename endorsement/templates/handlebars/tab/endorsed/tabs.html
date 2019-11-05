@@ -1,9 +1,10 @@
-{% load templatetag_handlebars %}
+{% verbatim %}
 
-{% tplhandlebars "provisioned-tab-link" %}
+<script id="provisioned-tab-link" type="text/x-handlebars-template">
 <li><a href="#{{ tab_content_id }}" data-toggle="tab" class="previous-endorsement"><h2>Manage your provisioned services</h2></a></li>
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "provisioned-tab-content" %}
+<script id="provisioned-tab-content" type="text/x-handlebars-template">
 <div class="tab-pane" id="{{ tab_content_id }}"></div>
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

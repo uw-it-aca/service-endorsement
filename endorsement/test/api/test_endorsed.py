@@ -1,5 +1,5 @@
 import json
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from endorsement.test.api import EndorsementApiTest
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.endorse import (
@@ -27,8 +27,9 @@ class TestEndorsementEndorsedAPI(EndorsementApiTest):
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertTrue('endorsee7' in data['endorsed'])
-        self.assertTrue('o365' in data['endorsed']['endorsee7'])
-        self.assertTrue(data['endorsed']['endorsee7']['o365']['endorsed'])
-        self.assertTrue(
-            data['endorsed']['endorsee7']['o365']['category_code'], 235)
-        self.assertFalse('google' in data['endorsed']['endorsee7'])
+        self.assertTrue('o365' in data['endorsed']['endorsee7'][
+            'endorsements'])
+        self.assertTrue('google' in data['endorsed']['endorsee7'][
+            'endorsements'])
+        self.assertTrue(data['endorsed']['endorsee7']['endorsements'][
+            'o365']['category_code'], 235)

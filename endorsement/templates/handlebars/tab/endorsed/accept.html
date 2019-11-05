@@ -1,0 +1,63 @@
+{% verbatim %}
+<script id="endorse_accept_modal_content" type="text/x-handlebars-template">
+<div class="modal-header">
+  <span class="significant">Confirm UW NetID Provision Request</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="endorsed-acceptance container col-md-12">
+    <div class="row">
+      You are about to provision
+      {{> enumerate_partial netid_count=endorse_netid_count google=endorse_google o365=endorse_o365 google_count=endorse_google_netid_count o365_count=endorse_o365_netid_count shared=''}}
+      By selecting {{ plural endorse_netid_count 'this' 'these' }} UW NetID{{ plural endorse_netid_count '' 's' }}, you confirm that:
+    </div>
+    <div class="row">
+      <ol>
+        <li>The provisioning recipient{{ plural endorse_netid_count '' 's' }} associated with {{ plural endorse_netid_count 'this' 'each' }} UW NetID requires use of
+          <ul class="comma-list">
+            {{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}
+            {{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}
+          </ul>
+          to carry out official UW operations, and</li>
+        <li>You have authority to make this request in accord with the UW-IT guidelines for providing computing services to UW
+          affiliates. For more information, visit: <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">https://itconnect.uw.edu/connect/email/resources/affiliate-access/</a>.</li>
+      </ol>
+    </div>
+    <div class="row">
+      <h4>Provisionee Email</h4>
+      A valid provisionee email address is required.  The provisionee will receive email with terms and conditions that they must accept in order to access the
+        <ul class="comma-list">
+          {{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}
+          {{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}
+        </ul> service.
+        <br /><br />
+        <ul class="email-list">
+        {{#each endorse_google}}
+        <li>Email for <span class="significant">{{ netid }}</span> will be sent to: {{> email_editor_partial . }}</li>
+        {{/each}}
+        {{#each endorse_o365}}
+        <li>Email for <span class="significant">{{ netid }}</span> will be sent to: {{> email_editor_partial . }}</li>
+        {{/each}}
+        </ul>
+      </p>
+    </div>
+    <div class="row">
+      <h4>Statement of agreement</h4>
+      <div class="col-md-12">
+        <input type="checkbox" id="endorse_accept_responsibility" class="accept_responsibility" />
+        <label for="endorse_accept_responsibility" class="accept_responsibility">
+          I understand and accept these terms.
+        </label>
+      </div>
+    </div>
+  </div>
+  <span style="display: block; line-height: 0;">&nbsp;</span>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
+  <button type="button" id="confirm_endorsement_responsibility" class="btn btn-primary" disabled="disabled">Provision services for {{plural endorse_netid_count 'this' 'these'}} UW NetID{{plural endorse_netid_count '' 's'}}</button>
+</div>
+</script>
+{% endverbatim %}

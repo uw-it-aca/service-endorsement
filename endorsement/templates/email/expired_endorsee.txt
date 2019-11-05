@@ -1,13 +1,13 @@
 Hi Provision Request Manager,
 
-It has recently come to my attention that the provisionee netid "{{ endorsee.netid }}"
-has exceeded their provisioned service lifetime ({{lifetime}} day{{lifetime|pluralize}}).
+It has recently come to my attention that {{ expired_count }} provisionee netid{{expired_count|pluralize}}
+have exceeded their provisioned service lifetime.
 
-The following endorsements should be renewed or revoked:
+The following endorsements have been revoked:
 
-Provisioner    Service        Reason
--------------  -------------  --------------------------------{%for e in endorsements %}{% if endorsee.netid == e.endorsee.netid %}
-{{e.endorser.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.reason|ljust:"40"}}{% endif %}{% endfor %}
+Provisionee         Provisioner         Service        Endorsed       Reason
+-------------       -------------       -------------  -----------    ----------------------------{%for e in endorsements %}
+{{e.endorsee.netid|ljust:"20"}}{{e.endorser.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.datetime_endorsed|ljust:"10"}}{{e.reason|ljust:"40"}}{% endfor %}
 
 Sincerely,
 

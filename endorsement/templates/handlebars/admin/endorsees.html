@@ -1,14 +1,14 @@
-{% load templatetag_handlebars %}
+{% verbatim %}
 
-{% tplhandlebars "admin-endorsee-search-result-endorsee" %}
+<script id="admin-endorsee-search-result-endorsee" type="text/x-handlebars-template">
 {{endorsee.netid}}{{#if acted_as}} (by {{ acted_as }}){{/if}}
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "admin-endorsee-search-result-endorsee-shared" %}
+<script id="admin-endorsee-search-result-endorsee-shared" type="text/x-handlebars-template">
 {{#unless endorsee.is_person}}shared{{/unless}}
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "admin-endorsee-search-result-endorsee-datetime-endorsed" %}
+<script id="admin-endorsee-search-result-endorsee-datetime-endorsed" type="text/x-handlebars-template">
         {{#if datetime_endorsed}}
         {{datetime_endorsed}}
         {{else}}
@@ -16,24 +16,25 @@
         Pending <a fclass="copy_clipboard" data-toggle="tooltip" data-clipboard="{{accept_url}}" data-clipboard-msg="Link copied to clipboard" title="Copy acceptance link to clipboard" href="javascript:void(0);"><i class="fa fa-copy"></i></a>
         {{/if}}
         {{/if}}
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "admin-endorsee-search-result-endorsee-is-revoked" %}
-{{#if is_revoked }}<span class="fa fa-check"></span><span style="display: none;">true</span>{{else}}<span style="display: none;">false</span>{{ /if }}
-{% endtplhandlebars %}
+<script id="admin-endorsee-search-result-endorsee-is-revoked" type="text/x-handlebars-template">
+{{#if is_revoked }}<span class="fa fa-check"></span><span style="display: none;">true</span>{{else}}<span style="display: none;">false</span>{{/if}}
+</script>
 
-{% tplhandlebars "admin-endorsee-search-error" %}
+<script id="admin-endorsee-search-error" type="text/x-handlebars-template">
 <tr class="odd">
-  <td valign="top" colspan="8" class="dataTables_empty">
+  <td valign="top" colspan="13" class="dataTables_empty">
     Error searching for Provision Requests<br />{{error}}
   </td>
 </tr>
-{% endtplhandlebars %}
+</script>
 
-{% tplhandlebars "admin-endorsee-empty-search-result" %}
+<script id="admin-endorsee-empty-search-result" type="text/x-handlebars-template">
 <tr class="odd">
-  <td valign="top" colspan="8" class="dataTables_empty">
+  <td valign="top" colspan="13" class="dataTables_empty">
     No Services or Provisioners found for {{endorsee}}
   </td>
 </tr>
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

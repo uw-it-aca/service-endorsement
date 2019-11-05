@@ -1,17 +1,14 @@
 // javascript handling clipboard copying
+/* jshint esversion: 6 */
+import { Notify } from "./notify.js";
 
-var ClipboardCopy = {
-    load: function () {
-        this._registerEvents();
-    },
-
-    _registerEvents: function () {
+var ClipboardCopy = (function () {
+    var _registerEvents = function () {
         $(document).on('click', '[data-clipboard]', function (e) {
-            ClipboardCopy._copy_clipboard($(this));
+            _copy_clipboard($(this));
         });
     },
-
-    _copy_clipboard: function ($node) {
+    _copy_clipboard = function ($node) {
         var url = $node.attr('data-clipboard'),
             msg = $node.attr('data-clipboard-msg'),
             $txt;
@@ -25,5 +22,13 @@ var ClipboardCopy = {
         document.execCommand('copy');
         $txt.remove();
         Notify.success(msg);
-    }
-};
+    };
+
+    return {
+        load: function () {
+            _registerEvents();
+        }
+    };
+}());
+
+export { ClipboardCopy };

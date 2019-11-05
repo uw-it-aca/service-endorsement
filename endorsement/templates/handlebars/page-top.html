@@ -1,6 +1,6 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "page-top" %}
 {% load staticfiles %}
+{% verbatim %}
+<script id="page-top" type="text/x-handlebars-template">
 
         <header class="topbanner-bg" role="banner">
             <div aria-labelledby="endorsement_banner">
@@ -17,11 +17,12 @@
                 </div>
                 <div class="endorsement-navigation container">
                     <div class="endorsement-wrapper" style="background-image: url({% static 'endorsement/img/w-logo-white.png' %})">
-                        <h1 id="endorsement_banner"><div class="endorsement-title">Provision services</div></h1>
+                      <div class="endorsement-title">
+                        Provisioning Request Tool
+                      </div>
                     </div>
                 </div>
             </div>
         </header>
-
-
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

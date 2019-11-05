@@ -1,11 +1,12 @@
 {% extends wrapper_template %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% block content %}
 <style>
 .current_message { background-color: #fbfbe3; }
 h4 {font-weight: 900;}
 </style>
-<div class="container" style="max-width: 800px;">
+<div class="container" style="max-width: 100%;">
 <h2>Provisioned User Search</h2>
 
 <form>
@@ -35,6 +36,10 @@ h4 {font-weight: 900;}
       <th>Service</th>
       <th>Reason</th>
       <th>Email Date</th>
+      <th>Notice 1 Date</th>
+      <th>Notice 2 Date</th>
+      <th>Notice 3 Date</th>
+      <th>Expire Notice Date</th>
       <th>Provisioned Date</th>
       <th>Revoked</th>
       <th>Revoked Date</th>
@@ -49,17 +54,14 @@ h4 {font-weight: 900;}
 {% endblock %}
 
 {% block extra_js%}
-<script src="{% static "endorsement/js/endorsee.js" %}"></script>
-<script src="{% static "endorsement/js/clipboard.js" %}"></script>
-<script src="{% static "endorsement/js/notify.js" %}"></script>
-<script src="{% static "endorsement/js/datetime.js" %}"></script>
-<script src="{% static "vendor/js/moment.2.8.3.min.js" %}"></script>
+{% render_bundle 'endorsee' 'js' %}
 
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
 <script type="text/javascript">

@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
+from django_prometheus.models import ExportModelOperationsMixin
 from uw_uwnetid.models import Category
 import hashlib
 import random
@@ -14,7 +15,7 @@ def datetime_to_str(d_obj):
     return None
 
 
-class Endorser(models.Model):
+class Endorser(ExportModelOperationsMixin('endorser'), models.Model):
     netid = models.SlugField(max_length=32,
                              db_index=True,
                              unique=True)
@@ -47,7 +48,7 @@ class Endorser(models.Model):
         db_table = 'uw_service_endorsement_endorser'
 
 
-class Endorsee(models.Model):
+class Endorsee(ExportModelOperationsMixin('endorsee'), models.Model):
     netid = models.SlugField(max_length=32,
                              db_index=True,
                              unique=True)
@@ -79,7 +80,8 @@ class Endorsee(models.Model):
         db_table = 'uw_service_endorsement_endorsee'
 
 
-class EndorseeEmail(models.Model):
+class EndorseeEmail(
+        ExportModelOperationsMixin('endorsee_email'), models.Model):
     """
     Distinct from Endorsee model in that endorsee could be person
     which includes email, or entity (shared, etc) netid without email
@@ -181,7 +183,8 @@ class EndorsementRecordManager(models.Manager):
             is_deleted__isnull=True)
 
 
-class EndorsementRecord(models.Model):
+class EndorsementRecord(
+        ExportModelOperationsMixin('endorsement_record'), models.Model):
     GOOGLE_SUITE_ENDORSEE = Category.GOOGLE_SUITE_ENDORSEE
     OFFICE_365_ENDORSEE = Category.OFFICE_365_ENDORSEE
 
@@ -203,6 +206,10 @@ class EndorsementRecord(models.Model):
                                  unique=True)
     datetime_created = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
+    datetime_notice_1_emailed = models.DateTimeField(null=True)
+    datetime_notice_2_emailed = models.DateTimeField(null=True)
+    datetime_notice_3_emailed = models.DateTimeField(null=True)
+    datetime_notice_4_emailed = models.DateTimeField(null=True)
     datetime_endorsed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
@@ -253,6 +260,14 @@ class EndorsementRecord(models.Model):
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired),
+            "datetime_notice_1_emailed": datetime_to_str(
+                self.datetime_notice_1_emailed),
+            "datetime_notice_2_emailed": datetime_to_str(
+                self.datetime_notice_2_emailed),
+            "datetime_notice_3_emailed": datetime_to_str(
+                self.datetime_notice_3_emailed),
+            "datetime_notice_4_emailed": datetime_to_str(
+                self.datetime_notice_4_emailed),
             "is_revoked": self.is_deleted,
             "accept_url": self.accept_url()
         }

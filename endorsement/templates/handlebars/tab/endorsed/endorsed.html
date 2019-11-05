@@ -1,32 +1,103 @@
-{% load templatetag_handlebars %}
-{% tplhandlebars "endorsed-netids" %}
+{% verbatim %}
+<script id="endorsed-netids" type="text/x-handlebars-template">
 
-<div class="form-group" id="uwnetids-endorsed">
-<h3>Accounts for which you have provisioned services</h3>
+  <a class="panel-toggle" data-reveal-text="<span class='fa fa-caret-right'></span> Add UW NetIDs to provision" data-conceal-text="<span class='fa fa-caret-down'></span> Add UW NetIDs to provision" href="javascript:void(0);"><span class="fa fa-caret-right"></span> Add UW NetIDs to provision</a>
+  <div class="content visually-hidden">
+    <div class="form-group" id="uwnetids-input">
+      <textarea id="netid_list" class="form-control" placeholder="Enter the UW NetID(s), @uw.edu, or @washington.edu email address(es) for which you want to provision access to UW-IT services."></textarea>
+      <br />
+      <button type="button" name="ValidateUWNetids" id="validate" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Validating UW NetIDs">Add UW NetID(s) to list</button>
+    </div>
+    <div class="form-group visually-hidden" id="uwnetids-validated">
+    </div>
+  </div>
+  <div class="no-endorsements{{#if has_endorsed}} visually-hidden{{/if}}">You haven't provisioned services for any UW NetIDs.</div>
+  <div>
+    <div class="content">
+      <div class="pull-right">
+        {{> display_filter_partial . }}
+      </div>
+      <div class="clearfix"></div>
+    </div>
 
-  {{#if has_endorsed}}
-  {{> endorsed_partial .}}
-<!-- 
-  <button type="button" name="Revoke" id="revoke" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking Services">Revoke Endorsements</button>
--->
-  {{else}}
-  <div class="no-endorsements">You haven't provisioned services for any UW NetIDs.</dev>
-  {{/if}}
+    <div class="form-group">
+      <div class="endorsed-netids-table">
+        <table class="table csv_table">
+          <thead class="thead-light">
+            <tr>
+              <th data-csv-label="netid">UW NetID</th>
+              <th data-csv-label="name">Name</th>
+              <th data-csv-label="service" class="endorsed-service-name"><input class="aggregate-action visually-hidden" type="checkbox" id="check_all" /><label class="significant" for="check_all">Service</label></th>
+              <th class="endorsed-status-icon"></th>
+              <th data-csv-label="status"><span>Status</span></th>
+              <th data-csv-label="reason"><span>Provision Reason</span></th>
+              <th><span>Action</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#if has_endorsed}}
+            {{#each endorsed.endorsed}}
+              {{#each this.endorsements}}
+               {{> endorsement_row_partial endorsement=this netid=@../key name=../name email=../email svc=@key }}
+              {{/each}}
+            {{/each}}
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-  {{#if has_endorsed}}
-  <button type="button" name="ExportCSV" id="export_csv" class="btn btn-default btn-outline" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Exporting Accounts">Export Accounts as CSV</button>
-  {{/if}}
+    <div class="row container">
+      <span class="pull-right">
+        <a name="ExportCSV" id="export_csv" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Exporting Accounts"><span class="fa fa-download"></span> Export as CSV</a>
+      </span>
+    </div>
+  </div>
 
-</div>
+</script>
 
-{% endtplhandlebars %}
+<script id="validated_content" type="text/x-handlebars-template">
+  <div class="valid_netids">
+    {{#if netid_count}}
+    <p><span class="significant text-success"><span class="fa fa-check"></span> {{netid_count}} NetID{{plural netid_count '' 's'}} Added</span><br />
+    {{plural netid_count 'It is' 'They are'}} available to be provisioned during this session{{#if netids_present_count}} ({{ netids_present_count}} NetID{{plural netids_present_count '' 's'}} were already available){{/if}}.</p>
+    {{else}}
+      {{#if netids_present_count}}
+      <p>{{ netids_present_count}} NetID{{plural netids_present_count '' 's'}} are already available for provisioning.</p>
+      {{/if}}
+    {{/if}}
+  </div>
+  <div class="invalid_netids">
+    {{#if netid_error_count}}
+    <p><span  class="significant text-danger"><span class="fa fa-warning"></span> Error</span><br />
+    The following NetID{{ plural netid_error_count '' 's'}} could not be added:</p>
+    <table class="table borderless">
+      <tbody>
+        {{#each netid_errors}}
+        <tr>
+          <td>{{ @key }}</td>
+          <td>{{ this.error }}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+  </div>
+  <button type="button" name="BackToUWNetids" id="netid_input" class="btn btn-primary">Add more UW NetID(s) to list</button>
+</script>
 
 
-{% tplhandlebars "endorsed-loading" %}
+<script id="endorsee-row" type="text/x-handlebars-template">
+{{> endorsement_row_partial endorsement=endorsement netid=netid email=email name=name svc=service new_netid=true }}
+</script>
+
+
+<script id="endorsed-loading" type="text/x-handlebars-template">
 <div class="loading"><div></div></div>
-{% endtplhandlebars %}
+</script>
 
 
-{% tplhandlebars "endorsed-failure" %}
+<script id="endorsed-failure" type="text/x-handlebars-template">
 <div class="no-endorsements">We are unable to determine provisioned services at this time.  Please try again later.</dev>
-{% endtplhandlebars %}
+</script>
+{% endverbatim %}

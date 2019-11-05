@@ -2,51 +2,50 @@
 {% load static %}
 
 {% block content %}
-
-
-<div class="container">
-
- <p style="padding: 30px 10px 10px 10px;">This tool allows you to manage non-employees' and Shared UW NetIDs' ability to access UW Office 365 and/or UW G Suite (Google).
-   </p>
-
-  <ul class="nav nav-tabs"></ul>
-  <div class="tab-content"></div>
+<div class="expiring_netids visually-hidden">
+  <span class="significant"><i class="fa fa-exclamation-triangle"></i> You have expiring UW-IT services.</span> Provisioned UW-IT services must be reviewed, renewed, and/or revoked at least annually.  To avoid loss of access to UW-IT services and data deletion, review and take action on the UW NetIDs highlighted below.
+  <button type="button" class="close" aria-label="Close">
+    <span aria-hidden="true">×</span>
+  </button>
 </div>
 
-{% include "handlebars/tab/endorse/tabs.html" %}
+<!-- <a class="close_expiring_netids" href="#"><i class="fa fa-window-close"></i></a> -->
+<div class="container">
 
-{% include "handlebars/tab/endorsed/tabs.html" %}
+ <h2 style="text-transform: uppercase;">Manage Provisions</h2>
 
-{% include "handlebars/tab/shared/tabs.html" %}
+ <p>Grant, revoke, and renew access to UW-IT services for UW NetIDs you own and UW NetIDs owned by others.</p>
+
+ <div id="shared-uwnetids">
+   <h3>UW NetIDs you own</h3>
+   <p>Manage access to provisioned UW-IT services for UW NetIDs you own (Shared, Admin, etc.). &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/endorse-uw-netids/" target="_blank">Learn more.</a>
+   </p>
+   <div id="shared" class="netid-panel"></div>
+ </div>
+
+ <div id="endorsed-uwnetids">
+   <h3>UW NetIDs owned by others</h3>
+   <p>Manage access to UW-IT services for UW affiliates working on behalf of the UW (alumni, retirees, consultants, etc.). &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">Learn more.</a></p>
+   <div id="provisioned" class="netid-panel"></div>
+ </div>
+</div>
+
+{% include "handlebars/reasons_partial.html" %}
+{% include "handlebars/email_editor_partial.html" %}
+{% include "handlebars/endorse_result.html" %}
+{% include "handlebars/endorse.html" %}
+{% include "handlebars/revoke.html" %}
+{% include "handlebars/renew.html" %}
+
 {% include "handlebars/tab/shared/shared.html" %}
 {% include "handlebars/tab/shared/accept.html" %}
-{% include "handlebars/tab/shared/revoke.html" %}
 {% include "handlebars/tab/shared/provisioned.html" %}
 
-{% include "handlebars/tab/endorse/validated.html" %}
-{% include "handlebars/valid_partial.html" %}
-{% include "handlebars/reasons_partial.html" %}
-{% include "handlebars/endorse_result.html" %}
-{% include "handlebars/revoke.html" %}
-{% include "handlebars/revoke_modal.html" %}
-
 {% include "handlebars/tab/endorsed/endorsed.html" %}
-{% include "handlebars/endorsed_partial.html" %}
+{% include "handlebars/tab/endorsed/accept.html" %}
 {% include "handlebars/endorsers_partial.html" %}
 {% include "handlebars/endorse_button_partial.html" %}
+{% include "handlebars/display_filter_partial.html" %}
+{% include "handlebars/enumerate_partial.html" %}
 
-{% endblock %}
-
-{% block extra_js %}
-<script src="{% static "endorsement/js/main.js" %}"></script>
-<script src="{% static "endorsement/js/tab/endorse.js" %}"></script>
-<script src="{% static "endorsement/js/tab/endorsed.js" %}"></script>
-<script src="{% static "endorsement/js/tab/shared.js" %}"></script>
-<script src="{% static "endorsement/js/revoke.js" %}"></script>
-<script src="{% static "endorsement/js/reasons.js" %}"></script>
-<script src="{% static "endorsement/js/clipboard.js" %}"></script>
-<script src="{% static "endorsement/js/history.js" %}"></script>
-<script src="{% static "endorsement/js/notify.js" %}"></script>
-<script src="{% static "endorsement/js/datetime.js" %}"></script>
-<script src="{% static "vendor/js/moment.2.8.3.min.js" %}"></script>
 {% endblock %}

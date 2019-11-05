@@ -1,167 +1,268 @@
 // javascript to Manage Shared Netids
+/* jshint esversion: 6 */
 
-var ManageSharedNetids = {
-    content_id: 'shared',
-    location_hash: '#shared',
+import { Endorse } from "../endorse.js";
+import { Revoke } from "../revoke.js";
+import { Renew } from "../renew.js";
+import { Reasons } from "../reasons.js";
 
-    load: function () {
-        this._loadTab();
-        this._registerEvents();
+var ManageSharedNetids = (function () {
+    var content_id = 'shared',
+        location_hash = '#' + content_id,
+
+    _loadContent = function () {
+        var content_template = Handlebars.compile($("#shared-netids").html());
+
+        $(location_hash).append(content_template());
+        _getSharedUWNetIDs();
     },
 
-    focus: function () {
-        if (window.location.hash === this.location_hash) {
-            $('a[href="' + this.location_hash + '"]').tab('show');
-        }
-    },
+    _registerEvents = function () {
+        var $panel = $(location_hash);
 
-    _loadTab: function () {
-        var tab_link_template = Handlebars.compile($("#shared-netids-tab-link").html()),
-            tab_content_template = Handlebars.compile($("#shared-netids-tab-content").html()),
-            context = {
-                tab_content_id: ManageSharedNetids.content_id
-            };
-        
-        $('.nav-tabs').append(tab_link_template(context));
-        $('.tab-content').append(tab_content_template(context));
-    },
+        $panel.on('click', 'button.endorse_service', function(e) {
+            Endorse.endorse('shared_accept_modal_content', $(this).closest('tr'));
+        }).on('click', 'button.aggregate_endorse_service', function(e) {
+            var $checked_rows = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel).closest('tr'),
+                $to_endorse = $checked_rows.find('.endorse_service:enabled').closest('tr');
 
-    _registerEvents: function () {
-        $('.tab-pane#' + ManageSharedNetids.content_id).on('click', 'button.confirm_revoke', function(e) {
-            Revoke.revoke($(this), '#shared_revoke_modal_content',
-                          'endorse:SharedUWNetIDsRevokeStatus');
+            Endorse.endorse('shared_accept_modal_content', $to_endorse);
+        }).on('click', 'button.revoke_service', function(e) {
+            Revoke.revoke($(this).closest('tr'));
+        }).on('click', 'button.aggregate_revoke_service', function(e) {
+            var $checked_rows = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel).closest('tr'),
+                $to_revoke = $checked_rows.find('.revoke_service:enabled').closest('tr');
+
+            Revoke.revoke($to_revoke);
+        }).on('click', 'button.renew_service', function(e) {
+            Renew.renew($(this).closest('tr'));
+        }).on('click', 'button.aggregate_renew_service', function(e) {
+            var $checked_rows = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel).closest('tr'),
+                $to_renew = $checked_rows.find('.renew_service:enabled').closest('tr');
+
+            Renew.renew($to_renew);
+        }).on('click', '#check_all', function(e) {
+            $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).prop('checked', $(this).prop('checked'));
+            _enableSharedEndorsability();
+        }).on('change', 'input[id^="aggregate_"]', function(e) {
+            _enableSharedEndorsability();
+        }).on('endorse:PanelToggleExposed', function (e, $div) {
+            $('.aggregate_action', $panel).removeClass('visually-hidden');
+            $('input[id^="aggregate_"]', $panel).prop('checked', false);
+            _enableSharedEndorsability();
+        }).on('endorse:PanelToggleHidden', function (e, $div) {
+            $('.aggregate_action', $panel).addClass('visually-hidden');
+        }).on('endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
+            _enableSharedEndorsability();
+        }).on('click', 'button#confirm_shared_endorse', function(e) {
+            $(this).parents('.modal').modal('hide');
+            $('button#shared_update').button('loading');
+            var shared = _getSharedUWNetIDsToEndorse();
+
+            _endorseSharedUWNetIDs(shared);
+        }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
+            Endorse.updateEndorsementRows(data.endorsed.endorsed);
+            _enableSharedEndorsability();
+
+            // pause for shared endorse modal fade
+            if (data.endorsed.endorsed) {
+                setTimeout(function () {
+                    _enableSharedEndorsability();
+                    _sharedEndorseSuccessModal(data.endorsed.endorsed);
+                }, 500);
+            }
+        }).on('endorse:UWNetIDsEndorseError', function (e, error) {
+            console.log('error: ' + error);
+        }).on('endorse:UWNetIDsRevokeSuccess', function (e, data) {
+            Endorse.updateEndorsementRows(data.revoked.endorsed);
+            _enableSharedEndorsability();
+        }).on('endorse:UWNetIDsRevokeError', function (e, error) {
+            console.log('error: ' + error);
+        }).on('endorse:UWNetIDsRenewSuccess', function (e, data) {
+            Endorse.updateEndorsementRows(data.renewed.endorsed);
+            _enableSharedEndorsability();
         });
 
-        $(document).on('shown.bs.tab', 'a[href="#' + ManageSharedNetids.content_id + '"]', function (e) {
-            // load once
-            if ($('#' + ManageSharedNetids.content_id + ' table').length === 0) {
-                ManageSharedNetids._getSharedUWNetIDs();
-            }
-        }).on('endorse:UWNetIDRevoking endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e) {
-            ManageSharedNetids._enableSharedEndorsability();
+        $(document).on('endorse:UWNetIDRevoking', function (e, $row) {
+            _enableSharedEndorsability($row);
         }).on('endorse:UWNetIDsInvalidReasonError', function (e, $row, $td) {
             if ($('input[type="checkbox"]:checked', $row).length > 0) {
                 $td.addClass('error');
                 $('button#shared_update').attr('disabled', 'disabled');
             }
         }).on('change', 'input[id^="endorse_"]', function (e) {
-            ManageSharedNetids._enableSharedEndorsability();
-        }).on('endorse:SharedUWNetIDsRevokeStatus', function (e, data) {
-            ManageSharedNetids._updateSharedEndorsementStatus(data.revoked);
-            ManageSharedNetids._enableSharedEndorsability();
-        }).on('endorse:SharedUWNetIDsEndorseStatus', function (e, endorsed) {
-            ManageSharedNetids._updateSharedEndorsementStatus(endorsed);
-            ManageSharedNetids._enableSharedEndorsability();
-        }).on('endorse:SharedUWNetIDsEndorseSuccess', function (e, netid, service, service_name) {
-            // pause for shared endorse modal fade
-            $('button#shared_update').button('reset');
-            setTimeout(function () {
-                ManageSharedNetids._enableSharedEndorsability();
-                ManageSharedNetids._sharedEndorseSuccessModal(netid, service, service_name);
-            }, 500);
-        }).on('endorse:SharedUWNetIDsEndorseStatusError', function (e, netid, service, error) {
-            $('button#shared_update').button('reset');
+            _enableSharedEndorsability();
         }).on('endorse:UWNetIDsShared', function (e, shared) {
-            ManageSharedNetids._displaySharedUWNetIDs(shared);
+            _displaySharedUWNetIDs(shared);
         }).on('endorse:UWNetIDsSharedError', function (e, error) {
-            $('#' + ManageSharedNetids.content_id).html($('#shared-failure').html());
-        }).on('click', 'button#confirm_shared_endorse', function(e) {
-            $(this).parents('.modal').modal('hide');
-            $('button#shared_update').button('loading');
-            ManageSharedNetids._endorseSharedUWNetIDs(ManageSharedNetids._getSharedUWNetIDsToEndorse());
-        }).on('click', 'button#shared_update', function(e) {
-            ManageSharedNetids._sharedEndorseAcceptModal(ManageSharedNetids._getSharedUWNetIDsToEndorse());
-        }).on('change', 'input[id^="shared_accept_responsibility"]', function(e) {
-            var boxes = $('input[id^="shared_accept_responsibility"]').length,
-                checked = $('input[id^="shared_accept_responsibility"]:checked').length;
-
-            if (boxes === checked) {
-                $('button#confirm_shared_endorse').removeAttr('disabled');
-            } else {
-                $('button#confirm_shared_endorse').attr('disabled', 'disabled');
-            }
-        }).on('show.bs.modal', '#shared_netid_modal' ,function (event) {
-            var _modal = $(this);
-
-            _modal.find('input#shared_accept_responsibility').attr('checked', false);
-            _modal.find('button#confirm_shared_endorse').attr('disabled', 'disabled');
+            $(location_hash + '.content').html($('#shared-failure').html());
+        }).on('endorse:DisplayFilterChange', function (e) {
+            _enableSharedEndorsability();
         });
     },
 
-    _displaySharedUWNetIDs: function(shared) {
-        var source = $("#shared-netids").html(),
-            template = Handlebars.compile(source),
+    _displaySharedUWNetIDs = function(shared) {
+        var $panel = $(location_hash),
+            $content = $('.form-group.content', $panel),
+            source,
+            template,
             context = {
-                has_shared: shared.shared && shared.shared.length > 0,
                 shared: shared
             };
 
-        $.each(context.shared.shared, function () {
-            var endorsements = this.endorsements,
-                svc;
+        if (shared.shared && shared.shared.length > 0) {
+            source = $("#shared-netids-content").html();
+            template = Handlebars.compile(source);
 
-            if (endorsements) {
-                for (svc in endorsements) {
-                    if (endorsements.hasOwnProperty(svc)) {
-                        if (endorsements[svc]) {
-                            if (endorsements[svc].hasOwnProperty('datetime_endorsed')) {
-                                endorsements[svc].date_endorsed = utc2localdate(endorsements[svc].datetime_endorsed);
+            $.each(context.shared.shared, function () {
+                var endorsements = this.endorsements,
+                    svc;
+
+                if (endorsements) {
+                    for (svc in endorsements) {
+                        if (endorsements.hasOwnProperty(svc)) {
+                            if (endorsements[svc]) {
+                                Endorse.updateEndorsementForRowContext(endorsements[svc]);
                             }
                         }
                     }
                 }
+            });
+        } else {
+            source = $("#no-shared-netids-content").html();
+            template = Handlebars.compile(source);
+        }
+
+        $content.html(template(context));
+        _enableSharedEndorsability();
+        Endorse.updateExpireWarning();
+    },
+
+    _enableSharedEndorsability = function() {
+        var $panel = $(location_hash);
+
+        // enable/disable Provision button
+        $('.displaying-reasons select', $panel).each(function () {
+            var $this = $(this);
+
+            if ($('option:selected', $this).val() !== '') {
+                $('button.endorse_service', $this.closest('tr')).removeAttr('disabled');
             }
         });
 
-        $('div.tab-pane#' + ManageSharedNetids.content_id).html(template(context));
-        ManageSharedNetids._enableSharedEndorsability();
-    },
+        // fixup checkboxes, aggregate labels
+        if ($('.panel-toggle + .form-group.content', $panel).hasClass('visually-hidden') === false) {
+            var $checked = $('tr:not(".visually-hidden") input[id^="aggregate_"]:checked', $panel),
+                $rows = $checked.closest('tr:not(".visually-hidden")'),
+                is_checked = false,
+                is_indeterminate = false,
+                $check_all = $('input#check_all', $panel),
+                n_total, n_renew = 0, n_revoke = 0, n_endorse = 0;
 
-    _enableSharedEndorsability: function() {
-        var $button = $('button#shared_update'),
-            netids;
+            if ($checked.length > 0) {
+                var total = $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).length;
 
-        $('td.error').removeClass('error');
-        netids = ManageSharedNetids._getSharedUWNetIDsToEndorse();
-        if (Object.keys(netids).length > 0 &&
-            $('td.error').length === 0) {
-            $button.removeAttr('disabled');
-        } else {
-            $button.attr('disabled', 'disabled');
+                $('.aggregate_action', $panel).removeClass('visually-hidden');
+
+                if ($checked.length < total) {
+                    is_indeterminate = true;
+                } else {
+                    is_checked = true;
+                }
+            }
+
+            $check_all.prop('indeterminate', is_indeterminate);
+            $check_all.prop('checked', is_checked);
+
+            // fixup error labels
+            $('.shared-netids-table > table > tbody > tr', $panel).removeClass('error');
+            $.each(['endorse', 'renew', 'revoke'], function (i, action) {
+                var $agg_button = $('.aggregate_' + action + '_service', $panel),
+                    $enabled =  $('.' + action + '_service:enabled', $rows),
+                    $disabled =  $('.' + action + '_service:disabled', $rows),
+                    check_count = $enabled.length + $disabled.length;
+
+                if (check_count) {
+                    $('span', $agg_button).html('(' + check_count + ') ');
+                    if ($disabled.length > 0) {
+                        $agg_button.attr('disabled', 'disabled');
+                    } else {
+                        $agg_button.removeAttr('disabled');
+                    }
+                } else {
+                    $agg_button.attr('disabled', 'disabled');
+                    $('span', $agg_button).html('');
+                }
+
+                $disabled.closest('tr').addClass('error');
+            });
         }
     },
 
-    _getSharedUWNetIDsToEndorse: function () {
-        var endorsees = {};
+    _getSharedUWNetIDsToEndorse = function () {
+        var aggregate = {
+            'endorse': {},
+            'revoke': {},
+            'renew': {}
+        };
 
-        $.each(['o365', 'google'], function () {
-            var service_id = this;
+        $('input[id^="aggregate_"]:checked').each(function () {
+            var $checkbox = $(this),
+                $row = $checkbox.closest('tr'),
+                netid = $row.attr('data-netid'),
+                service = $row.attr('data-service'),
+                service_name = $row.attr('data-service-name'),
+                $provision = $('.endorse_service:enabled', $row),
+                $revoke = $('.revoke_service:enabled', $row),
+                $renew = $('.renew_service:endabled', $row);
 
-            $('input[id^="endorse_' + service_id + '_"]:checked').each(function () {
-                var $row = $(this).closest('tr'),
-                    netid = this.value;
-
-                if (!endorsees.hasOwnProperty(netid)) {
-                    endorsees[netid] = {
+            if (netid) {
+                if ($provision.length) {
+                    var endorse = {
                         name: '',
                         email: '',
                         reason: Reasons.getReason($row),
-                        store: true
+                    };
+
+                    if (!aggregate.endorse.hasOwnProperty(netid)) {
+                        aggregate.endorse[netid] = {
+                            state: true
+                        };
+                    }
+
+                    aggregate.endorse[netid][service] = endorse;
+                }
+
+                if ($revoke.length) {
+                    if (!aggregate.revoke.hasOwnProperty(netid)) {
+                        aggregate.revoke[netid] = {};
+                    }
+
+                    aggregate.revoke[netid][service] = {
+                        state: false
                     };
                 }
 
-                endorsees[netid][service_id] = true;
-            });
+                if ($renew.length) {
+                    if (!aggregate.renew.hasOwnProperty(netid)) {
+                        aggregate.renew[netid] = {};
+                    }
+
+                    aggregate.renew[netid][service] = {
+                        name: netid
+                    };
+                }
+            }
         });
 
-        return endorsees;
+        return aggregate;
     },
 
-    _getSharedUWNetIDs: function() {
+    _getSharedUWNetIDs = function() {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-            $panel = $('.tab-pane#' + ManageSharedNetids.content_id);
+            $panel = $(location_hash);
 
-        $panel.html($('#shared-loading').html());
+        $('.form-group.content', $panel).html($('#shared-loading').html());
 
         $.ajax({
             url: "/api/v1/shared/",
@@ -180,130 +281,51 @@ var ManageSharedNetids = {
         });
     },
 
-    _endorseSharedUWNetIDs: function(to_endorse) {
-        var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-            $panel = $('.tab-pane#' + ManageSharedNetids.content_id);
-
-        $.ajax({
-            url: "/api/v1/endorse/",
-            dataType: "JSON",
-            data: JSON.stringify(to_endorse),
-            type: "POST",
-            accepts: {html: "application/json"},
-            headers: {
-                "X-CSRFToken": csrf_token
-            },
-            success: function(results) {
-                $panel.trigger('endorse:SharedUWNetIDsEndorseStatus', [results]);
-            },
-            error: function(xhr, status, error) {
-                $panel.trigger('endorse:SharedUWNetIDsEndorseStatusError', [netid, service, error]);
-            }
-        });
-    },
-
-    _updateSharedEndorsementStatus: function(endorsed) {
-        var endorsers_template = Handlebars.compile(
-            $("#endorsers_partial").html()),
-            reason_template = Handlebars.compile(
-                $("#reasons_partial").html()),
-            action_template = Handlebars.compile(
-                $("#endorse_button_partial").html()),
-            success = false,
-            netid;
-
-        $.each(endorsed.endorsed, function(netid, endorsements) {
-            $.each(['o365', 'google'], function () {
-                var service_id = this,
-                    endorsement,
-                    $row;
-
-                if (endorsements.hasOwnProperty('error')) {
-                    Notify.error('Error provisioning shared netid "' + netid + '"');
-                    $('button#shared_update').button('reset');
-                    return;
-                }
-
-                if (endorsements.hasOwnProperty(service_id)) {
-                    endorsement = endorsements[service_id];
-                    $row = $('#endorsers-' + service_id + '-' + netid).closest('tr');
-
-                    if (endorsement.hasOwnProperty('datetime_endorsed')) {
-                        endorsement.date_endorsed = utc2localdate(endorsement.datetime_endorsed);
-                    }
-                    
-                    $('#endorsers-' + service_id + '-' + netid).html(endorsers_template({
-                        netid: netid,
-                        svc: service_id,
-                        endorsement: endorsement.endorsed ? endorsement : null
-                    }));
-
-                    $('#reason-' + service_id + '-' + netid).html(reason_template({
-                        endorsements: endorsement.endorsed ? endorsements : null
-                    }));
-
-                    if (endorsement.endorsed || $('button.confirm_revoke', $row).length === 0) {
-                        $('#reason-' + netid).html(reason_template({
-                            endorsements: endorsement.endorsed ? endorsements : null
-                        }));
-                    }
-
-                    if (!success && endorsement.endorsed) {
-                        success = true;
-                    }
-                }
-            });
-        });
-
-        if (success) {
-            $(document).trigger('endorse:SharedUWNetIDsEndorseSuccess', [endorsed]);
-        }
-    },
-
-    _sharedEndorseAcceptModal: function (endorsements) {
-        var source = $("#shared_accept_modal_content").html(),
+    _sharedEndorseSuccessModal = function (endorsements) {
+        var source = $("#shared_provisioned_modal_content").html(),
             template = Handlebars.compile(source),
             $modal = $('#shared_netid_modal'),
-            endorse_o365 = [],
-            endorse_google = [],
             context = {
+                unique: [],
                 endorse_o365: [],
                 endorse_google: [],
                 endorse_netid_count: 0,
                 endorse_o365_netid_count: 0,
                 endorse_google_netid_count: 0
-            },
-            netid;
+            };
 
-        for (netid in endorsements) {
-            if (endorsements.hasOwnProperty(netid)) {
-                if (endorsements[netid].hasOwnProperty('o365')) {
-                    context.endorse_o365.push(netid);
-                }
-
-                if (endorsements[netid].hasOwnProperty('google')) {
-                    context.endorse_google.push(netid);
-                }
+        $.each(endorsements, function (netid, services) {
+            if (context.unique.indexOf(netid) < 0) {
+                context.unique.push(netid);
             }
-        }
+
+            if (services.endorsements.hasOwnProperty('o365')) {
+                context.endorse_o365.push({
+                    netid: netid
+                });
+            }
+
+            if (services.endorsements.hasOwnProperty('google')) {
+                context.endorse_google.push({
+                    netid: netid
+                });
+            }
+        });
 
         context.endorse_o365_netid_count = context.endorse_o365.length;
         context.endorse_google_netid_count = context.endorse_google.length;
         context.endorse_netid_count = context.endorse_google_netid_count + context.endorse_o365_netid_count;
 
-        $.data($modal[0], 'modal-body-context', context);
-
         $('.modal-content', $modal).html(template(context));
         $modal.modal('show');
-    },
+    };
 
-    _sharedEndorseSuccessModal: function (netid, service, service_name) {
-        var source = $("#shared_provisioned_modal_content").html(),
-            template = Handlebars.compile(source),
-            $modal = $('#shared_netid_modal'),
-            context = $.data($modal[0], 'modal-body-context');
+    return {
+        load: function () {
+            _loadContent();
+            _registerEvents();
+        }
+    };
+}());
 
-        $('.modal-content', $modal).html(template(context));
-        $modal.modal('show');
-    }
-};
+export { ManageSharedNetids };

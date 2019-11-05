@@ -1,0 +1,15 @@
+Hi Provision Request Manager,
+
+It has recently come to my attention that the provisionees listed below no
+longer have an active kerberos principal.  Their access to the identified
+services really should be revoked.
+
+The following provisionees should be revoked:
+
+Provisionee    Provsioner     Service        Reason
+-------------  -------------  -------------  --------------------------------{%for e in endorsements %}
+{{e.endorsee.netid|ljust:"15"}}{{e.endorser.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.reason|ljust:"40"}}{% endfor %}
+
+Sincerely,
+
+Your Provision Request Tool

@@ -1,0 +1,55 @@
+{% extends wrapper_template %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<style>
+.current_message { background-color: #fbfbe3; }
+h4 {font-weight: 900;}
+</style>
+<h2>Provision Request Tool Statistics</h2>
+<div class="container" style="max-width: 100%;">
+  <div class="row">
+    <div class="col-xs-12">
+      <h3>Daily Activity for <select id="daily-rate"><option value="7">last 7 days</option><option value="30">last 30 days</option><option value="90" selected>last 90 days</option><option value="180">last 6 Months</option><option value="365">last year</option><option value="730">last 2 years</option></select></h3>
+      <div id="rate_container" style="min-width: 1200px; height: 340px; max-width: 1200px; margin: 0 auto"></div>
+    </div>
+  </div>
+  <h3>Various Interesting Data Bits</h3>
+  <div class="row">
+    <div class="col-xs-4">
+      <div id="service_container" style="min-width: 150px; height: 240px; max-width: 300px; margin: 0 auto"></div>
+    </div>
+
+    <div class="col-xs-4">
+      <div id="shared_container" style="min-width: 150px; height: 240px; max-width: 300px; margin: 0 auto"></div>
+    </div>
+
+    <div class="col-xs-4">
+      <div id="pending_container" style="min-width: 150px; height: 240px; max-width: 300px; margin: 0 auto"></div>
+    </div>
+
+  <h3>Top Provisioners and Reasons</h3>
+  <div class="row">
+    <div class="col-xs-6">
+      <div id="endorsers_container" style="min-width: 250px; height: 340px; max-width: 400px; margin: 0 auto"></div>
+    </div>
+    <div class="col-xs-6">
+      <div id="reasons_container" style="min-width: 250px; height: 340px; max-width: 400px; margin: 0 auto"></div>
+    </div>
+  </div>
+</div>
+
+{% csrf_token %}
+
+{% include "handlebars/admin/stats.html" %}
+{% endblock %}
+
+{% block extra_js%}
+{% render_bundle 'statistics' 'js' %}
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+{% endblock %}

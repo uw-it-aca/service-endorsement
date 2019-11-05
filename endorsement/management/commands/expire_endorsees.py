@@ -1,46 +1,42 @@
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.core.mail import mail_managers
 from django.template import loader
-from endorsement.models import EndorsementRecord
-from endorsement.dao.user import get_endorsee_model
-from datetime import datetime, timedelta
-import pytz
+from endorsement.policy import endorsements_to_expire,  ENDORSEMENT_GRACETIME
+from endorsement.dao.endorse import clear_endorsement
 import logging
+import urllib3
 
 
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = 'alert menagement to expired endorsements'
+    help = 'expire endorsements and alert managers'
 
-    default_lifetime = 360
+    # actual expiration happens after one year
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--lifetime', dest='lifetime', default=self.default_lifetime,
-            type=int,
-            help='provisioning lifetime in days, default {0}'.format(
-                self.default_lifetime))
+            '--gracetime', dest='gracetime',
+            default=ENDORSEMENT_GRACETIME, type=int,
+            help='expiration grace period in days, default {} days'.format(
+                ENDORSEMENT_GRACETIME))
 
     def handle(self, *args, **options):
-        lifetime = options.get('lifetime', self.default_lifetime)
-        now = datetime.utcnow().replace(tzinfo=pytz.utc)
-        endorsements = EndorsementRecord.objects.filter(
-            datetime_endorsed__lt=now-timedelta(days=lifetime),
-            is_deleted__isnull=True)
-        endorsees = list(set([e.endorsee.netid for e in endorsements]))
-        for netid in endorsees:
-            endorsee = get_endorsee_model(netid)
+        urllib3.disable_warnings()
+        gracetime = options.get('gracetime', ENDORSEMENT_GRACETIME)
+        endorsements = endorsements_to_expire(gracetime)
+
+        if len(endorsements):
+            for e in endorsements:
+                clear_endorsement(e)
+
             body = loader.render_to_string('email/expired_endorsee.txt',
                                            {
-                                               'lifetime': lifetime,
-                                               'endorsee': endorsee,
-                                               'endorsements': endorsements
+                                               'endorsements': endorsements,
+                                               'expired_count': len(
+                                                   endorsements)
                                            })
             mail_managers(
-                'Provisioned services for {0} expiring'.format(endorsee), body)
-
-            logger.info('expired endorsments ({0}) for {1}'.format(
-                len(endorsements), netid))
+                'PRT {} services expired'.format(
+                    len(endorsements)), body)

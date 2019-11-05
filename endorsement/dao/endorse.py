@@ -62,6 +62,10 @@ def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
         en.datetime_endorsed = now
         en.acted_as = acted_as
         en.datetime_emailed = None
+        en.datetime_notice_1_emailed = None
+        en.datetime_notice_2_emailed = None
+        en.datetime_notice_3_emailed = None
+        en.datetime_notice_4_emailed = None
         en.datetime_renewed = now if en.is_deleted else None
         en.datetime_expired = None
         en.is_deleted = None
@@ -75,6 +79,10 @@ def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
             datetime_endorsed=now,
             acted_as=acted_as,
             datetime_emailed=None,
+            datetime_notice_1_emailed=None,
+            datetime_notice_2_emailed=None,
+            datetime_notice_3_emailed=None,
+            datetime_notice_4_emailed=None,
             datetime_renewed=None,
             datetime_expired=None,
             is_deleted=None)
@@ -96,6 +104,7 @@ def clear_endorsement(endorsement):
         endorsement.endorsee.netid,
         endorsement.endorser.netid))
     endorsement.revoke()
+    return endorsement
 
 
 def get_endorsement(endorser, endorsee, category_code):
@@ -110,8 +119,9 @@ def get_endorsements_by_endorser(endorser):
     return EndorsementRecord.objects.get_endorsements_for_endorser(endorser)
 
 
-def get_endorsements_for_endorsee(endorsee):
-    return EndorsementRecord.objects.get_endorsements_for_endorsee(endorsee)
+def get_endorsements_for_endorsee(endorsee, category_code=None):
+    return EndorsementRecord.objects.get_endorsements_for_endorsee(
+        endorsee, category_code)
 
 
 def get_endorsements_for_endorsee_re(endorsee_regex):
@@ -122,6 +132,16 @@ def get_endorsements_for_endorsee_re(endorsee_regex):
 def get_endorsement_records_for_endorsee_re(endorsee_regex):
     return EndorsementRecord.objects.get_all_endorsements_for_endorsee_re(
         endorsee_regex)
+
+
+def get_office365_endorsement(endorser, endorsee):
+    return get_endorsement(endorser, endorsee,
+                           EndorsementRecord.OFFICE_365_ENDORSEE)
+
+
+def get_google_endorsement(endorser, endorsee):
+    return get_endorsement(endorser, endorsee,
+                           EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
 
 def initiate_office365_endorsement(endorser, endorsee, reason):
@@ -173,8 +193,7 @@ def clear_office365_endorsement(endorser, endorsee):
     Upon failure to renew, the endorsement tools should:
       *  mark category 235 it former (status 3).
     """
-    clear_endorsement(get_endorsement(
-        endorser, endorsee, EndorsementRecord.OFFICE_365_ENDORSEE))
+    return clear_endorsement(get_office365_endorsement(endorser, endorsee))
 
 
 def clear_google_endorsement(endorser, endorsee):
@@ -182,8 +201,7 @@ def clear_google_endorsement(endorser, endorsee):
     Upon failure to renew, the endorsement tools should:
       *  mark category 234 it former (status 3).
     """
-    clear_endorsement(get_endorsement(
-        endorser, endorsee, EndorsementRecord.GOOGLE_SUITE_ENDORSEE))
+    return clear_endorsement(get_google_endorsement(endorser, endorsee))
 
 
 def is_permitted(endorser, endorsee, subscription_codes):
@@ -212,8 +230,7 @@ def is_permitted(endorser, endorsee, subscription_codes):
 
 def is_office365_permitted(endorser, endorsee):
     try:
-        get_endorsement(endorser, endorsee,
-                        EndorsementRecord.OFFICE_365_ENDORSEE)
+        get_office365_endorsement(endorser, endorsee)
         return True, True
     except NoEndorsementException:
         return is_permitted(
@@ -224,8 +241,7 @@ def is_office365_permitted(endorser, endorsee):
 
 def is_google_permitted(endorser, endorsee):
     try:
-        get_endorsement(endorser, endorsee,
-                        EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
+        get_google_endorsement(endorser, endorsee)
         return True, True
     except NoEndorsementException:
         return is_permitted(

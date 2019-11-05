@@ -71,7 +71,8 @@ class Validate(RESTDispatch):
                     'netid': endorse_netid,
                     'name': endorsee.display_name,
                     'email': get_endorsee_email_model(
-                        endorsee, endorser).email
+                        endorsee, endorser).email,
+                    'endorsements': {}
                 }
 
                 for e in endorsements:
@@ -82,7 +83,10 @@ class Validate(RESTDispatch):
                 try:
                     active, endorsed = is_office365_permitted(
                         endorser, endorsee)
-                    valid['o365'] = {
+                    valid['endorsements']['o365'] = {
+                        'category_name': dict(
+                            EndorsementRecord.CATEGORY_CODE_CHOICES)[
+                                EndorsementRecord.OFFICE_365_ENDORSEE],
                         'active': active,
                         'endorsers': [],
                         'self_endorsed': endorsed
@@ -91,17 +95,21 @@ class Validate(RESTDispatch):
                     for e in endorsements:
                         if (e.category_code ==
                                 EndorsementRecord.OFFICE_365_ENDORSEE):
-                            valid['o365']['endorsers'].append(e.endorser.netid)
+                            valid['endorsements']['o365']['endorsers'].append(
+                                e.endorser.json_data())
 
                 except Exception as ex:
-                    valid['o365'] = {
+                    valid['endorsements']['o365'] = {
                         'error': "{0}".format(ex)
                     }
 
                 try:
                     active, endorsed = is_google_permitted(
                         endorser, endorsee)
-                    valid['google'] = {
+                    valid['endorsements']['google'] = {
+                        'category_name': dict(
+                            EndorsementRecord.CATEGORY_CODE_CHOICES)[
+                                EndorsementRecord.GOOGLE_SUITE_ENDORSEE],
                         'active': active,
                         'endorsers': [],
                         'self_endorsed': endorsed
@@ -110,11 +118,11 @@ class Validate(RESTDispatch):
                     for e in endorsements:
                         if (e.category_code ==
                                 EndorsementRecord.GOOGLE_SUITE_ENDORSEE):
-                            valid['google']['endorsers'].append(
-                                e.endorser.netid)
+                            valid['endorsements']['google'][
+                                'endorsers'].append(e.endorser.json_data())
 
                 except Exception as ex:
-                    valid['google'] = {
+                    valid['endorsements']['google'] = {
                         'error': "{0}".format(ex)
                     }
 
