@@ -102,7 +102,7 @@ var Reasons = (function () {
 
             if (reason.length === 0 || $selected.val() === '') {
                 $panel.trigger('endorse:UWNetIDsInvalidReasonError',
-                               [$selected.closest('tr'), $selected.cosest('td')]);
+                               [$selected.closest('tr'), $selected.closest('td')]);
             }
 
             return reason;

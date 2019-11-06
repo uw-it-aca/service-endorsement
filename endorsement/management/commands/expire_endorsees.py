@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.core.mail import mail_managers
 from django.template import loader
-from endorsement.policy import endorsements_to_expire,  ENDORSEMENT_GRACETIME
+from endorsement.policy import (
+    endorsements_to_expire, DEFAULT_ENDORSEMENT_GRACETIME)
 from endorsement.dao.endorse import clear_endorsement
 import logging
 import urllib3
@@ -18,13 +19,13 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             '--gracetime', dest='gracetime',
-            default=ENDORSEMENT_GRACETIME, type=int,
+            default=DEFAULT_ENDORSEMENT_GRACETIME, type=int,
             help='expiration grace period in days, default {} days'.format(
-                ENDORSEMENT_GRACETIME))
+                DEFAULT_ENDORSEMENT_GRACETIME))
 
     def handle(self, *args, **options):
         urllib3.disable_warnings()
-        gracetime = options.get('gracetime', ENDORSEMENT_GRACETIME)
+        gracetime = options.get('gracetime', DEFAULT_ENDORSEMENT_GRACETIME)
         endorsements = endorsements_to_expire(gracetime)
 
         if len(endorsements):
