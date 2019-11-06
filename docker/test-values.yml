@@ -31,7 +31,7 @@ repo: prt
 instance: test
 image:
   repository: registry.hub.docker.com/acait/prt
-commitHash: "COMMIT_HASH"
+commitHash: '861201f'
 metrics:
   enabled: true
   serviceMonitor:
@@ -40,37 +40,37 @@ cronjob:
   enabled: true
   jobs:
     - name: expire-endorsees
-      schedule: "5 0 * * 1-5"
+      schedule: "5 8 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expire_endorsees)"]'
     - name: expiration-notice-1
-      schedule: "10 0 * * 1-5"
+      schedule: "10 8 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 1)"]'
     - name: expiration-notice-2
-      schedule: "15 0 * * 1-5"
+      schedule: "15 8 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 2)"]'
     - name: expiration-notice-3
-      schedule: "20 0 * * 1-5"
+      schedule: "20 8 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 3)"]'
     - name: expiration-notice-4
-      schedule: "25 0 * * 1-5"
+      schedule: "25 8 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 4)"]'
     - name: validate-endorsees
-      schedule: "10 4 * * 1-5"
+      schedule: "10 12 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_endorsees)"]'
     - name: validate-endorsers
-      schedule: "25 4 * * 1-5"
+      schedule: "25 12 * * 1-5"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_endorsers)"]'
-    - name: notify-endorsers
-      schedule: "*/5 * * * *"
-      command: '["bash"]'
-      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsers)"]'
+#    - name: notify-endorsers
+#      schedule: "*/5 * * * *"
+#      command: '["bash"]'
+#      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsers)"]'
     - name: notify-endorsees
       schedule: "*/5 * * * *"
       command: '["bash"]'

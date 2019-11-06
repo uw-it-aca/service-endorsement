@@ -22,6 +22,7 @@ if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
 if os.getenv("ENV") == "prod":
     INSTALLED_APPS += ['rc_django',]
     RESTCLIENTS_DAO_CACHE_CLASS='endorsement.cache.ProvisionCache'
+    APP_SERVER_BASE = 'https://provision.uw.edu'
 
 INSTALLED_APPS += [
     'django_prometheus',
