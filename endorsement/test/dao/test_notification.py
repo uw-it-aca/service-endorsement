@@ -43,5 +43,5 @@ class TestNotificationDao(TransactionTestCase):
         self.assertEqual(mail.outbox[0].subject,
                          'Shared NetID access to UW Office 365 and UW G Suite')
         self.assertTrue('UW Office 365 and UW G Suite' in mail.outbox[0].body)
-        self.assertTrue('Shared NetID use of these services is bound'
+        self.assertTrue('Shared UW NetID use of these services is bound'
                         in mail.outbox[0].alternatives[0][0])
