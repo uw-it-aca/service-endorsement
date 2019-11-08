@@ -13,7 +13,7 @@ We are in the process of provisioning access for {{ endorsed_count|pluralize:"th
 
 {% if o365_endorsed %}Get started using UW Office 365 at:
 
-        http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/
+        https://itconnect.uw.edu/connect/productivity-platforms/uw-office-365/
 {% endif %}
 {% if google_endorsed %}Get started using UW G Suite at:
 
