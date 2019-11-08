@@ -31,7 +31,7 @@ repo: prt
 instance: test
 image:
   repository: registry.hub.docker.com/acait/prt
-commitHash: '861201f'
+commitHash: COMMIT_HASH
 metrics:
   enabled: true
   serviceMonitor:
