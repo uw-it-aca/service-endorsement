@@ -72,6 +72,9 @@ if [ ! -d $HOME/helm/bin ]; then
 fi
 export PATH=${PATH}:${HOME}/helm/bin
 
+echo "CLONE chart repo $HELM_CHART_REPO"
+git clone --depth 1 "$HELM_CHART_REPO" --branch master $HELM_CHART_DIR >/dev/null 2>&1
+
 echo "GENERATE manifest for release $HELM_RELEASE"
 helm template $HELM_CHART_DIR --set commitHash=$COMMIT_HASH -f docker/${APP_INSTANCE}-values.yml > $RELEASE_MANIFEST
 
