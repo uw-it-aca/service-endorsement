@@ -32,7 +32,7 @@ instance: test
 replicaCount: 5
 image:
   repository: registry.hub.docker.com/acait/prt
-commitHash: '861201f'
+commitHash: COMMIT_HASH
 metrics:
   enabled: true
   serviceMonitor:
