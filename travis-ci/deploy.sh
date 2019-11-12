@@ -23,11 +23,17 @@ HELM_TGZ=helm-v3.0.0-rc.3-linux-amd64.tar.gz
 HELM_CHART_REPO=https://github.com/uw-it-aca/django-production-chart.git
 HELM_CHART_DIR=django-production-chart
 HELM_RELEASE=${RELEASE_NAME}-prod-${INSTANCE}
-FLUX_REPO=https://github.com/uw-it-aca/gcp-flux-${INSTANCE}.git
-FLUX_DIR=gcp-flux-${INSTANCE}
+
+FLUX_REPO_NAME=gcp-flux-${INSTANCE}
+FLUX_REPO_PATH=uw-it-aca/$FLUX_REPO_NAME
+FLUX_REPO=https://${GH_AUTH_TOKEN}@github.com/${FLUX_REPO_PATH}.git
+
 RELEASE_BRANCH=release/${RELEASE_NAME}:${COMMIT_HASH}
 RELEASE_MANIFEST_NAME=${RELEASE_NAME}.yaml
-RELEASE_MANIFEST=${HOME}/${RELEASE_MANIFEST_NAME}.yaml
+RELEASE_MANIFEST=${HOME}/${RELEASE_MANIFEST_NAME}
+
+FLUX_RELEASE_MANIFEST=releases/${INSTANCE}/$RELEASE_MANIFEST_NAME
+
 export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
 export CLOUDSDK_CORE_DISABLE_PROMPTS=1
 
@@ -69,14 +75,20 @@ git clone --depth 1 "$HELM_CHART_REPO" --branch master $HELM_CHART_DIR
 echo "GENERATE manifest for release $HELM_RELEASE"
 helm template $HELM_CHART_DIR --set commitHash=$COMMIT_HASH -f docker/${INSTANCE}-values.yml > $RELEASE_MANIFEST
 
-FLUX_RELEASE_MANIFEST=releases/${INSTANCE}/$RELEASE_MANIFEST_NAME
-echo "CLONE flux $FLUX_REPO: upate ${FLUX_RELEASE_MANIFEST}"
-git clone --depth 1 "$FLUX_REPO" --branch master $FLUX_DIR
-pushd $FLUX_DIR
-echo "The following commands would be"
-echo git checkout -b $RELEASE_BRANCH
-echo cp -p $RELEASE_MANIFEST $FLUX_RELEASE_MANIFEST
-echo git commit -m "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}" $FLUX_RELEASE_MANIFEST
-echo git push origin $RELEASE_BRANCH
-echo do github api magic here to open pull request
+echo "CLONE $FLUX_REPO_PATH, add $FLUX_RELEASE_MANIFEST, create PR"
+git clone --depth 1 "$FLUX_REPO" --branch master $FLUX_REPO_NAME
+pushd $FLUX_REPO_NAME
+git checkout -b $RELEASE_BRANCH
+cp -p $RELEASE_MANIFEST $FLUX_RELEASE_MANIFEST
+git add $FLUX_RELEASE_MANIFEST
+git commit -m "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}" $FLUX_RELEASE_MANIFEST
+git push origin $RELEASE_BRANCH
+curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -X POST https://api.github.com/repos/${FLUX_REPO_PATH}/pulls -d @- <<EOF
+{
+  "title": "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}",
+  "body": "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}",
+  "head": "$RELEASE_BRANCH",
+  "base": "master"
+}
+EOF
 popd
