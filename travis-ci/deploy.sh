@@ -83,7 +83,7 @@ cp -p $RELEASE_MANIFEST $FLUX_RELEASE_MANIFEST
 git add $FLUX_RELEASE_MANIFEST
 git commit -m "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}" $FLUX_RELEASE_MANIFEST >/dev/null 2>&1
 git push origin $RELEASE_BRANCH >/dev/null 2>&1
-curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -X POST https://api.github.com/repos/${FLUX_REPO_PATH}/pulls -d @- <<EOF
+curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -H "Content-type: application/json" -X POST https://api.github.com/repos/${FLUX_REPO_PATH}/pulls -d @- <<EOF
 {
   "title": "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}",
   "body": "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}",
