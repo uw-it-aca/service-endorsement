@@ -29,6 +29,7 @@ externalService:
   servicePort: 5432
 repo: prt
 instance: test
+replicaCount: 5
 image:
   repository: registry.hub.docker.com/acait/prt
 commitHash: '861201f'
