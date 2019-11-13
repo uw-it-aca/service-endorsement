@@ -25,6 +25,15 @@ externalService:
   servicePort: 5432
 repo: prt
 instance: prod
+replicaCount: 2
+minReplicas: 2
+maxReplicas: 6
+targetAverageUtilization: 90
+resources:
+  limits:
+    cpu: 600m
+  requests:
+    cpu: 200m
 image:
   repository: registry.hub.docker.com/acait/prt
 commitHash: '8a08a3d'
