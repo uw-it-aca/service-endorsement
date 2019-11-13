@@ -2,10 +2,13 @@
 
 # stage $RELEASE_NAME release
 #
-# PRECONDITION: env vars RELEASE_NAME, COMMIT_HASH and IMAGE_TAG
-# exist in the calling travis shell
+# PRECONDITION: inherited env vars from application's .travis.yml MUST include:
+#      RELEASE_NAME: application's name as it is expressed in k8s cluster
+#      COMMIT_HASH: application's source commit to be deployed
+#      IMAGE_TAG: tag of docker image to be pushed to image repository
+#
 
-# map branch to GCP/MCI project
+# branch specific settings
 if [ "$TRAVIS_BRANCH" = "develop" ]; then
     APP_INSTANCE="test"
     FLUX_INSTANCE="dev"
@@ -19,36 +22,41 @@ else
     exit 1
 fi
 
-GCP_HOSTNAME="gcr.io"
-HELM_URL=https://get.helm.sh
-HELM_TGZ=helm-v3.0.0-rc.3-linux-amd64.tar.gz
-HELM_CHART_REPO=https://github.com/uw-it-aca/django-production-chart.git
-HELM_CHART_DIR=django-production-chart
-HELM_RELEASE=${RELEASE_NAME}-prod-${APP_INSTANCE}
-
+APP_NAME=${RELEASE_NAME}-prod-${APP_INSTANCE}
+HELM_CHART_NAME=django-production-chart
 FLUX_REPO_NAME=gcp-flux-${FLUX_INSTANCE}
-FLUX_REPO_PATH=uw-it-aca/$FLUX_REPO_NAME
+GITHUB_REPO_OWNER=uw-it-aca
+
+HELM_APP_URL=https://get.helm.sh
+HELM_APP_TGZ=helm-v3.0.0-rc.3-linux-amd64.tar.gz
+
+HELM_CHART_LOCAL_DIR=${HOME}/$HELM_CHART_NAME
+HELM_CHART_REPO_PATH=${GITHUB_REPO_OWNER}/${HELM_CHART_NAME}
+HELM_CHART_REPO=https://github.com/${HELM_CHART_REPO_PATH}.git
+
+FLUX_LOCAL_DIR=${HOME}/$FLUX_REPO_NAME
+FLUX_REPO_PATH=${GITHUB_REPO_OWNER}/$FLUX_REPO_NAME
 FLUX_REPO=https://${GH_AUTH_TOKEN}@github.com/${FLUX_REPO_PATH}.git
 
-RELEASE_BRANCH=release/${RELEASE_NAME}/${COMMIT_HASH}
-RELEASE_MANIFEST_NAME=${RELEASE_NAME}.yaml
-RELEASE_MANIFEST=${HOME}/${RELEASE_MANIFEST_NAME}
+MANIFEST_FILE_NAME=${RELEASE_NAME}.yaml
+LOCAL_MANIFEST=${HOME}/$MANIFEST_FILE_NAME
+FLUX_RELEASE_MANIFEST=releases/${FLUX_INSTANCE}/$MANIFEST_FILE_NAME
+FLUX_RELEASE_BRANCH_NAME=release/${FLUX_INSTANCE}/${RELEASE_NAME}/$COMMIT_HASH
 
-FLUX_RELEASE_MANIFEST=releases/${FLUX_INSTANCE}/$RELEASE_MANIFEST_NAME
+COMMIT_MESSAGE="Automated ${FLUX_INSTANCE} deploy of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH} by travis build ${TRAVIS_BUILD_NUMBER}"
+PULL_REQUEST_MESSAGE="Automated ${FLUX_INSTANCE} deploy of [${TRAVIS_REPO_SLUG}:${COMMIT_HASH}](/${TRAVIS_REPO_SLUG}/commit/${COMMIT_HASH})  Generated travis build [${TRAVIS_BUILD_NUMBER}]($TRAVIS_BUILD_WEB_URL)"
 
-export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
-export CLOUDSDK_CORE_DISABLE_PROMPTS=1
+GITHUB_API_PULLS=https://api.github.com/repos/${FLUX_REPO_PATH}/pulls
 
 echo "#####################################"
-echo "DEPLOY $HELM_RELEASE in $GCP_PROJECT"
+echo "DEPLOY $APP_NAME in $GCP_PROJECT"
 echo "#####################################"
 
 if [ -n "$DOCKER_USER" ]; then
     REPO_TAG="${DOCKER_USER}/${RELEASE_NAME}:${COMMIT_HASH}"
     echo -n "$DOCKER_PASS" | docker login --username="$DOCKER_USER" --password-stdin;
 else
-    REPO_TAG="${GCP_HOSTNAME}/${GCP_PROJECT}/${RELEASE_NAME}:${COMMIT_HASH}"
-
+    REPO_TAG="gcr.io/${GCP_PROJECT}/${RELEASE_NAME}:${COMMIT_HASH}"
     #
     # do GCP authentication magic here?
     #
@@ -65,32 +73,38 @@ if [ ! -d $HOME/helm/bin ]; then
     if [ ! -d $HOME/helm ]; then mkdir $HOME/helm ; fi
     pushd $HOME/helm
     mkdir ./bin
-    curl -Lso ${HELM_TGZ} ${HELM_URL}/${HELM_TGZ}
-    tar xzf ${HELM_TGZ}
+    curl -Lso ${HELM_APP_TGZ} ${HELM_APP_URL}/${HELM_APP_TGZ}
+    tar xzf ${HELM_APP_TGZ}
     mv ./linux-amd64/helm ./bin/helm
     popd
 fi
 export PATH=${PATH}:${HOME}/helm/bin
 
-echo "CLONE chart repo $HELM_CHART_REPO"
-git clone --depth 1 "$HELM_CHART_REPO" --branch master $HELM_CHART_DIR >/dev/null 2>&1
+echo "CLONE chart repository $HELM_CHART_REPO_PATH"
+git clone --depth 1 "$HELM_CHART_REPO" --branch master $HELM_CHART_LOCAL_DIR >/dev/null 2>&1
 
-echo "GENERATE manifest for release $HELM_RELEASE"
-helm template $HELM_CHART_DIR --set commitHash=$COMMIT_HASH -f docker/${APP_INSTANCE}-values.yml > $RELEASE_MANIFEST
+echo "GENERATE release manifest $MANIFEST_FILE_NAME using docker/${APP_INSTANCE}-values.yml"
+helm template $HELM_CHART_LOCAL_DIR --set commitHash=$COMMIT_HASH -f docker/${APP_INSTANCE}-values.yml > $LOCAL_MANIFEST
 
-echo "CLONE $FLUX_REPO_PATH, add $FLUX_RELEASE_MANIFEST, create PR"
-git clone --depth 1 "$FLUX_REPO" --branch master $FLUX_REPO_NAME
-pushd $FLUX_REPO_NAME
-git checkout -b $RELEASE_BRANCH
-cp -p $RELEASE_MANIFEST $FLUX_RELEASE_MANIFEST
+echo "CLONE flux repository ${FLUX_REPO_PATH}"
+git clone --depth 1 "$FLUX_REPO" --branch master $FLUX_LOCAL_DIR >/dev/null 2>&1
+pushd $FLUX_LOCAL_DIR
+
+echo "CREATE branch $FLUX_RELEASE_BRANCH_NAME"
+git checkout -b $FLUX_RELEASE_BRANCH_NAME
+
+echo "ADD ${FLUX_RELEASE_MANIFEST} and COMMIT"
+cp -p $LOCAL_MANIFEST $FLUX_RELEASE_MANIFEST
 git add $FLUX_RELEASE_MANIFEST
-git commit -m "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}" $FLUX_RELEASE_MANIFEST >/dev/null 2>&1
-git push origin $RELEASE_BRANCH >/dev/null 2>&1
-curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -H "Content-type: application/json" -X POST https://api.github.com/repos/${FLUX_REPO_PATH}/pulls -d @- <<EOF
+git commit -m $COMMIT_MESSAGE $FLUX_RELEASE_MANIFEST >/dev/null 2>&1
+git push origin $FLUX_RELEASE_BRANCH_NAME >/dev/null 2>&1
+
+echo "SUBMIT $RELEASE_BRANCH_NAME pull request"
+curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -H "Content-type: application/json" -X POST $GITHUB_API_PULLS -d @- <<EOF
 {
-  "title": "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}",
-  "body": "Automated release of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH}; pushd by travis build ${TRAVIS_BUILD_NUMBER}",
-  "head": "$RELEASE_BRANCH",
+  "title": "${COMMIT_MESSAGE}",
+  "body": "${PULL_REQUEST_MESSAGE}",
+  "head": "${FLUX_RELEASE_BRANCH_NAME}",
   "base": "master"
 }
 EOF
