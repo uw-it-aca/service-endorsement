@@ -3,36 +3,31 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
   tls:
-    prt-test:
-      secretName: provision-test.uw.edu
+    prt-prod:
+      secretName: provision.uw.edu
       hosts:
-        - provision-test.uw.edu
+        - provision.uw.edu
   hosts:
-    prt-test:
-      host: provision-test.uw.edu
-      paths: 
-        - "/"
-    prt-test-aca-aws:
-      host: prt-test.aca-aws.s.uw.edu
+    prt-prod:
+      host: provision.uw.edu
       paths: 
         - "/"
 database:
   engine: postgres
   name: uw_service_endorsement
-  hostname: provision-db-test-service
-  secretName: provision-db-test
+  hostname: provision-db-prod-service
+  secretName: provision-db-prod
 externalService:
   enabled: true
-  name: provision-db-test-service
+  name: provision-db-prod-service
   type: ClusterIP
-  serviceAddress: 172.18.1.14
+  serviceAddress: 172.18.1.16
   servicePort: 5432
 repo: prt
-instance: test
-replicaCount: 5
+instance: prod
 image:
   repository: registry.hub.docker.com/acait/prt
-commitHash: COMMIT_HASH
+commitHash: '8a08a3d'
 metrics:
   enabled: true
   serviceMonitor:
@@ -41,75 +36,70 @@ cronjob:
   enabled: true
   jobs:
     - name: expire-endorsees
-      schedule: "5 8 * * 1-5"
+      schedule: "5 8 * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expire_endorsees)"]'
     - name: expiration-notice-1
-      schedule: "10 8 * * 1-5"
+      schedule: "10 8 * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 1)"]'
     - name: expiration-notice-2
-      schedule: "15 8 * * 1-5"
+      schedule: "20 8 * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 2)"]'
     - name: expiration-notice-3
-      schedule: "20 8 * * 1-5"
+      schedule: "30 8 * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 3)"]'
     - name: expiration-notice-4
-      schedule: "25 8 * * 1-5"
+      schedule: "40 8 * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 4)"]'
     - name: validate-endorsees
-      schedule: "10 12 * * 1-5"
+      schedule: "10 12 * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_endorsees)"]'
     - name: validate-endorsers
-      schedule: "25 12 * * 1-5"
+      schedule: "25 12 * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_endorsers)"]'
-#    - name: notify-endorsers
-#      schedule: "*/5 * * * *"
-#      command: '["bash"]'
-#      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsers)"]'
     - name: notify-endorsees
-      schedule: "*/5 * * * *"
+      schedule: "*/2 * * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsees)"]'
 certs:
   mounted: true
-  certPath: /certs/provision-test.uw.edu-uwca.cert
-  keyPath: /certs/provision-test.uw.edu-uwca.key
-  secretName: prt-test-uwca-certs
+  certPath: /certs/provision.uw.edu-uwca.cert
+  keyPath: /certs/provision.uw.edu-uwca.key
+  secretName: prt-prod-uwca-certs
 environmentVariables:
   - name: ENV
-    value: dev
+    value: prod
   - name: CERT_PATH
-    value: /certs/provision-test.uw.edu-uwca.cert
+    value: /certs/provision.uw.edu-uwca.cert
   - name: KEY_PATH
-    value: /certs/provision-test.uw.edu-uwca.key
+    value: /certs/provision.uw.edu-uwca.key
   - name: GWS_ENV
     value: PROD
   - name: PWS_ENV
     value: PROD
   - name: UWNETID_ENV
-    value: EVAL
+    value: PROD
   - name: AUTH
     value: SAML
   - name: SAML_ENTITY_ID
-    value: https://provision-test.uw.edu/sso/
+    value: https://provision.uw.edu/sso/
   - name: CLUSTER_CNAME
-    value: provision-test.uw.edu
+    value: provision.uw.edu
   - name: SP_CERT
-    value: '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'
+    value: 'MIIEpDCCBA2gAwIBAgICMzgwDQYJKoZIhvcNAQELBQAwgZQxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMRQwEgYDVQQLEwtVVyBTZXJ2aWNlczEXMBUGA1UEAxMOVVcgU2VydmljZXMgQ0ExJjAkBgkqhkiG9w0BCQEWF2hlbHBAY2FjLndhc2hpbmd0b24uZWR1MB4XDTE4MDQxMDE3NDUwMVoXDTIxMDQxMTE3NDUwMVowgZ0xCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJXQTEQMA4GA1UEBwwHU2VhdHRsZTEhMB8GA1UECgwYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMRMwEQYDVQQLDApVVy1JVCBBWEREMRkwFwYDVQQDDBBwcm92aXNpb24udXcuZWR1MRwwGgYJKoZIhvcNAQkBFg1hY2EtaXRAdXcuZWR1MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuQVBKpPdNtkrD5gT0D/f7gO0O4kfssejk/kkQZpDBw5U1aYLbATb406/XGilLgKCLqNxqPfTJWYOXlDKuaSSImbLSE5u8YJ6OBiD9PaODp51vDxLGGWcCtB8KZPS2+ENq8l8upAtwmQv/VjWlGK4B/HYWvkSN70YSibXbhsYHy9TJg89HWbkqz0SKS00MLRJJUCEwQkmvTPUodEY2hPYBfeAwxUOSGO0k4jGWXpTG4PuilrCzboRaySWENUdMTrD4thr7HYFZid9oAGJjwctVUBJgqh2De92D+MS18vSlxjOW9mVpHx1P9vHqUr78hik7dLzXDwUeLI9EaZ4GOZWIwIDAQABo4IBdDCCAXAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwHQYDVR0OBBYEFEpz3n6+AJ3IBh5Dlc754QB9g9EQMBsGA1UdEQQUMBKCEHByb3Zpc2lvbi51dy5lZHUwgcEGA1UdIwSBuTCBtoAUVdfBM8b6k/gnPcsgS/VajliXfXShgZqkgZcwgZQxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMRQwEgYDVQQLEwtVVyBTZXJ2aWNlczEXMBUGA1UEAxMOVVcgU2VydmljZXMgQ0ExJjAkBgkqhkiG9w0BCQEWF2hlbHBAY2FjLndhc2hpbmd0b24uZWR1ggEAMEEGA1UdHwQ6MDgwNqA0oDKGMGh0dHA6Ly9jZXJ0cy5jYWMud2FzaGluZ3Rvbi5lZHUvVVdTZXJ2aWNlc0NBLmNybDANBgkqhkiG9w0BAQsFAAOBgQCf/i1Fkq/4kJWD81xQAG0qNEiJ
+3f0ex5kSHqXQPIPW3Cx9gjxRKElvdSe89GOvEx2xuYxdDt8AUvdyuBNgpJ775li21kqdvT6ulOcBCNX2J7dmwa7gwzhHdE+pdgB1i9v3NM3/v8BhBr6JMCM5awn3SbJGNJ19WVhIe0TW/5oSAA=='
   - name: IDP_CERT
     value: 'MIID/TCCAuWgAwIBAgIJAMoYJbDt9lKKMA0GCSqGSIb3DQEBBQUAMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdTAeFw0xMTA0MjYxOTEwMzlaFw0yMTA0MjMxOTEwMzlaMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMH9G8m68L0Hf9bmf4/7c+ERxgDQrbq50NfSi2YTQWc1veUIPYbZy1agSNuc4dwn3RtC0uOQbdNTYUAiVTcYgaYceJVB7syWf9QyGIrglZPMu98c5hWb7vqwvs6d3s2Sm7tBib2v6xQDDiZ4KJxpdAvsoPQlmGdgpFfmAsiYrnYFXLTHgbgCc/YhV8lubTakUdI3bMYWfh9dkj+DVGUmt2gLtQUzbuH8EU44vnXgrQYSXNQkmRcyoE3rj4Rhhbu/p5D3P+nuOukLYFOLRaNeiiGyTu3P7gtc/dy/UjUrf+pH75UUU7Lb369dGEfZwvVtITXsdyp0pBfun4CP808H9N0CAwEAAaOBwTCBvjAdBgNVHQ4EFgQUP5smx3ZYKODMkDglkTbduvLcGYAwgY4GA1UdIwSBhjCBg4AUP5smx3ZYKODMkDglkTbduvLcGYChYKReMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdYIJAMoYJbDt9lKKMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAEo7c2CNHEI+Fvz5DhwumU+WHXqwSOK47MxXwNJVpFQ9GPR2ZGDAq6hzLJLAVWcY4kB3ECDkRtysAWSFHm1roOU7xsU9f0C17QokoXfLNC0d7KoivPM6ctl8aRftU5moyFJkkJX3qSExXrl053uxTOQVPms4ypkYv1A/FBZWgSC8eNoYnBnv1Mhy4m8bfeEN7qT9rFoxh4cVjMH1Ykq7JWyFXLEB4ifzH4KHyplt5Ryv61eh6J1YPFa2RurVTyGpHJZeOLUIBvJu15GzcexuDDXe0kg7sHD6PbK0xzEF/QeXP/hXzMxR9kQXB/IR/b2k4ien+EM3eY/ueBcTZ95dgVM='
-  - name: SAFE_EMAIL_RECIPIENT
-    value: "mikes@uw.edu"
 environmentVariablesSecrets:
   djangoSecret:
     name: DJANGO_SECRET
-    secretName: prt-test-django-secret
+    secretName: prt-prod-django-secret
     secretKey: django-secret
   emailHostUser:
     name: EMAIL_HOST_USER
