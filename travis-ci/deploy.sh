@@ -84,7 +84,7 @@ echo "CLONE chart repository $HELM_CHART_REPO_PATH"
 git clone --depth 1 "$HELM_CHART_REPO" --branch master $HELM_CHART_LOCAL_DIR >/dev/null 2>&1
 
 echo "GENERATE release manifest $MANIFEST_FILE_NAME using docker/${APP_INSTANCE}-values.yml"
-helm template $HELM_CHART_LOCAL_DIR --set commitHash=$COMMIT_HASH -f docker/${APP_INSTANCE}-values.yml > $LOCAL_MANIFEST
+helm template $HELM_CHART_LOCAL_DIR --name $APP_NAME --set commitHash=$COMMIT_HASH -f docker/${APP_INSTANCE}-values.yml > $LOCAL_MANIFEST
 
 echo "CLONE flux repository ${FLUX_REPO_PATH}"
 git clone --depth 1 "$FLUX_REPO" --branch master $FLUX_LOCAL_DIR >/dev/null 2>&1
