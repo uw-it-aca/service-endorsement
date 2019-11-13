@@ -96,10 +96,13 @@ git checkout -b $FLUX_RELEASE_BRANCH_NAME
 echo "ADD ${FLUX_RELEASE_MANIFEST} and COMMIT"
 cp -p $LOCAL_MANIFEST $FLUX_RELEASE_MANIFEST
 git add $FLUX_RELEASE_MANIFEST
+ls -l ${FLUX_LOCAL_DIR}/$FLUX_RELEASE_MANIFEST
+head $FLUX_RELEASE_MANIFEST
+git status
 git commit -m $COMMIT_MESSAGE $FLUX_RELEASE_MANIFEST >/dev/null 2>&1
 git push origin $FLUX_RELEASE_BRANCH_NAME >/dev/null 2>&1
 
-echo "SUBMIT $RELEASE_BRANCH_NAME pull request"
+echo "SUBMIT $FLUX_RELEASE_BRANCH_NAME pull request"
 curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -H "Content-type: application/json" -X POST $GITHUB_API_PULLS -d @- <<EOF
 {
   "title": "${COMMIT_MESSAGE}",
