@@ -19,10 +19,11 @@ if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
                        'u_acadev_provision_support'],
     }
 
-if os.getenv("ENV") == "prod":
+if not os.getenv("ENV") == "localdev":
     INSTALLED_APPS += ['rc_django',]
-    RESTCLIENTS_DAO_CACHE_CLASS='endorsement.cache.ProvisionCache'
-    APP_SERVER_BASE = 'https://provision.uw.edu'
+    RESTCLIENTS_DAO_CACHE_CLASS = 'endorsement.cache.ProvisionCache'
+    if os.getenv("ENV") == "prod":
+        APP_SERVER_BASE = 'https://provision.uw.edu'
 
 INSTALLED_APPS += [
     'django_prometheus',

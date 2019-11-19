@@ -12,7 +12,7 @@ Your use of these services is bound by UW-IT’s Appropriate Use policy, as well
 Service documentation is available here:
 
 {%if google_endorsed %}UW G Suite: https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate{% endif %}
-{%if o365_endorsed %}UW Office 365: http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/{% endif %}
+{%if o365_endorsed %}UW Office 365: https://itconnect.uw.edu/connect/productivity-platforms/uw-office-365/{% endif %}
 
 Thank you,
 

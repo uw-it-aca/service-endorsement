@@ -1,0 +1,8 @@
+[run]
+source = endorsement
+parallel = True
+
+[paths]
+source =
+  endorsement/
+  /app/endorsement/
