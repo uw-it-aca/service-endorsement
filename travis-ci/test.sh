@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+trap 'travis_terminate 1' ERR
 
 # travis test script for django app
 
@@ -14,7 +16,6 @@ function run_test {
     echo "##########################"
     echo "TEST: $1"
     eval $1
-    if [ $? != 0 ] ; then exit 1; fi
 }
 
 run_test "pycodestyle ${DJANGO_APP}/ --exclude=migrations,static"

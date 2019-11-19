@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
+set -eu
+trap 'travis_terminate 1' ERR
 
-# stage $RELEASE_NAME release
+# stage $RELEASE_NAME as flux repository branch candidate for deployment
+#
+# NOTES:
+#      - git clone/push redirect to /dev/null so auth_token isn't spilled
 #
 # PRECONDITION: inherited env vars from application's .travis.yml MUST include:
 #      RELEASE_NAME: application's name as it is expressed in k8s cluster
@@ -19,7 +24,7 @@ elif [ "$TRAVIS_BRANCH" = "master" ]; then
     GCP_PROJECT="uwit-mci-0011"
 else
     echo "Branch $TRAVIS_BRANCH not configured for deployment"
-    exit 1
+    travis_terminate 1
 fi
 
 APP_NAME=${RELEASE_NAME}-prod-${APP_INSTANCE}
@@ -28,7 +33,9 @@ FLUX_REPO_NAME=gcp-flux-${FLUX_INSTANCE}
 GITHUB_REPO_OWNER=uw-it-aca
 
 HELM_APP_URL=https://get.helm.sh
-HELM_APP_TGZ=helm-v3.0.0-rc.3-linux-amd64.tar.gz
+HELM_APP_TGZ=helm-v3.0.0-linux-amd64.tar.gz
+KUBEVAL_URL=https://github.com/instrumenta/kubeval/releases/latest/download
+KUBEVAL_TGZ=kubeval-linux-amd64.tar.gz
 
 HELM_CHART_LOCAL_DIR=${HOME}/$HELM_CHART_NAME
 HELM_CHART_REPO_PATH=${GITHUB_REPO_OWNER}/${HELM_CHART_NAME}
@@ -80,11 +87,26 @@ if [ ! -d $HOME/helm/bin ]; then
 fi
 export PATH=${PATH}:${HOME}/helm/bin
 
+if [ ! -d $HOME/kubeval/bin ]; then
+    echo "INSTALL kubeval"
+    if [ ! -d $HOME/kubeval ]; then mkdir $HOME/kubeval ; fi
+    pushd $HOME/kubeval
+    mkdir ./bin
+    curl -Lso ${KUBEVAL_TGZ} ${KUBEVAL_URL}/${KUBEVAL_TGZ}
+    tar xzf ${KUBEVAL_TGZ}
+    mv ./kubeval ./bin/kubeval
+    popd
+fi
+export PATH=${PATH}:${HOME}/kubeval/bin
+
 echo "CLONE chart repository $HELM_CHART_REPO_PATH"
 git clone --depth 1 "$HELM_CHART_REPO" --branch master $HELM_CHART_LOCAL_DIR >/dev/null 2>&1
 
 echo "GENERATE release manifest $MANIFEST_FILE_NAME using docker/${APP_INSTANCE}-values.yml"
 helm template $APP_NAME $HELM_CHART_LOCAL_DIR --set commitHash=$COMMIT_HASH -f docker/${APP_INSTANCE}-values.yml > $LOCAL_MANIFEST
+
+echo "VALIDATE generated manifest $MANIFEST_FILE_NAME"
+kubeval $LOCAL_MANIFEST --strict --exit-on-error --ignore-missing-schemas
 
 echo "CLONE flux repository ${FLUX_REPO_PATH}"
 git clone --depth 1 "$FLUX_REPO" --branch master $FLUX_LOCAL_DIR >/dev/null 2>&1

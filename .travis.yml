@@ -30,5 +30,5 @@ after_success:
 
 cache:
   directories:
-    - "$HOME/google-cloud-sdk"
     - "$HOME/helm"
+    - "$HOME/kubeval"
