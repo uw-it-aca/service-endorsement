@@ -133,3 +133,5 @@ curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -H "Content-type: application/js
 }
 EOF
 popd
+
+exit 0
