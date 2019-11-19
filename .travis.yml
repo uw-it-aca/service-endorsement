@@ -25,6 +25,7 @@ install:
   - docker build -t "$IMAGE_TAG" .
 
 before_script:
+  - pip install coverage
   - pip install coveralls
 
 script:
@@ -32,6 +33,7 @@ script:
 
 after_success:
   - cp /tmp/.coverage ./.coverage
+  - coverage combine
   - coveralls
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [[ "$TRAVIS_BRANCH" =~ ^(develop|master)$ ]]; then . ./travis-ci/deploy.sh; fi
 
