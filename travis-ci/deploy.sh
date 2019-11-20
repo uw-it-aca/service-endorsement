@@ -100,7 +100,7 @@ fi
 export PATH=${PATH}:${HOME}/kubeval/bin
 
 echo "CLONE chart repository $HELM_CHART_REPO_PATH"
-git clone --depth 1 "$HELM_CHART_REPO" --branch master $HELM_CHART_LOCAL_DIR >/dev/null 2>&1
+git clone --depth 1 "$HELM_CHART_REPO" --branch master $HELM_CHART_LOCAL_DIR
 
 echo "GENERATE release manifest $MANIFEST_FILE_NAME using docker/${APP_INSTANCE}-values.yml"
 helm template $APP_NAME $HELM_CHART_LOCAL_DIR --set-string commitHash=$COMMIT_HASH -f docker/${APP_INSTANCE}-values.yml > $LOCAL_MANIFEST
@@ -109,18 +109,23 @@ echo "VALIDATE generated manifest $MANIFEST_FILE_NAME"
 kubeval $LOCAL_MANIFEST --strict --exit-on-error --ignore-missing-schemas
 
 echo "CLONE flux repository ${FLUX_REPO_PATH}"
-git clone --depth 1 "$FLUX_REPO" --branch master $FLUX_LOCAL_DIR >/dev/null 2>&1
+git clone --depth 1 "$FLUX_REPO" --branch master $FLUX_LOCAL_DIR 2>&1 | sed -E 's/[[:xdigit:]]{32,}/[secret]/g'
 pushd $FLUX_LOCAL_DIR
 
 echo "CREATE branch $FLUX_RELEASE_BRANCH_NAME"
 git checkout -b $FLUX_RELEASE_BRANCH_NAME
 
+echo "CONTEXT"
+pwd
+ls -l
+git branch -r
+
 echo "ADD ${FLUX_RELEASE_MANIFEST} and COMMIT"
 cp -p $LOCAL_MANIFEST $FLUX_RELEASE_MANIFEST
 git add $FLUX_RELEASE_MANIFEST
 git status
-git commit -m "$COMMIT_MESSAGE" $FLUX_RELEASE_MANIFEST >/dev/null 2>&1
-git push origin $FLUX_RELEASE_BRANCH_NAME >/dev/null 2>&1
+git commit -m "$COMMIT_MESSAGE" $FLUX_RELEASE_MANIFEST 2>&1 | sed -E 's/[[:xdigit:]]{32,}/[secret]/g'
+git push origin $FLUX_RELEASE_BRANCH_NAME 2>&1 | sed -E 's/[[:xdigit:]]{32,}/[secret]/g'
 git status
 
 echo "SUBMIT $FLUX_RELEASE_BRANCH_NAME pull request"
