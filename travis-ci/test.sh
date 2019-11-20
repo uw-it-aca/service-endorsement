@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-trap 'travis_terminate 1' ERR
+trap 'exit 1' ERR
 
 # travis test script for django app
 #
