@@ -91,9 +91,11 @@ def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
 
 
 def clear_endorsement(endorsement):
-    if EndorsementRecord.objects.get_endorsements_for_endorsee(
-            endorsement.endorsee, endorsement.category_code).count() <= 1:
+    if (endorsement.datetime_endorsed is not None and
+        EndorsementRecord.objects.get_endorsements_for_endorsee(
+            endorsement.endorsee, endorsement.category_code).count() <= 1):
         _former_category(endorsement)
+
         logger.info('former category {0} for {1} by {2}'.format(
             endorsement.category_code,
             endorsement.endorsee.netid,
