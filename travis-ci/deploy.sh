@@ -49,6 +49,7 @@ MANIFEST_FILE_NAME=${RELEASE_NAME}.yaml
 LOCAL_MANIFEST=${HOME}/$MANIFEST_FILE_NAME
 FLUX_RELEASE_MANIFEST=releases/${FLUX_INSTANCE}/$MANIFEST_FILE_NAME
 FLUX_RELEASE_BRANCH_NAME=release/${FLUX_INSTANCE}/${RELEASE_NAME}/$COMMIT_HASH
+FLUX_PR_OUTPUT=${HOME}/pr-${FLUX_INSTANCE}-${RELEASE_NAME}-${COMMIT_HASH}.json
 
 COMMIT_MESSAGE="Automated ${FLUX_INSTANCE} deploy of ${TRAVIS_REPO_SLUG}:${COMMIT_HASH} by travis build ${TRAVIS_BUILD_NUMBER}"
 PULL_REQUEST_MESSAGE="Automated ${FLUX_INSTANCE} deploy of [${TRAVIS_REPO_SLUG}:${COMMIT_HASH}](/${TRAVIS_REPO_SLUG}/commit/${COMMIT_HASH})  Generated travis build [${TRAVIS_BUILD_NUMBER}]($TRAVIS_BUILD_WEB_URL)"
@@ -129,7 +130,7 @@ git push origin $FLUX_RELEASE_BRANCH_NAME 2>&1 | sed -E 's/[[:xdigit:]]{32,}/[se
 git status
 
 echo "SUBMIT $FLUX_RELEASE_BRANCH_NAME pull request"
-curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -H "Content-type: application/json" -X POST $GITHUB_API_PULLS -d @- <<EOF
+curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -H "Content-type: application/json" -X POST $GITHUB_API_PULLS >${FLUX_PR_OUTPUT} -d @- <<EOF
 {
   "title": "${COMMIT_MESSAGE}",
   "body": "${PULL_REQUEST_MESSAGE}",
@@ -137,6 +138,23 @@ curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -H "Content-type: application/js
   "base": "master"
 }
 EOF
+
+FLUX_PULL_URL=$(jq '.html_url' ${FLUX_PR_OUTPUT})
+echo "SUBMITTED $FLUX_PULL_URL"
+
+if [ "$TRAVIS_BRANCH" = "develop" ]; then
+  echo "MERGING $FLUX_PULL_URL"
+  GITHUB_API_MERGE="$(jq --raw-output '.url' ${FLUX_PR_OUTPUT})/merge"
+  curl -H "Authorization: Token ${GH_AUTH_TOKEN}" -H "Content-type: application/json" -X PUT $GITHUB_API_MERGE -d @- <<EOF
+{
+  "commit_title": "Automated merge of ${PULL_REQUEST_MESSAGE}",
+  "commit_message": "Automated merge of ${PULL_REQUEST_MESSAGE}",
+  "sha": $(jq '.head.sha' ${FLUX_PR_OUTPUT}),
+  "merge_method": "merge"
+}
+EOF
+fi
+
 popd
 
 exit 0
