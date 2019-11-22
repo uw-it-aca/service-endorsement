@@ -16,10 +16,17 @@ env:
     - DJANGO_APP="endorsement"
     - COMMIT_HASH="$(git rev-parse --short=7 HEAD)"
     - IMAGE_TAG="${RELEASE_NAME}:${COMMIT_HASH}"
-    - DEPLOY_SCRIPT_BASE=https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/master/
+    - DEPLOY_SCRIPT_BASE=https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/master
+    - DEPLOY_EXAMPLE=$(curl -Ls ${DEPLOY_SCRIPT_BASE}/.travis.yml.example)
     - secure: $(curl -Ls ${DEPLOY_SCRIPT_BASE}/secret/docker_user.txt)
     - secure: $(curl -Ls ${DEPLOY_SCRIPT_BASE}/secret/docker_pw.txt)
     - secure: $(curl -Ls ${DEPLOY_SCRIPT_BASE}/secret/github.txt)
+
+before_install:
+  - echo "######################################"
+  - echo "IMAGE_TAG=$IMAGE_TAG"
+  - echo "DEPLOY_EXAMPLE=$DEPLOY_EXAMPLE"
+  - echo "######################################"
 
 install:
   - docker build -t "$IMAGE_TAG" .
