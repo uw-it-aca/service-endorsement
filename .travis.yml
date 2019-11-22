@@ -24,8 +24,8 @@ env:
 
 before_install:
   - echo "######################################"
-  - echo "IMAGE_TAG=$IMAGE_TAG"
-  - echo "DEPLOY_EXAMPLE=$DEPLOY_EXAMPLE"
+  - echo $IMAGE_TAG
+  - echo $DEPLOY_EXAMPLE
   - echo "######################################"
 
 install:
