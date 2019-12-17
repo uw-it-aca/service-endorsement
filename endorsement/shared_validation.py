@@ -56,5 +56,5 @@ def validate_shared_endorsers():
                 er.datetime_expired = None
                 er.is_deleted = None
                 er.save()
-        except:
+        except Exception:
             None
