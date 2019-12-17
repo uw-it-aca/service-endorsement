@@ -29,14 +29,17 @@ class TestProvisioneSharedNetidNotices(TestCase):
         self.assertTrue('emailinfo' in mail.outbox[0].body)
         self.assertTrue('emailinfo' in mail.outbox[0].alternatives[0][0])
 
-        er = EndorsementRecord.objects.get(
+        er_old = EndorsementRecord.objects.get(
             endorser=self.javerage, endorsee=self.endorsee,
             category_code=EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
-        self.assertEqual(er.is_deleted, True)
+        self.assertEqual(er_old.is_deleted, True)
 
-        er = EndorsementRecord.objects.get(
+        er_new = EndorsementRecord.objects.get(
             endorser=self.bill, endorsee=self.endorsee,
             category_code=EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
-        self.assertEqual(er.is_deleted, None)
+        self.assertEqual(er_new.is_deleted, None)
+
+        self.assertEqual(er_old.datetime_notice_1_emailed,
+                         er_new.datetime_notice_1_emailed)
