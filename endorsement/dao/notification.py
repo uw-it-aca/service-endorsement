@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 logging.captureWarnings(True)
 
 
-def create_endorsee_message(endorser):
+def _create_endorsee_message(endorser):
     sent_date = timezone.now()
     params = {
         "endorser_netid": endorser['netid'],
@@ -107,7 +107,7 @@ def notify_endorsees():
 
     for email, endorsers in endorsements.items():
         for endorser_netid, endorsers in endorsers['endorsers'].items():
-            (subject, text_body, html_body) = create_endorsee_message(
+            (subject, text_body, html_body) = _create_endorsee_message(
                 endorsers)
             try:
                 send_email(
@@ -118,7 +118,7 @@ def notify_endorsees():
                 pass
 
 
-def create_endorser_message(endorsed):
+def _create_endorser_message(endorsed):
     sent_date = timezone.now()
     params = {
         "o365_endorsed": endorsed.get('o365', None),
@@ -179,7 +179,7 @@ def notify_endorsers():
                      "provision-noreply@uw.edu")
     endorsements = get_endorsed_unnotified()
     for email, endorsed in endorsements.items():
-        (subject, text_body, html_body) = create_endorser_message(endorsed)
+        (subject, text_body, html_body) = _create_endorser_message(endorsed)
         try:
             send_email(
                 sender, [email], subject, text_body, html_body, "Endorser")
@@ -191,7 +191,7 @@ def notify_endorsers():
             pass
 
 
-def create_invalid_endorser_message(endorsements):
+def _create_invalid_endorser_message(endorsements):
     params = {
         "endorsed": {},
         "endorser": endorsements[0].endorser.json_data(),
@@ -238,7 +238,7 @@ def notify_invalid_endorser(endorser, endorsements):
     email = "{0}@uw.edu".format(endorser.netid)
     sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
                      "provision-noreply@uw.edu")
-    (subject, text_body, html_body) = create_invalid_endorser_message(
+    (subject, text_body, html_body) = _create_invalid_endorser_message(
         endorsements)
 
     try:
@@ -252,7 +252,7 @@ def notify_invalid_endorser(endorser, endorsements):
         pass
 
 
-def create_expire_notice_message(notice_level, lifetime, endorsed):
+def _create_expire_notice_message(notice_level, lifetime, endorsed):
     context = {
         'endorser': endorsed[0].endorser,
         'notice_time': globals()['NOTICE_{}_DAYS_PRIOR'.format(notice_level)],
@@ -295,7 +295,9 @@ def warn_endorsers(notice_level, lifetime):
                              "provision-noreply@uw.edu")
 
             try:
-                (subject, text_body, html_body) = create_expire_notice_message(
+                (subject,
+                 text_body,
+                 html_body) = _create_expire_notice_message(
                     notice_level, lifetime, endorsed)
                 send_email(
                     sender, [email], subject, text_body, html_body,
@@ -308,6 +310,46 @@ def warn_endorsers(notice_level, lifetime):
                 endorsed.update(**sent_date)
             except EmailFailureException as ex:
                 pass
+
+
+def _create_warn_shared_owner_message(owner_netid, endorsements):
+    context = {
+        'endorser': owner_netid,
+        'lifetime': DEFAULT_ENDORSEMENT_LIFETIME,
+        'notice_time': NOTICE_1_DAYS_PRIOR,
+        'expiring': endorsements,
+        'expiring_count': len(endorsements)
+    }
+
+    subject = "{0}{1}".format(
+        "Action Required: UW-IT services provisioned for Shared ",
+        "UW NetIDs you own have expired")
+    text_template = "email/notice_new_shared_warning.txt"
+    html_template = "email/notice_new_shared_warning.html"
+
+    return (subject,
+            loader.render_to_string(text_template, context),
+            loader.render_to_string(html_template, context))
+
+
+def warn_new_shared_netid_owner(new_owner, endorsements):
+    if not (endorsements and len(endorsements) > 0):
+        return
+
+    sent_date = timezone.now()
+    email = "{0}@uw.edu".format(new_owner.netid)
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
+    (subject, text_body, html_body) = _create_warn_shared_owner_message(
+        new_owner, endorsements)
+
+    send_email(
+        sender, [email], subject, text_body, html_body,
+        "Shared Netid Owner")
+
+    for endorsement in endorsements:
+        endorsement.datetime_notice_1_emailed = sent_date
+        endorsement.save()
 
 
 def send_email(sender, recipients, subject, text_body, html_body, kind):
