@@ -310,6 +310,47 @@ def warn_endorsers(notice_level, lifetime):
                 pass
 
 
+def create_warn_shared_owner_message(owner_netid, endorsements):
+    context = {
+        'endorser': owner_netid,
+        'lifetime': DEFAULT_ENDORSEMENT_LIFETIME,
+        'notice_time': NOTICE_1_DAYS_PRIOR,
+        'expiring': endorsements,
+        'expiring_count': len(endorsements)
+    }
+
+    subject = "{0}{1}".format(
+        "Action Required: UW-IT services provisioned for Shared ",
+        "UW NetIDs you own have expired")
+    text_template = "email/notice_new_shared_warning.txt"
+    html_template = "email/notice_new_shared_warning.html"
+
+    return (subject,
+            loader.render_to_string(text_template, context),
+            loader.render_to_string(html_template, context))
+
+
+def warn_new_shared_netid_owner(new_owner, endorsements):
+    if not (endorsements and len(endorsements) > 0):
+        return
+
+    sent_date = timezone.now()
+    email = "{0}@uw.edu".format(new_owner.netid)
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
+    (subject, text_body, html_body) = create_warn_shared_owner_message(
+        new_owner, endorsements)
+
+    send_email(
+        sender, [email], subject, text_body, html_body,
+        "Shared Netid Owner")
+
+    now = timezone.now()
+    for endorsement in endorsements:
+        endorsement.datetime_notice_1_emailed = now
+        endorsement.save()
+
+
 def send_email(sender, recipients, subject, text_body, html_body, kind):
     message = EmailMultiAlternatives(
         subject, text_body, sender, recipients, headers={'Precedence': 'bulk'})
