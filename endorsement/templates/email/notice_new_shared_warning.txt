@@ -14,10 +14,6 @@ UW NetID       UW-IT Service  Date Provisioned   Reason
 {{e.endorsee.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.datetime_endorsed|date:"M d, Y"|ljust:"19"}}{{e.reason|ljust:"40"}}{% endfor %}
 
 To log in to the Provisioning Request Tool (PRT) and complete the annual review
-process for UW affiliate NetIDs (retirees, alums, Sponsored UW NetIDs, etc.),
-visit https://itconnect.uw.edu/connect/email/resources/affiliate-access/#annual_renewal.
-
-To log in to the Provisioning Request Tool (PRT) and complete the annual review
 process for Shared or Admin UW NetIDs, visit
 https://itconnect.uw.edu/connect/email/resources/endorse-uw-netids/#annual_renewal.
 
