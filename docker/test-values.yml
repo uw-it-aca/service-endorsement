@@ -84,6 +84,10 @@ cronjob:
       schedule: "*/5 * * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsees)"]'
+    - name: validate-shared-owners
+      schedule: "15 11 * * *"
+      command: '["bash"]'
+      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_shared_endorsers)"]'
 certs:
   mounted: true
   certPath: /certs/provision-test.uw.edu-uwca.cert

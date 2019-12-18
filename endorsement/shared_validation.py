@@ -54,6 +54,9 @@ def validate_shared_endorsers():
                 er.endorser = new_owner
                 er.accept_id = None
                 er.datetime_expired = None
+                er.datetime_notice_2_emailed = None
+                er.datetime_notice_3_emailed = None
+                er.datetime_notice_4_emailed = None
                 er.is_deleted = None
                 er.save()
         except Exception:
