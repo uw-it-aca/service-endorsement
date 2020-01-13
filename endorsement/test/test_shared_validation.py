@@ -43,3 +43,29 @@ class TestProvisioneSharedNetidNotices(TestCase):
 
         self.assertEqual(er_old.datetime_notice_1_emailed,
                          er_new.datetime_notice_1_emailed)
+
+    def test_shared_netid_owner_transfer(self):
+        now = timezone.now()
+        e_javerage = EndorsementRecord.objects.get(
+            endorser=self.javerage, endorsee=self.endorsee,
+            category_code=EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
+        self.assertEqual(e_javerage.is_deleted, None)
+        e_bill = EndorsementRecord.objects.create(
+            endorser=self.bill, endorsee=self.endorsee,
+            category_code=EndorsementRecord.GOOGLE_SUITE_ENDORSEE,
+            reason="Because I said so",
+            datetime_endorsed=now)
+
+        validate_shared_endorsers()
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        e_javerage = EndorsementRecord.objects.get(
+            endorser=self.javerage, endorsee=self.endorsee,
+            category_code=EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
+        self.assertEqual(e_javerage.is_deleted, True)
+
+        e_bill = EndorsementRecord.objects.get(
+            endorser=self.bill, endorsee=self.endorsee,
+            category_code=EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
+        self.assertEqual(e_bill.is_deleted, None)
