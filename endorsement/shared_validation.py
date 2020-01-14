@@ -24,7 +24,7 @@ def validate_shared_endorsers():
             if isinstance(shared_netids, list) and len(shared_netids):
                 owned = [n.name for n in shared_netids]
             else:
-                continue
+                owned = []
 
             for e in endorsements:
                 if e.endorsee.netid not in owned:
