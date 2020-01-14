@@ -36,6 +36,18 @@ def validate_shared_endorsers():
                     orphan.endorsee.netid, orphan.endorser.netid))
             continue
 
+        # quietly sweep away record if new owner already endorsed
+        try:
+            EndorsementRecord.objects.get(
+                is_deleted__isnull=True,
+                endorser__netid=owner,
+                endorsee=orphan.endorsee,
+                category_code=orphan.category_code)
+            orphan.revoke()
+            continue
+        except EndorsementRecord.DoesNotExist as ex:
+            pass
+
         if owner in new_owners:
             new_owners[owner].append(orphan)
         else:
