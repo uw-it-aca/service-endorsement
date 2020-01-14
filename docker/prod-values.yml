@@ -36,7 +36,7 @@ resources:
     cpu: 200m
 image:
   repository: registry.hub.docker.com/acait/prt
-commitHash: '8a08a3d'
+  tag: IMAGE_TAG
 metrics:
   enabled: true
   serviceMonitor:
