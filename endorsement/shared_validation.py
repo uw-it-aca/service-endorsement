@@ -20,8 +20,12 @@ def validate_shared_endorsers():
             endorsee__is_person=False)
 
         if len(endorsements):
-            owned = [
-                n.name for n in get_shared_netids_for_netid(endorser.netid)]
+            shared_netids = get_shared_netids_for_netid(endorser.netid)
+            if isinstance(shared_netids, list) and len(shared_netids):
+                owned = [n.name for n in shared_netids]
+            else:
+                continue
+
             for e in endorsements:
                 if e.endorsee.netid not in owned:
                     orphans.append(e)
