@@ -34,6 +34,7 @@ def get_shared_netids_for_netid(netid):
         if ex.status == 404:
             return []
     except Exception:
-        return handel_err(logger,
-                          '{0} supported resources '.format(netid),
-                          traceback.format_exc())
+        handel_err(logger,
+                   '{0} supported resources '.format(netid),
+                   traceback.format_exc()):
+        return []
