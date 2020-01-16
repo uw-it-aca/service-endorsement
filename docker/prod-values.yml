@@ -1,5 +1,6 @@
 ingress:
   enabled: true
+  type: nginx
   annotations:
     kubernetes.io/ingress.class: nginx
   tls:
@@ -76,6 +77,10 @@ cronjob:
       schedule: "*/2 * * * *"
       command: '["bash"]'
       args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsees)"]'
+    - name: validate-shared-owners
+      schedule: "15 11 * * *"
+      command: '["bash"]'
+      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_shared_endorsers)"]'
 certs:
   mounted: true
   certPath: /certs/provision.uw.edu-uwca.cert
