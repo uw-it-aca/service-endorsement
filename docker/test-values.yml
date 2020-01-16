@@ -1,7 +1,6 @@
 ingress:
   enabled: true
   type: nginx
-  annotations: {}
   tls:
     prt-test:
       secretName: provision-test.uw.edu
