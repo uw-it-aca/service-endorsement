@@ -1,6 +1,7 @@
 ingress:
   enabled: true
   type: nginx
+  annotations: {}
   tls:
     prt-prod:
       secretName: provision.uw.edu-ingress-cert
