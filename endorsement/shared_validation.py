@@ -70,7 +70,7 @@ def validate_shared_endorsers():
                 logger.info(
                     "shared: new record for {} of {} ({}) from {}".format(
                         new_owner.netid, er.endorsee.netid,
-                        en.category_code, er.endorser.netid))
+                        er.category_code, er.endorser.netid))
                 # create record for new owner, preserving warning date
                 er.pk = None
                 er.endorser = new_owner
