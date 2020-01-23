@@ -1,4 +1,4 @@
-FROM acait/django-container:1.0.9 as django
+FROM acait/django-container:1.0.17 as django
 
 USER root
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
