@@ -21,7 +21,9 @@ def validate_shared_endorsers():
 
         if len(endorsements):
             owned = [
-                n.name for n in get_shared_netids_for_netid(endorser.netid)]
+                n.name for n in get_shared_netids_for_netid(
+                    endorser.netid) if n.is_owner()]
+
             for e in endorsements:
                 if e.endorsee.netid not in owned:
                     orphans.append(e)
@@ -38,14 +40,18 @@ def validate_shared_endorsers():
 
         # quietly sweep away record if new owner already endorsed
         try:
-            EndorsementRecord.objects.get(
+            noe = EndorsementRecord.objects.get(
                 is_deleted__isnull=True,
                 endorser__netid=owner,
                 endorsee=orphan.endorsee,
                 category_code=orphan.category_code)
+            logger.info(
+                "shared: old owner {} of {} ({}) revoked for {}".format(
+                    orphan.endorser.netid, orphan.endorsee.netid,
+                    orphan.category_code, noe.endorser.netid))
             orphan.revoke()
             continue
-        except EndorsementRecord.DoesNotExist as ex:
+        except EndorsementRecord.DoesNotExist:
             pass
 
         if owner in new_owners:
@@ -61,6 +67,10 @@ def validate_shared_endorsers():
             for er in new_owners[owner]:
                 # no longer endorsed by previous owner
                 er.revoke()
+                logger.info(
+                    "shared: new record for {} of {} ({}) from {}".format(
+                        new_owner.netid, er.endorsee.netid,
+                        er.category_code, er.endorser.netid))
                 # create record for new owner, preserving warning date
                 er.pk = None
                 er.endorser = new_owner
