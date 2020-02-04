@@ -26,12 +26,11 @@ class Command(BaseCommand):
                 set(get_kerberos_inactive_netids_for_category(
                     category)) - set(netids))
 
-        endorsements = ER.objects.filter(
-            endorsee__netid__in=netids, category_code__in=categories)
-
-        if len(endorsements):
-            for e in endorsements:
-                logger.info(
-                    'Ineligible endorsee: {} of {} by {} revoked'.format(
-                        e.endorsee.netid, e.category_code, e.endorser.netid))
-                clear_endorsement(e)
+        for e in ER.objects.filter(
+                endorsee__netid__in=netids,
+                category_code__in=categories,
+                is_deleted__isnull=True):
+            logger.info(
+                'Ineligible endorsee: {} with {} by {} revoked'.format(
+                    e.endorsee.netid, e.category_code, e.endorser.netid))
+            clear_endorsement(e)
