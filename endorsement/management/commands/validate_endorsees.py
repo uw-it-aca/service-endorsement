@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
-from django.core.mail import mail_managers
-from django.template import loader
+from endorsement.dao.endorse import clear_endorsement
 from endorsement.models import EndorsementRecord as ER
 from uw_uwnetid.models import Category
 from endorsement.dao.prt import get_kerberos_inactive_netids_for_category
@@ -27,17 +26,11 @@ class Command(BaseCommand):
                 set(get_kerberos_inactive_netids_for_category(
                     category)) - set(netids))
 
-        endorsements = ER.objects.filter(
-            endorsee__netid__in=netids, category_code__in=categories)
-
-        if len(endorsements):
-            body = loader.render_to_string('email/ineligible_endorsee.txt',
-                                           {
-                                               'endorsements': endorsements
-                                           })
-            mail_managers(
-                'PRT discovered {} inactive kerberos '.format(
-                    len(endorsements)), body)
-
-            for e in endorsements:
-                logger.info('invalid endorsee: {}'.format(e))
+        for e in ER.objects.filter(
+                endorsee__netid__in=netids,
+                category_code__in=categories,
+                is_deleted__isnull=True):
+            logger.info(
+                'Ineligible endorsee: {} with {} by {} revoked'.format(
+                    e.endorsee.netid, e.category_code, e.endorser.netid))
+            clear_endorsement(e)
