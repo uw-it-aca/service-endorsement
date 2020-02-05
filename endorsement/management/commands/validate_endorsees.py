@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 from endorsement.dao.endorse import clear_endorsement
+from endorsement.dao.prt import get_kerberos_inactive_netids_for_category
 from endorsement.models import EndorsementRecord as ER
 from uw_uwnetid.models import Category
-from endorsement.dao.prt import get_kerberos_inactive_netids_for_category
 import logging
 import urllib3
 
@@ -33,4 +33,8 @@ class Command(BaseCommand):
             logger.info(
                 'Ineligible endorsee: {} with {} by {} revoked'.format(
                     e.endorsee.netid, e.category_code, e.endorser.netid))
-            clear_endorsement(e)
+            try:
+                clear_endorsement(e)
+            except Exception as ex:
+                logger.error("Clearing {} with {}: {}".format(
+                    e.endorsee.netid, e.category_code, ex))
