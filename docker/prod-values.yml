@@ -3,7 +3,7 @@ ingress:
   type: nginx
   tls:
     prt-prod:
-      secretName: provision.uw.edu-ingress-cert
+      secretName: provision.uw.edu-ingress-1797eb351d9c0b9327e60afd48c1c16a
       hosts:
         - provision.uw.edu
   hosts:
