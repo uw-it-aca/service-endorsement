@@ -2,18 +2,26 @@ ingress:
   enabled: true
   type: nginx
   tls:
+    test-prt:
+      secretName: test.provision.uw.edu-81d5204cb79db9dc4f5489b6da81fa4a
+      hosts:
+        - test.provision.uw.edu
     prt-test:
       secretName: provision-test.uw.edu
       hosts:
         - provision-test.uw.edu
   hosts:
+    test-prt:
+      host: test.provision.uw.edu
+      paths:
+        - "/"
     prt-test:
       host: provision-test.uw.edu
-      paths: 
+      paths:
         - "/"
     prt-test-aca-aws:
       host: prt-test.aca-aws.s.uw.edu
-      paths: 
+      paths:
         - "/"
 database:
   engine: postgres
