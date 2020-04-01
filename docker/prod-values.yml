@@ -87,10 +87,6 @@ certs:
 environmentVariables:
   - name: ENV
     value: prod
-  - name: CERT_PATH
-    value: /certs/provision.uw.edu-uwca.cert
-  - name: KEY_PATH
-    value: /certs/provision.uw.edu-uwca.key
   - name: GWS_ENV
     value: PROD
   - name: PWS_ENV
