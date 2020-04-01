@@ -31,10 +31,12 @@ def get_shared_netids_for_netid(netid):
 
         return shared
     except DataFailureException as ex:
-        if ex.status == 404:
-            return []
+        logger.error(
+            'uw_uwnetid get_supported_resources({}) returned {}'.format(
+                netid, ex.status))
     except Exception:
         handel_err(logger,
                    '{0} supported resources '.format(netid),
                    traceback.format_exc())
-        return []
+
+    return []
