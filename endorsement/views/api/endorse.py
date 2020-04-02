@@ -29,7 +29,7 @@ class Endorse(RESTDispatch):
     def post(self, request, *args, **kwargs):
         timer = Timer()
 
-        endorsees = request.data.get('endorses', [])
+        endorsees = request.data.get('endorsees', {})
         user_service = UserService()
         netid = user_service.get_user()
         if not netid:
