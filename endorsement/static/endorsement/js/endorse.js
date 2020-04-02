@@ -87,9 +87,9 @@ var Endorse = (function () {
 
         $.ajax({
             url: "/api/v1/endorse/",
-            dataType: "JSON",
-            data: JSON.stringify(endorsees),
             type: "POST",
+            data: JSON.stringify({ "endorsees": endorsees }),
+            contentType: "application/json",
             accepts: {html: "application/json"},
             headers: {
                 "X-CSRFToken": csrf_token

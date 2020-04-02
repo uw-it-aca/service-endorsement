@@ -9,20 +9,22 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
         url = reverse('endorse_api')
 
         data = json.dumps({
-            "endorsee7": {
-                "name": "JERRY ENDORSEE7",
-                "email": "endorsee7@uw.edu",
-                "google": {
-                    "state": True,
-                    "reason": "Student mentoring"
-                },
-                "o365": {
-                    "state": False
+            "endorsees": {
+                "endorsee7": {
+                    "name": "JERRY ENDORSEE7",
+                    "email": "endorsee7@uw.edu",
+                    "google": {
+                        "state": True,
+                        "reason": "Student mentoring"
+                    },
+                    "o365": {
+                        "state": False
+                    }
                 }
             }
         })
 
-        response = self.client.post(url, data, content_type='application_json')
+        response = self.client.post(url, data, content_type='application/json')
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(data['endorser']['netid'], 'jstaff')
@@ -48,20 +50,23 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
         url = reverse('endorse_api')
 
         data = json.dumps({
-            "endorsee7": {
-                "name": "JERRY ENDORSEE7",
-                "email": "endorsee7@uw.edu",
-                "o365": {
-                    "state": True,
-                    "reason": "Student mentoring"
-                },
-                "google": {
-                    "state": False
+            "endorsees":
+            {
+                "endorsee7": {
+                    "name": "JERRY ENDORSEE7",
+                    "email": "endorsee7@uw.edu",
+                    "o365": {
+                        "state": True,
+                        "reason": "Student mentoring"
+                    },
+                    "google": {
+                        "state": False
+                    }
                 }
             }
         })
 
-        response = self.client.post(url, data, content_type='application_json')
+        response = self.client.post(url, data, content_type='application/json')
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(data['endorser']['netid'], 'jfaculty')

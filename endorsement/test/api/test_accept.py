@@ -17,24 +17,24 @@ class TestEndorsementAcceptAPI(EndorsementApiTest):
         except NoEndorsementException as ex:
             pass
 
-        initiate_office365_endorsement(endorser, endorsee, 'foobar')
+        initiate_office365_endorsement(endorser, endorsee, 'endorsee6')
 
         endorsement = EndorsementRecord.objects.get(endorser=endorser,
                                                     endorsee=endorsee)
 
-        self.set_user('endorsee7')
+        self.set_user('endorsee6')
         url = reverse('accept_api')
         data = json.dumps({
             "accept_id": endorsement.accept_id
         })
 
-        response = self.client.post(url, data, content_type='application_json')
+        response = self.client.post(url, data, content_type='application/json')
 
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(data['accept_id'], endorsement.accept_id)
         self.assertTrue(data['is_o365'])
         self.assertFalse(data['is_google'])
-        self.assertEqual(data['reason'], 'foobar')
+        self.assertEqual(data['reason'], 'endorsee6')
         self.assertEqual(data['endorser']['netid'], 'jfaculty')
         self.assertEqual(data['endorsee']['netid'], 'endorsee7')
