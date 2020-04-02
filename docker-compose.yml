@@ -7,7 +7,7 @@ services:
       - PORT=8000
       - AUTH=SAML_MOCK
     restart: always
-    container_name: app
+    container_name: app-provision
     build:
       context: .
     volumes:
