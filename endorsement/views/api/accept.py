@@ -1,7 +1,7 @@
 import logging
 import json
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+#from django.contrib.auth.decorators import login_required
+#from django.utils.decorators import method_decorator
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
 from endorsement.dao.endorse import (
@@ -17,7 +17,8 @@ class Accept(RESTDispatch):
     """
     validate accept request
     """
-    @method_decorator(login_required)
+
+    # @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         timer = Timer()
 

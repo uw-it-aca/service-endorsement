@@ -1,6 +1,4 @@
 import logging
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
 from endorsement.exceptions import UnrecognizedUWNetid
@@ -21,7 +19,6 @@ class Endorsed(RESTDispatch):
     """
     Validate provided endorsement list
     """
-    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         timer = Timer()
 

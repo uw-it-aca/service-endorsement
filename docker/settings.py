@@ -31,7 +31,8 @@ INSTALLED_APPS += [
     'endorsement',
     'userservice',
     'django_client_logger',
-    'supporttools'
+    'supporttools',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = ['django_prometheus.middleware.PrometheusBeforeMiddleware'] +\

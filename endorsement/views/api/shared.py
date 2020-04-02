@@ -1,6 +1,4 @@
 import logging
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
 from endorsement.dao.gws import is_valid_endorser
@@ -22,7 +20,6 @@ class Shared(RESTDispatch):
     """
     Return shared netids associated with the provided netid
     """
-    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         timer = Timer()
 

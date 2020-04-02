@@ -23,7 +23,6 @@ var ManageProvisionedServices = (function () {
 
         $.ajax({
             url: "/api/v1/endorsed/",
-            dataType: "JSON",
             type: "GET",
             accepts: {html: "application/json"},
             headers: {
@@ -298,9 +297,9 @@ var ManageProvisionedServices = (function () {
 
         $.ajax({
             url: "/api/v1/validate/",
-            dataType: "JSON",
-            data: JSON.stringify(netids),
             type: "POST",
+            data: JSON.stringify({ "netids": netids }),
+            contentType: "application/json",
             accepts: {html: "application/json"},
             headers: {
                 "X-CSRFToken": csrf_token

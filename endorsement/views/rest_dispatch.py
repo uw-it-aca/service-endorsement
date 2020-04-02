@@ -1,9 +1,11 @@
+from rest_framework.views import APIView
 from django.http import HttpResponse
-from django.views import View
 import json
 import sys
 from restclients_core.exceptions import DataFailureException,\
     InvalidNetID, InvalidRegID
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 from endorsement.util.log import log_exception_with_timer,\
@@ -11,17 +13,20 @@ from endorsement.util.log import log_exception_with_timer,\
     log_invalid_netid_response, log_invalid_endorser_response
 
 
-class RESTDispatch(View):
+class RESTDispatch(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def error_response(self, status, message='', content={}):
         content['error'] = '{0}'.format(message)
         return HttpResponse(json.dumps(content),
-                            status=status,
-                            content_type='application/json')
+                        status=status,
+                        content_type='application/json')
 
     def json_response(self, content='', status=200):
         return HttpResponse(json.dumps(content, sort_keys=True),
-                            status=status,
-                            content_type='application/json')
+                        status=status,
+                        content_type='application/json')
 
 
 def handle_exception(logger, timer, stack_trace):
