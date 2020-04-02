@@ -20,13 +20,13 @@ class RESTDispatch(APIView):
     def error_response(self, status, message='', content={}):
         content['error'] = '{0}'.format(message)
         return HttpResponse(json.dumps(content),
-                        status=status,
-                        content_type='application/json')
+                            status=status,
+                            content_type='application/json')
 
     def json_response(self, content='', status=200):
         return HttpResponse(json.dumps(content, sort_keys=True),
-                        status=status,
-                        content_type='application/json')
+                            status=status,
+                            content_type='application/json')
 
 
 def handle_exception(logger, timer, stack_trace):
