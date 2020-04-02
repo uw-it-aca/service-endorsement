@@ -19,6 +19,15 @@ if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
                        'u_acadev_provision_support'],
     }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated'
+    ),
+}
+
 if not os.getenv("ENV") == "localdev":
     INSTALLED_APPS += ['rc_django',]
     RESTCLIENTS_DAO_CACHE_CLASS = 'endorsement.cache.ProvisionCache'

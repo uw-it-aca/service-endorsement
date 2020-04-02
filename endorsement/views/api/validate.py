@@ -1,5 +1,4 @@
 import logging
-import json
 from django.conf import settings
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord

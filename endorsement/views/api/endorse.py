@@ -1,5 +1,4 @@
 import logging
-import json
 from userservice.user import UserService
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model, get_endorsee_email_model)

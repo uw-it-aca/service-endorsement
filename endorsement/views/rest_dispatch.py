@@ -4,8 +4,6 @@ import json
 import sys
 from restclients_core.exceptions import DataFailureException,\
     InvalidNetID, InvalidRegID
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
 
 
 from endorsement.util.log import log_exception_with_timer,\
@@ -14,9 +12,6 @@ from endorsement.util.log import log_exception_with_timer,\
 
 
 class RESTDispatch(APIView):
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated]
-
     def error_response(self, status, message='', content={}):
         content['error'] = '{0}'.format(message)
         return HttpResponse(json.dumps(content),
