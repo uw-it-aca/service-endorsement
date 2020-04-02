@@ -14,7 +14,7 @@ class Endorsee(RESTDispatch):
     """
     Show endorsements for endorsee
     """
-    authentication_classes = [AdminGroupAuthentication, TokenAuthentication]
+    authentication_classes = [TokenAuthentication, AdminGroupAuthentication]
 
     def get(self, request, *args, **kwargs):
         timer = Timer()
