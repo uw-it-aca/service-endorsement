@@ -4,7 +4,6 @@ import re
 
 
 def validate(username):
-    return None
     if len(username) == 0:
         return "No override user supplied"
 
