@@ -73,9 +73,9 @@ var Revoke = (function () {
 
         $.ajax({
             url: "/api/v1/endorse/",
-            dataType: "JSON",
-            data: JSON.stringify(revokees),
             type: "POST",
+            data: JSON.stringify({'endorsees': revokees }),
+            contentType: "application/json",
             accepts: {html: "application/json"},
             headers: {
                 "X-CSRFToken": csrf_token
