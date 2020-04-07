@@ -5,7 +5,7 @@ from endorsement.dao.endorse import (
     store_office365_endorsement, store_google_endorsement,
     clear_office365_endorsement, clear_google_endorsement,
     get_endorsements_by_endorser, is_office365_permitted,
-    is_google_permitted)
+    is_google_permitted, is_endorsed)
 
 
 class TestEndorseDao(TransactionTestCase):
@@ -79,3 +79,14 @@ class TestEndorseDao(TransactionTestCase):
 
         self.assertTrue(is_google_permitted(
             endorser, endorsee), 0)
+
+    def test_is_endorsed(self):
+        endorser = get_endorser_model('jstaff')
+        endorsee = get_endorsee_model('endorsee7')
+
+        en = store_office365_endorsement(endorser, endorsee, None, 'because')
+        self.assertTrue(is_endorsed(en))
+
+        endorsee = get_endorsee_model('endorsee3')
+        en = store_office365_endorsement(endorser, endorsee, None, 'because')
+        self.assertTrue(not is_endorsed(en))
