@@ -2,7 +2,7 @@ import logging
 from django.utils import timezone
 from django.conf import settings
 from uw_uwnetid.models import Subscription, Category
-from uw_uwnetid.category import update_catagory
+from uw_uwnetid.category import update_catagory, get_netid_categories
 from uw_uwnetid.subscription import (
     get_netid_subscriptions, update_subscription)
 from endorsement.models import EndorsementRecord
@@ -204,6 +204,16 @@ def clear_google_endorsement(endorser, endorsee):
       *  mark category 234 it former (status 3).
     """
     return clear_endorsement(get_google_endorsement(endorser, endorsee))
+
+
+def is_endorsed(endorsement):
+    endorsed = False
+    for cat in get_netid_categories(
+            endorsement.endorsee.netid, endorsement.category_code):
+        if cat.category_code == endorsement.category_code:
+            endorsed = (cat.status_code == Category.STATUS_ACTIVE)
+
+    return endorsed
 
 
 def is_permitted(endorser, endorsee, subscription_codes):
