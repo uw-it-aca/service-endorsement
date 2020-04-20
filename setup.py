@@ -44,7 +44,6 @@ setup(
         'django-pyscss',
         'Django-SupportTools>=3.4,<4.0',
         'django_client_logger>=2.0,<3.0',
-        'django-prometheus>=1.0,<2.0',
     ],
     license='Apache License, Version 2.0',
     description=('App mangaging University of Washington Endorsed Services'),
