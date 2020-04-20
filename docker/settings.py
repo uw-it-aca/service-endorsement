@@ -35,7 +35,6 @@ if not os.getenv("ENV") == "localdev":
         APP_SERVER_BASE = 'https://provision.uw.edu'
 
 INSTALLED_APPS += [
-    'django_prometheus',
     'webpack_loader',
     'endorsement',
     'userservice',
@@ -44,14 +43,7 @@ INSTALLED_APPS += [
     'rest_framework.authtoken',
 ]
 
-MIDDLEWARE = ['django_prometheus.middleware.PrometheusBeforeMiddleware'] +\
-             MIDDLEWARE +\
-             ['userservice.user.UserServiceMiddleware',
-              'django_prometheus.middleware.PrometheusAfterMiddleware']
-
-if not os.getenv("ENV") == "localdev":
-    DATABASES['default']['ENGINE'] = 'django_prometheus.db.backends.postgresql'
-
+MIDDLEWARE += ['userservice.user.UserServiceMiddleware']
 
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'supporttools.context_processors.supportools_globals',
