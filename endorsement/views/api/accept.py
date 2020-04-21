@@ -1,7 +1,5 @@
 import logging
 import json
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
 from endorsement.dao.endorse import (
@@ -17,13 +15,12 @@ class Accept(RESTDispatch):
     """
     validate accept request
     """
-    @method_decorator(login_required)
+
     def post(self, request, *args, **kwargs):
         timer = Timer()
 
         try:
-            accept = json.loads(request.read())
-            accept_id = accept['accept_id']
+            accept_id = request.data['accept_id']
         except KeyError:
             return invalid_session(logger, timer)
 

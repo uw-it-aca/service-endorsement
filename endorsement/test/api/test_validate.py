@@ -21,10 +21,13 @@ class TestEndorsementValidateAPI(EndorsementApiTest):
         self.set_user('jfaculty')
 
         url = reverse('validate_api')
+        data = json.dumps({
+            "netids": [
+                "endorsee7"
+            ]
+        })
 
-        response = self.client.post(
-            url, '["endorsee7"]',
-            content_type='application/x-www-form-urlencoded; charset=UTF-8')
+        response = self.client.post(url, data, content_type='application/json')
         self.assertEquals(response.status_code, 200)
 
         data = json.loads(response.content)

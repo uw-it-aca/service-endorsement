@@ -19,6 +19,15 @@ if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
                        'u_acadev_provision_support'],
     }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+}
+
 if not os.getenv("ENV") == "localdev":
     INSTALLED_APPS += ['rc_django',]
     RESTCLIENTS_DAO_CACHE_CLASS = 'endorsement.cache.ProvisionCache'
@@ -26,22 +35,15 @@ if not os.getenv("ENV") == "localdev":
         APP_SERVER_BASE = 'https://provision.uw.edu'
 
 INSTALLED_APPS += [
-    'django_prometheus',
     'webpack_loader',
     'endorsement',
     'userservice',
     'django_client_logger',
-    'supporttools'
+    'supporttools',
+    'rest_framework.authtoken',
 ]
 
-MIDDLEWARE = ['django_prometheus.middleware.PrometheusBeforeMiddleware'] +\
-             MIDDLEWARE +\
-             ['userservice.user.UserServiceMiddleware',
-              'django_prometheus.middleware.PrometheusAfterMiddleware']
-
-if not os.getenv("ENV") == "localdev":
-    DATABASES['default']['ENGINE'] = 'django_prometheus.db.backends.postgresql'
-
+MIDDLEWARE += ['userservice.user.UserServiceMiddleware']
 
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'supporttools.context_processors.supportools_globals',

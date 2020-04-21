@@ -1,25 +1,23 @@
 import logging
-from django.conf import settings
-from django.utils.decorators import method_decorator
 from django.utils import timezone
-from uw_saml.decorators import group_required
-from endorsement.models import Endorser, Endorsee, EndorsementRecord
+from endorsement.models import EndorsementRecord
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time, log_data_error_response
 from endorsement.views.rest_dispatch import RESTDispatch
 from datetime import date, time, datetime, timedelta
+from endorsement.util.auth import AdminGroupAuthentication
 import re
 
 
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(
-    group_required(settings.PROVISION_ADMIN_GROUP), name='dispatch')
 class Statistics(RESTDispatch):
     """
     Show endorsements for endorsee
     """
+    authentication_classes = [AdminGroupAuthentication]
+
     def get(self, request, *args, **kwargs):
         timer = Timer()
 

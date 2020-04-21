@@ -120,9 +120,8 @@ var Renew = (function () {
 
         $.ajax({
             url: "/api/v1/endorse/",
-            dataType: "JSON",
-            data: JSON.stringify(renewees),
-            type: "POST",
+            data: JSON.stringify({'endorsees': renewees }),
+            contentType: "application/json",
             accepts: {html: "application/json"},
             headers: {
                 "X-CSRFToken": csrf_token

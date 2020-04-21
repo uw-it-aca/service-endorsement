@@ -40,9 +40,9 @@ var acceptEndorsement = function () {
 
     $.ajax({
         url: "/api/v1/accept/",
-        dataType: "JSON",
-        data: JSON.stringify({ "accept_id": window.endorsement.accept_id }),
         type: "POST",
+        data: JSON.stringify({ "accept_id": window.endorsement.accept_id }),
+        contentType: "application/json",
         accepts: {html: "application/json"},
         headers: {
             "X-CSRFToken": csrf_token

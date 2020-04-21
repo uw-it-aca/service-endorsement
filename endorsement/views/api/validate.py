@@ -1,8 +1,5 @@
 import logging
-import json
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
 from endorsement.dao.user import (
@@ -26,7 +23,6 @@ class Validate(RESTDispatch):
     """
     Validate provided endorsement list
     """
-    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         timer = Timer()
 
@@ -38,8 +34,7 @@ class Validate(RESTDispatch):
             return invalid_endorser(logger, timer)
 
         endorser = get_endorser_model(netid)
-
-        netids = json.loads(request.read())
+        netids = request.data.get('netids', [])
         validated = {
             'endorser': endorser.json_data(),
             'validated': []
