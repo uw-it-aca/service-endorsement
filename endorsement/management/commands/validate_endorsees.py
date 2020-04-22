@@ -30,14 +30,18 @@ class Command(BaseCommand):
                 endorsee__netid__in=netids,
                 category_code__in=categories):
             if e.is_deleted:
-                if is_endorsed(e):
-                    logger.info(
-                        ('Ineligible endorsee reported {} with {} by {} but' +
-                         ' is active').format(e.endorsee.netid,
-                                              e.category_code,
-                                              e.endorser.netid))
-                else:
-                    continue
+                try:
+                    if is_endorsed(e):
+                        logger.info(
+                            ('Ineligible endorsee reported {} with {} by {}' +
+                             ' but is active').format(e.endorsee.netid,
+                                                      e.category_code,
+                                                      e.endorser.netid))
+                    else:
+                        continue
+                except Exception as ex:
+                    logger.error("Query endorsed {} with {}: {}".format(
+                        e.endorsee.netid, e.category_code, ex))
 
             logger.info(
                 'Ineligible endorsee: {} with {} by {} revoked'.format(
