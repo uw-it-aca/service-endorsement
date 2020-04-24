@@ -30,7 +30,13 @@ class Command(BaseCommand):
 
         if len(endorsements):
             for e in endorsements:
-                clear_endorsement(e)
+                try:
+                    clear_endorsement(e)
+                except Exception as ex:
+                    logger.error(
+                        "Cannot clear endorsement {} for {} by {}: {}".format(
+                            e.category_code, e.endorsee.netid,
+                            e.endorser.netid, ex))
 
             body = loader.render_to_string('email/expired_endorsee.txt',
                                            {
