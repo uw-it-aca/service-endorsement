@@ -13,7 +13,7 @@ def handel_err(logger, message, stacktrace):
     if isinstance(exc_value, InvalidNetID):
         return False
     if isinstance(exc_value, DataFailureException) and\
-            exc_value.status == 404:
+            exc_value.status in [404, 409]:
         return False
     raise
 

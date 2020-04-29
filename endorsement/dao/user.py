@@ -1,6 +1,5 @@
 import logging
 from django.utils import timezone
-from django.db import IntegrityError, transaction
 from endorsement.models.core import Endorser, Endorsee, EndorseeEmail
 from uw_uwnetid.models import Category
 from endorsement.dao.gws import is_valid_endorser
