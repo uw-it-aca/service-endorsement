@@ -120,6 +120,7 @@ var Renew = (function () {
 
         $.ajax({
             url: "/api/v1/endorse/",
+            type: "POST",
             data: JSON.stringify({'endorsees': renewees }),
             contentType: "application/json",
             accepts: {html: "application/json"},
