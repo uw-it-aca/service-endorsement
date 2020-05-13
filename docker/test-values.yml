@@ -3,11 +3,11 @@ ingress:
   type: nginx
   tls:
     test-prt:
-      secretName: test.provision.uw.edu-81d5204cb79db9dc4f5489b6da81fa4a
+      secretName: test.provision.uw.edu-ingress-cert
       hosts:
         - test.provision.uw.edu
     prt-test:
-      secretName: provision-test.uw.edu
+      secretName: provision-test.uw.edu-ingress-cert
       hosts:
         - provision-test.uw.edu
   hosts:
@@ -19,10 +19,8 @@ ingress:
       host: provision-test.uw.edu
       paths:
         - "/"
-    prt-test-aca-aws:
-      host: prt-test.aca-aws.s.uw.edu
-      paths:
-        - "/"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
 database:
   engine: postgres
   name: uw_service_endorsement

@@ -3,7 +3,7 @@ ingress:
   type: nginx
   tls:
     prt-prod:
-      secretName: provision.uw.edu-ingress-1797eb351d9c0b9327e60afd48c1c16a
+      secretName: provision.uw.edu-ingress-cert
       hosts:
         - provision.uw.edu
   hosts:
@@ -11,6 +11,8 @@ ingress:
       host: provision.uw.edu
       paths: 
         - "/"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
 database:
   engine: postgres
   name: uw_service_endorsement
