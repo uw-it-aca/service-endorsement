@@ -81,11 +81,10 @@ RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
 SUPPORTTOOLS_PARENT_APP = "PRT"
 SUPPORTTOOLS_PARENT_APP_URL = "/"
 
-EMAIL_HOST = 'smtp.uw.edu'
+EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = 587
-EMAIL_HOST_USER=os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD=os.getenv('EMAIL_HOST_PASSWORD', '')
-EMAIL_USE_TLS=True
+EMAIL_SSL_CERTFILE = os.getenv('CERT_PATH', '')
+EMAIL_SSL_KEYFILE = os.getenv('KEY_PATH', '')
 if os.getenv("SAFE_EMAIL_RECIPIENT", None):
     SAFE_EMAIL_RECIPIENT = os.getenv("SAFE_EMAIL_RECIPIENT")
     EMAIL_BACKEND = 'saferecipient.EmailBackend'

@@ -1,3 +1,7 @@
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
 ingress:
   enabled: true
   type: nginx
