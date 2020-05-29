@@ -122,13 +122,9 @@ environmentVariables:
 environmentVariablesSecrets:
   djangoSecret:
     name: DJANGO_SECRET
-    secretName: prt-test-django-secret
+    secretName: test.provision.uw.edu-secrets
     secretKey: django-secret
-  emailHostUser:
-    name: EMAIL_HOST_USER
-    secretName: email-post-credentials
-    secretKey: username
-  emailHostPassword:
-    name: EMAIL_HOST_PASSWORD
-    secretName: email-post-credentials
-    secretKey: password
+  emailHost:
+    name: EMAIL_HOST
+    secretName: test.provision.uw.edu-secrets
+    secretKey: email-host
