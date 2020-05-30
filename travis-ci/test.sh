@@ -10,11 +10,6 @@ trap 'exit 1' ERR
 # start virtualenv
 source bin/activate
 
-# install test tooling
-pip install pycodestyle coverage
-apt-get install -y nodejs npm
-npm install -g jshint
-
 function run_test {
     echo "##########################"
     echo "TEST: $1"

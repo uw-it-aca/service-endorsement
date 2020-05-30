@@ -1,4 +1,4 @@
-FROM acait/django-container:1.0.24 as django
+FROM acait/django-container:1.0.30 as app-container
 
 USER root
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
@@ -21,8 +21,13 @@ WORKDIR /app/
 RUN npm install .
 RUN npx webpack --mode=production
 
-FROM django
+FROM app-container
 
 COPY --chown=acait:acait --from=wpack /app/endorsement/static/endorsement/bundles/* /app/endorsement/static/endorsement/bundles/
 COPY --chown=acait:acait --from=wpack /app/endorsement/static/ /static/
 COPY --chown=acait:acait --from=wpack /app/endorsement/static/webpack-stats.json /app/endorsement/static/webpack-stats.json
+
+FROM acait/django-test-container:1.0.30 as app-test-container
+
+COPY --from=0 /app/ /app/
+COPY --from=0 /static/ /static/
