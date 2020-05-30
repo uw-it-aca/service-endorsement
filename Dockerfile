@@ -29,5 +29,5 @@ COPY --chown=acait:acait --from=wpack /app/endorsement/static/webpack-stats.json
 
 FROM acait/django-test-container:1.0.30 as app-test-container
 
-COPY --from=0 /app/ /app/
-COPY --from=0 /static/ /static/
+COPY --from=app-container /app/ /app/
+COPY --from=app-container /static/ /static/
