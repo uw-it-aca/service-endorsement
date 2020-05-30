@@ -1,4 +1,4 @@
-FROM acait/django-container:1.0.30 as app-container
+FROM acait/django-container:1.0.30 as app-prewebpack-container
 
 USER root
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
@@ -21,7 +21,7 @@ WORKDIR /app/
 RUN npm install .
 RUN npx webpack --mode=production
 
-FROM app-container
+FROM app-prewebpack-container as app-container
 
 COPY --chown=acait:acait --from=wpack /app/endorsement/static/endorsement/bundles/* /app/endorsement/static/endorsement/bundles/
 COPY --chown=acait:acait --from=wpack /app/endorsement/static/ /static/
