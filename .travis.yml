@@ -22,22 +22,38 @@ env:
     - secure: "Y1m4SOU89RMw1d/kKRzy4JHJTv3m7VGxfaW/mum3UHtNpZQlZjXkadPftmCjdqFOow7YIJNFh5KrTtYFKqYfAn2YVYsh7kRj9a3n3hNKpR666kgMjiKSEC0rDKCfetSDpdlOkh3TyxDBqpBAdE2XwMxabBcMJfx0JEqSR14HpmBmpvJl+5kjmjhD5B9Wdg3pC9ANkiBDf+p7TnV+20reYy9kIYwYpWVxAdm+hSuZX05YoK99hucfR4lYQxfWx3KIR3cmvQJK0adOzBYstPv6VYei+HM9jmz6iNImy6J3yOlBhPEnl2BjB1Z13lXkwlHjHLuWnV2KflvKn4PgNvRD/kRx5y3cEfqfgrnaEMG0tI3tzLDoC+5v2aU127WxeKyO5ZPNL16mqLbYOZ3XBEAkX3W/gSGFT6D43XY+/Fs7LVqrEObwwdPM3RwqimxVY4kuRjQ4EvJEAsT/Ws1pN76oE/i+CWYdvwl5GGj1frBgAtkTI8hvBc1nXTICehvcPsiXwKCG05DrwFm5Gg+LHhT7+2ZHZ1eTK0eYuqFsoPSYdlyX5nmCvf//drL2mbDz7mLN3yjSHtMD3MOXaI89i/uPY1M4hO1tXNUlrEfJv9l10M1zs2s3ez2Uw5+wu2bkaHtj7VKeUscsCb0qdTD01YuXkJtsGFkuv2S4jdKwtxUlAB8="
 
 install:
-  - docker build -t "$IMAGE_TAG" .
+  - docker build --target app-container -t "$IMAGE_TAG" .
+  - docker build -t app-test-container .
 
 before_script:
   - pip install coverage
   - pip install coveralls
 
 script:
-  - docker run -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK" "$IMAGE_TAG" bash -c ". ./travis-ci/test.sh"
+  - docker run -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK" app-test-container bash -c ". ./travis-ci/test.sh"
 
 after_success:
   - cp /tmp/.coverage.* .
   - coverage combine
   - coveralls
-  - if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [[ "$TRAVIS_BRANCH" =~ ^(develop|master)$ ]]; then
-    curl -Ls ${DEPLOY_SCRIPT_BASE}/travis-ci/deploy.sh | bash;
+  - |
+    if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+      case "$TRAVIS_BRANCH" in
+        "master")
+          export APP_INSTANCE="prod";
+          ;;
+        "develop")
+          export APP_INSTANCE="test";
+          ;;
+        *)
+          unset APP_INSTANCE
+          ;;
+      esac
+      if [[ "$APP_INSTANCE" ]]; then
+        curl -Ls ${DEPLOY_SCRIPT_BASE}/travis-ci/deploy.sh | bash;
+      fi
     fi
+
 
 cache:
   directories:
