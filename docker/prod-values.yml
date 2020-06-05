@@ -53,31 +53,40 @@ cronjob:
   jobs:
     - name: expire-endorsees
       schedule: "5 8 * * *"
-      command: [/scripts/management_command.sh expire_endorsees]
+      command: ["/scripts/management_command.sh"]
+      args: ["expire_endorsees"]
     - name: expiration-notice-1
       schedule: "10 8 * * *"
-      command: [/scripts/management_command.sh expiration_notice 1]
+      command: ["/scripts/management_command.sh"]
+      args: ["expiration_notice", "1"]
     - name: expiration-notice-2
       schedule: "20 8 * * *"
-      command: [/scripts/management_command.sh expiration_notice 2]
+      command: ["/scripts/management_command.sh"]
+      args: ["expiration_notice", "2"]
     - name: expiration-notice-3
       schedule: "30 8 * * *"
-      command: [/scripts/management_command.sh expiration_notice 3]
+      command: ["/scripts/management_command.sh"]
+      args: ["expiration_notice", "3"]
     - name: expiration-notice-4
       schedule: "40 8 * * *"
-      command: [/scripts/management_command.sh expiration_notice 4]
+      command: ["/scripts/management_command.sh"]
+      args: ["expiration_notice", "4"]
     - name: validate-endorsees
       schedule: "10 12 * * *"
-      command: [/scripts/management_command.sh validate_endorsees]
+      command: ["/scripts/management_command.sh"]
+      args: ["validate_endorsees"]
     - name: validate-endorsers
       schedule: "25 12 * * *"
-      command: [/scripts/management_command.sh validate_endorsers]
+      command: ["/scripts/management_command.sh"]
+      args: ["validate_endorsers"]
     - name: notify-endorsees
       schedule: "*/2 * * * *"
-      command: [/scripts/management_command.sh notify_endorsees]
+      command: ["/scripts/management_command.sh"]
+      args: ["notify_endorsees"]
     - name: validate-shared-owners
       schedule: "15 11 * * *"
-      command: [/scripts/management_command.sh validate_shared_endorsers]
+      command: ["/scripts/management_command.sh"]
+      args: ["validate_shared_endorsers"]
 certs:
   mounted: true
   certPath: /certs/provision.uw.edu-uwca.cert
