@@ -120,7 +120,7 @@ externalSecrets:
   enabled: true
   secrets:
     - name: test.provision.uw.edu-secrets
-      externalKey: axdd/provision/test/secrets
+      externalKey: axdd/kv/provision/test/secrets
       data:
         - name: django-secret
           property: django-secret
