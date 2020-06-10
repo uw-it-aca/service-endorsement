@@ -19,7 +19,7 @@ database:
   engine: postgres
   name: uw_service_endorsement
   hostname: provision-db-test-service
-  secretName: provision-db-test
+  secretName: test.provision.uw.edu-sql-secret
 externalService:
   enabled: true
   name: provision-db-test-service
@@ -126,6 +126,13 @@ externalSecrets:
           property: django-secret
         - name: email-host
           property: email-host
+    - name: test.provision.uw.edu-sql-secret
+      externalKey: axdd/kv/provision/test/sql-secret
+      data:
+        - name: username
+          property: sql_user
+        - name: password
+          property: sql_pass
 environmentVariablesSecrets:
   djangoSecret:
     name: DJANGO_SECRET
