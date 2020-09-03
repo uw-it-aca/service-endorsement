@@ -8,7 +8,10 @@ from endorsement.dao.endorse import (
     initiate_office365_endorsement, store_office365_endorsement,
     clear_office365_endorsement,
     initiate_google_endorsement, store_google_endorsement,
-    clear_google_endorsement, get_endorsements_for_endorsee)
+    clear_google_endorsement,
+    initiate_canvas_endorsement, store_canvas_endorsement,
+    clear_canvas_endorsement,
+    get_endorsements_for_endorsee)
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
@@ -25,6 +28,24 @@ class Endorse(RESTDispatch):
     """
     Validate provided endorsement list
     """
+    _store_endorsement = {
+        'o365': store_office365_endorsement,
+        'google': store_google_endorsement,
+        'canvas': store_canvas_endorsement
+    }
+
+    _initiate_endorsement = {
+        'o365': initiate_office365_endorsement,
+        'google': initiate_google_endorsement,
+        'canvas': initiate_canvas_endorsement
+    }
+
+    _clear_endorsement = {
+        'o365': clear_office365_endorsement,
+        'google': clear_google_endorsement,
+        'canvas': clear_canvas_endorsement
+    }
+
     def post(self, request, *args, **kwargs):
         timer = Timer()
 
@@ -65,98 +86,14 @@ class Endorse(RESTDispatch):
                     endorsements['email'] = get_endorsee_email_model(
                         endorsee, endorser, email=to_endorse['email']).email
 
-                try:
-                    e = None
-                    if to_endorse['o365']['state']:
-                        reason = to_endorse['o365']['reason']
-                        if to_endorse.get('store', False):
-                            e = store_office365_endorsement(
-                                endorser, endorsee, acted_as, reason)
-                        else:
-                            e = initiate_office365_endorsement(
-                                endorser, endorsee, reason)
+                self._endorse(to_endorse, 'o365', endorser, endorser_json,
+                              endorsee, acted_as, endorsements['endorsements'])
 
-                        endorsements['endorsements']['o365'] = e.json_data()
-                        endorsements['endorsements']['o365']['endorsed'] = True
-                        endorsements['endorsements']['o365']['reason'] = reason
-                    else:
-                        try:
-                            e = clear_office365_endorsement(endorser, endorsee)
-                            endorsements['endorsements'][
-                                'o365'] = e.json_data()
-                        except NoEndorsementException as ex:
-                            endorsements['endorsements']['o365'] = {
-                                'endorser': endorser_json,
-                                'endorsee': endorsee.json_data(),
-                                'endorsed': False
-                            }
+                self._endorse(to_endorse, 'google', endorser, endorser_json,
+                              endorsee, acted_as, endorsements['endorsements'])
 
-                    if e:
-                        endorsers = []
-                        for ee in get_endorsements_for_endorsee(
-                                endorsee, category_code=e.category_code):
-                            endorsers.append(ee.endorser.json_data())
-
-                        endorsements['endorsements']['o365'][
-                            'endorsers'] = endorsers
-                except KeyError as ex:
-                    if ex.args[0] == 'reason':
-                        raise MissingReasonException()
-                except (CategoryFailureException,
-                        SubscriptionFailureException) as ex:
-                    endorsements['endorsements']['o365'] = {
-                        'endorser': endorser_json,
-                        'endorsee': endorsee.json_data(),
-                        'error': "{0}".format(ex)
-                    }
-
-                try:
-                    e = None
-                    if to_endorse['google']['state']:
-                        reason = to_endorse['google']['reason']
-                        if to_endorse.get('store', False):
-                            e = store_google_endorsement(
-                                endorser, endorsee, acted_as, reason)
-                        else:
-                            e = initiate_google_endorsement(
-                                endorser, endorsee, reason)
-
-                        endorsements['endorsements'][
-                            'google'] = e.json_data()
-                        endorsements['endorsements'][
-                            'google']['endorsed'] = True
-                        endorsements['endorsements'][
-                            'google']['reason'] = reason
-                    else:
-                        try:
-                            e = clear_google_endorsement(endorser, endorsee)
-                            endorsements['endorsements'][
-                                'google'] = e.json_data()
-                        except NoEndorsementException as ex:
-                            endorsements['endorsements']['google'] = {
-                                'endorser': endorser_json,
-                                'endorsee': endorsee.json_data(),
-                                'endorsed': False
-                            }
-
-                    if e:
-                        endorsers = []
-                        for ee in get_endorsements_for_endorsee(
-                                endorsee, category_code=e.category_code):
-                            endorsers.append(ee.endorser.json_data())
-
-                        endorsements['endorsements']['google'][
-                            'endorsers'] = endorsers
-                except KeyError as ex:
-                    if ex.args[0] == 'reason':
-                        raise MissingReasonException()
-                except (CategoryFailureException,
-                        SubscriptionFailureException) as ex:
-                    endorsements['endorsements']['google'] = {
-                        'endorser': endorser_json,
-                        'endorsee': endorsee.json_data(),
-                        'error': "{0}".format(ex)
-                    }
+                self._endorse(to_endorse, 'canvas', endorser, endorser_json,
+                              endorsee, acted_as, endorsements['endorsements'])
 
             except InvalidNetID as ex:
                 endorsements = {
@@ -183,3 +120,49 @@ class Endorse(RESTDispatch):
             endorsed['endorsed'][endorsee_netid] = endorsements
 
         return self.json_response(endorsed)
+
+    def _endorse(self, to_endorse, service_tag, endorser, endorser_json,
+                 endorsee, acted_as, endorsements):
+        try:
+            e = None
+            if to_endorse[service_tag]['state']:
+                reason = to_endorse[service_tag]['reason']
+                if to_endorse.get('store', False):
+                    e = self._store_endorsement[service_tag](
+                        endorser, endorsee, acted_as, reason)
+                else:
+                    e = self._initiate_endorsement[service_tag](
+                        endorser, endorsee, reason)
+
+                endorsements[service_tag] = e.json_data()
+                endorsements[service_tag]['endorsed'] = True
+                endorsements[service_tag]['reason'] = reason
+            else:
+                try:
+                    e = self._clear_endorsement[service_tag](
+                        endorser, endorsee)
+                    endorsements[service_tag] = e.json_data()
+                except NoEndorsementException as ex:
+                    endorsements[service_tag] = {
+                        'endorser': endorser_json,
+                        'endorsee': endorsee.json_data(),
+                        'endorsed': False
+                    }
+
+            if e:
+                endorsers = []
+                for ee in get_endorsements_for_endorsee(
+                        endorsee, category_code=e.category_code):
+                    endorsers.append(ee.endorser.json_data())
+
+                endorsements[service_tag]['endorsers'] = endorsers
+        except KeyError as ex:
+            if ex.args[0] == 'reason':
+                raise MissingReasonException()
+        except (CategoryFailureException,
+                SubscriptionFailureException) as ex:
+            endorsements[service_tag] = {
+                'endorser': endorser_json,
+                'endorsee': endorsee.json_data(),
+                'error': "{0}".format(ex)
+            }

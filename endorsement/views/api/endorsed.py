@@ -41,6 +41,8 @@ class Endorsed(RESTDispatch):
                 endorsement_type = 'o365'
             elif er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
                 endorsement_type = 'google'
+            elif er.category_code == EndorsementRecord.CANVAS_PROVISIONEE:
+                endorsement_type = 'canvas'
             else:
                 continue
 
@@ -58,6 +60,10 @@ class Endorsed(RESTDispatch):
                             'google': {
                                 'category_name': category_choices[
                                     EndorsementRecord.GOOGLE_SUITE_ENDORSEE]
+                            },
+                            'canvas': {
+                                'category_name': category_choices[
+                                    EndorsementRecord.CANVAS_PROVISIONEE]
                             }
                         }
                     }
