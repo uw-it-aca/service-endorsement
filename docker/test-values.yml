@@ -17,14 +17,14 @@ readiness:
   enabled: true
 database:
   engine: postgres
-  name: uw_service_endorsement
+  name: uw_service_endorsement_test
   hostname: provision-db-test-service
   secretName: test.provision.uw.edu-sql-secret
 externalService:
   enabled: true
   name: provision-db-test-service
   type: ClusterIP
-  serviceAddress: 172.18.1.14
+  serviceAddress: 172.18.1.16
   servicePort: 5432
 repo: prt
 instance: test
