@@ -75,15 +75,15 @@ class Validate(RESTDispatch):
                         break
 
                 valid['endorsements']['o365'] = self._endorsement(
-                    endorser, endorsee, endorsements,
+                    endorser, endorsee, is_office365_permitted, endorsements,
                     EndorsementRecord.OFFICE_365_ENDORSEE)
 
                 valid['endorsements']['google'] = self._endorsement(
-                    endorser, endorsee, endorsements,
+                    endorser, endorsee, is_google_permitted, endorsements,
                     EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
                 valid['endorsements']['canvas'] = self._endorsement(
-                    endorser, endorsee, endorsements,
+                    endorser, endorsee, is_canvas_permitted, endorsements,
                     EndorsementRecord.CANVAS_PROVISIONEE)
 
             except UnrecognizedUWNetid as ex:
@@ -121,10 +121,10 @@ class Validate(RESTDispatch):
 
         return self.json_response(validated)
 
-    def _endorsement(self, endorser, endorsee,
+    def _endorsement(self, endorser, endorsee, is_permitted,
                      endorsements, endorsement_category):
         try:
-            active, endorsed = is_canvas_permitted(endorser, endorsee)
+            active, endorsed = is_permitted(endorser, endorsee)
             endorsement = {
                 'category_name': dict(
                     EndorsementRecord.CATEGORY_CODE_CHOICES)[
@@ -136,7 +136,7 @@ class Validate(RESTDispatch):
 
             for e in endorsements:
                 if (e.category_code == endorsement_category):
-                    endorsements['endorsers'].append(e.endorser.json_data())
+                    endorsement['endorsers'].append(e.endorser.json_data())
 
         except Exception as ex:
             endorsement = {
