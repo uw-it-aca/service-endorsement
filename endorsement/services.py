@@ -50,4 +50,3 @@ def endorsement_service_keys(keys, shared=False):
                 endorsement_services[k][key] = v[key]
 
     return endorsement_services
-
