@@ -43,27 +43,39 @@ var Renew = (function () {
             context = {
                 renewal_date: moment().add(1, 'Y').format('MM/DD/YYYY'),
                 unique: [],
+
+
                 renew_o365: [],
                 renew_google: [],
                 renew_netid_count: 0
             };
+
+        $.each(window.endorsed_services, function(k, v) {
+            context['services'][k] = {
+                'renew': []
+            };
+        });
 
         $.each(renewed, function (netid, services) {
             if (context.unique.indexOf(netid) < 0) {
                 context.unique.push(netid);
             }
 
-            if (services.endorsements.hasOwnProperty('o365')) {
-                context.renew_o365.push({
-                    netid: netid
+            $.each(window.endorsed_services, function(k, v) {
+                $.each(services, function(s) {
+                    if (services.endorsements.hasOwnProperty(k)) {
+                        context.services[k].renew.push({
+                            netid: netid
+                        });
+                    }
                 });
-            }
+            });
+        });
 
-            if (services.endorsements.hasOwnProperty('google')) {
-                context.renew_google.push({
-                    netid: netid
-                });
-            }
+        context['netid_count'] = context.unique.length
+
+        $.each(context['services'], function(k) {
+            context.services[k]['count'] = context.services[k].renew.length;
         });
 
         $('.modal-content', $modal).html(template(context));
@@ -76,12 +88,15 @@ var Renew = (function () {
             context = {
                 renewer: window.user.netid,
                 unique: [],
-                renew_o365: [],
-                renew_google: [],
-                renew_netid_count: 0,
-                renew_o365_netid_count: 0,
-                renew_google_netid_count: 0
+                services: {}
             };
+
+        $.each(window.endorsed_services, function(k, v) {
+            context['services'][k] = {
+                'name': v.name,
+                'renew': []
+            };
+        });
 
         $rows.each(function (i, row) {
             var $row = $(row),
@@ -95,19 +110,16 @@ var Renew = (function () {
                 context.unique.push(netid);
             }
 
-            if (service === 'o365') {
-                context.renew_o365.push({
-                    netid: netid,
-                    email: email
-                });
-            }
+            context['services'][service].renew.push({
+                netid: netid,
+                email: email
+            });
+        });
 
-            if (service === 'google') {
-                context.renew_google.push({
-                    netid: netid,
-                    email: email
-                });
-            }
+        context['netid_count'] = context.unique.length
+
+        $.each(context['services'], function(k) {
+            context.services[k]['count'] = context.services[k].renew.length;
         });
 
         return context;

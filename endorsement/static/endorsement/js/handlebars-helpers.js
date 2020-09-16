@@ -6,8 +6,7 @@ $(window.document).ready(function() {
         'endorsement_row_partial': $("#endorsement_row_partial").html(),
         'endorse_button_partial': $("#endorse_button_partial").html(),
         'display_filter_partial': $("#display_filter_partial").html(),
-        'email_editor_partial': $("#email_editor_partial").html(),
-        'enumerate_partial': $("#enumerate_partial").html()
+        'email_editor_partial': $("#email_editor_partial").html()
     });
 
     Handlebars.registerHelper({

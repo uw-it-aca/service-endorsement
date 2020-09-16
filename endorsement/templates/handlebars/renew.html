@@ -25,8 +25,9 @@
   <div class="renew-acceptance container col-md-12">
     <div class="row">
       You are about to renew access to <ul class="comma-list">
-        {{#if renew_google.length}}<li class="significant">UW G Suite</li>{{/if}}
-        {{#if renew_o365.length}}<li class="significant">UW Office 365</li>{{/if}}
+        {{#each services}}
+        {{#if this.count}}<li class="significant">{{this.name}}</li>{{/if}}
+        {{/each}}
       </ul> for {{#gt unique.length 1}}{{unique.length}} {{/gt}}UW NetID{{plural unique.length '' 's'}}{{#gt unique.length 1}}{{else}} <ul class="comma-list">{{#each unique}}<li class="significant">{{this}}</li>{{/each}}</ul>{{/gt}}.
     </div>
     <div class="row">
@@ -35,8 +36,9 @@
     <div class="row">
       The use of
       <ul class="comma-list">
-        {{#if renew_google.length }}<li class="significant">UW G Suite</li>{{/if}}
-        {{#if renew_o365.length }}<li class="significant">UW Office 365</li>{{/if}}
+        {{#each services}}
+        {{#if this.count}}<li class="significant">{{this.name}}</li>{{/if}}
+        {{/each}}
       </ul>
         by any indivual is bound by UW's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures.  For more information, visit UW's Appropriate Use page at <a href="https://itconnect.uw.edu/work/appropriate-use/" target="_blank">https://itconnect.uw.edu/work/appropriate-use/</a>.
     </div>
