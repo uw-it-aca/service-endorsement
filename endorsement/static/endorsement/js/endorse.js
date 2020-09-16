@@ -48,8 +48,8 @@ var Endorse = (function () {
         };
 
         $.each(window.endorsed_services, function(k, v) {
-            context['services'][k] = {
-                'name': v.name,
+            context.services[k] = {
+                'name': v.category_name,
                 'endorsed': []
             };
         });
@@ -66,16 +66,16 @@ var Endorse = (function () {
                 context.unique.push(netid);
             }
 
-            context['services'][service].endorsed.push({
+            context.services[service].endorsed.push({
                 netid: netid,
                 email: email
             });
         });
 
-        context['netid_count'] = context.unique.length
+        context.netid_count = context.unique.length;
 
-        $.each(context['services'], function(k) {
-            context.services[k]['count'] = context.services[k].endorsed.length;
+        $.each(context.services, function(k) {
+            context.services[k].count = context.services[k].endorsed.length;
         });
 
         return context;

@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
 from userservice.user import UserService
-from endorsement.models import EndorsementRecord
+from endorsement.services import endorsement_service_keys
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time
@@ -33,24 +33,10 @@ def index(request):
             "user": {
                 "netid": netid,
                 "session_key": session_key,
-            }
+            },
+            'services': json.dumps(endorsement_service_keys(
+                ['category_code', 'category_name']))
         }
-
-        choices = dict(EndorsementRecord.CATEGORY_CODE_CHOICES)
-        context['services'] = json.dumps({
-            'o365': {
-                'category': EndorsementRecord.OFFICE_365_ENDORSEE,
-                'name': choices[EndorsementRecord.OFFICE_365_ENDORSEE]
-            },
-            'google': {
-                'category': EndorsementRecord.GOOGLE_SUITE_ENDORSEE,
-                'name': choices[EndorsementRecord.GOOGLE_SUITE_ENDORSEE]
-            },
-            'canvas': {
-                'category': EndorsementRecord.CANVAS_PROVISIONEE,
-                'name': choices[EndorsementRecord.CANVAS_PROVISIONEE]
-            }
-        })
 
         if not is_valid_endorser(netid):
             context["auth_failure"] = "provisioner"

@@ -10,15 +10,28 @@
 <div class="modal-body">
   <div>
     You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. Access to
-    <ul class="comma-list">{{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}{{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}</ul> for the{{#gt unique.length 1}} {{ unique.length }}{{/gt}}UW NetID{{plural unique.length '' 's'}} {{#gt unique.length 1}}{{else}} <ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/gt}} has been provisioned.
+    <ul class="comma-list">
+    {{#each service}}
+    {{#if this.count}}<li>{{this.name}}</li>
+    {{/each}}</ul>
+    for the{{#gt netid_count 1}} {{ netid_count }} {{/gt}}UW NetID{{plural netid_count '' 's'}} {{#gt this.count 1}}{{else}} <ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/gt}} has been provisioned.
   </div>
-  <br /> 
-  {{#if endorse_o365_netid_count}}
-  <p><a href="http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/" target="_blank">Get started using UW Office 365</a></p>
-  {{/if}}
-  {{#if endorse_google_netid_count}}
-  <p><a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate" target="_blank">Get started using UW G Suite</a></p>
-  {{/if}}
+  <br />
+  {{#each services}}
+    {{#if this.count}}
+  <p><a
+        {{#equals @key 'o365'}}
+href="http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/"
+        {{/equals}}
+        {{#equals @key 'google'}}
+href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate"
+        {{/equals}}
+        {{#equals @key 'canvas'}}
+href="https://canvas.uw.edu"
+        {{/equals}}
+  target="_blank">Get started using {{this.category_name}}</a></p>
+    {{/if}}
+  {{/each}}
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

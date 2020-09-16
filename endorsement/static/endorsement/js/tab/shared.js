@@ -287,34 +287,33 @@ var ManageSharedNetids = (function () {
             $modal = $('#shared_netid_modal'),
             context = {
                 unique: [],
-                endorse_o365: [],
-                endorse_google: [],
-                endorse_netid_count: 0,
-                endorse_o365_netid_count: 0,
-                endorse_google_netid_count: 0
+                services: {}
             };
 
-        $.each(endorsements, function (netid, services) {
-            if (context.unique.indexOf(netid) < 0) {
-                context.unique.push(netid);
-            }
+        $.each(window.endorsed_services, function(k, v) {
+            context.services[k] = {
+                'name': v.category_name,
+                'endorsed': []
+            };
 
-            if (services.endorsements.hasOwnProperty('o365')) {
-                context.endorse_o365.push({
-                    netid: netid
-                });
-            }
+            $.each(endorsements, function (netid, endorsements) {
+                if (context.unique.indexOf(netid) < 0) {
+                    context.unique.push(netid);
+                }
 
-            if (services.endorsements.hasOwnProperty('google')) {
-                context.endorse_google.push({
-                    netid: netid
-                });
-            }
+                if (endorsements.hasOwnProperty(k)) {
+                    context.services[k].endorsed.push({
+                        netid: netid
+                    });
+                }
+            });
         });
 
-        context.endorse_o365_netid_count = context.endorse_o365.length;
-        context.endorse_google_netid_count = context.endorse_google.length;
-        context.endorse_netid_count = context.endorse_google_netid_count + context.endorse_o365_netid_count;
+        context.netid_count = context.unique.length;
+
+        $.each(context.services, function(k) {
+            context.services[k].count = context.services[k].endorsed.length;
+        });
 
         $('.modal-content', $modal).html(template(context));
         $modal.modal('show');

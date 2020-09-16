@@ -2,16 +2,10 @@ import logging
 from userservice.user import UserService
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model, get_endorsee_email_model)
+from endorsement.services import ENDORSEMENT_SERVICES
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_person
-from endorsement.dao.endorse import (
-    initiate_office365_endorsement, store_office365_endorsement,
-    clear_office365_endorsement,
-    initiate_google_endorsement, store_google_endorsement,
-    clear_google_endorsement,
-    initiate_canvas_endorsement, store_canvas_endorsement,
-    clear_canvas_endorsement,
-    get_endorsements_for_endorsee)
+from endorsement.dao.endorse import get_endorsements_for_endorsee
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
@@ -28,24 +22,6 @@ class Endorse(RESTDispatch):
     """
     Validate provided endorsement list
     """
-    _store_endorsement = {
-        'o365': store_office365_endorsement,
-        'google': store_google_endorsement,
-        'canvas': store_canvas_endorsement
-    }
-
-    _initiate_endorsement = {
-        'o365': initiate_office365_endorsement,
-        'google': initiate_google_endorsement,
-        'canvas': initiate_canvas_endorsement
-    }
-
-    _clear_endorsement = {
-        'o365': clear_office365_endorsement,
-        'google': clear_google_endorsement,
-        'canvas': clear_canvas_endorsement
-    }
-
     def post(self, request, *args, **kwargs):
         timer = Timer()
 
@@ -86,14 +62,11 @@ class Endorse(RESTDispatch):
                     endorsements['email'] = get_endorsee_email_model(
                         endorsee, endorser, email=to_endorse['email']).email
 
-                self._endorse(to_endorse, 'o365', endorser, endorser_json,
-                              endorsee, acted_as, endorsements['endorsements'])
-
-                self._endorse(to_endorse, 'google', endorser, endorser_json,
-                              endorsee, acted_as, endorsements['endorsements'])
-
-                self._endorse(to_endorse, 'canvas', endorser, endorser_json,
-                              endorsee, acted_as, endorsements['endorsements'])
+                for service_tag in ENDORSEMENT_SERVICES.keys():
+                    self._endorse(to_endorse, service_tag,
+                                  endorser, endorser_json,
+                                  endorsee, acted_as,
+                                  endorsements['endorsements'])
 
             except InvalidNetID as ex:
                 endorsements = {
@@ -128,10 +101,10 @@ class Endorse(RESTDispatch):
             if to_endorse[service_tag]['state']:
                 reason = to_endorse[service_tag]['reason']
                 if to_endorse.get('store', False):
-                    e = self._store_endorsement[service_tag](
+                    e = ENDORSEMENT_SERVICES[service_tag]['store'](
                         endorser, endorsee, acted_as, reason)
                 else:
-                    e = self._initiate_endorsement[service_tag](
+                    e = ENDORSEMENT_SERVICES[service_tag]['initiate'](
                         endorser, endorsee, reason)
 
                 endorsements[service_tag] = e.json_data()
@@ -139,7 +112,7 @@ class Endorse(RESTDispatch):
                 endorsements[service_tag]['reason'] = reason
             else:
                 try:
-                    e = self._clear_endorsement[service_tag](
+                    e = ENDORSEMENT_SERVICES[service_tag]['clear'](
                         endorser, endorsee)
                     endorsements[service_tag] = e.json_data()
                 except NoEndorsementException as ex:

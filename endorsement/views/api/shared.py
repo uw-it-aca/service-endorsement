@@ -1,6 +1,6 @@
 import logging
 from userservice.user import UserService
-from endorsement.models import EndorsementRecord
+from endorsement.services import ENDORSEMENT_SERVICES, endorsement_service_keys
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.uwnetid_supported import get_shared_netids_for_netid
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
@@ -39,18 +39,8 @@ class Shared(RESTDispatch):
                     'netid': shared.name,
                     'name': None,
                     'type': shared.netid_type,
-                    'endorsements': {
-                        'o365': {
-                            'category_name': dict(
-                                EndorsementRecord.CATEGORY_CODE_CHOICES)[
-                                    EndorsementRecord.OFFICE_365_ENDORSEE]
-                        },
-                        'google': {
-                            'category_name': dict(
-                                EndorsementRecord.CATEGORY_CODE_CHOICES)[
-                                    EndorsementRecord.GOOGLE_SUITE_ENDORSEE]
-                        }
-                    }
+                    'endorsements': endorsement_service_keys(
+                        ['category_name', 'valid_shared'], shared=True)
                 }
 
                 try:
@@ -62,23 +52,16 @@ class Shared(RESTDispatch):
                     for endorsement in endorsements:
                         if endorsement.endorsee.id == endorsee.id:
                             for er in get_endorsements_for_endorsee(endorsee):
-                                if (EndorsementRecord.OFFICE_365_ENDORSEE ==
-                                        er.category_code):
-                                    e_data = er.json_data()
-                                    e_data['endorser'] = endorser.json_data()
-                                    e_data['endorsers'] = [
-                                        endorser.json_data()
-                                    ]
-                                    data['endorsements']['o365'] = e_data
-
-                                if (EndorsementRecord.GOOGLE_SUITE_ENDORSEE ==
-                                        er.category_code):
-                                    e_data = er.json_data()
-                                    e_data['endorser'] = endorser.json_data()
-                                    e_data['endorsers'] = [
-                                        endorser.json_data()
-                                    ]
-                                    data['endorsements']['google'] = e_data
+                                for svc_tag, v in ENDORSEMENT_SERVICES.items():
+                                    if (er.category == v['category_code'] and
+                                            v['valid_shared']):
+                                        data['endorsements'][svc_tag]\
+                                            = er.json_data()
+                                        data['endorsements'][svc_tag][
+                                            'endorser'] = endorser.json_data()
+                                        data['endorsements'][svc_tag][
+                                            'endorsers'] = [
+                                                endorser.json_data()]
 
                 except (UnrecognizedUWNetid, InvalidNetID):
                     pass

@@ -1,6 +1,6 @@
 import logging
 from userservice.user import UserService
-from endorsement.models import EndorsementRecord
+from endorsement.services import ENDORSEMENT_SERVICES, endorsement_service_keys
 from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.user import get_endorser_model, get_endorsee_email_model
@@ -31,19 +31,17 @@ class Endorsed(RESTDispatch):
 
         endorser = get_endorser_model(netid)
         endorsed = {}
-        category_choices = dict(EndorsementRecord.CATEGORY_CODE_CHOICES)
         for er in get_endorsements_by_endorser(endorser):
             if not er.endorsee.is_person:
                 continue
 
-            endorsement_type = 'unknown'
-            if (er.category_code == EndorsementRecord.OFFICE_365_ENDORSEE):
-                endorsement_type = 'o365'
-            elif er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
-                endorsement_type = 'google'
-            elif er.category_code == EndorsementRecord.CANVAS_PROVISIONEE:
-                endorsement_type = 'canvas'
-            else:
+            service_tag = None
+            for service, v in ENDORSEMENT_SERVICES.items():
+                if (er.category_code == v['category_code']):
+                    service_tag = service
+                    break
+
+            if service_tag is None:
                 continue
 
             try:
@@ -52,27 +50,15 @@ class Endorsed(RESTDispatch):
                         'name': er.endorsee.display_name,
                         'email': get_endorsee_email_model(
                             er.endorsee, endorser).email,
-                        'endorsements': {
-                            'o365': {
-                                'category_name': category_choices[
-                                    EndorsementRecord.OFFICE_365_ENDORSEE]
-                            },
-                            'google': {
-                                'category_name': category_choices[
-                                    EndorsementRecord.GOOGLE_SUITE_ENDORSEE]
-                            },
-                            'canvas': {
-                                'category_name': category_choices[
-                                    EndorsementRecord.CANVAS_PROVISIONEE]
-                            }
-                        }
+                        'endorsements': endorsement_service_keys(
+                            ['category_name'])
                     }
             except UnrecognizedUWNetid as err:
                 logger.error('UnrecognizedUWNetid: {}'.format(err))
                 continue
 
             endorsed[er.endorsee.netid]['endorsements'][
-                endorsement_type] = er.json_data()
+                service_tag] = er.json_data()
 
             endorsers = []
             for ee in get_endorsements_for_endorsee(
@@ -80,7 +66,7 @@ class Endorsed(RESTDispatch):
                 endorsers.append(ee.endorser.json_data())
 
             endorsed[er.endorsee.netid]['endorsements'][
-                endorsement_type]['endorsers'] = endorsers
+                service_tag]['endorsers'] = endorsers
 
         log_resp_time(logger, "endorsed", timer)
         return self.json_response({

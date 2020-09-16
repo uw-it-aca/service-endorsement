@@ -42,16 +42,11 @@ var Renew = (function () {
             $modal = $('#renew_success_modal'),
             context = {
                 renewal_date: moment().add(1, 'Y').format('MM/DD/YYYY'),
-                unique: [],
-
-
-                renew_o365: [],
-                renew_google: [],
-                renew_netid_count: 0
+                unique: []
             };
 
         $.each(window.endorsed_services, function(k, v) {
-            context['services'][k] = {
+            context.services[k] = {
                 'renew': []
             };
         });
@@ -72,10 +67,10 @@ var Renew = (function () {
             });
         });
 
-        context['netid_count'] = context.unique.length
+        context.netid_count = context.unique.length;
 
-        $.each(context['services'], function(k) {
-            context.services[k]['count'] = context.services[k].renew.length;
+        $.each(context.services, function(k) {
+            context.services[k].count = context.services[k].renew.length;
         });
 
         $('.modal-content', $modal).html(template(context));
@@ -83,17 +78,15 @@ var Renew = (function () {
     },
 
     _renewModalContext = function ($rows) {
-        var renew_o365 = [],
-            renew_google = [],
-            context = {
+        var context = {
                 renewer: window.user.netid,
                 unique: [],
                 services: {}
             };
 
         $.each(window.endorsed_services, function(k, v) {
-            context['services'][k] = {
-                'name': v.name,
+            context.services[k] = {
+                'name': v.category_name,
                 'renew': []
             };
         });
@@ -110,16 +103,18 @@ var Renew = (function () {
                 context.unique.push(netid);
             }
 
-            context['services'][service].renew.push({
-                netid: netid,
-                email: email
-            });
+            if (context.services.hasOwnProperty(service)) {
+                context.services[service].renew.push({
+                    netid: netid,
+                    email: email
+                });
+            }
         });
 
-        context['netid_count'] = context.unique.length
+        context.netid_count = context.unique.length;
 
-        $.each(context['services'], function(k) {
-            context.services[k]['count'] = context.services[k].renew.length;
+        $.each(context.services, function(k) {
+            context.services[k].count = context.services[k].renew.length;
         });
 
         return context;
