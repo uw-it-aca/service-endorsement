@@ -2,11 +2,11 @@ import logging
 from django.conf import settings
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
+from endorsement.services import ENDORSEMENT_SERVICES
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model,
     get_endorsee_email_model, is_shared_netid)
 from endorsement.dao.endorse import (
-    is_office365_permitted, is_google_permitted, is_canvas_permitted,
     get_endorsements_for_endorsee, get_endorsements_by_endorser)
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.util.time_helper import Timer
@@ -74,17 +74,10 @@ class Validate(RESTDispatch):
                         valid['reason'] = e.reason
                         break
 
-                valid['endorsements']['o365'] = self._endorsement(
-                    endorser, endorsee, is_office365_permitted, endorsements,
-                    EndorsementRecord.OFFICE_365_ENDORSEE)
-
-                valid['endorsements']['google'] = self._endorsement(
-                    endorser, endorsee, is_google_permitted, endorsements,
-                    EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
-
-                valid['endorsements']['canvas'] = self._endorsement(
-                    endorser, endorsee, is_canvas_permitted, endorsements,
-                    EndorsementRecord.CANVAS_PROVISIONEE)
+                for service_tag, v in ENDORSEMENT_SERVICES.items():
+                    valid['endorsements'][service_tag] = self._endorsement(
+                        endorser, endorsee, v['permitted'],
+                        endorsements, v['category_code'])
 
             except UnrecognizedUWNetid as ex:
                 valid = {
