@@ -53,3 +53,9 @@ def endorsement_service_keys(keys, shared=False):
                 endorsement_services[k][key] = v[key]
 
     return endorsement_services
+
+
+def service_name_list():
+    names = [s['category_name'] for t, s in ENDORSEMENT_SERVICES.items()]
+    return '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
+        len(names) > 1) else names[0]

@@ -9,8 +9,7 @@ from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.exceptions import EmailFailureException
 from endorsement.policy import (
-    endorsements_to_warn, DEFAULT_ENDORSEMENT_LIFETIME, NOTICE_1_DAYS_PRIOR,
-    NOTICE_2_DAYS_PRIOR, NOTICE_3_DAYS_PRIOR, NOTICE_4_DAYS_PRIOR)
+    endorsements_to_warn, DEFAULT_ENDORSEMENT_LIFETIME, NOTICE_1_DAYS_PRIOR)
 import logging
 
 
@@ -176,37 +175,34 @@ def notify_endorsers():
 
 def _create_invalid_endorser_message(endorsements):
     params = {
-        "endorsed": {},
-        "endorser": endorsements[0].endorser.json_data(),
-        "o365_endorsed_count": 0,
-        "google_endorsed_count": 0,
-        "total_endorsed_count": 0
+        "endorsed": {}
     }
 
+    services = {}
     for e in endorsements:
-        data = {
-            'service': e.get_category_code_display(),
-            'reason': e.reason
-        }
+        params['endorser_netid'] = e.endorser.netid
+        for svc_tag, svc in ENDORSEMENT_SERVICES.items():
+            if e.category_code == svc['category_code']:
+                services[svc['category_name']] = 1
+                try:
+                    params['endorsed'][e.endorsee.netid].append(
+                        svc['category_name'])
+                except KeyError:
+                    params['endorsed'][e.endorsee.netid] = [
+                        svc['category_name']]
 
-        try:
-            params['endorsed'][e.endorsee.netid].append(data)
-        except KeyError:
-            params['endorsed'][e.endorsee.netid] = [data]
+    params['services'] = list(services.keys())
 
-        if e.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
-            params['google_endorsed_count'] += 1
-        elif e.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
-            params['o365_endorsed_count'] += 1
-
-    params["total_endorsed_count"] = (params["o365_endorsed_count"] +
-                                      params["google_endorsed_count"])
     subject = "{0}{1}".format(
         "Action Required: Services that you provisioned for other ",
         "UW NetIDs will be revoked soon")
 
     text_template = "email/invalid_endorser.txt"
     html_template = "email/invalid_endorser.html"
+
+    x = loader.render_to_string(text_template, params)
+    y = loader.render_to_string(html_template, params)
+    import pdb; pdb.set_trace()
 
     return (subject,
             loader.render_to_string(text_template, params),

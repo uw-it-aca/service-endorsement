@@ -6,8 +6,7 @@ alumni, Sponsored, Shared, and/or Admin).
 
 Access to provisioned UW-IT services lasts for {{lifetime}} day{{lifetime|pluralize}} and must be renewed or
 revoked annually.  Access to provisioned UW-IT services for the following ({{expiring_count}})
-UW NetID{{expiring_count|pluralize}} has expired and the associated UW-IT service account (e.g. UW
-G Suite or UW Office 365) is in the process of being deleted.
+UW NetID{{expiring_count|pluralize}} has expired and the associated UW-IT service accountis in the process of being deleted.
 
 UW NetID       UW-IT Service  Date Provisioned   Reason
 -------------  -------------  ----------------   --------------------------------{%for e in expiring %}
