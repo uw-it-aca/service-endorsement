@@ -1,6 +1,6 @@
 
 <p>The UW employee <strong>{{ endorser_name }} ({{ endorser_netid }})</strong> has requested that you be given access through the University of Washington to
-    {%if o365_endorsed %}<strong>UW Office 365</strong>{% endif %}{%if both_endorsed %} and {% endif %}{%if google_endorsed %}<strong>UW G Suite (Google)</strong>{% endif %}.
+{% for svc, v in services.items %}{% if forloop.first %} {% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ v.name}}{% endfor %}.
 </p>
 
 <p>
@@ -8,17 +8,11 @@
 </p>
 
 <ul style="list-style-type: none;">
-  {%if google_endorsed %}
-    <li>
-        <a href="{{ google_accept_url }}">Activate UW G Suite.</a>
-    </li>
-  {% endif %}
-  {%if o365_endorsed %}
-    <li>
-        <a href="{{ o365_accept_url }}">Activate UW Office 365.</a>
-    </li>
-  {% endif %}
-
+  {% for svc, v in services.items %}
+  <li>
+    <a href="{{ v.accept_url }}">Activate {{ v.name }}.</a>
+  </li>
+  {% endfor %}
 </ul>
 
 <p>The activation process will likely be completed within two hours, but it may take up to 24 hours.</p>
@@ -33,16 +27,11 @@
 
 
 <ul style="list-style-type: none;">
-  {%if google_endorsed %}
+    {% for svc, v in services.items %}
     <li>
-        <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate">UW G Suite</a>
+        <a href="{% if svc == 'o365' %}https://itconnect.uw.edu/connect/productivity-platforms/uw-office-365/{% elif svc == 'google' %}https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate{% elif svc == 'canvas' %}https://canvas.uw.edu{% endif %}">{{v.name}}</a>
     </li>
-  {% endif %}
-  {%if o365_endorsed %}
-    <li>
-        <a href="https://itconnect.uw.edu/connect/productivity-platforms/uw-office-365/">UW Office 365</a>
-    </li>
-  {% endif %}
+    {% endfor %}
 </ul>
 
 <p>

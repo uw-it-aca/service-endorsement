@@ -6,7 +6,8 @@ from endorsement.dao.notification import (
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.endorse import (
     store_office365_endorsement, store_google_endorsement,
-    initiate_office365_endorsement, initiate_google_endorsement)
+    initiate_office365_endorsement, initiate_google_endorsement,
+    initiate_canvas_endorsement)
 
 
 class TestNotificationDao(TransactionTestCase):
@@ -16,6 +17,7 @@ class TestNotificationDao(TransactionTestCase):
 
         initiate_office365_endorsement(endorser, endorsee, 'because')
         initiate_google_endorsement(endorser, endorsee, 'because')
+        initiate_canvas_endorsement(endorser, endorsee, 'because')
 
         endorsements = get_unendorsed_unnotified()
         self.assertEqual(len(endorsements), 1)
@@ -24,8 +26,9 @@ class TestNotificationDao(TransactionTestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
-            'Action Required: Your new access to UW Office 365 and UW G Suite')
-        self.assertTrue('UW Office 365 and UW G Suite' in mail.outbox[0].body)
+            'Action Required: Your new access to UW Office 365, UW G Suite and UW Canvas')
+        self.assertTrue(
+            'UW Office 365, UW G Suite and UW Canvas' in mail.outbox[0].body)
         self.assertTrue('Appropriate Use' in mail.outbox[0].alternatives[0][0])
 
     def test_endorser_notification_message(self):
