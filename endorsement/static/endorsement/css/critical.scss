@@ -273,6 +273,7 @@ a {
   thead { flex: 0 0 auto; }
   tbody { flex: 1 1 auto; display: block; overflow-y: scroll; overflow-x: hidden; height: 280px; }
   tr { width: 100%; display: table; table-layout: fixed; }
+  tr:last-child { border-bottom: 1px solid #ddd; }
 
   thead { background-color: #eee;
      label { margin-bottom: 0; }
