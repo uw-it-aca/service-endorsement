@@ -9,7 +9,8 @@ from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.exceptions import EmailFailureException
 from endorsement.policy import (
-    endorsements_to_warn, DEFAULT_ENDORSEMENT_LIFETIME, NOTICE_1_DAYS_PRIOR)
+    endorsements_to_warn, DEFAULT_ENDORSEMENT_LIFETIME, NOTICE_1_DAYS_PRIOR,
+    NOTICE_2_DAYS_PRIOR, NOTICE_3_DAYS_PRIOR, NOTICE_4_DAYS_PRIOR)
 import logging
 
 
@@ -199,10 +200,6 @@ def _create_invalid_endorser_message(endorsements):
 
     text_template = "email/invalid_endorser.txt"
     html_template = "email/invalid_endorser.html"
-
-    x = loader.render_to_string(text_template, params)
-    y = loader.render_to_string(html_template, params)
-    import pdb; pdb.set_trace()
 
     return (subject,
             loader.render_to_string(text_template, params),
