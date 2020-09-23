@@ -248,6 +248,24 @@ var Endorse = (function () {
             updateExpireWarning();
         },
 
+        endorsementTableStyling = function (table, endorsement_count) {
+            var css = '',
+                child;
+
+            for (var i = 0; i < endorsement_count; i++) {
+                if (i) { css += ', '; }
+                css += table + ' tr:nth-child(' + (endorsement_count * 2) + 'n';
+                css += ((i) ? ' - ' + i : '') + ')';
+            }
+
+            css += ' { background: #f8f8f8; } ';
+            child = table + ' tr:nth-child(' + endorsement_count + 'n + 1) ';
+            css += child + ' .endorsed-netid, ';
+            css += child + ' .endorsed-name ';
+            css += '{ color: black !important; border-top: 1px solid #ddd; }';
+            return css;
+        },
+
         updateExpireWarning = function () {
             if ($('.expiring-service').length > 0) {
                 $('.expiring_netids').removeClass('visually-hidden');
@@ -263,6 +281,7 @@ var Endorse = (function () {
         gatherEndorsementsByRow: gatherEndorsementsByRow,
         updateEndorsementForRowContext: updateEndorsementForRowContext,
         updateEndorsementRows: updateEndorsementRows,
+        endorsementTableStyling: endorsementTableStyling,
         updateExpireWarning: updateExpireWarning
     };
 }());

@@ -1,6 +1,6 @@
 from django.test import TransactionTestCase
 from django.core import mail
-from endorsement.services import ENDORSEMENT_SERVICES, service_name_list
+from endorsement.services import ENDORSEMENT_SERVICES, service_names
 from endorsement.dao.notification import (
     notify_endorsees, notify_endorsers,
     get_unendorsed_unnotified, get_endorsed_unnotified,
@@ -35,7 +35,7 @@ class TestNotificationDao(TransactionTestCase):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
 
-        service_list = service_name_list()
+        service_list = service_names()
         for service_tag, svc in ENDORSEMENT_SERVICES.items():
             svc['initiate'](endorser, endorsee, 'because')
 
@@ -74,7 +74,7 @@ class TestNotificationDao(TransactionTestCase):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
 
-        service_list = service_name_list()
+        service_list = service_names()
         for service_tag, svc in ENDORSEMENT_SERVICES.items():
             svc['store'](endorser, endorsee, None, 'because')
 

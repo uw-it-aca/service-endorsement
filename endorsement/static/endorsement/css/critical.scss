@@ -267,20 +267,6 @@ a {
   }
 }
 
-.endorsed-netids-table {
-  tr:nth-child(6n), tr:nth-child(6n - 1), tr:nth-child(6n -2) { background: #f8f8f8; }
-  tr:nth-child(3n + 1) {
-    .endorsed-netid, .endorsed-name { color: black !important; border-top: 1px solid #ddd; }
-  }
-}
-
-.shared-netids-table {
-  tr:nth-child(4n), tr:nth-child(4n - 1) { background: #f8f8f8; }
-  tr:nth-child(2n + 1) {
-    .endorsed-netid, .endorsed-name { color: black !important; border-top: 1px solid #ddd; }
-  }
-}
-
 .endorsed-netids-table, .shared-netids-table { border: 1px solid #ddd; 
 
   table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }

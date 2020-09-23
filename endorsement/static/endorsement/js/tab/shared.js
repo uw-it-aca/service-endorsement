@@ -9,6 +9,7 @@ import { Reasons } from "../reasons.js";
 var ManageSharedNetids = (function () {
     var content_id = 'shared',
         location_hash = '#' + content_id,
+        table_css,
 
     _loadContent = function () {
         var content_template = Handlebars.compile($("#shared-netids").html());
@@ -116,7 +117,8 @@ var ManageSharedNetids = (function () {
 
             $.each(context.shared.shared, function () {
                 var endorsements = this.endorsements,
-                    svc;
+                    svc,
+                    endorsement_count = 0;
 
                 if (endorsements) {
                     for (svc in endorsements) {
@@ -124,8 +126,11 @@ var ManageSharedNetids = (function () {
                             if (endorsements[svc]) {
                                 Endorse.updateEndorsementForRowContext(endorsements[svc]);
                             }
+                            endorsement_count += 1;
                         }
                     }
+
+                    _updateEndorsementTableShading(endorsement_count);
                 }
             });
         } else {
@@ -136,6 +141,13 @@ var ManageSharedNetids = (function () {
         $content.html(template(context));
         _enableSharedEndorsability();
         Endorse.updateExpireWarning();
+    },
+
+    _updateEndorsementTableShading = function(endorsement_count) {
+        if (endorsement_count && !table_css) {
+            table_css = Endorse.endorsementTableStyling('.shared-netids-table', endorsement_count);
+            $("<style type='text/css'>" + table_css + " </style>").appendTo("head");
+        }
     },
 
     _enableSharedEndorsability = function() {
