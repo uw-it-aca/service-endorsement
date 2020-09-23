@@ -47,17 +47,16 @@ var ManageProvisionedServices = (function () {
                 endorsed: endorsed
             },
             $panel = $(location_hash),
-            endorsement_count = 0;
+            endorsement_count;
 
         // figure out renewal dates and expirations
         $.each(endorsed ? endorsed.endorsed : [], function (netid, data) {
             $.each(data.endorsements, function (service, endorsement) {
                 Endorse.updateEndorsementForRowContext(endorsement);
-                endorsement_count += 1;
             });
-        });
 
-        _updateEndorsementTableShading(endorsement_count);
+            endorsement_count = Object.keys(data.endorsements).length;
+        });
 
         $panel.html(template(context));
         $panel.find('ul').each(function () {
@@ -67,6 +66,8 @@ var ManageProvisionedServices = (function () {
                 pending.appendTo($(this));
             }
         });
+
+        _updateEndorsementTableShading(endorsement_count);
     },
 
     _updateEndorsementTableShading = function(endorsement_count) {
