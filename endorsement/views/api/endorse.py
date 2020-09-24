@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class Endorse(RESTDispatch):
     """
-    Validate provided endorsement list
+    Endorse provided endorsee list
     """
     def post(self, request, *args, **kwargs):
         timer = Timer()
@@ -62,12 +62,19 @@ class Endorse(RESTDispatch):
                     endorsements['email'] = get_endorsee_email_model(
                         endorsee, endorser, email=to_endorse['email']).email
 
-                for service_tag in ENDORSEMENT_SERVICES.keys():
-                    self._endorse(to_endorse, service_tag,
-                                  endorser, endorser_json,
-                                  endorsee, acted_as,
-                                  endorsements['endorsements'])
-
+                for svc_tag, svc in ENDORSEMENT_SERVICES.items():
+                    if endorsee.is_person or svc['valid_shared']:
+                        self._endorse(to_endorse, svc_tag,
+                                      endorser, endorser_json,
+                                      endorsee, acted_as,
+                                      endorsements['endorsements'])
+                    else:
+                        err = 'Shared netid {} not allowed for {}'.format(
+                            endorsee.netid, svc['category_name'])
+                        endorsements['endorsements'][svc_tag] = {
+                            'endorsee': endorsee.json_data(),
+                            'error': err
+                        }
             except InvalidNetID as ex:
                 endorsements = {
                     'endorsee': {
