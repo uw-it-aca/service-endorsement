@@ -65,4 +65,3 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
                             self.assertFalse(endorsement['endorsed'])
                     else:
                         self.assertTrue('error' in endorsement)
-
