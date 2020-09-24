@@ -13,7 +13,7 @@ We are in the process of provisioning access for {{ endorsees|length|pluralize:"
 
 {% for s, v in endorsed.items %}
 <p>
-  <a href="{% if v.svc == 'o365' %}https://itconnect.uw.edu/connect/productivity-platforms/uw-office-365/{% elif v.svc == 'google' %}https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate{% elif v.svc == 'canvas' %}https://canvas.uw.edu{% endif %}" target="_blank">Get started using {{ s }}.</a>
+  <a href="{{v.service_link}}" target="_blank">Get started using {{ s }}.</a>
 </p>
 {% endfor %}
 

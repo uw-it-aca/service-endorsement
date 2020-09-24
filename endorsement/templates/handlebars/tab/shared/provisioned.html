@@ -19,17 +19,7 @@
   <br />
   {{#each services}}
     {{#if this.count}}
-  <p><a
-        {{#equals @key 'o365'}}
-href="http://itconnect.uw.edu/connect/productivity-platforms/suites/uw-office-365/"
-        {{/equals}}
-        {{#equals @key 'google'}}
-href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate"
-        {{/equals}}
-        {{#equals @key 'canvas'}}
-href="https://canvas.uw.edu"
-        {{/equals}}
-  target="_blank">Get started using {{this.category_name}}</a></p>
+  <p><a href="{{service_link}}" target="_blank">Get started using {{this.category_name}}</a></p>
     {{/if}}
   {{/each}}
 </div>

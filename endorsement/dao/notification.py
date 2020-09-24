@@ -27,7 +27,11 @@ def _create_endorsee_message(endorser):
         "services": endorser['services']
     }
 
-    names = [v['name'] for k, v in endorser['services'].items()]
+    names = []
+    for k, v in endorser['services'].items():
+        names.append(v['name'])
+        v['service_link'] = ENDORSEMENT_SERVICES[k]['service_link']
+
     subject = "Action Required: Your new access to {0}".format(
         '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
             len(names) > 1) else names[0])
@@ -117,7 +121,12 @@ def _create_endorser_message(endorsed):
                 }
 
     params["endorsees"] = list(unique.keys())
-    services = list(params["endorsed"].keys())
+
+    services = []
+    for s, v in params["endorsed"].items():
+        services.append(s)
+        v['service_link'] = ENDORSEMENT_SERVICES[v['svc']]['service_link']
+
     subject = "Shared NetID access to {}".format(
         '{} and {}'.format(', '.join(services[:-1]), services[-1]) if (
             len(services) > 1) else services[0])

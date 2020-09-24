@@ -29,7 +29,7 @@
 <ul style="list-style-type: none;">
     {% for svc, v in services.items %}
     <li>
-        <a href="{% if svc == 'o365' %}https://itconnect.uw.edu/connect/productivity-platforms/uw-office-365/{% elif svc == 'google' %}https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate{% elif svc == 'canvas' %}https://canvas.uw.edu{% endif %}">{{v.name}}</a>
+        <a href="{{v.service_link}}">{{v.name}}</a>
     </li>
     {% endfor %}
 </ul>

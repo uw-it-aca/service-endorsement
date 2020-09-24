@@ -17,7 +17,9 @@ ENDORSEMENT_SERVICES = {
         'initiate': initiate_office365_endorsement,
         'store': store_office365_endorsement,
         'clear': clear_office365_endorsement,
-        'valid_shared': True
+        'valid_shared': True,
+        'service_link': ('https://itconnect.uw.edu/connect/'
+                         'productivity-platforms/uw-office-365/')
     },
     'google': {
         'category_code': EndorsementRecord.GOOGLE_SUITE_ENDORSEE,
@@ -26,7 +28,9 @@ ENDORSEMENT_SERVICES = {
         'initiate': initiate_google_endorsement,
         'store': store_google_endorsement,
         'clear': clear_google_endorsement,
-        'valid_shared': True
+        'valid_shared': True,
+        'service_link': ('https://itconnect.uw.edu/connect/email/'
+                         'google-apps/getting-started/#activate')
     },
     'canvas': {
         'category_code': EndorsementRecord.CANVAS_PROVISIONEE,
@@ -35,7 +39,8 @@ ENDORSEMENT_SERVICES = {
         'initiate': initiate_canvas_endorsement,
         'store': store_canvas_endorsement,
         'clear': clear_canvas_endorsement,
-        'valid_shared': False
+        'valid_shared': False,
+        'service_link': 'https://itconnect.uw.edu/learn/tools/canvas/'
     }
 }
 

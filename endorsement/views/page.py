@@ -35,7 +35,7 @@ def index(request):
                 "session_key": session_key,
             },
             'services': json.dumps(endorsement_service_keys(
-                ['category_code', 'category_name']))
+                ['category_code', 'category_name', 'service_link']))
         }
 
         if not is_valid_endorser(netid):

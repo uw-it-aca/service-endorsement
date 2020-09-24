@@ -13,7 +13,7 @@ Your use of these services is bound by UW-IT’s Appropriate Use policy, as well
 Service documentation is available here:
 
 {% for svc, v in services.items %}
-{{v.name}}: {% if svc == 'o365' %}https://itconnect.uw.edu/connect/productivity-platforms/uw-office-365/{% elif svc == 'google' %}https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate{% elif svc == 'canvas' %}https://canvas.uw.edu{% endif %}
+{{v.name}}: {{v.service_link}}
 {% endfor %}
 
 Thank you,

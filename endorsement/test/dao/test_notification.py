@@ -19,6 +19,7 @@ class TestNotificationDao(TransactionTestCase):
         svc = ENDORSEMENT_SERVICES[svc_key]
         svc['initiate'](endorser, endorsee, 'because')
         service_name = svc['category_name']
+        service_link = svc['service_link']
 
         endorsements = get_unendorsed_unnotified()
         self.assertEqual(len(endorsements), 1)
@@ -29,6 +30,7 @@ class TestNotificationDao(TransactionTestCase):
             mail.outbox[0].subject,
             'Action Required: Your new access to {}'.format(service_name))
         self.assertTrue(service_name in mail.outbox[0].body)
+        self.assertTrue(service_link in mail.outbox[0].body)
         self.assertTrue('Appropriate Use' in mail.outbox[0].alternatives[0][0])
 
     def test_endorsee_notification_message_all(self):
@@ -48,6 +50,10 @@ class TestNotificationDao(TransactionTestCase):
             mail.outbox[0].subject,
             'Action Required: Your new access to {}'.format(service_list))
         self.assertTrue(service_list in mail.outbox[0].body)
+
+        for service_tag, svc in ENDORSEMENT_SERVICES.items():
+            self.assertTrue(svc['service_link'] in mail.outbox[0].body)
+
         self.assertTrue('Appropriate Use' in mail.outbox[0].alternatives[0][0])
 
     def test_endorser_notification_message_single(self):
@@ -58,6 +64,7 @@ class TestNotificationDao(TransactionTestCase):
         svc = ENDORSEMENT_SERVICES[svc_key]
         svc['store'](endorser, endorsee, None, 'because')
         service_name = svc['category_name']
+        service_link = svc['service_link']
 
         endorsements = get_endorsed_unnotified()
         self.assertEqual(len(endorsements), 1)
@@ -67,6 +74,7 @@ class TestNotificationDao(TransactionTestCase):
         self.assertEqual(mail.outbox[0].subject,
                          'Shared NetID access to {}'.format(service_name))
         self.assertTrue(service_name in mail.outbox[0].body)
+        self.assertTrue(service_link in mail.outbox[0].body)
         self.assertTrue('Shared UW NetID use of these services is bound'
                         in mail.outbox[0].alternatives[0][0])
 
@@ -86,6 +94,9 @@ class TestNotificationDao(TransactionTestCase):
         self.assertEqual(mail.outbox[0].subject,
                          'Shared NetID access to {}'.format(service_list))
         self.assertTrue(service_list in mail.outbox[0].body)
+        for service_tag, svc in ENDORSEMENT_SERVICES.items():
+            self.assertTrue(svc['service_link'] in mail.outbox[0].body)
+
         self.assertTrue('Shared UW NetID use of these services is bound'
                         in mail.outbox[0].alternatives[0][0])
 

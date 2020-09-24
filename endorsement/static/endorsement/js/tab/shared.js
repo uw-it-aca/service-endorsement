@@ -305,6 +305,7 @@ var ManageSharedNetids = (function () {
         $.each(window.endorsed_services, function(k, v) {
             context.services[k] = {
                 'name': v.category_name,
+                'service_link': v.service_link,
                 'endorsed': []
             };
 
