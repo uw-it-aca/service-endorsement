@@ -33,5 +33,5 @@ class TestEndorsementEndorsedAPI(EndorsementApiTest):
         for s, v in ENDORSEMENT_SERVICES.items():
             self.assertTrue(s in data['endorsed']['endorsee7']['endorsements'])
             if s == svc_key:
-                self.assertTrue(data['endorsed']['endorsee7']['endorsements'][
-                    'o365']['category_code'], v['category_code'])
+                self.assertTrue(data['endorsed']['endorsee7'][
+                    'endorsements'][s]['category_code'], v['category_code'])
