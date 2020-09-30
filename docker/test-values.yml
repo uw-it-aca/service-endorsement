@@ -46,7 +46,7 @@ metrics:
     enabled: true
 memcached:
   enabled: true
-  replicaCount: 2
+  replicaCount: 3
   mcrouter:
     enabled: true
 cronjob:
