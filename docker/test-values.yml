@@ -49,6 +49,7 @@ memcached:
   replicaCount: 3
   mcrouter:
     enabled: true
+    controller: "statefulset"
 cronjob:
   enabled: true
   jobs:
