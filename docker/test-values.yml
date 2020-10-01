@@ -44,12 +44,6 @@ metrics:
   enabled: true
   serviceMonitor:
     enabled: true
-memcached:
-  enabled: true
-  replicaCount: 2
-  mcrouter:
-    enabled: true
-    controller: "statefulset"
 cronjob:
   enabled: true
   jobs:
