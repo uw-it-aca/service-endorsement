@@ -23,7 +23,7 @@ database:
   engine: postgres
   name: uw_service_endorsement
   hostname: provision-db-prod-service
-  secretName: provision-db-prod
+  secretName: provision.uw.edu-sql-secret
 externalService:
   enabled: true
   name: provision-db-prod-service
@@ -107,10 +107,40 @@ environmentVariables:
     value: https://provision.uw.edu/sso/
   - name: CLUSTER_CNAME
     value: provision.uw.edu
-  - name: SP_CERT
-    value: 'MIIEpDCCBA2gAwIBAgICMzgwDQYJKoZIhvcNAQELBQAwgZQxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMRQwEgYDVQQLEwtVVyBTZXJ2aWNlczEXMBUGA1UEAxMOVVcgU2VydmljZXMgQ0ExJjAkBgkqhkiG9w0BCQEWF2hlbHBAY2FjLndhc2hpbmd0b24uZWR1MB4XDTE4MDQxMDE3NDUwMVoXDTIxMDQxMTE3NDUwMVowgZ0xCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJXQTEQMA4GA1UEBwwHU2VhdHRsZTEhMB8GA1UECgwYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMRMwEQYDVQQLDApVVy1JVCBBWEREMRkwFwYDVQQDDBBwcm92aXNpb24udXcuZWR1MRwwGgYJKoZIhvcNAQkBFg1hY2EtaXRAdXcuZWR1MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuQVBKpPdNtkrD5gT0D/f7gO0O4kfssejk/kkQZpDBw5U1aYLbATb406/XGilLgKCLqNxqPfTJWYOXlDKuaSSImbLSE5u8YJ6OBiD9PaODp51vDxLGGWcCtB8KZPS2+ENq8l8upAtwmQv/VjWlGK4B/HYWvkSN70YSibXbhsYHy9TJg89HWbkqz0SKS00MLRJJUCEwQkmvTPUodEY2hPYBfeAwxUOSGO0k4jGWXpTG4PuilrCzboRaySWENUdMTrD4thr7HYFZid9oAGJjwctVUBJgqh2De92D+MS18vSlxjOW9mVpHx1P9vHqUr78hik7dLzXDwUeLI9EaZ4GOZWIwIDAQABo4IBdDCCAXAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwHQYDVR0OBBYEFEpz3n6+AJ3IBh5Dlc754QB9g9EQMBsGA1UdEQQUMBKCEHByb3Zpc2lvbi51dy5lZHUwgcEGA1UdIwSBuTCBtoAUVdfBM8b6k/gnPcsgS/VajliXfXShgZqkgZcwgZQxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMRQwEgYDVQQLEwtVVyBTZXJ2aWNlczEXMBUGA1UEAxMOVVcgU2VydmljZXMgQ0ExJjAkBgkqhkiG9w0BCQEWF2hlbHBAY2FjLndhc2hpbmd0b24uZWR1ggEAMEEGA1UdHwQ6MDgwNqA0oDKGMGh0dHA6Ly9jZXJ0cy5jYWMud2FzaGluZ3Rvbi5lZHUvVVdTZXJ2aWNlc0NBLmNybDANBgkqhkiG9w0BAQsFAAOBgQCf/i1Fkq/4kJWD81xQAG0qNEiJ3f0ex5kSHqXQPIPW3Cx9gjxRKElvdSe89GOvEx2xuYxdDt8AUvdyuBNgpJ775li21kqdvT6ulOcBCNX2J7dmwa7gwzhHdE+pdgB1i9v3NM3/v8BhBr6JMCM5awn3SbJGNJ19WVhIe0TW/5oSAA=='
-  - name: IDP_CERT
-    value: 'MIID/TCCAuWgAwIBAgIJAMoYJbDt9lKKMA0GCSqGSIb3DQEBBQUAMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdTAeFw0xMTA0MjYxOTEwMzlaFw0yMTA0MjMxOTEwMzlaMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMH9G8m68L0Hf9bmf4/7c+ERxgDQrbq50NfSi2YTQWc1veUIPYbZy1agSNuc4dwn3RtC0uOQbdNTYUAiVTcYgaYceJVB7syWf9QyGIrglZPMu98c5hWb7vqwvs6d3s2Sm7tBib2v6xQDDiZ4KJxpdAvsoPQlmGdgpFfmAsiYrnYFXLTHgbgCc/YhV8lubTakUdI3bMYWfh9dkj+DVGUmt2gLtQUzbuH8EU44vnXgrQYSXNQkmRcyoE3rj4Rhhbu/p5D3P+nuOukLYFOLRaNeiiGyTu3P7gtc/dy/UjUrf+pH75UUU7Lb369dGEfZwvVtITXsdyp0pBfun4CP808H9N0CAwEAAaOBwTCBvjAdBgNVHQ4EFgQUP5smx3ZYKODMkDglkTbduvLcGYAwgY4GA1UdIwSBhjCBg4AUP5smx3ZYKODMkDglkTbduvLcGYChYKReMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdYIJAMoYJbDt9lKKMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAEo7c2CNHEI+Fvz5DhwumU+WHXqwSOK47MxXwNJVpFQ9GPR2ZGDAq6hzLJLAVWcY4kB3ECDkRtysAWSFHm1roOU7xsU9f0C17QokoXfLNC0d7KoivPM6ctl8aRftU5moyFJkkJX3qSExXrl053uxTOQVPms4ypkYv1A/FBZWgSC8eNoYnBnv1Mhy4m8bfeEN7qT9rFoxh4cVjMH1Ykq7JWyFXLEB4ifzH4KHyplt5Ryv61eh6J1YPFa2RurVTyGpHJZeOLUIBvJu15GzcexuDDXe0kg7sHD6PbK0xzEF/QeXP/hXzMxR9kQXB/IR/b2k4ien+EM3eY/ueBcTZ95dgVM='
+externalSecrets:
+  enabled: true
+  secrets:
+    - name: provision.uw.edu-secrets
+      externalKey: axdd/kv/data/provision/prod/secrets
+      data:
+        - name: django-secret
+          property: django-secret
+        - name: email-host
+          property: email-host
+    - name: provision.uw.edu-sql-secret
+      externalKey: axdd/kv/data/provision/prod/sql-secret
+      data:
+        - name: username
+          property: sql_user
+        - name: password
+          property: sql_pass
+    - name: provision.uw.edu-uwca-certs
+      externalKey: axdd/kv/data/provision/prod/uwca-certs
+      data:
+        - name: provision.uw.edu-uwca.key
+          property: key
+        - name: provision.uw.edu-uwca.cert
+          property: cert
+    - name: provision.uw.edu-ic-certs
+      externalKey: axdd/kv/data/provision/prod/ic-certs
+      data:
+        - name: provision.uw.edu.cert
+          property: cert
+    - name: idp.uw-cert
+      externalKey: axdd/kv/data/idp-cert
+      data:
+        - name: idp.uw-cert
+          property: cert
 environmentVariablesSecrets:
   djangoSecret:
     name: DJANGO_SECRET
@@ -120,3 +150,11 @@ environmentVariablesSecrets:
     name: EMAIL_HOST
     secretName: provision.uw.edu-secrets
     secretKey: email-host
+  SAMLServiceProviderCert:
+    name: SP_CERT
+    secretName: provision.uw.edu-ic-certs
+    secretKey: provision.uw.edu.cert
+  SAMLIDPCert:
+    name: IDP_CERT
+    secretName: idp.uw-cert
+    secretKey: idp.uw-cert
