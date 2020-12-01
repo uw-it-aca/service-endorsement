@@ -13,28 +13,30 @@ ingress:
         - "/"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+readiness:
+  enabled: true
 database:
   engine: postgres
-  name: uw_service_endorsement
+  name: uw_service_endorsement_test
   hostname: provision-db-test-service
-  secretName: provision-db-test
+  secretName: test.provision.uw.edu-sql-secret
 externalService:
   enabled: true
   name: provision-db-test-service
   type: ClusterIP
-  serviceAddress: 172.18.1.14
+  serviceAddress: 172.18.1.16
   servicePort: 5432
 repo: prt
 instance: test
 replicaCount: 2
-minReplicas: 2
-maxReplicas: 6
+minReplicas: 1
+maxReplicas: 2
 targetAverageUtilization: 90
 resources:
   limits:
-    cpu: 600m
+    cpu: 500m
   requests:
-    cpu: 200m
+    cpu: 10m
 image:
   repository: registry.hub.docker.com/acait/prt
   tag: IMAGE_TAG
@@ -42,54 +44,63 @@ metrics:
   enabled: true
   serviceMonitor:
     enabled: true
+memcached:
+  enabled: true
+  replicaCount: 2
+  mcrouter:
+    enabled: true
+    controller: "statefulset"
 cronjob:
   enabled: true
   jobs:
     - name: expire-endorsees
       schedule: "5 8 * * 1-5"
-      command: '["bash"]'
-      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expire_endorsees)"]'
+      command: ["/scripts/management_command.sh"]
+      args: ["expire_endorsees"]
     - name: expiration-notice-1
       schedule: "10 8 * * 1-5"
-      command: '["bash"]'
-      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 1)"]'
+      command: ["/scripts/management_command.sh"]
+      args: ["expiration_notice", "1"]
     - name: expiration-notice-2
       schedule: "15 8 * * 1-5"
-      command: '["bash"]'
-      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 2)"]'
+      command: ["/scripts/management_command.sh"]
+      args: ["expiration_notice", "2"]
     - name: expiration-notice-3
       schedule: "20 8 * * 1-5"
-      command: '["bash"]'
-      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 3)"]'
+      command: ["/scripts/management_command.sh"]
+      args: ["expiration_notice", "3"]
     - name: expiration-notice-4
       schedule: "25 8 * * 1-5"
-      command: '["bash"]'
-      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py expiration_notice 4)"]'
+      command:
+        - /scripts/management_command.sh
+      args:
+        - expiration_notice
+        - "4"
 #    - name: validate-endorsees
 #      schedule: "10 12 * * 1-5"
-#      command: '["bash"]'
-#      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_endorsees)"]'
+#      command: ["/scripts/management_command.sh"]
+#      args: ["validate_endorsees"]
 #    - name: validate-endorsers
 #      schedule: "25 12 * * 1-5"
-#      command: '["bash"]'
-#      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_endorsers)"]'
+#      command: ["/scripts/management_command.sh"]
+#      args: ["validate_endorsers"]
 #    - name: notify-endorsers
 #      schedule: "*/5 * * * *"
-#      command: '["bash"]'
-#      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsers)"]'
+#      command: ["/scripts/management_command.sh"]
+#      args: ["notify_endorsers"]
     - name: notify-endorsees
       schedule: "*/5 * * * *"
-      command: '["bash"]'
-      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py notify_endorsees)"]'
+      command: ["/scripts/management_command.sh"]
+      args: ["notify_endorsees"]
 #    - name: validate-shared-owners
 #      schedule: "15 11 * * *"
-#      command: '["bash"]'
-#      args: '["-c", "(cd /app && source ./bin/activate && ./bin/python manage.py validate_shared_endorsers)"]'
+#      command: ["/scripts/management_command.sh"]
+#      args:  ["validate_shared_endorsers"]
 certs:
   mounted: true
   certPath: /certs/provision-test.uw.edu-uwca.cert
   keyPath: /certs/provision-test.uw.edu-uwca.key
-  secretName: prt-test-uwca-certs
+  secretName: test.provision.uw.edu-uwca-certs
 environmentVariables:
   - name: ENV
     value: dev
@@ -105,12 +116,42 @@ environmentVariables:
     value: https://test.provision.uw.edu/saml
   - name: CLUSTER_CNAME
     value: test.provision.uw.edu
-  - name: SP_CERT
-    value: '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'
-  - name: IDP_CERT
-    value: 'MIID/TCCAuWgAwIBAgIJAMoYJbDt9lKKMA0GCSqGSIb3DQEBBQUAMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdTAeFw0xMTA0MjYxOTEwMzlaFw0yMTA0MjMxOTEwMzlaMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMH9G8m68L0Hf9bmf4/7c+ERxgDQrbq50NfSi2YTQWc1veUIPYbZy1agSNuc4dwn3RtC0uOQbdNTYUAiVTcYgaYceJVB7syWf9QyGIrglZPMu98c5hWb7vqwvs6d3s2Sm7tBib2v6xQDDiZ4KJxpdAvsoPQlmGdgpFfmAsiYrnYFXLTHgbgCc/YhV8lubTakUdI3bMYWfh9dkj+DVGUmt2gLtQUzbuH8EU44vnXgrQYSXNQkmRcyoE3rj4Rhhbu/p5D3P+nuOukLYFOLRaNeiiGyTu3P7gtc/dy/UjUrf+pH75UUU7Lb369dGEfZwvVtITXsdyp0pBfun4CP808H9N0CAwEAAaOBwTCBvjAdBgNVHQ4EFgQUP5smx3ZYKODMkDglkTbduvLcGYAwgY4GA1UdIwSBhjCBg4AUP5smx3ZYKODMkDglkTbduvLcGYChYKReMFwxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJXQTEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBXYXNoaW5ndG9uMR0wGwYDVQQDExRpZHAudS53YXNoaW5ndG9uLmVkdYIJAMoYJbDt9lKKMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAEo7c2CNHEI+Fvz5DhwumU+WHXqwSOK47MxXwNJVpFQ9GPR2ZGDAq6hzLJLAVWcY4kB3ECDkRtysAWSFHm1roOU7xsU9f0C17QokoXfLNC0d7KoivPM6ctl8aRftU5moyFJkkJX3qSExXrl053uxTOQVPms4ypkYv1A/FBZWgSC8eNoYnBnv1Mhy4m8bfeEN7qT9rFoxh4cVjMH1Ykq7JWyFXLEB4ifzH4KHyplt5Ryv61eh6J1YPFa2RurVTyGpHJZeOLUIBvJu15GzcexuDDXe0kg7sHD6PbK0xzEF/QeXP/hXzMxR9kQXB/IR/b2k4ien+EM3eY/ueBcTZ95dgVM='
   - name: SAFE_EMAIL_RECIPIENT
     value: "mikes@uw.edu"
+externalSecrets:
+  enabled: true
+  secrets:
+    - name: test.provision.uw.edu-secrets
+      externalKey: axdd/kv/data/provision/test/secrets
+      data:
+        - name: django-secret
+          property: django-secret
+        - name: email-host
+          property: email-host
+    - name: test.provision.uw.edu-sql-secret
+      externalKey: axdd/kv/data/provision/test/sql-secret
+      data:
+        - name: username
+          property: sql_user
+        - name: password
+          property: sql_pass
+    - name: test.provision.uw.edu-uwca-certs
+      externalKey: axdd/kv/data/provision/test/uwca-certs
+      data:
+        - name: provision-test.uw.edu-uwca.key
+          property: key
+        - name: provision-test.uw.edu-uwca.cert
+          property: cert
+    - name: test.provision.uw.edu-ic-certs
+      externalKey: axdd/kv/data/provision/test/ic-certs
+      data:
+        - name: provision-test.uw.edu.cert
+          property: cert
+    - name: idp.uw-cert
+      externalKey: axdd/kv/data/idp-cert
+      data:
+        - name: idp.uw-cert
+          property: cert
 environmentVariablesSecrets:
   djangoSecret:
     name: DJANGO_SECRET
@@ -120,3 +161,11 @@ environmentVariablesSecrets:
     name: EMAIL_HOST
     secretName: test.provision.uw.edu-secrets
     secretKey: email-host
+  SAMLServiceProviderCert:
+    name: SP_CERT
+    secretName: test.provision.uw.edu-ic-certs
+    secretKey: provision-test.uw.edu.cert
+  SAMLIDPCert:
+    name: IDP_CERT
+    secretName: idp.uw-cert
+    secretKey: idp.uw-cert
