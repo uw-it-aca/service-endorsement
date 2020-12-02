@@ -91,7 +91,7 @@ certs:
   mounted: true
   certPath: /certs/provision.uw.edu-uwca.cert
   keyPath: /certs/provision.uw.edu-uwca.key
-  secretName: prt-prod-uwca-certs
+  secretName: provision.uw.edu-uwca-certs
 environmentVariables:
   - name: ENV
     value: prod
