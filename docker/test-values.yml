@@ -13,6 +13,8 @@ ingress:
         - "/"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+securityPolicy:
+  enabled: true
 readiness:
   enabled: true
 database:
@@ -46,10 +48,7 @@ metrics:
     enabled: true
 memcached:
   enabled: true
-  replicaCount: 2
-  mcrouter:
-    enabled: true
-    controller: "statefulset"
+  replicaCount: 1
 cronjob:
   enabled: true
   jobs:
@@ -84,18 +83,19 @@ cronjob:
 #      schedule: "25 12 * * 1-5"
 #      command: ["/scripts/management_command.sh"]
 #      args: ["validate_endorsers"]
-#    - name: notify-endorsers
-#      schedule: "*/5 * * * *"
-#      command: ["/scripts/management_command.sh"]
-#      args: ["notify_endorsers"]
-    - name: notify-endorsees
-      schedule: "*/5 * * * *"
-      command: ["/scripts/management_command.sh"]
-      args: ["notify_endorsees"]
 #    - name: validate-shared-owners
 #      schedule: "15 11 * * *"
 #      command: ["/scripts/management_command.sh"]
 #      args:  ["validate_shared_endorsers"]
+daemon:
+  enabled: true
+  daemons:
+#    - name: notify-endorsers
+#      command: ["/scripts/management_daemon.sh"]
+#      args: ["--cron", "*/5 * * * *", "notify_endorsers"]
+    - name: notify-endorsees
+      command: ["/scripts/management_daemon.sh"]
+      args: ["--cron", "*/5 * * * *", "notify_endorsees"]
 certs:
   mounted: true
   certPath: /certs/provision-test.uw.edu-uwca.cert
