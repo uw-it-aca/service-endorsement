@@ -30,7 +30,6 @@ externalService:
   servicePort: 5432
 repo: prt
 instance: test
-replicaCount: 2
 minReplicas: 1
 maxReplicas: 2
 targetAverageUtilization: 90
