@@ -44,6 +44,7 @@ after_success:
           ;;
         "develop")
           export APP_INSTANCE="test";
+          export HELM_CHART_BRANCH="feature/checkov-validation"
           ;;
         *)
           unset APP_INSTANCE
