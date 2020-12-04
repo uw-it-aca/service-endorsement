@@ -15,8 +15,10 @@ ingress:
     cert-manager.io/cluster-issuer: letsencrypt
 securityPolicy:
   enabled: true
+
 readiness:
   enabled: true
+
 database:
   engine: postgres
   name: uw_service_endorsement_test
