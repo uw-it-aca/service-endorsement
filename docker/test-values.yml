@@ -91,10 +91,10 @@ daemon:
   daemons:
 #    - name: notify-endorsers
 #      command: ["/scripts/management_daemon.sh"]
-#      args: ["--cron", "*/5 * * * *", "notify_endorsers"]
+#      args: ['--cron', '*/5 * * * *', 'notify_endorsers']
     - name: notify-endorsees
       command: ["/scripts/management_daemon.sh"]
-      args: ["--cron", "*/5 * * * *", "notify_endorsees"]
+      args: ['--cron', '*/5 * * * *', 'notify_endorsees']
 certs:
   mounted: true
   certPath: /certs/provision-test.uw.edu-uwca.cert
