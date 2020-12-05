@@ -44,7 +44,9 @@ deploy:
 #      curl -Ls ${DEPLOY_SCRIPT_BASE}/travis-ci/deploy.sh | bash
 #    on:
 #      all_branches: true
-#      condition: $TRAVIS_BRANCH =~ ^(master|develop)$ && $TRAVIS_PULL_REQUEST == "false"
+#      condition: >-
+#        $TRAVIS_BRANCH =~ ^(master|develop)$ &&
+#        $TRAVIS_PULL_REQUEST == "false"
   - provider: script
     skip_cleanup: true
     script: >-
