@@ -38,23 +38,16 @@ after_success:
   - coveralls
 
 deploy:
-#  - provider: script
-#    skip_cleanup: true
-#    script: >-
-#      curl -Ls ${DEPLOY_SCRIPT_BASE}/travis-ci/deploy.sh | bash
-#    on:
-#      all_branches: true
-#      condition: >-
-#        $TRAVIS_BRANCH =~ ^(master|develop)$ &&
-#        $TRAVIS_PULL_REQUEST == "false"
   - provider: script
     skip_cleanup: true
     script: >-
       export HELM_CHART_BRANCH="feature/checkov-validation" &&
       curl -Ls ${DEPLOY_SCRIPT_BASE}/travis-ci/deploy.sh | bash
     on:
-      branch: develop
-      condition: $TRAVIS_PULL_REQUEST == "false"
+      all_branches: true
+      condition: >-
+        $TRAVIS_PULL_REQUEST == "false" &&
+        $TRAVIS_BRANCH =~ ^(develop)$
 
 cache:
   directories:
