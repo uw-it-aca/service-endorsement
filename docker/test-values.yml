@@ -16,7 +16,6 @@ ingress:
 
 securityPolicy:
   enabled: true
-
 readiness:
   enabled: true
 database:
