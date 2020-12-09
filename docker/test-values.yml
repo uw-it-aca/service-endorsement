@@ -13,7 +13,6 @@ ingress:
         - "/"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
-
 securityPolicy:
   enabled: true
 readiness:
