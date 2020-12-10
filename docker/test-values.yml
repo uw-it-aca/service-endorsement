@@ -76,24 +76,9 @@ cronjob:
       args:
         - expiration_notice
         - "4"
-#    - name: validate-endorsees
-#      schedule: "10 12 * * 1-5"
-#      command: ["/scripts/management_command.sh"]
-#      args: ["validate_endorsees"]
-#    - name: validate-endorsers
-#      schedule: "25 12 * * 1-5"
-#      command: ["/scripts/management_command.sh"]
-#      args: ["validate_endorsers"]
-#    - name: validate-shared-owners
-#      schedule: "15 11 * * *"
-#      command: ["/scripts/management_command.sh"]
-#      args:  ["validate_shared_endorsers"]
 daemon:
   enabled: true
   daemons:
-#    - name: notify-endorsers
-#      command: ["/scripts/management_daemon.sh"]
-#      args: ['--cron', '*/5 * * * *', 'notify_endorsers']
     - name: notify-endorsees
       command: ["/scripts/management_daemon.sh"]
       args: ['--cron', '*/5 * * * *', 'notify_endorsees']
