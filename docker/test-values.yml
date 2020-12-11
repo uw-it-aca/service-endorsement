@@ -19,7 +19,6 @@ ingress:
     cert-manager.io/cluster-issuer: letsencrypt
 securityPolicy:
   enabled: true
-
 readiness:
   enabled: true
 database:
