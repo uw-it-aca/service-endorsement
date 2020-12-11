@@ -1,3 +1,7 @@
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
 ingress:
   enabled: true
   type: nginx
@@ -13,6 +17,8 @@ ingress:
         - "/"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+securityPolicy:
+  enabled: true
 readiness:
   enabled: true
 database:
@@ -28,15 +34,12 @@ externalService:
   servicePort: 5432
 repo: prt
 instance: test
-replicaCount: 2
-minReplicas: 2
-maxReplicas: 6
-targetAverageUtilization: 90
+targetAverageUtilization: 95
 resources:
   limits:
-    cpu: 600m
+    cpu: 500m
   requests:
-    cpu: 200m
+    cpu: 10m
 image:
   repository: registry.hub.docker.com/acait/prt
   tag: IMAGE_TAG
@@ -44,6 +47,9 @@ metrics:
   enabled: true
   serviceMonitor:
     enabled: true
+memcached:
+  enabled: true
+  replicaCount: 1
 cronjob:
   enabled: true
   jobs:
@@ -70,26 +76,12 @@ cronjob:
       args:
         - expiration_notice
         - "4"
-#    - name: validate-endorsees
-#      schedule: "10 12 * * 1-5"
-#      command: ["/scripts/management_command.sh"]
-#      args: ["validate_endorsees"]
-#    - name: validate-endorsers
-#      schedule: "25 12 * * 1-5"
-#      command: ["/scripts/management_command.sh"]
-#      args: ["validate_endorsers"]
-#    - name: notify-endorsers
-#      schedule: "*/5 * * * *"
-#      command: ["/scripts/management_command.sh"]
-#      args: ["notify_endorsers"]
+daemon:
+  enabled: true
+  daemons:
     - name: notify-endorsees
-      schedule: "*/5 * * * *"
-      command: ["/scripts/management_command.sh"]
-      args: ["notify_endorsees"]
-#    - name: validate-shared-owners
-#      schedule: "15 11 * * *"
-#      command: ["/scripts/management_command.sh"]
-#      args:  ["validate_shared_endorsers"]
+      command: ["/scripts/management_daemon.sh"]
+      args: ['--cron', '*/5 * * * *', 'notify_endorsees']
 certs:
   mounted: true
   certPath: /certs/provision-test.uw.edu-uwca.cert
