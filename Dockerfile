@@ -1,4 +1,4 @@
-FROM acait/django-container:1.2.1 as app-prewebpack-container
+FROM acait/django-container:1.2.4 as app-prewebpack-container
 
 USER root
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
@@ -27,7 +27,7 @@ COPY --chown=acait:acait --from=wpack /app/endorsement/static/endorsement/bundle
 COPY --chown=acait:acait --from=wpack /app/endorsement/static/ /static/
 COPY --chown=acait:acait --from=wpack /app/endorsement/static/webpack-stats.json /app/endorsement/static/webpack-stats.json
 
-FROM acait/django-test-container:1.2.1 as app-test-container
+FROM acait/django-test-container:1.2.4 as app-test-container
 
 COPY --from=app-container /app/ /app/
 COPY --from=app-container /static/ /static/
