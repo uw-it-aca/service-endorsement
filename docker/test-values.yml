@@ -38,8 +38,10 @@ targetAverageUtilization: 95
 resources:
   limits:
     cpu: 500m
+    memory: 512Mi
   requests:
-    cpu: 10m
+    cpu: 25m
+    memory: 128Mi
 image:
   repository: registry.hub.docker.com/acait/prt
   tag: IMAGE_TAG
