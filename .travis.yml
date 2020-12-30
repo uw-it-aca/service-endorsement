@@ -30,7 +30,6 @@ install:
 before_script:
   - pip install coverage
   - pip install coveralls
-  - openssl aes-256-cbc -K $encrypted_0e718fcdeb51_key -iv $encrypted_0e718fcdeb51_iv -in ${GCP_JSON_KEY}.enc -out ${GCP_JSON_KEY} -d
 
 script:
   - docker run -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK" app-test-container bash -c ". ./travis-ci/test.sh"
@@ -39,6 +38,7 @@ after_success:
   - cp /tmp/.coverage.* .
   - coverage combine
   - coveralls
+  - openssl aes-256-cbc -K $encrypted_0e718fcdeb51_key -iv $encrypted_0e718fcdeb51_iv -in ${GCP_JSON_KEY}.enc -out ${GCP_JSON_KEY} -d
 
 deploy:
   - provider: script
