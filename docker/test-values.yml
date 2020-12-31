@@ -43,7 +43,7 @@ resources:
     cpu: 25m
     memory: 128Mi
 image:
-  repository: registry.hub.docker.com/acait/prt
+  repository: gcr.io/uwit-mci-axdd/prt
   tag: IMAGE_TAG
 metrics:
   enabled: true
