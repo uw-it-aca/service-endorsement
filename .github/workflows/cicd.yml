@@ -4,7 +4,6 @@ env:
   RELEASE_NAME: "prt"
   DJANGO_APP: "endorsement"
   COMMIT_HASH: "$(git rev-parse --short=7 ${GITHUB_SHA})"
-  IMAGE_TAG: "${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
 
 on:
   push:
@@ -26,15 +25,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Build App Image ${{ env.IMAGE_TAG }}
+      - name: Build App Image $IMAGE_TAG
         id: docker_build
+        env:
+          IMAGE_TAG: "${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
         uses: docker/build-push-action@v2
         with:
           push: false
           context: ./
           file: 
           target: app-container
-          tags: ${{ env.IMAGE_TAG }}
+          tags: $IMAGE_TAG
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -56,15 +57,16 @@ jobs:
             pip install coveralls
 
       - name: Run Tests in Test Image
-        uses: addnab/docker-run-action@v2
-        with:
-          image: app-test-container
-          shell: bash
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          options: -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK"
-          run: |
-            ./docker/test.sh
+        run: |
+          docker run -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK" app-test-container bash -c ". ./docker/test.sh"
+#        with:
+#          image: app-test-container
+#          shell: bash
+#          cache-from: type=local,src=/tmp/.buildx-cache
+#          cache-to: type=local,dest=/tmp/.buildx-cache
+#          options: -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK"
+#          run: |
+#            ./docker/test.sh
 
       - name: Record Test Results
         shell: bash
