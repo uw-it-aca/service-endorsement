@@ -1,0 +1,71 @@
+name: build-test-deploy-containerized-python-app
+
+env:
+  - RELEASE_NAME="prt"
+  - DJANGO_APP="endorsement"
+
+on:
+  push:
+    branches:
+      - feature/github-actions
+  pull_request:
+    branches:
+      - feature/github-actions
+
+jobs:
+  cicd-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v2
+        env:
+          - COMMIT_HASH="$(git rev-parse --short=7 ${GITHUB_SHA})"
+          - IMAGE_TAG="${RELEASE_NAME}:${COMMIT_HASH}"
+        
+      - name: Build App Image
+        uses: docker/build-push-action@v1
+        with:
+          push: false
+          target: app-container
+          tags: $IMAGE_TAG
+
+      - name: Build Test Image
+        uses: docker/build-push-action@v1
+        with:
+          push: false
+          tags: app-test-container
+
+      - name: Prep Test Tooling
+        uses: actions/setup-python@v2
+        with:
+            python-version: 3.6
+        run: |
+          python -m pip install --upgrade pip
+          pip install coverage
+          pip install coveralls
+
+      - name: Test Image
+        uses: addnab/docker-run-action@v1
+        with:
+          image: app-test-container
+          shell: bash
+          options: -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK"
+          run: |
+            ./docker/test.sh
+
+      - name: Record Test Results
+        shell: bash
+        run: |
+          cp /tmp/.coverage.* .
+          coverage combine
+          coveralls
+
+#      - name: Deploy
+#        if: github.event.pull_request.merged == true
+#        env:
+#          - DEPLOY_SCRIPT_BASE=https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/
+#          - DEPLOY_SCRIPT_BRANCH=master
+#          - DEPLOY_SCRIPT=${DEPLOY_SCRIPT_BASE}/${DEPLOY_SCRIPT_BRANCH}/travis-ci/deploy.sh
+#          - GCP_JSON_KEY=gcp.json
+#        run: |
+#          curl -Ls "$DEPLOY_SCRIPT" | bash
