@@ -4,6 +4,7 @@ name: build-test-deploy-containerized-python-app
 env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 on:
   push:
