@@ -5,6 +5,7 @@ env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
   COMMIT_HASH: $(git rev-parse --short=7 ${{ github.sha }})
+  IMAGE_TAG: "${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
 
 on:
   push:
@@ -17,14 +18,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        id: repo
-        env:
-          IMAGE_TAG: "${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
 
-      - name: Build App Images for ${{ repo.env.IMAGE_TAG }}
+      - name: Build App Images for ${{ env.IMAGE_TAG }}
         id: docker_build
         run: |
-          docker build --target app-container -t "${{ repo.env.IMAGE_TAG }}" .
+          docker build --target app-container -t "${{ env.IMAGE_TAG }}" .
           docker build -t app-test-container .
 
       - name: Prep Test Tooling
