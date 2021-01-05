@@ -21,7 +21,9 @@ jobs:
         run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
       - name: Set image tag
-        run: echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}" >> $GITHUB_ENV
+        run: >-
+          echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
+          >> $GITHUB_ENV
 
       - name: Build App and Test Images
         id: docker_build
@@ -40,12 +42,12 @@ jobs:
 
       - name: Run Tests
         shell: bash
-        run: |
+        run: >-
           docker run -u root -it -v /tmp:/coverage
-            -e DJANGO_APP="${{ env.DJANGO_APP }}"
-            -e "ENV=localdev" -e "AUTH=SAML_MOCK"
-            app-test-container
-            bash -c ". ./docker/test.sh"
+          -e DJANGO_APP="${{ env.DJANGO_APP }}"
+          -e "ENV=localdev" -e "AUTH=SAML_MOCK"
+          app-test-container
+          bash -c ". ./docker/test.sh"
 
       - name: Record Test Results
         shell: bash
