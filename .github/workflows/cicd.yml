@@ -1,3 +1,4 @@
+---
 name: build-test-deploy-containerized-python-app
 
 env:
@@ -22,7 +23,7 @@ jobs:
 
       - name: Build App Images for ${{ repo.env.IMAGE_TAG }}
         id: docker_build
-        run |
+        run: |
           docker build --target app-container -t "${{ repo.env.IMAGE_TAG }}" .
           docker build -t app-test-container .
 
@@ -35,9 +36,14 @@ jobs:
             pip install coverage
             pip install coveralls
 
-      - name: Run Tests in Test Image
+      - name: Run Tests
+        shell: bash
         run: |
-          docker run -u root -it -v /tmp:/coverage -e DJANGO_APP="${{ env.DJANGO_APP }}" -e "ENV=localdev" -e "AUTH=SAML_MOCK" app-test-container bash -c ". ./docker/test.sh"
+          docker run -u root -it -v /tmp:/coverage
+            -e DJANGO_APP="${{ env.DJANGO_APP }}"
+            -e "ENV=localdev" -e "AUTH=SAML_MOCK"
+            app-test-container
+            bash -c ". ./docker/test.sh"
 
       - name: Record Test Results
         shell: bash
@@ -45,13 +51,3 @@ jobs:
           cp /tmp/.coverage.* .
           coverage combine
           coveralls
-
-#      - name: Deploy
-#        if: github.event.pull_request.merged == true
-#        env:
-#          DEPLOY_SCRIPT_BASE: https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/
-#          DEPLOY_SCRIPT_BRANCH: master
-#          DEPLOY_SCRIPT: ${DEPLOY_SCRIPT_BASE}/${DEPLOY_SCRIPT_BRANCH}/travis-ci/deploy.sh
-#          GCP_JSON_KEY=gcp.json
-#        run: |
-#          curl -Ls "$DEPLOY_SCRIPT" | bash
