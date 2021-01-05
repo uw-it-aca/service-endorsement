@@ -3,6 +3,8 @@ name: build-test-deploy-containerized-python-app
 env:
   RELEASE_NAME: "prt"
   DJANGO_APP: "endorsement"
+  COMMIT_HASH: "$(git rev-parse --short=7 ${GITHUB_SHA})"
+  IMAGE_TAG: "${RELEASE_NAME}:${COMMIT_HASH}"
 
 on:
   push:
@@ -13,27 +15,40 @@ on:
       - feature/github-actions
 
 jobs:
-  cicd-pipeline:
+  pipeline:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository code
+      - name: Checkout repository
+        id: repository
         uses: actions/checkout@v2
-        env:
-          COMMIT_HASH: "$(git rev-parse --short=7 ${GITHUB_SHA})"
-          IMAGE_TAG: "${RELEASE_NAME}:${COMMIT_HASH}"
-        
-      - name: Build App Image
-        uses: docker/build-push-action@v1
+
+      - name: Docker Cache
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build App Image $IMAGE_TAG
+        id: docker_build
+        uses: docker/build-push-action@v2
         with:
           push: false
+          context: ./
+          file: 
           target: app-container
-          tags: $IMAGE_TAG
+          tags: ${{ repository.env.IMAGE_TAG }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build Test Image
         uses: docker/build-push-action@v1
         with:
           push: false
           tags: app-test-container
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Prep Test Tooling
         uses: actions/setup-python@v2
@@ -44,11 +59,13 @@ jobs:
             pip install coverage
             pip install coveralls
 
-      - name: Test Image
+      - name: Run Tests in Test Image
         uses: addnab/docker-run-action@v1
         with:
           image: app-test-container
           shell: bash
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
           options: -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK"
           run: |
             ./docker/test.sh
