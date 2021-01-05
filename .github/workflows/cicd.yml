@@ -34,8 +34,11 @@ jobs:
       - name: Build App and Test Images
         id: docker_build
         run: |
-          docker build --target app-container -t "${{ env.IMAGE_TAG }}" .
-          docker build -t app-test-container .
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
+          docker build --target app-container -t "${{ env.IMAGE_TAG }}" --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache .
+          docker tag "${{ env.IMAGE_TAG }}" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
+          docker build -t app-test-container --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache .
 
       - name: Install test tooling
         shell: bash
