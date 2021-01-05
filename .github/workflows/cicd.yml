@@ -5,7 +5,7 @@ env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
   COMMIT_HASH: $(git rev-parse --short=7 ${{ github.sha }})
-  IMAGE_TAG: "${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
+  IMAGE_TAG: "${RELEASE_NAME}:${COMMIT_HASH}"
 
 on:
   push:
