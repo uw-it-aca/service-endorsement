@@ -4,13 +4,10 @@ env:
   RELEASE_NAME: "prt"
   DJANGO_APP: "endorsement"
   COMMIT_HASH: "$(git rev-parse --short=7 ${GITHUB_SHA})"
-  IMAGE_TAG: "${RELEASE_NAME}:${COMMIT_HASH}"
+  IMAGE_TAG: "${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
 
 on:
   push:
-    branches:
-      - feature/github-actions
-  pull_request:
     branches:
       - feature/github-actions
 
@@ -29,7 +26,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Build App Image $IMAGE_TAG
+      - name: Build App Image ${{ env.IMAGE_TAG }}
         id: docker_build
         uses: docker/build-push-action@v2
         with:
@@ -42,7 +39,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build Test Image
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v2
         with:
           push: false
           tags: app-test-container
@@ -59,7 +56,7 @@ jobs:
             pip install coveralls
 
       - name: Run Tests in Test Image
-        uses: addnab/docker-run-action@v1
+        uses: addnab/docker-run-action@v2
         with:
           image: app-test-container
           shell: bash
