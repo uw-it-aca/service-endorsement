@@ -1,9 +1,9 @@
 name: build-test-deploy-containerized-python-app
 
 env:
-  RELEASE_NAME: "prt"
-  DJANGO_APP: "endorsement"
-  COMMIT_HASH: "$(git rev-parse --short=7 ${GITHUB_SHA})"
+  RELEASE_NAME: prt
+  DJANGO_APP: endorsement
+  COMMIT_HASH: $(git rev-parse --short=7 ${{ github.sha }})
 
 on:
   push:
@@ -16,36 +16,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Docker Cache
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build App Image $IMAGE_TAG
-        id: docker_build
+        id: repo
         env:
           IMAGE_TAG: "${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
-        uses: docker/build-push-action@v2
-        with:
-          push: false
-          context: ./
-          file: 
-          target: app-container
-          tags: $IMAGE_TAG
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Build Test Image
-        uses: docker/build-push-action@v2
-        with:
-          push: false
-          tags: app-test-container
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Build App Images for ${{ repo.env.IMAGE_TAG }}
+        id: docker_build
+        run |
+          docker build --target app-container -t "${{ repo.env.IMAGE_TAG }}" .
+          docker build -t app-test-container .
 
       - name: Prep Test Tooling
         uses: actions/setup-python@v2
@@ -58,15 +37,7 @@ jobs:
 
       - name: Run Tests in Test Image
         run: |
-          docker run -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK" app-test-container bash -c ". ./docker/test.sh"
-#        with:
-#          image: app-test-container
-#          shell: bash
-#          cache-from: type=local,src=/tmp/.buildx-cache
-#          cache-to: type=local,dest=/tmp/.buildx-cache
-#          options: -u root -it -v /tmp:/coverage -e DJANGO_APP="$DJANGO_APP" -e "ENV=localdev" -e "AUTH=SAML_MOCK"
-#          run: |
-#            ./docker/test.sh
+          docker run -u root -it -v /tmp:/coverage -e DJANGO_APP="${{ env.DJANGO_APP }}" -e "ENV=localdev" -e "AUTH=SAML_MOCK" app-test-container bash -c ". ./docker/test.sh"
 
       - name: Record Test Results
         shell: bash
