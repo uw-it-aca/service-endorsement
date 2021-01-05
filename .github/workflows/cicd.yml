@@ -16,10 +16,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          run: |
+            echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
       - name: Setup Environment
         run: |
-          echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
           echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}" >> $GITHUB_ENV
 
       - name: Build App and Test Images
