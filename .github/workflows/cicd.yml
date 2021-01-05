@@ -1,8 +1,8 @@
 name: build-test-deploy-containerized-python-app
 
 env:
-  RELEASE_NAME="prt"
-  DJANGO_APP="endorsement"
+  RELEASE_NAME: "prt"
+  DJANGO_APP: "endorsement"
 
 on:
   push:
@@ -19,8 +19,8 @@ jobs:
       - name: Checkout repository code
         uses: actions/checkout@v2
         env:
-          COMMIT_HASH="$(git rev-parse --short=7 ${GITHUB_SHA})"
-          IMAGE_TAG="${RELEASE_NAME}:${COMMIT_HASH}"
+          COMMIT_HASH: "$(git rev-parse --short=7 ${GITHUB_SHA})"
+          IMAGE_TAG: "${RELEASE_NAME}:${COMMIT_HASH}"
         
       - name: Build App Image
         uses: docker/build-push-action@v1
@@ -63,9 +63,9 @@ jobs:
 #      - name: Deploy
 #        if: github.event.pull_request.merged == true
 #        env:
-#          DEPLOY_SCRIPT_BASE=https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/
-#          DEPLOY_SCRIPT_BRANCH=master
-#          DEPLOY_SCRIPT=${DEPLOY_SCRIPT_BASE}/${DEPLOY_SCRIPT_BRANCH}/travis-ci/deploy.sh
+#          DEPLOY_SCRIPT_BASE: https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/
+#          DEPLOY_SCRIPT_BRANCH: master
+#          DEPLOY_SCRIPT: ${DEPLOY_SCRIPT_BASE}/${DEPLOY_SCRIPT_BRANCH}/travis-ci/deploy.sh
 #          GCP_JSON_KEY=gcp.json
 #        run: |
 #          curl -Ls "$DEPLOY_SCRIPT" | bash
