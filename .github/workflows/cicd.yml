@@ -46,7 +46,8 @@ jobs:
       - name: Run Tests
         shell: bash
         run: >-
-          docker run -u root -it -v /tmp:/coverage
+          docker run -u root -t
+          -v /tmp:/coverage
           -e DJANGO_APP="${{ env.DJANGO_APP }}"
           -e "ENV=localdev" -e "AUTH=SAML_MOCK"
           app-test-container
