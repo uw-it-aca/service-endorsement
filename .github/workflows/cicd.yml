@@ -4,8 +4,6 @@ name: build-test-deploy-containerized-python-app
 env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
-  COMMIT_HASH: $(git rev-parse --short=7 ${{ github.sha }})
-  IMAGE_TAG: "${RELEASE_NAME}:${COMMIT_HASH}"
 
 on:
   push:
@@ -14,12 +12,17 @@ on:
 
 jobs:
   pipeline:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Build App Images for ${{ env.IMAGE_TAG }}
+      - name: Setup Environment
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}" >> $GITHUB_ENV
+
+      - name: Build App and Test Images
         id: docker_build
         run: |
           docker build --target app-container -t "${{ env.IMAGE_TAG }}" .
