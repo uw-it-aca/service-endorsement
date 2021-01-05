@@ -38,11 +38,11 @@ jobs:
       - name: Prep Test Tooling
         uses: actions/setup-python@v2
         with:
-            python-version: 3.6
-        run: |
-          python -m pip install --upgrade pip
-          pip install coverage
-          pip install coveralls
+          python-version: 3.6
+          run: |
+            python -m pip install --upgrade pip
+            pip install coverage
+            pip install coveralls
 
       - name: Test Image
         uses: addnab/docker-run-action@v1
