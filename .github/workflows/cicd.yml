@@ -19,7 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        id: repository
         uses: actions/checkout@v2
 
       - name: Docker Cache
@@ -38,7 +37,7 @@ jobs:
           context: ./
           file: 
           target: app-container
-          tags: ${{ repository.env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_TAG }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
