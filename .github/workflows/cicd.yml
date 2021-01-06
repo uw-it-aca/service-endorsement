@@ -38,7 +38,7 @@ jobs:
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
           docker build --target app-container -t "${{ env.IMAGE_TAG }}" --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache .
           docker tag "${{ env.IMAGE_TAG }}" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
-          docker build -t app-test-container --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache .
+          docker build --target app-test-container -t app-test-container --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache .
 
       - name: Install test tooling
         shell: bash
