@@ -68,7 +68,7 @@ jobs:
           coveralls
 
       - name: Deploy
-        if: github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == 'true'
         env:
           GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TRAVIS_BRANCH: ${{ github.base_ref }}
