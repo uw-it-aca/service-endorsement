@@ -18,18 +18,18 @@ jobs:
   pipeline:
     runs-on: ubuntu-18.04
     steps:
-      - name: Checkout repo
+      - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Setup python
+      - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.6
 
-      - name: Set commit hash
+      - name: Set Commit Hash
         run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
-      - name: Set image tag
+      - name: Set Image Tag
         run: >-
           echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
           >> $GITHUB_ENV
@@ -43,14 +43,14 @@ jobs:
           docker tag "${{ env.IMAGE_TAG }}" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
           docker build --target app-test-container -t app-test-container --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache .
 
-      - name: Install test tooling
+      - name: Install Test Tooling
         shell: bash
         run: |
           python -m pip install --upgrade pip
           pip install coverage
           pip install coveralls
 
-      - name: Run Tests
+      - name: Test Images
         shell: bash
         run: >-
           docker run -u root -t
@@ -67,13 +67,14 @@ jobs:
           coverage combine
           coveralls
 
-      - name: Deploy
-        if: github.event.pull_request.merged == 'true'
+      - name: Deploy Image
         env:
           GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GCP_JSON_KEY: ${{ secrets.GCP_JSON_KEY }}
           TRAVIS_BRANCH: ${{ github.base_ref }}
           TRAVIS_REPO_SLUG: ${{ github.repository }}
           TRAVIS_BUILD_NUMBER: ${{ github.run_id }}
-          TRAVIS_BUILD_WEB_URL: ${{ github.action_path }}
-        run: >-
+          TRAVIS_BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          echo ${{ github.event.pull_request.merged }}
           curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/travis-ci/dumpenv.sh | bash
