@@ -21,7 +21,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Setup python
+      - name: Set up python
         uses: actions/setup-python@v2
         with:
           python-version: 3.6
@@ -50,7 +50,7 @@ jobs:
           pip install coverage
           pip install coveralls
 
-      - name: Run Tests
+      - name: Test Images
         shell: bash
         run: >-
           docker run -u root -t
@@ -74,7 +74,7 @@ jobs:
           TRAVIS_BRANCH: ${{ github.base_ref }}
           TRAVIS_REPO_SLUG: ${{ github.repository }}
           TRAVIS_BUILD_NUMBER: ${{ github.run_id }}
-          TRAVIS_BUILD_WEB_URL: ${{ github.action_path }}
+          TRAVIS_BUILD_WEB_URL: https://github.com/${{ github.repository }}/runs/${{ github.run_id }}
         run: |
           echo ${{ github.event.pull_request.merged }}
           curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/travis-ci/dumpenv.sh | bash
