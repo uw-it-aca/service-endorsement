@@ -77,5 +77,5 @@ jobs:
           TRAVIS_BUILD_NUMBER: ${{ github.run_id }}
           TRAVIS_BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          echo ${{ secrets.GCP_JSON_KEY }} > ${GCP_JSON_KEY}
+          echo "${{ secrets.GCP_JSON_KEY }}" | base64 -d > ${GCP_JSON_KEY}
           curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/travis-ci/dumpenv.sh | bash
