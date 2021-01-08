@@ -70,6 +70,7 @@ jobs:
       - name: Deploy
         env:
           GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GCP_JSON_KEY: ${{ secrets.GCP_JSON_KEY }}
           TRAVIS_BRANCH: ${{ github.base_ref }}
           TRAVIS_REPO_SLUG: ${{ github.repository }}
           TRAVIS_BUILD_NUMBER: ${{ github.run_id }}
