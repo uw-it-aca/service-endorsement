@@ -68,12 +68,12 @@ jobs:
           coveralls
 
       - name: Deploy
-        if: github.event.pull_request.merged == 'true'
         env:
           GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TRAVIS_BRANCH: ${{ github.base_ref }}
           TRAVIS_REPO_SLUG: ${{ github.repository }}
           TRAVIS_BUILD_NUMBER: ${{ github.run_id }}
           TRAVIS_BUILD_WEB_URL: ${{ github.action_path }}
-        run: >-
+        run: |
+          echo ${{ github.event.pull_request.merged }}
           curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/travis-ci/dumpenv.sh | bash
