@@ -4,7 +4,6 @@ name: Build, Test and Deploy
 env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
-  COMMIT_HASH: $(git rev-parse --short=7 "$GITHUB_SHA")
 
 on:
   push:
@@ -24,25 +23,27 @@ jobs:
 
     env:
       GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BRANCH: ${GITHUB_REF##*/}
-      IMAGE_TAG: ${RELEASE_NAME}:${COMMIT_HASH}
-      GIT_REPO_BRANCH: ${{ github.ref }}
+      GIT_REPO_BRANCH: ${{ github.base_ref }}
       GIT_REPO_SLUG: ${{ github.repository }}
+      GCR_TAG_BASE: gcr.io/uwit-mci-axdd
       BUILD_NUMBER: ${{ github.run_id }}
       BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      DEPLOY_APP_BASE: https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.6
+      - name: Set Commit Hash
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> GITHUB_ENV
+
+      - name: Set Image Tag
+          echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:${COMMIT_HASH}" >> GITHUB_ENV
 
       - name: Prep Image Cache
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          echo "$GH_AUTH_TOKEN" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
 
@@ -65,6 +66,11 @@ jobs:
       - name: Build Test Image
         run: |
           docker build --target app-test-container -t app-test-container --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
 
       - name: Install Test Tooling
         shell: bash
@@ -94,25 +100,31 @@ jobs:
       - name: Push Image to GCR
         # if: github.event_name == 'push'
         env:
-          REPO_TAG: gcr.io/uwit-mci-axdd/$IMAGE_TAG
+          GCR_TAG: ${{ env.GCR_TAG_BASE }}/${{ env.IMAGE_TAG }}
         run: |
           echo "${{ secrets.GCP_JSON_KEY }}" | docker login --username=_json_key --password-stdin https://gcr.io
-          echo docker tag "$IMAGE_TAG" "$REPO_TAG"
-          echo docker push "$REPO_TAG"
+          echo docker tag "$IMAGE_TAG" "$GCR_TAG"
+          echo docker push "$GCR_TAG"
 
       - name: Deploy Production
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: >-
+          github.event_name == 'push' &&
+          github.ref == 'refs/heads/master'
         run: |
-          curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/dumpenv.sh | bash
+          curl -Ls ${DEPLOY_APP_BASE}/feature/dump-env/dumpenv.sh | bash
 
       - name: Deploy Develop
-        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        if: >-
+           github.event_name == 'push' &&
+           github.ref == 'refs/heads/develop'
         run: |
-          curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/dumpenv.sh | bash
+          curl -Ls ${DEPLOY_APP_BASE}/feature/dump-env/dumpenv.sh | bash
 
       - name: Deploy Personal Evaluation
-        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/github-actions'
+        if: >-
+          github.event_name == 'push' &&
+           github.ref == 'refs/heads/feature/github-actions'
         env:
           FOO: bar
         run: |
-          curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/dumpenv.sh | bash
+          curl -Ls ${DEPLOY_APP_BASE}/feature/dump-env/dumpenv.sh | bash
