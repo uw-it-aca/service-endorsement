@@ -27,7 +27,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set Commit Hash
-        run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+          echo "ONE: ${GITHUB_REF##*/}"
+          echo "TWO: ${GITHUB_REF##*/}"
+          echo "THREE: $GITHUB_REF"
 
       - name: Set Image Tag
         run: echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
@@ -104,7 +108,7 @@ jobs:
           docker push "$GCR_TAG"
 
   deploy:
-    # if: github.event_name == 'push'
+    if: github.event_name == 'push'
 
     needs: build
 
@@ -122,8 +126,6 @@ jobs:
       - name: Setup Deploy Environment
         run: |
           echo "GIT_REPO_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "ONE: ${GITHUB_REF##*/}"
-          echo "TWO: ${GITHUB_REF##*/}"
       - name: Deploy Production
         if: env.GIT_REPO_BRANCH == 'master'
         run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
