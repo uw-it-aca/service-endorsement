@@ -102,23 +102,17 @@ jobs:
 
       - name: Deploy Production
         if: ${{ github.event_name == 'push' && github.ref == 'master' }}
-        needs:
-          - tests
         run: |
           curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/dumpenv.sh | bash
 
       - name: Deploy Develop
         if: ${{ github.event_name == 'push' && github.ref == 'develop' }}
-        needs:
-          - tests
         env:
         run: |
           curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/dumpenv.sh | bash
 
       - name: Deploy Personal Evaluation
         if: ${{ github.event_name == 'push' && github.ref == 'feature/github-actions' }}
-        needs:
-          - tests
         env:
         run: |
           curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/dumpenv.sh | bash
