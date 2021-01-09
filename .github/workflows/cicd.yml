@@ -104,7 +104,7 @@ jobs:
           docker push "$GCR_TAG"
 
   deploy:
-    if: github.event_name == 'push'
+    # if: github.event_name == 'push'
 
     needs: build
 
@@ -120,7 +120,9 @@ jobs:
 
     steps:
       - name: Setup Deploy Environment
-        run: echo "GIT_REPO_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+        run: |
+          echo "GIT_REPO_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo ${GITHUB_REF##*/}
 
       - name: Deploy Production
         if: env.GIT_REPO_BRANCH == 'master'
