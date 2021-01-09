@@ -92,7 +92,6 @@ jobs:
       - name: Setup Deploy Environment
         if: ${{ github.event_name == 'push' }}
         run: |
-          echo "ref: ${{ github.ref }}"
           echo "GH_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
           echo "GCP_JSON_KEY=gcp.json" >> $GITHUB_ENV
           echo "${{ secrets.GCP_JSON_KEY }}" | base64 -d > gcp.json
