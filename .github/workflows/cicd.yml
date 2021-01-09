@@ -39,6 +39,7 @@ jobs:
           echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> GITHUB_ENV
 
       - name: Set Image Tag
+        run: |
           echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:${COMMIT_HASH}" >> GITHUB_ENV
 
       - name: Prep Image Cache
