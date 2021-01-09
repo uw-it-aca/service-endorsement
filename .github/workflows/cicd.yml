@@ -1,5 +1,5 @@
 ---
-name: cicd
+name: Build, test and deploy
 
 env:
   RELEASE_NAME: prt
@@ -13,6 +13,10 @@ on:
   pull_request:
     branches:
       - feature/github-actions
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 jobs:
   pipeline:
@@ -34,14 +38,31 @@ jobs:
           echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
           >> $GITHUB_ENV
 
-      - name: Build App and Test Images
-        id: docker_build
-        run: |
+      - name: Prep Image Cache
+         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
-          docker build --target app-container -t "${{ env.IMAGE_TAG }}" --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache .
+          docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
+
+      - name: Build Intermediate Image
+        run: |
+          docker build --target wpack -t wpack --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
+
+      - name: Cache Intermediate Image
+        run: |
+          docker tag wpack docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
+
+      - name: Build App Image
+        run: |
+          docker build --target app-container -t "${{ env.IMAGE_TAG }}" --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
+
+      - name: Cache App Image
+        run: |
           docker tag "${{ env.IMAGE_TAG }}" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
-          docker build --target app-test-container -t app-test-container --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache .
+
+      - name: Build Test Image
+        run: |
+          docker build --target app-test-container -t app-test-container --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
 
       - name: Install Test Tooling
         shell: bash
@@ -68,7 +89,7 @@ jobs:
           coveralls
 
       - name: Deploy Image
-        if: github.event.pull_request.merged == ''
+        if: if github.event_name == 'push'
         env:
           GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GCP_JSON_KEY: gcp.json
@@ -78,4 +99,4 @@ jobs:
           TRAVIS_BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           echo "${{ secrets.GCP_JSON_KEY }}" | base64 -d > ${GCP_JSON_KEY}
-          curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/travis-ci/dumpenv.sh | bash
+          curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/dumpenv.sh | bash
