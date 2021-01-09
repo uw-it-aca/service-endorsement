@@ -25,7 +25,7 @@ jobs:
     env:
       GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BRANCH: ${GITHUB_REF##*/}
-      IMAGE_TAG: ${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}
+      IMAGE_TAG: ${RELEASE_NAME}:${COMMIT_HASH}
       GIT_REPO_BRANCH: ${{ github.ref }}
       GIT_REPO_SLUG: ${{ github.repository }}
       BUILD_NUMBER: ${{ github.run_id }}
@@ -79,7 +79,7 @@ jobs:
         run: >-
           docker run -u root -t
           -v /tmp:/coverage
-          -e DJANGO_APP="${{ env.DJANGO_APP }}"
+          -e DJANGO_APP="$DJANGO_APP"
           -e "ENV=localdev" -e "AUTH=SAML_MOCK"
           app-test-container
           bash -c ". ./docker/test.sh"
