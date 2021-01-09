@@ -18,18 +18,12 @@ on:
       - synchronize
 
 jobs:
-  pipeline:
+  build:
     runs-on: ubuntu-18.04
 
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GIT_REPO_SLUG: ${{ github.repository }}
       GCR_TAG_BASE: gcr.io/uwit-mci-axdd
-      BUILD_NUMBER: ${{ github.run_id }}
-      BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-      DEPLOY_APP_BASE: https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy
-      DEPLOY_APP_BRANCH: feature/dump-env
 
     steps:
       - name: Checkout Repo
@@ -43,7 +37,7 @@ jobs:
 
       - name: Prep Image Cache
         run: |
-          echo "$GH_AUTH_TOKEN" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          echo "$GITHUB_TOKEN" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
 
@@ -106,21 +100,41 @@ jobs:
           docker tag "$IMAGE_TAG" "$GCR_TAG"
           docker push "$GCR_TAG"
 
+  deploy:
+    if: github.event_name == 'push'
+
+    needs: build
+
+    runs-on: ubuntu-18.04
+
+    env:
+      GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GIT_REPO_SLUG: ${{ github.repository }}
+      BUILD_NUMBER: ${{ github.run_id }}
+      BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      DEPLOY_APP_BASE: https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy
+      DEPLOY_APP_BRANCH: feature/dump-env
+
+    steps:
+      - name: Set Commit Hash
+        run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+
+      - name: Set Image Tag
+        run: echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
+
       - name: Setup Deploy Environment
         run: echo "GIT_REPO_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
       - name: Deploy Production
-        if: github.event_name == 'push' && env.GIT_REPO_BRANCH == 'master'
+        if: env.GIT_REPO_BRANCH == 'master'
         run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
 
       - name: Deploy Develop
-        if: github.event_name == 'push' && env.GIT_REPO_BRANCH == 'develop'
+        if: env.GIT_REPO_BRANCH == 'develop'
         run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
 
       - name: Deploy Personal Evaluation
-        if: >-
-          github.event_name == 'push' &&
-           env.GIT_REPO_BRANCH == 'feature/github-actions'
+        if: env.GIT_REPO_BRANCH == 'feature/github-actions'
         env:
           FOO: bar
         run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
