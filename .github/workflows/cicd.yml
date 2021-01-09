@@ -20,6 +20,8 @@ on:
 
 jobs:
   prep:
+    runs-on: ubuntu-18.04
+
     steps:
       - name: Set Commit Hash
         run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
@@ -28,6 +30,8 @@ jobs:
         run: echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
 
   build:
+    needs: prep
+
     runs-on: ubuntu-18.04
 
     steps:
