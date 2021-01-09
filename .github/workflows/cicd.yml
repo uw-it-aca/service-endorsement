@@ -72,6 +72,7 @@ jobs:
           pip install coveralls
 
       - name: Test Images
+        id: tests
         shell: bash
         run: >-
           docker run -u root -t
@@ -90,6 +91,8 @@ jobs:
 
       - name: Deploy Image
         if: github.event_name == 'push'
+        uses:
+          - tests
         env:
           GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GCP_JSON_KEY: gcp.json
