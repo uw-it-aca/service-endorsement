@@ -33,30 +33,38 @@ jobs:
         run: echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
 
       - name: Prep Image Cache
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
+        run: >-
+          echo "${{ secrets.GITHUB_TOKEN }}" | 
+          docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin &&
+          docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true &&
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
 
       - name: Build Intermediate Image
-        run: |
-          docker build --target wpack -t wpack --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
+        run: >-
+          docker build --target wpack -t wpack
+          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
 
       - name: Cache Intermediate Image
-        run: |
-          docker tag wpack docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
+        run: >-
+          docker tag wpack docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache &&
+          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
 
       - name: Build App Image
-        run: |
-          docker build --target app-container -t "$IMAGE_TAG" --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
+        run: >-
+          docker build --target app-container -t "$IMAGE_TAG"
+          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache
+          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
 
       - name: Cache App Image
-        run: |
-          docker tag "$IMAGE_TAG" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
+        run: >-
+          docker tag "$IMAGE_TAG" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache &&
+          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
 
       - name: Build Test Image
-        run: |
-          docker build --target app-test-container -t app-test-container --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
+        run: >-
+          docker build --target app-test-container -t app-test-container
+          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache
+          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
 
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -89,13 +97,14 @@ jobs:
         if: github.event_name == 'push'
         env:
           GCR_TAG: ${{ env.GCR_TAG_BASE }}/${{ env.IMAGE_TAG }}
-        run: |
-          echo "${{ secrets.GCP_JSON_KEY }}" | base64 -d | docker login --username=_json_key --password-stdin https://gcr.io
-          docker tag "$IMAGE_TAG" "$GCR_TAG"
+        run: >-
+          echo "${{ secrets.GCP_JSON_KEY }}" | base64 -d | 
+          docker login --username=_json_key --password-stdin https://gcr.io &&
+          docker tag "$IMAGE_TAG" "$GCR_TAG" &&
           docker push "$GCR_TAG"
 
   deploy:
-#    if: github.event_name == 'push'
+    if: github.event_name == 'push'
 
     needs: build
 
