@@ -120,8 +120,10 @@ jobs:
 
     steps:
       - name: Setup Deploy Environment
-        run: echo "GIT_REPO_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-
+        run: |
+          echo "GIT_REPO_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "ONE: $GITHUB_REF"
+          echo "TWO: ${GITHUB_REF##*/}"
       - name: Deploy Production
         if: env.GIT_REPO_BRANCH == 'master'
         run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
