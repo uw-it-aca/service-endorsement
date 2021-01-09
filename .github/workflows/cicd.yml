@@ -19,24 +19,18 @@ on:
       - synchronize
 
 jobs:
-  prep:
-    runs-on: ubuntu-18.04
-
-    steps:
-      - name: Set Commit Hash
-        run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
-
-      - name: Set Image Tag
-        run: echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
-
   build:
-    needs: prep
-
     runs-on: ubuntu-18.04
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
+
+      - name: Set Commit Hash
+        run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+
+      - name: Set Image Tag
+        run: echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
 
       - name: Prep Image Cache
         run: |
@@ -99,7 +93,7 @@ jobs:
           docker push "$GCR_TAG"
 
   deploy:
-    if: github.event_name == 'push'
+#    if: github.event_name == 'push'
 
     needs: build
 
