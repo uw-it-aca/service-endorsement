@@ -1,10 +1,10 @@
 ---
-name: Build, test and deploy
+name: Build, Test and Deploy
 
 env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  COMMIT_HASH: $(git rev-parse --short=7 "$GITHUB_SHA")
 
 on:
   push:
@@ -21,6 +21,16 @@ on:
 jobs:
   pipeline:
     runs-on: ubuntu-18.04
+
+    env:
+      GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BRANCH: ${GITHUB_REF##*/}
+      IMAGE_TAG: ${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}
+      GIT_REPO_BRANCH: ${{ github.ref }}
+      GIT_REPO_SLUG: ${{ github.repository }}
+      BUILD_NUMBER: ${{ github.run_id }}
+      BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -29,14 +39,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.6
-
-      - name: Set Commit Hash
-        run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
-
-      - name: Set Image Tag
-        run: >-
-          echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:${{ env.COMMIT_HASH }}"
-          >> $GITHUB_ENV
 
       - name: Prep Image Cache
         run: |
@@ -54,11 +56,11 @@ jobs:
 
       - name: Build App Image
         run: |
-          docker build --target app-container -t "${{ env.IMAGE_TAG }}" --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
+          docker build --target app-container -t "$IMAGE_TAG" --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
 
       - name: Cache App Image
         run: |
-          docker tag "${{ env.IMAGE_TAG }}" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
+          docker tag "$IMAGE_TAG" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
 
       - name: Build Test Image
         run: |
@@ -71,7 +73,7 @@ jobs:
           pip install coverage
           pip install coveralls
 
-      - name: Test Images
+      - name: Run Image Tests
         id: tests
         shell: bash
         run: >-
@@ -89,29 +91,27 @@ jobs:
           coverage combine
           coveralls
 
-      - name: Setup Deploy Environment
-        if: ${{ github.event_name == 'push' }}
+      - name: Push Image to GCR
+        # if: github.event_name == 'push'
+        env:
+          REPO_TAG: gcr.io/uwit-mci-axdd/$IMAGE_TAG
         run: |
-          echo "GH_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
-          echo "GCP_JSON_KEY=gcp.json" >> $GITHUB_ENV
-          echo "${{ secrets.GCP_JSON_KEY }}" | base64 -d > gcp.json
-          echo "TRAVIS_BRANCH=${{ github.ref }}" >> $GITHUB_ENV
-          echo "TRAVIS_REPO_SLUG=${{ github.repository }}" >> $GITHUB_ENV
-          echo "TRAVIS_BUILD_NUMBER=${{ github.run_id }}" >> $GITHUB_ENV
-          echo "TRAVIS_BUILD_WEB_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
+          echo "${{ secrets.GCP_JSON_KEY }}" | docker login --username=_json_key --password-stdin https://gcr.io
+          echo docker tag "$IMAGE_TAG" "$REPO_TAG"
+          echo docker push "$REPO_TAG"
 
       - name: Deploy Production
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/dumpenv.sh | bash
 
       - name: Deploy Develop
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
           curl -Ls https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy/feature/dump-env/dumpenv.sh | bash
 
       - name: Deploy Personal Evaluation
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/github-actions' }}
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/github-actions'
         env:
           FOO: bar
         run: |
