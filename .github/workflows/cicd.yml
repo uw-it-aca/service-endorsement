@@ -94,11 +94,11 @@ jobs:
         run: |
           echo "GH_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
           echo "GCP_JSON_KEY=gcp.json" >> $GITHUB_ENV
+          echo "${{ secrets.GCP_JSON_KEY }}" | base64 -d > gcp.json
           echo "TRAVIS_BRANCH=${{ github.base_ref }}" >> $GITHUB_ENV
           echo "TRAVIS_REPO_SLUG=${{ github.repository }}" >> $GITHUB_ENV
           echo "TRAVIS_BUILD_NUMBER=${{ github.run_id }}" >> $GITHUB_ENV
           echo "TRAVIS_BUILD_WEB_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
-          echo "${{ secrets.GCP_JSON_KEY }}" | base64 -d > ${GCP_JSON_KEY}
 
       - name: Deploy Production
         if: ${{ github.event_name == 'push' && github.ref == 'master' }}
