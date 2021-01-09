@@ -39,7 +39,7 @@ jobs:
           >> $GITHUB_ENV
 
       - name: Prep Image Cache
-         run: |
+        run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
