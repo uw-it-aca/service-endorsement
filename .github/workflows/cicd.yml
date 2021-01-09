@@ -4,6 +4,7 @@ name: Build, Test and Deploy
 env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
+  GCR_TAG_BASE: gcr.io/uwit-mci-axdd
 
 on:
   push:
@@ -18,26 +19,24 @@ on:
       - synchronize
 
 jobs:
-  build:
-    runs-on: ubuntu-18.04
-
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GCR_TAG_BASE: gcr.io/uwit-mci-axdd
-
+  prep:
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-
       - name: Set Commit Hash
         run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
       - name: Set Image Tag
         run: echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
 
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
       - name: Prep Image Cache
         run: |
-          echo "$GITHUB_TOKEN" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
           docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
 
@@ -66,13 +65,6 @@ jobs:
         with:
           python-version: 3.6
 
-      - name: Install Test Tooling
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip
-          pip install coverage
-          pip install coveralls
-
       - name: Run Image Tests
         id: tests
         shell: bash
@@ -87,11 +79,13 @@ jobs:
       - name: Record Test Results
         shell: bash
         run: |
+          python -m pip install --upgrade pip
+          pip install coverage coveralls
           cp /tmp/.coverage.* .
           coverage combine
           coveralls
 
-      - name: Push Image ${{ env.IMAGE_TAG }} to GCR
+      - name: Push Image to GCR
         if: github.event_name == 'push'
         env:
           GCR_TAG: ${{ env.GCR_TAG_BASE }}/${{ env.IMAGE_TAG }}
@@ -116,12 +110,6 @@ jobs:
       DEPLOY_APP_BRANCH: feature/dump-env
 
     steps:
-      - name: Set Commit Hash
-        run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
-
-      - name: Set Image Tag
-        run: echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
-
       - name: Setup Deploy Environment
         run: echo "GIT_REPO_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
