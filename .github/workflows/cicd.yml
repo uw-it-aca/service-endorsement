@@ -24,12 +24,12 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GIT_REPO_BRANCH: ${{ github.base_ref }}
       GIT_REPO_SLUG: ${{ github.repository }}
       GCR_TAG_BASE: gcr.io/uwit-mci-axdd
       BUILD_NUMBER: ${{ github.run_id }}
       BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
       DEPLOY_APP_BASE: https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy
+      DEPLOY_APP_BRANCH: feature/dump-env
 
     steps:
       - name: Checkout Repo
@@ -97,8 +97,8 @@ jobs:
           coverage combine
           coveralls
 
-      - name: Push Image to GCR
-        # if: github.event_name == 'push'
+      - name: Push Image ${{ env.IMAGE_TAG }} to GCR
+        if: github.event_name == 'push'
         env:
           GCR_TAG: ${{ env.GCR_TAG_BASE }}/${{ env.IMAGE_TAG }}
         run: |
@@ -106,25 +106,21 @@ jobs:
           docker tag "$IMAGE_TAG" "$GCR_TAG"
           docker push "$GCR_TAG"
 
+      - name: Setup Deploy Environment
+        run: echo "GIT_REPO_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
       - name: Deploy Production
-        if: >-
-          github.event_name == 'push' &&
-          github.ref == 'refs/heads/master'
-        run: |
-          curl -Ls ${DEPLOY_APP_BASE}/feature/dump-env/dumpenv.sh | bash
+        if: github.event_name == 'push' && env.GIT_REPO_BRANCH == 'master'
+        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
 
       - name: Deploy Develop
-        if: >-
-           github.event_name == 'push' &&
-           github.ref == 'refs/heads/develop'
-        run: |
-          curl -Ls ${DEPLOY_APP_BASE}/feature/dump-env/dumpenv.sh | bash
+        if: github.event_name == 'push' && env.GIT_REPO_BRANCH == 'develop'
+        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
 
       - name: Deploy Personal Evaluation
         if: >-
           github.event_name == 'push' &&
-           github.ref == 'refs/heads/feature/github-actions'
+           env.GIT_REPO_BRANCH == 'feature/github-actions'
         env:
           FOO: bar
-        run: |
-          curl -Ls ${DEPLOY_APP_BASE}/feature/dump-env/dumpenv.sh | bash
+        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
