@@ -89,7 +89,7 @@ jobs:
           coveralls
 
       - name: Deploy Image
-        if: if github.event_name == 'push'
+        if: github.event_name == 'push'
         env:
           GH_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GCP_JSON_KEY: gcp.json
