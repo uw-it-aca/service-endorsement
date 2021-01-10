@@ -121,7 +121,7 @@ jobs:
   deploy:
     if: github.event_name == 'push'
 
-    needs: build
+    needs: [environment, build]
 
     runs-on: ubuntu-18.04
 
