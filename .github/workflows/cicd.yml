@@ -121,6 +121,7 @@ jobs:
     steps:
       - name: Setup Deploy Environment
         run: |
+          echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
           echo "GIT_REPO_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
       - name: Deploy Production
