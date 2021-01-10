@@ -134,5 +134,5 @@ jobs:
       - name: Deploy Personal Evaluation
         if: env.GIT_REPO_BRANCH == 'feature/github-actions'
         env:
-          FOO: bar
+          FOO: foobar
         run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
