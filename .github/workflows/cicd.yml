@@ -29,8 +29,8 @@ jobs:
           export FULL_COMMIT_HASH="${{ github.sha }}"
           export COMMIT_HASH="${FULL_COMMIT_HASH:0:7}"
           echo "::set-output name=commit_hash::${COMMIT_HASH}"
-        outputs:
-          commit_hash: ${{ steps.global-env.outputs.commit_hash }}
+    outputs:
+      commit_hash: ${{ steps.global-env.outputs.commit_hash }}
 
   build:
     needs: environment
