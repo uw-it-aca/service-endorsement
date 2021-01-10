@@ -43,7 +43,7 @@ jobs:
 
       - name: Setup Environment
         run: |
-          export COMMIT_HASH="${{ steps.global-env.outputs.commit_hash }}"
+          export COMMIT_HASH="${{ needs.environment.outputs.commit_hash }}"
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
           echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
 
@@ -136,7 +136,7 @@ jobs:
     steps:
       - name: Setup Environment
         run: |
-          export COMMIT_HASH="${{ steps.global-env.outputs.commit_hash }}"
+          export COMMIT_HASH="${{ needs.environment.outputs.commit_hash }}"
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
           echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
           echo "GIT_REPO_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
