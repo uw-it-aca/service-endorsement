@@ -9,10 +9,12 @@ env:
 on:
   push:
     branches:
+      - master
       - develop
       - feature/github-actions
   pull_request:
     branches:
+      - master
       - develop
       - feature/github-actions
     types: [opened, reopened, synchronize]
