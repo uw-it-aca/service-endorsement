@@ -149,5 +149,6 @@ jobs:
       - name: Deploy Special Evaluation Branch
         if: env.GIT_REPO_BRANCH == 'feature/github-actions'
         env:
-          APP_INSTANCE: dev
-        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/deploy.sh --dry-run | bash
+          APP_INSTANCE: eval
+          DRY_RUN: true
+        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/deploy.sh | bash
