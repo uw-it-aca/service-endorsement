@@ -13,10 +13,7 @@ on:
   pull_request:
     branches:
       - feature/github-actions
-    types:
-      - opened
-      - reopened
-      - synchronize
+    types: [opened, reopened, synchronize]
 
 jobs:
   environment:
@@ -81,11 +78,6 @@ jobs:
           --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache
           --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.6
-
       - name: Run Image Tests
         id: tests
         shell: bash
@@ -96,6 +88,11 @@ jobs:
           -e "ENV=localdev" -e "AUTH=SAML_MOCK"
           app-test-container
           bash -c ". ./docker/test.sh"
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
 
       - name: Record Test Results
         env:
@@ -131,7 +128,7 @@ jobs:
       BUILD_NUMBER: ${{ github.run_id }}
       BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
       DEPLOY_APP_BASE: https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy
-      DEPLOY_APP_BRANCH: feature/dump-env
+      DEPLOY_APP_BRANCH: feature/platform-neutral
 
     steps:
       - name: Setup Environment
@@ -142,15 +139,15 @@ jobs:
           echo "GIT_REPO_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
       - name: Deploy Production
-        if: env.GIT_REPO_BRANCH == 'master'
-        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
+        if: env.GIT_REPO_BRANCH == 'main' || env.GIT_REPO_BRANCH == 'master'
+        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/deploy.sh | bash
 
-      - name: Deploy Develop
+      - name: Deploy Test Branch
         if: env.GIT_REPO_BRANCH == 'develop'
-        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
+        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/deploy.sh | bash
 
-      - name: Deploy Personal Evaluation
+      - name: Deploy Special Evaluation Branch
         if: env.GIT_REPO_BRANCH == 'feature/github-actions'
         env:
-          FOO: foobar
-        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/dumpenv.sh | bash
+          APP_INSTANCE: dev
+        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/deploy.sh --dry-run | bash
