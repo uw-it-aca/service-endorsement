@@ -93,16 +93,21 @@ jobs:
           app-test-container
           bash -c ". ./docker/test.sh"
 
-      - name: Prep Coveralls Output
-        run: |
-          ls -Rlh /tmp/*/lcov.info
-          cat /tmp/*/lcov.info > /tmp/lcov.info
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
 
-      - name: Coveralls
+      - name: Prepare Test Resuls
+        run: |
+          python -m pip install --upgrade pip coverage
+          cp /tmp/.coverage.* .
+          coverage combine
+
+      - name: Submit Coveralls Resuls
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: /tmp/lcov.info
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
