@@ -142,9 +142,6 @@ jobs:
           echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
           echo "GIT_REPO_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
-      - name: Checkout Repo for Helm Values
-        uses: actions/checkout@v2
-
       - name: Deploy Production
         if: env.GIT_REPO_BRANCH == 'main' || env.GIT_REPO_BRANCH == 'master'
         run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/deploy.sh | bash
