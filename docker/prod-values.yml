@@ -42,7 +42,7 @@ resources:
   requests:
     cpu: 200m
 image:
-  repository: registry.hub.docker.com/acait/prt
+  repository: gcr.io/uwit-mci-axdd/prt
   tag: IMAGE_TAG
 metrics:
   enabled: true
@@ -95,6 +95,8 @@ certs:
 environmentVariables:
   - name: ENV
     value: prod
+  - name: WEBSERVER
+    value: nginx
   - name: GWS_ENV
     value: PROD
   - name: PWS_ENV

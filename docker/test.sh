@@ -2,9 +2,9 @@
 set -e
 trap 'exit 1' ERR
 
-# travis test script for django app
+# test script for django app
 #
-# PRECONDITION: inherited env vars from application's .travis.yml MUST include:
+# PRECONDITION: inherited environment vars from MUST include:
 #      DJANGO_APP: django application directory name
 
 # start virtualenv
