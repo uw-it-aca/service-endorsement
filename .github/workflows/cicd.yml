@@ -107,6 +107,7 @@ jobs:
           python -m pip install --upgrade pip coverage
           cp /tmp/.coverage.* .
           coverage combine
+          ls -lR .
           # coveralls || true
 
       - name: Post Coveralls Result
