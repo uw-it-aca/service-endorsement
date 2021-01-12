@@ -95,15 +95,13 @@ jobs:
 
       - name: Prep Coveralls
         run: |
-          python -m pip install --upgrade pip
-          pip install coverage
-          cp /tmp/.coverage.* .
-          coverage combine
+          cp /tmp/.coverage.* ./coverage
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
