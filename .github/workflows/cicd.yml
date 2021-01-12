@@ -82,17 +82,12 @@ jobs:
           --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache
           --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
 
-      - name: Prep for Test Results
-        shell: bash
-        run: |
-          mkdir coverage
-
       - name: Run Tests in Image
         id: tests
         shell: bash
         run: >-
           docker run -u root -t
-          -v coverage:/coverage
+          -v .:/coverage
           -e DJANGO_APP="$DJANGO_APP"
           -e "ENV=localdev" -e "AUTH=SAML_MOCK"
           app-test-container
