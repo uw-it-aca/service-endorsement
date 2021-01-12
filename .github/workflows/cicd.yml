@@ -93,7 +93,7 @@ jobs:
           app-test-container
           bash -c ". ./docker/test.sh"
 
-      -name: Prep Coveralls Output
+      - name: Prep Coveralls Output
         run: |
           python -m pip install --upgrade pip coverage
           cp /tmp/.coverage.* .
