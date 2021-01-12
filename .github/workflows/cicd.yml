@@ -82,7 +82,7 @@ jobs:
           --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache
           --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
 
-      - name: Run Image Tests
+      - name: Run Tests in Image
         id: tests
         shell: bash
         run: >-
@@ -103,15 +103,17 @@ jobs:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          python -m pip install --upgrade pip coverage# coveralls
+          #python -m pip install --upgrade pip coverage coveralls
+          python -m pip install --upgrade pip coverage
           cp /tmp/.coverage.* .
           coverage combine
           # coveralls || true
 
-      - name: Coveralls
+      - name: Post Coveralls Result
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: integration
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
