@@ -130,8 +130,7 @@ jobs:
       BUILD_NUMBER: ${{ github.run_id }}
       BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
       DEPLOY_APP_BASE: https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy
-      # DEPLOY_APP_BRANCH: master
-      DEPLOY_APP_BRANCH: feature/platform-neutral
+      DEPLOY_APP_BRANCH: master
 
     steps:
       - name: Setup Environment
