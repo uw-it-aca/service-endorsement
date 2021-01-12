@@ -93,21 +93,14 @@ jobs:
           app-test-container
           bash -c ". ./docker/test.sh"
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.6
-
-      - name: Record Test Results
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
+      - name: Prep Coveralls
         run: |
-          python -m pip install --upgrade pip
-          pip install coverage coveralls
           cp /tmp/.coverage.* .
-          coverage combine
-          coveralls
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
