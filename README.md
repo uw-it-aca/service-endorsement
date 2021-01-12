@@ -1,11 +1,9 @@
 # service-endorsement
-A Django web app enabling UW employees to manage their endorsement of non-employees to use selected UW-IT services.
+A web application enabling UW employees to provision non-employees to selected UW-IT services.
 
-[![Build Status](https://api.travis-ci.org/uw-it-aca/service-endorsement.svg?branch=master)](https://travis-ci.org/uw-it-aca/service-endorsement)
+[![Build Status](https://github.com/uw-it-aca/service-endorsement/workflows/build-test-deploy-containerized-python-app/badge.svg)](https://github.com/uw-it-aca/service-endorsement/actions)
 [![Coverage Status](https://coveralls.io/repos/uw-it-aca/service-endorsement/badge.png?branch=master)](https://coveralls.io/r/uw-it-aca/service-endorsement?branch=master)
 
-Service Endorsement
-===================
+# Installation and Evaluation
 
-Install instructions at:
-https://github.com/uw-it-aca/service-endorsement/wiki/Install-Service-Endorsement-Web-Application
+After cloning, with docker and docker-compose installed, evaluation should be a simple matter of running `docker-compose up --build` from the repository's root directory.
