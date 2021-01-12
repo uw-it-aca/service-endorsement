@@ -93,12 +93,18 @@ jobs:
           app-test-container
           bash -c ". ./docker/test.sh"
 
+      -name: Prep Coveralls Output
+        run: |
+          python -m pip install --upgrade pip
+          pip install coverage
+          cp /tmp/.coverage.* .
+          coverage combine
+
       - name: Coveralls
-        uses: coverallsapp/github-action@master~.
+        uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel-finished: true
-          path-to-lcov: /tmp/lcov.info
+          path-to-lcov: ./lcov.info
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
