@@ -108,6 +108,7 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: /tmp/lcov.info
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
