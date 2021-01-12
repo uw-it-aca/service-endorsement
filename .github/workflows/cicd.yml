@@ -95,15 +95,14 @@ jobs:
 
       - name: Prep Coveralls Output
         run: |
-          python -m pip install --upgrade pip coverage
-          cp /tmp/.coverage.* .
-          coverage combine
+          ls -Rlh /tmp/*/lcov.info
+          cat /tmp/*/lcov.info > /tmp/lcov.info
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./lcov.info
+          path-to-lcov: /tmp/lcov.info
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
