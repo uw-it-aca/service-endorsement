@@ -1,16 +1,17 @@
-import logging
-import traceback
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
 from userservice.user import UserService
+from endorsement.services import endorsement_service_keys
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time
 from endorsement.views.session import log_session_key
-from endorsement.views.rest_dispatch import invalid_session,\
-    invalid_endorser, handle_exception
+from endorsement.views.rest_dispatch import invalid_session, handle_exception
+import logging
+import traceback
+import json
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,9 @@ def index(request):
             "user": {
                 "netid": netid,
                 "session_key": session_key,
-            }
+            },
+            'services': json.dumps(endorsement_service_keys(
+                ['category_code', 'category_name', 'service_link']))
         }
 
         if not is_valid_endorser(netid):

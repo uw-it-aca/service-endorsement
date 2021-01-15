@@ -10,6 +10,7 @@ import { Notify } from "../notify.js";
 var ManageProvisionedServices = (function () {
     var content_id = 'provisioned',
         location_hash = '#' + content_id,
+        table_css = null,
 
     _getEndorsedUWNetIDs = function() {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
@@ -45,13 +46,16 @@ var ManageProvisionedServices = (function () {
                 has_endorsed: (endorsed && Object.keys(endorsed.endorsed).length > 0),
                 endorsed: endorsed
             },
-            $panel = $(location_hash);
+            $panel = $(location_hash),
+            endorsement_count;
 
         // figure out renewal dates and expirations
         $.each(endorsed ? endorsed.endorsed : [], function (netid, data) {
             $.each(data.endorsements, function (service, endorsement) {
                 Endorse.updateEndorsementForRowContext(endorsement);
             });
+
+            endorsement_count = Object.keys(data.endorsements).length;
         });
 
         $panel.html(template(context));
@@ -62,6 +66,15 @@ var ManageProvisionedServices = (function () {
                 pending.appendTo($(this));
             }
         });
+
+        _updateEndorsementTableShading(endorsement_count);
+    },
+
+    _updateEndorsementTableShading = function(endorsement_count) {
+        if (endorsement_count && !table_css) {
+            table_css = Endorse.endorsementTableStyling('.endorsed-netids-table', endorsement_count);
+            $("<style type='text/css'>" + table_css + " </style>").appendTo("head");
+        }
     },
 
     _exportProvisionedToCSV = function() {
@@ -245,7 +258,8 @@ var ManageProvisionedServices = (function () {
                 name = this.name,
                 email = this.email,
                 present = ($('.endorsed-netids-table tr[data-netid="' + netid + '"]', $panel).length > 0),
-                $row;
+                $row,
+                endorsement_count;
 
             if (present) {
                 context.netids_present[netid] = this;
@@ -262,6 +276,7 @@ var ManageProvisionedServices = (function () {
                     }
                 });
 
+                endorsement_count = 0;
                 $.each(this.endorsements, function (svc, endorsement) {
                     var row_html = row_template({
                         netid: netid,
@@ -278,7 +293,11 @@ var ManageProvisionedServices = (function () {
                     } else {
                         $('.endorsed-netids-table tbody').append(row_html);
                     }
+
+                    endorsement_count += 1;
                 });
+
+                _updateEndorsementTableShading(endorsement_count);
             } else {
                 context.netid_errors[this.netid] = this;
                 context.netid_error_count += 1;

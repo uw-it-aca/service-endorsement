@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from userservice.user import UserService
+from endorsement.services import service_name_list
 from endorsement.util.time_helper import Timer
 from endorsement.models import EndorsementRecord
 from endorsement.dao.user import get_endorsee_model
@@ -36,6 +37,7 @@ def accept(request, accept_id):
                 endorsee)
             for record in er:
                 if accept_id == record.get_accept_id(netid):
+                    context['services'] = service_name_list()
                     return render(request, "accepted.html", context)
 
             context["err"] = "Invalid Endorser"

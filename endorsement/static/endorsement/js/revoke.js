@@ -29,14 +29,17 @@ var Revoke = (function () {
     },
 
     _revokeModalContext = function ($rows) {
-        var revoke_o365 = [],
-            revoke_google = [],
-            context = {
+        var context = {
                 unique: [],
-                revoke_o365: [],
-                revoke_google: [],
-                revoke_netid_count: 0
+                services: {}
             };
+
+        $.each(window.endorsed_services, function(k, v) {
+            context.services[k] = {
+                'name': v.category_name,
+                'revoke': []
+            };
+        });
 
         $rows.each(function (i, row) {
             var $row = $(row),
@@ -50,19 +53,18 @@ var Revoke = (function () {
                 context.unique.push(netid);
             }
 
-            if (service === 'o365') {
-                context.revoke_o365.push({
+            if (context.services.hasOwnProperty(service)) {
+                context.services[service].revoke.push({
                     netid: netid,
                     email: email
                 });
             }
+        });
 
-            if (service === 'google') {
-                context.revoke_google.push({
-                    netid: netid,
-                    email: email
-                });
-            }
+        context.netid_count = context.unique.length;
+
+        $.each(context.services, function(k) {
+            context.services[k].count = context.services[k].revoke.length;
         });
 
         return context;
