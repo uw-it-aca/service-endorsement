@@ -53,8 +53,8 @@ class Shared(RESTDispatch):
                         if endorsement.endorsee.id == endorsee.id:
                             for er in get_endorsements_for_endorsee(endorsee):
                                 for svc_tag, v in ENDORSEMENT_SERVICES.items():
-                                    if (er.category_code == v['category_code'] and
-                                            v['valid_shared']):
+                                    if (er.category_code == v['category_code']
+                                            and v['valid_shared']):
                                         data['endorsements'][svc_tag]\
                                             = er.json_data()
                                         data['endorsements'][svc_tag][
