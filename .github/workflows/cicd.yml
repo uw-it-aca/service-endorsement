@@ -8,15 +8,9 @@ env:
 
 on:
   push:
-    branches:
-      - master
-      - develop
-      - feature/github-actions
+    branches: [master, develop, feature/github-actions]
   pull_request:
-    branches:
-      - master
-      - develop
-      - feature/github-actions
+    branches: [master, develop]
     types: [opened, reopened, synchronize]
 
 jobs:
@@ -42,45 +36,40 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Setup Environment
+      - name: Set up Environment
         run: |
           export COMMIT_HASH="${{ needs.environment.outputs.commit_hash }}"
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
           echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
 
-      - name: Prep Image Cache
-        run: >-
-          echo "${{ secrets.GITHUB_TOKEN }}" |
-          docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin &&
-          docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true &&
-          docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-      - name: Build Intermediate Image
-        run: >-
-          docker build --target wpack -t wpack
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
-
-      - name: Cache Intermediate Image
-        run: >-
-          docker tag wpack docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache &&
-          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-$(echo ${{ hashFiles('Dockerfile') }} | head -c 16)
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
       - name: Build App Image
-        run: >-
-          docker build --target app-container -t "$IMAGE_TAG"
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
-
-      - name: Cache App Image
-        run: >-
-          docker tag "$IMAGE_TAG" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache &&
-          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
+        uses: docker/build-push-action@v2
+        with:
+          target: app-container
+          tags: ${{ env.IMAGE_TAG }}
+          push: false
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build Test Image
-        run: >-
-          docker build --target app-test-container -t app-test-container
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
+        uses: docker/build-push-action@v2
+        with:
+          target: app-test-container
+          tags: app-test-container
+          push: false
+          load: true
 
       - name: Run Tests in Image
         id: tests
