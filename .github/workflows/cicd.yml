@@ -112,8 +112,8 @@ jobs:
       - name: Deployment Pipeline
         if: contains([main, master, develop], cicd_context.outputs.git_repo_branch)
         uses: uw-it-aca/actions/cicd-deploy@feature/cicd
-          with:
-            release_name: ${{ env.RELEASE_NAME }}
-            commit_hash: ${{ cicd_context.outputs.commit_hash }}
-            git_repo_branch: ${{ cicd_context.outputs.git_repo_branch }}
-            gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+          commit_hash: ${{ cicd_context.outputs.commit_hash }}
+          git_repo_branch: ${{ cicd_context.outputs.git_repo_branch }}
+          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
