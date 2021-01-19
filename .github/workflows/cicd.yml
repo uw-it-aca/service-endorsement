@@ -24,8 +24,8 @@ jobs:
       - name: Set up Context
         id: cicd_context
         uses: uw-it-aca/actions/cicd-context@feature/cicd
-          with:
-            release_name: ${{ env.RELEASE_NAME }}
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -106,8 +106,8 @@ jobs:
       - name: Set up Context
         id: cicd_context
         uses: uw-it-aca/actions/cicd-context@feature/cicd
-          with:
-            release_name: ${{ env.RELEASE_NAME }}
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
 
       - name: Deployment Pipeline
         if: contains([main, master, develop], cicd_context.outputs.git_repo_branch)
