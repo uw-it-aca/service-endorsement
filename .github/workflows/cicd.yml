@@ -110,7 +110,9 @@ jobs:
           release_name: ${{ env.RELEASE_NAME }}
 
       - name: Deployment Pipeline
-        if: contains(fromJSON('[main, master, develop]'), steps.cicd.outputs.git_repo_branch)
+        if: >-
+          contains(fromJSON('["main", "master", "develop"]'),
+            steps.cicd.outputs.git_repo_branch)
         uses: uw-it-aca/actions/cicd-deploy@feature/cicd
         with:
           release_name: ${{ env.RELEASE_NAME }}
