@@ -8,7 +8,7 @@ env:
 
 on:
   push:
-    branches: [master, develop, feature/github-actions]
+    branches: [master, develop]
   pull_request:
     branches: [master, develop]
     types: [opened, reopened, synchronize]
@@ -23,7 +23,7 @@ jobs:
 
       - name: Set up Context
         id: cicd
-        uses: uw-it-aca/actions/cicd-context@feature/cicd
+        uses: uw-it-aca/actions/cicd-context@v1.1
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
@@ -105,7 +105,7 @@ jobs:
 
       - name: Set up Context
         id: cicd
-        uses: uw-it-aca/actions/cicd-context@feature/cicd
+        uses: uw-it-aca/actions/cicd-context@v1.1
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
@@ -113,7 +113,7 @@ jobs:
         if: >-
           contains(fromJSON('["main", "master", "develop"]'),
             steps.cicd.outputs.git_repo_branch)
-        uses: uw-it-aca/actions/cicd-deploy@feature/cicd
+        uses: uw-it-aca/actions/cicd-deploy@v1.1
         with:
           release_name: ${{ env.RELEASE_NAME }}
           commit_hash: ${{ steps.cicd.outputs.commit_hash }}
