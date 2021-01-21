@@ -7,7 +7,7 @@ env:
 
 on:
   push:
-    branches: [master, develop]
+    branches: [master, develop, feature/github-actions]
   pull_request:
     branches: [master, develop]
     types: [opened, reopened, synchronize]
@@ -22,7 +22,7 @@ jobs:
 
       - name: Set up Context
         id: cicd
-        uses: uw-it-aca/actions/cicd-context@v1.3
+        uses: uw-it-aca/actions/cicd-context@feature/variable-length-hash
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
