@@ -7,7 +7,7 @@ env:
 
 on:
   push:
-    branches: [master, develop, feature/github-actions]
+    branches: [master, develop]
   pull_request:
     branches: [master, develop]
     types: [opened, reopened, synchronize]
@@ -22,7 +22,7 @@ jobs:
 
       - name: Set up Context
         id: cicd
-        uses: uw-it-aca/actions/cicd-context@v1.2
+        uses: uw-it-aca/actions/cicd-context@v1.3
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
@@ -82,10 +82,10 @@ jobs:
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
-        uses: uw-it-aca/actions/gcr-push@feature/gcr-action
+        uses: uw-it-aca/actions/gcr-push@v1.3
         with:
-            image_tag: ${{ steps.cicd.outputs.image_tag }}
-            gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+          image_tag: ${{ steps.cicd.outputs.image_tag }}
+          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
   deploy:
     if: github.event_name == 'push'
@@ -100,7 +100,7 @@ jobs:
 
       - name: Set up Context
         id: cicd
-        uses: uw-it-aca/actions/cicd-context@v1.2
+        uses: uw-it-aca/actions/cicd-context@v1.3
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
@@ -108,7 +108,7 @@ jobs:
         if: >-
           contains(fromJSON('["main", "master", "develop", "qa"]'),
             steps.cicd.outputs.git_repo_branch)
-        uses: uw-it-aca/actions/cicd-deploy@v1.2
+        uses: uw-it-aca/actions/cicd-deploy@v1.3
         with:
           release_name: ${{ env.RELEASE_NAME }}
           commit_hash: ${{ steps.cicd.outputs.commit_hash }}
