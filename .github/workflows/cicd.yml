@@ -4,11 +4,10 @@ name: Build, Test and Deploy
 env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
-  GCR_TAG_BASE: gcr.io/uwit-mci-axdd
 
 on:
   push:
-    branches: [master, develop]
+    branches: [master, develop, feature/gcr-actions]
   pull_request:
     branches: [master, develop]
     types: [opened, reopened, synchronize]
@@ -83,14 +82,10 @@ jobs:
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
-        env:
-          GCR_TAG: ${{ env.GCR_TAG_BASE }}/${{ steps.cicd.outputs.image_tag }}
-        run: |
-          echo "${{ secrets.GCP_JSON_KEY }}" |
-            base64 -d |
-            docker login --username=_json_key --password-stdin https://gcr.io
-          docker tag "${{ steps.cicd.outputs.image_tag }}" "$GCR_TAG"
-          docker push "$GCR_TAG"
+        uses: uw-it-aca/actions/gcr-push@feature/gcr-action
+        with:
+            image_tag: ${{ steps.cicd.outputs.image_tag }}
+            gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
   deploy:
     if: github.event_name == 'push'
