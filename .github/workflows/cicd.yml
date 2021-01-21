@@ -90,7 +90,7 @@ jobs:
   deploy:
     if: github.event_name == 'push'
 
-    needs: [build]
+    needs: build
 
     runs-on: ubuntu-18.04
 
