@@ -1,0 +1,15 @@
+{
+  "uwNetID": "nebnotic",
+  "categoryList": [
+    {
+      "categoryCode": 11,
+      "categoryName": "Department",
+      "sourceCode": 4,
+      "sourceName": "Supplemental",
+      "statusCode": 1,
+      "statusName": "Active",
+      "instance": 0
+    }
+  ],
+  "timeStamp": "Mon, 18 Jun 2018 13:02:46 -0700"
+}
