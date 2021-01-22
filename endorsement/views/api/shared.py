@@ -2,7 +2,8 @@ import logging
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
 from endorsement.dao.gws import is_valid_endorser
-from endorsement.dao.uwnetid_supported import get_shared_netids_for_netid
+from endorsement.dao.uwnetid_supported import (
+    get_shared_netids_for_netid, shared_netid_in_excluded_category)
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.endorse import (
     get_endorsements_by_endorser, get_endorsements_for_endorsee)
@@ -34,7 +35,9 @@ class Shared(RESTDispatch):
         endorsements = get_endorsements_by_endorser(endorser)
         owned = []
         for shared in get_shared_netids_for_netid(netid):
-            if shared.is_owner():
+            if (shared.is_owner() and
+                    not shared_netid_in_excluded_category(shared.name)):
+
                 data = {
                     'netid': shared.name,
                     'name': None,
