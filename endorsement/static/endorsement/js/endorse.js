@@ -44,11 +44,15 @@ var Endorse = (function () {
     _endorseModalContext = function ($rows) {
         var context = {
             unique: [],
-            endorse_o365: [],
-            endorse_google: [],
-            endorse_o365_netid_count: 0,
-            endorse_google_netid_count: 0
+            services: {}
         };
+
+        $.each(window.endorsed_services, function(k, v) {
+            context.services[k] = {
+                'name': v.category_name,
+                'endorsed': []
+            };
+        });
 
         $rows.each(function (i, row) {
             var $row = $(row),
@@ -62,23 +66,18 @@ var Endorse = (function () {
                 context.unique.push(netid);
             }
 
-            if (service === 'o365') {
-                context.endorse_o365.push({
-                    netid: netid,
-                    email: email
-                });
-            }
-
-            if (service === 'google') {
-                context.endorse_google.push({
-                    netid: netid,
-                    email: email
-                });
-            }
+            context.services[service].endorsed.push({
+                netid: netid,
+                email: email
+            });
         });
 
-        context.endorse_o365_netid_count = context.endorse_o365.length;
-        context.endorse_google_netid_count = context.endorse_google.length;
+        context.netid_count = context.unique.length;
+
+        $.each(context.services, function(k) {
+            context.services[k].count = context.services[k].endorsed.length;
+        });
+
         return context;
     },
 
@@ -249,6 +248,24 @@ var Endorse = (function () {
             updateExpireWarning();
         },
 
+        endorsementTableStyling = function (table, endorsement_count) {
+            var css = '',
+                child;
+
+            for (var i = 0; i < endorsement_count; i++) {
+                if (i) { css += ', '; }
+                css += table + ' tr:nth-child(' + (endorsement_count * 2) + 'n';
+                css += ((i) ? ' - ' + i : '') + ')';
+            }
+
+            css += ' { background: #f8f8f8; } ';
+            child = table + ' tr:nth-child(' + endorsement_count + 'n + 1) ';
+            css += child + ' .endorsed-netid, ';
+            css += child + ' .endorsed-name ';
+            css += '{ color: black !important; border-top: 1px solid #ddd; }';
+            return css;
+        },
+
         updateExpireWarning = function () {
             if ($('.expiring-service').length > 0) {
                 $('.expiring_netids').removeClass('visually-hidden');
@@ -264,6 +281,7 @@ var Endorse = (function () {
         gatherEndorsementsByRow: gatherEndorsementsByRow,
         updateEndorsementForRowContext: updateEndorsementForRowContext,
         updateEndorsementRows: updateEndorsementRows,
+        endorsementTableStyling: endorsementTableStyling,
         updateExpireWarning: updateExpireWarning
     };
 }());

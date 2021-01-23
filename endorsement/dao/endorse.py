@@ -146,6 +146,11 @@ def get_google_endorsement(endorser, endorsee):
                            EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
 
+def get_canvas_endorsement(endorser, endorsee):
+    return get_endorsement(endorser, endorsee,
+                           EndorsementRecord.CANVAS_PROVISIONEE)
+
+
 def initiate_office365_endorsement(endorser, endorsee, reason):
     """
     Create record that endorsee requested endorsement for endorsee
@@ -190,6 +195,27 @@ def store_google_endorsement(endorser, endorsee, acted_as, reason):
                              EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
 
 
+def initiate_canvas_endorsement(endorser, endorsee, reason):
+    """
+    Create record that endorsee requested endorsement for endorsee
+    """
+    return initiate_endorsement(
+        endorser, endorsee, reason, EndorsementRecord.CANVAS_PROVISIONEE)
+
+
+def store_canvas_endorsement(endorser, endorsee, acted_as, reason):
+    """
+    The expected life cycle for a Canvas endorsement would be:
+      *  Add category 236, status 1 record for given endorsee
+      *  Activate subscription 79 for endorsee
+    """
+    _activate_category(endorsee.netid, Category.CANVAS_PROVISIONEE)
+    _activate_subscriptions(endorsee.netid, endorser.netid,
+                            [Subscription.SUBS_CODE_CANVAS_SPONSORED])
+    return store_endorsement(endorser, endorsee, acted_as, reason,
+                             EndorsementRecord.CANVAS_PROVISIONEE)
+
+
 def clear_office365_endorsement(endorser, endorsee):
     """
     Upon failure to renew, the endorsement tools should:
@@ -204,6 +230,14 @@ def clear_google_endorsement(endorser, endorsee):
       *  mark category 234 it former (status 3).
     """
     return clear_endorsement(get_google_endorsement(endorser, endorsee))
+
+
+def clear_canvas_endorsement(endorser, endorsee):
+    """
+    Upon failure to renew, the endorsement tools should:
+      *  mark category 236 it former (status 3).
+    """
+    return clear_endorsement(get_canvas_endorsement(endorser, endorsee))
 
 
 def is_endorsed(endorsement):
@@ -259,6 +293,19 @@ def is_google_permitted(endorser, endorsee):
         return is_permitted(
             endorser, endorsee, [
                 Subscription.SUBS_CODE_GOOGLE_APPS
+            ]), False
+
+
+def is_canvas_permitted(endorser, endorsee):
+    try:
+        get_canvas_endorsement(endorser, endorsee)
+        return True, True
+    except NoEndorsementException:
+        return is_permitted(
+            endorser, endorsee, [
+                Subscription.SUBS_CODE_CANVAS_STUDENT,
+                Subscription.SUBS_CODE_CANVAS_AFFILIATE,
+                Subscription.SUBS_CODE_CANVAS_SPONSORED
             ]), False
 
 

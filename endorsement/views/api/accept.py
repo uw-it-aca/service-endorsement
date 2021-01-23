@@ -1,9 +1,7 @@
 import logging
-import json
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
-from endorsement.dao.endorse import (
-    store_office365_endorsement, store_google_endorsement)
+from endorsement.services import ENDORSEMENT_SERVICES
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import RESTDispatch, invalid_session
 
@@ -38,21 +36,12 @@ class Accept(RESTDispatch):
 
         record = records[0]
 
-        is_o365 = (
-            record.category_code == EndorsementRecord.OFFICE_365_ENDORSEE)
-        is_google = (
-            record.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
-
-        if is_o365:
-            json_data = store_office365_endorsement(
-                record.endorser, record.endorsee,
-                acted_as, record.reason).json_data()
-        elif is_google:
-            json_data = store_google_endorsement(
-                record.endorser, record.endorsee,
-                acted_as, record.reason).json_data()
-
-        json_data['is_o365'] = is_o365
-        json_data['is_google'] = is_google
+        for service_tag, keys in ENDORSEMENT_SERVICES.items():
+            if record.category_code == keys['category_code']:
+                json_data = keys['store'](
+                    record.endorser, record.endorsee,
+                    acted_as, record.reason).json_data()
+                json_data['service_tag'] = service_tag
+                json_data['service_list'] = keys['service_link']
 
         return self.json_response(json_data)

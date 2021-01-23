@@ -1,16 +1,16 @@
-Hello {{ endorser.netid }},
+Hello {{ endorser_netid }},
 
 <p>
 
-You previously used the Provisioning Request Tool to provision {% if google_endorsed_count > 0 %} UW G Suite{% if o365_endorsed_count > 0 %} and{% endif %}{% endif %}{% if o365_endorsed_count > 0 %} UW Office 365{% endif %} services for the following UW NetIDs:
+You previously used the Provisioning Request Tool to provision {% for svc in services %}{% if not forloop.first %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ svc }}{% endfor %} services for the following UW NetID{{ endorsed|length|pluralize }}:
 </p>
 <ul style="list-style: none;">
-{% for key, value in endorsed.items %}
-<li>{{ key }}: {% for v in value %}{% if not forloop.first %}, {% endif %}{{v.service}}{% endfor %}</li>
+{% for netid, svcs in endorsed.items %}
+<li>{{ netid }}: {% for s in svcs %}{% if not forloop.first %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ s }}{% endfor %}</li>
 {% endfor %}
 </ul>
 <p>
-Please find a UW employee to reprovision services for these UW NetIDs. 
+Please find a UW employee to reprovision services for {{ endorsed|length|pluralize:"this,these" }} UW NetID{{ endorsed|length|pluralize }}.
 </p>
 <p>
 If you take no action, services will be revoked and data will be deleted for these UW NetIDs in roughly 14 days.

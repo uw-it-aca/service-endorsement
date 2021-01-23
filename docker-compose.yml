@@ -1,15 +1,16 @@
-version: '2'
+version: '3.4'
 
 services:
   app:
     environment:
-      - ENV=localdev
-      - PORT=8000
-      - AUTH=SAML_MOCK
+      ENV: localdev
+      PORT: 8000
+      AUTH: SAML_MOCK
     restart: always
     container_name: app-provision
     build:
       context: .
+      target: app-container
     volumes:
       - ./endorsement:/app/endorsement
     ports:

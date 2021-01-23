@@ -3,6 +3,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.utils import timezone
 from endorsement.models import EndorsementRecord
+from endorsement.services import ENDORSEMENT_SERVICES
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
@@ -22,34 +23,18 @@ def _create_endorsee_message(endorser):
     params = {
         "endorser_netid": endorser['netid'],
         "endorser_name": endorser['display_name'],
-        "endorsed_date": display_datetime(sent_date)
+        "endorsed_date": display_datetime(sent_date),
+        "services": endorser['services']
     }
 
-    services = ""
-    try:
-        params['o365_accept_url'] =\
-            endorser['services']['o365']['accept_url']
-        services += "UW Office 365"
-        params['o365_endorsed'] = True
-    except KeyError:
-        params['o365_endorsed'] = False
+    names = []
+    for k, v in endorser['services'].items():
+        names.append(v['name'])
+        v['service_link'] = ENDORSEMENT_SERVICES[k]['service_link']
 
-    try:
-        params['google_accept_url'] =\
-            endorser['services']['google']['accept_url']
-
-        if len(services):
-            services += " and "
-
-        services += "UW G Suite"
-        params['google_endorsed'] = True
-    except KeyError:
-        params['google_endorsed'] = False
-
-    params['both_endorsed'] = (params['google_endorsed'] > 0 and
-                               params['o365_endorsed'] > 0)
-
-    subject = "Action Required: Your new access to {0}".format(services)
+    subject = "Action Required: Your new access to {0}".format(
+        '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
+            len(names) > 1) else names[0])
 
     text_template = "email/endorsee.txt"
     html_template = "email/endorsee.html"
@@ -63,11 +48,11 @@ def get_unendorsed_unnotified():
     endorsements = {}
     for er in EndorsementRecord.objects.get_unendorsed_unnotified():
         try:
-            email = get_endorsee_email_model(
-                er.endorsee, er.endorser).email
+            email = get_endorsee_email_model(er.endorsee, er.endorser).email
         except Exception as ex:
             logger.error("Notify get email failed: {0}, netid: {1}"
                          .format(ex, er.endorsee))
+            continue
 
         if email not in endorsements:
             endorsements[email] = {
@@ -81,20 +66,16 @@ def get_unendorsed_unnotified():
                 'services': {}
             }
 
-        s = endorsements[email]['endorsers'][er.endorser.netid]['services']
-        if er.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
-            s['o365'] = {
-                'id': er.id,
-                'accept_url': er.accept_url()
-            }
-
-        if er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
-            s['google'] = {
-                'id': er.id,
-                'accept_url': er.accept_url()
-            }
-
-        endorsements[email]['endorsers'][er.endorser.netid]['services'] = s
+        for service_tag, v in ENDORSEMENT_SERVICES.items():
+            if er.category_code == v['category_code']:
+                endorsements[email]['endorsers'][
+                    er.endorser.netid]['services'][service_tag] = {
+                        'code': v['category_code'],
+                        'name': v['category_name'],
+                        'id': er.id,
+                        'accept_url': er.accept_url()
+                    }
+                break
 
     return endorsements
 
@@ -121,23 +102,34 @@ def notify_endorsees():
 def _create_endorser_message(endorsed):
     sent_date = timezone.now()
     params = {
-        "o365_endorsed": endorsed.get('o365', None),
-        "google_endorsed": endorsed.get('google', None),
-        "o365_endorsed_count": len(endorsed.get('o365', [])),
-        "google_endorsed_count": len(endorsed.get('google', [])),
-        "endorsed_date": display_datetime(sent_date)
+        "endorsed_date": display_datetime(sent_date),
+        "endorsed": {}
     }
 
-    params["endorsed_count"] = params["o365_endorsed_count"]
-    params["endorsed_count"] += params["google_endorsed_count"]
-    params['both_endorsed'] = (params['google_endorsed'] is not None and
-                               params['o365_endorsed'] is not None)
+    unique = {}
+    for svc, endorsee_list in endorsed.items():
+        for e in endorsee_list:
+            service_name = e["name"]
+            netid = e["netid"]
+            unique[netid] = 1
+            if service_name in params["endorsed"]:
+                params["endorsed"][service_name]['netids'].append(netid)
+            else:
+                params["endorsed"][service_name] = {
+                    'svc': svc,
+                    'netids': [netid]
+                }
 
-    subject = "Shared NetID access to {0}{1}{2}".format(
-        'UW Office 365' if params['o365_endorsed'] else '',
-        ' and ' if (
-            params['o365_endorsed'] and params['google_endorsed']) else '',
-        'UW G Suite' if params['google_endorsed'] else '')
+    params["endorsees"] = list(unique.keys())
+
+    services = []
+    for s, v in params["endorsed"].items():
+        services.append(s)
+        v['service_link'] = ENDORSEMENT_SERVICES[v['svc']]['service_link']
+
+    subject = "Shared NetID access to {}".format(
+        '{} and {}'.format(', '.join(services[:-1]), services[-1]) if (
+            len(services) > 1) else services[0])
 
     text_template = "email/endorser.txt"
     html_template = "email/endorser.html"
@@ -157,19 +149,19 @@ def get_endorsed_unnotified():
 
         data = {
             'netid': er.endorsee.netid,
+            'name': '',
             'id': er.id
         }
 
-        if er.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
-            if 'o365' in endorsements[email]:
-                endorsements[email]['o365'].append(data)
-            else:
-                endorsements[email]['o365'] = [data]
-        elif er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
-            if 'google' in endorsements[email]:
-                endorsements[email]['google'].append(data)
-            else:
-                endorsements[email]['google'] = [data]
+        for service_tag, v in ENDORSEMENT_SERVICES.items():
+            if er.category_code == v['category_code']:
+                data['name'] = v['category_name']
+                if service_tag in endorsements[email]:
+                    endorsements[email][service_tag].append(data)
+                else:
+                    endorsements[email][service_tag] = [data]
+
+                break
 
     return endorsements
 
@@ -183,7 +175,7 @@ def notify_endorsers():
         try:
             send_email(
                 sender, [email], subject, text_body, html_body, "Endorser")
-            for svc in ['o365', 'google']:
+            for svc in ENDORSEMENT_SERVICES.keys():
                 if svc in endorsed:
                     for id in [x['id'] for x in endorsed[svc]]:
                         EndorsementRecord.objects.emailed(id)
@@ -193,31 +185,24 @@ def notify_endorsers():
 
 def _create_invalid_endorser_message(endorsements):
     params = {
-        "endorsed": {},
-        "endorser": endorsements[0].endorser.json_data(),
-        "o365_endorsed_count": 0,
-        "google_endorsed_count": 0,
-        "total_endorsed_count": 0
+        "endorsed": {}
     }
 
+    services = {}
     for e in endorsements:
-        data = {
-            'service': e.get_category_code_display(),
-            'reason': e.reason
-        }
+        params['endorser_netid'] = e.endorser.netid
+        for svc_tag, svc in ENDORSEMENT_SERVICES.items():
+            if e.category_code == svc['category_code']:
+                services[svc['category_name']] = 1
+                try:
+                    params['endorsed'][e.endorsee.netid].append(
+                        svc['category_name'])
+                except KeyError:
+                    params['endorsed'][e.endorsee.netid] = [
+                        svc['category_name']]
 
-        try:
-            params['endorsed'][e.endorsee.netid].append(data)
-        except KeyError:
-            params['endorsed'][e.endorsee.netid] = [data]
+    params['services'] = list(services.keys())
 
-        if e.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
-            params['google_endorsed_count'] += 1
-        elif e.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
-            params['o365_endorsed_count'] += 1
-
-    params["total_endorsed_count"] = (params["o365_endorsed_count"] +
-                                      params["google_endorsed_count"])
     subject = "{0}{1}".format(
         "Action Required: Services that you provisioned for other ",
         "UW NetIDs will be revoked soon")
