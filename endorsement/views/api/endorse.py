@@ -65,7 +65,7 @@ class Endorse(RESTDispatch):
 
                 for svc_tag, svc in ENDORSEMENT_SERVICES.items():
                     if endorsee.is_person or valid_supported_netid(
-                            endorsee.netid, svc['valid_shared']):
+                            endorsee.netid, svc):
                         self._endorse(to_endorse, svc_tag,
                                       endorser, endorser_json,
                                       endorsee, acted_as,

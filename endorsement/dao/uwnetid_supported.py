@@ -10,8 +10,7 @@ from uw_uwnetid.supported import get_supported_resources
 from endorsement.dao.uwnetid_categories import get_shared_categories_for_netid
 from endorsement.dao import handel_err
 from restclients_core.exceptions import DataFailureException
-from endorsement.services import service_supports_shared
-
+from endorsement.services import ENDORSEMENT_SERVICES, service_supports_shared
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,14 @@ def get_shared_netids_for_netid(netid):
     """
 
     try:
-        return get_supported_resources(netid)
+        shared = []
+        for supported in get_supported_resources(netid):
+            for service_tag, v in ENDORSEMENT_SERVICES.items():
+                if supported.role in v['shared_supported_roles']:
+                    shared.append(supported)
+                    break
+
+        return shared
     except DataFailureException as ex:
         logger.error(
             'uw_uwnetid get_supported_resources({}) returned {}'.format(
@@ -37,7 +43,7 @@ def get_shared_netids_for_netid(netid):
 
 def valid_supported_netid(netid, service):
     for shared in get_shared_netids_for_netid(netid):
-        if shared.name == netid and valid_shared_resource(shared, service):
+        if shared.name == netid and valid_supported_resource(shared, service):
             return True
 
     return False
