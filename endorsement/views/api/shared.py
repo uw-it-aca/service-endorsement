@@ -1,9 +1,10 @@
 import logging
 from userservice.user import UserService
-from endorsement.services import ENDORSEMENT_SERVICES, endorsement_service_keys
+from endorsement.services import (
+    ENDORSEMENT_SERVICES, endorsement_service_keys)
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.uwnetid_supported import (
-    get_shared_netids_for_netid, shared_netid_in_excluded_category)
+    get_shared_netids_for_netid, valid_supported_resource)
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.endorse import (
     get_endorsements_by_endorser, get_endorsements_for_endorsee)
@@ -35,16 +36,20 @@ class Shared(RESTDispatch):
         endorsements = get_endorsements_by_endorser(endorser)
         owned = []
         for shared in get_shared_netids_for_netid(netid):
-            if (shared.is_owner() and
-                    not shared_netid_in_excluded_category(shared.name)):
-
+            if shared.is_owner():
                 data = {
                     'netid': shared.name,
                     'name': None,
                     'type': shared.netid_type,
-                    'endorsements': endorsement_service_keys(
-                        ['category_name', 'valid_shared'], shared=True)
+                    'endorsements': {}
                 }
+
+                for svc_tag, v in ENDORSEMENT_SERVICES.items():
+                    if valid_supported_resource(shared, v):
+                        data['endorsements'][svc_tag] = {
+                            'category_name': v['category_name'],
+                            'valid_shared': True
+                        }
 
                 try:
                     endorsee = get_endorsee_model(shared.name)
@@ -57,7 +62,8 @@ class Shared(RESTDispatch):
                             for er in get_endorsements_for_endorsee(endorsee):
                                 for svc_tag, v in ENDORSEMENT_SERVICES.items():
                                     if (er.category_code == v['category_code']
-                                            and v['valid_shared']):
+                                            and valid_supported_resource(
+                                                shared, v)):
                                         data['endorsements'][svc_tag]\
                                             = er.json_data()
                                         data['endorsements'][svc_tag][

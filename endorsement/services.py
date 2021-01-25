@@ -17,7 +17,8 @@ ENDORSEMENT_SERVICES = {
         'initiate': initiate_office365_endorsement,
         'store': store_office365_endorsement,
         'clear': clear_office365_endorsement,
-        'valid_shared': True,
+        'shared_supported_types': ['shared', 'administrator', 'support'],
+        'shared_excluded_categories': [22],
         'service_link': ('https://itconnect.uw.edu/connect/'
                          'productivity-platforms/uw-office-365/')
     },
@@ -28,7 +29,8 @@ ENDORSEMENT_SERVICES = {
         'initiate': initiate_google_endorsement,
         'store': store_google_endorsement,
         'clear': clear_google_endorsement,
-        'valid_shared': True,
+        'shared_supported_types': ['shared', 'administrator', 'support'],
+        'shared_excluded_categories': [22],
         'service_link': ('https://itconnect.uw.edu/connect/email/'
                          'google-apps/getting-started/#activate')
     },
@@ -39,7 +41,8 @@ ENDORSEMENT_SERVICES = {
         'initiate': initiate_canvas_endorsement,
         'store': store_canvas_endorsement,
         'clear': clear_canvas_endorsement,
-        'valid_shared': False,
+        'shared_supported_types': ['administrator'],
+        'shared_excluded_categories': None,
         'service_link': 'https://itconnect.uw.edu/learn/tools/canvas/'
     }
 }
@@ -48,7 +51,7 @@ ENDORSEMENT_SERVICES = {
 def endorsement_service_keys(keys, shared=False):
     endorsement_services = {}
     for k, v in ENDORSEMENT_SERVICES.items():
-        if shared and not v['valid_shared']:
+        if shared and not service_supports_shared(v):
             continue
 
         endorsement_services[k] = {}
@@ -57,6 +60,12 @@ def endorsement_service_keys(keys, shared=False):
                 endorsement_services[k][key] = v[key]
 
     return endorsement_services
+
+
+def service_supports_shared(service):
+    return ('shared_supported_types' in service and
+            service['shared_supported_types'] is not None and
+            len(service['shared_supported_types']) > 0)
 
 
 def service_names():

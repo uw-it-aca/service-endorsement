@@ -6,6 +6,7 @@ from endorsement.services import ENDORSEMENT_SERVICES
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_person
 from endorsement.dao.endorse import get_endorsements_for_endorsee
+from endorsement.dao.uwnetid_supported import valid_supported_netid
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
@@ -63,7 +64,8 @@ class Endorse(RESTDispatch):
                         endorsee, endorser, email=to_endorse['email']).email
 
                 for svc_tag, svc in ENDORSEMENT_SERVICES.items():
-                    if endorsee.is_person or svc['valid_shared']:
+                    if endorsee.is_person or valid_supported_netid(
+                            endorsee.netid, svc['valid_shared']):
                         self._endorse(to_endorse, svc_tag,
                                       endorser, endorser_json,
                                       endorsee, acted_as,
