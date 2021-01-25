@@ -28,7 +28,6 @@ class TestEndorsementSharedNetidsAPI(EndorsementApiTest):
         self.assertTrue(
             'canvas' in data['shared'][netids['wadm_jstaff']]['endorsements'])
 
-
     def test_invalid_shared_netids(self):
         self.set_user('endorsee7')
         url = reverse('shared_api')
