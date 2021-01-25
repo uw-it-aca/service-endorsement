@@ -23,7 +23,7 @@ $(window.document).ready(function() {
             return (a > b) ? options.fn(this) : options.inverse(this);
         },
         'even': function(n, options) {
-            return ((n % 2) == 0) ? options.fn(this) : options.inverse(this);
+            return ((n % 2) === 0) ? options.fn(this) : options.inverse(this);
         },
         'ifAndNot': function(a, b, options) {
             return (a && !b) ? options.fn(this) : options.inverse(this);

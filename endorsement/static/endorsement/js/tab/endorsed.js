@@ -306,7 +306,7 @@ var ManageProvisionedServices = (function () {
 
             $('[data-netid='+ netid +']', $table)
                 .removeClass('endorsee_row_even endorsee_row_odd')
-                .addClass('endorsee_row_' + ((index % 2 == 0) ? 'even' : 'odd'))
+                .addClass('endorsee_row_' + ((index % 2 === 0) ? 'even' : 'odd'));
         });
     },
 
