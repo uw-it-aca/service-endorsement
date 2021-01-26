@@ -48,6 +48,9 @@ metrics:
   enabled: true
   serviceMonitor:
     enabled: true
+memcached:
+  enabled: true
+  replicaCount: 1
 cronjob:
   enabled: true
   jobs:

@@ -38,7 +38,7 @@
             {{#if has_endorsed}}
             {{#each endorsed.endorsed}}
               {{#each this.endorsements}}
-               {{> endorsement_row_partial endorsement=this netid=@../key name=../name email=../email svc=@key }}
+               {{> endorsement_row_partial endorsement=this netid=@../key name=../name email=../email svc=@key endorsee_index=@../index endorsement_index=@index }}
               {{/each}}
             {{/each}}
             {{/if}}
@@ -88,7 +88,7 @@
 
 
 <script id="endorsee-row" type="text/x-handlebars-template">
-{{> endorsement_row_partial endorsement=endorsement netid=netid email=email name=name svc=service new_netid=true }}
+{{> endorsement_row_partial endorsement=endorsement netid=netid email=email name=name svc=service new_netid=true endorsee_index=endorsee_index endorsement_index=endorsement_index }}
 </script>
 
 

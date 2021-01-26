@@ -66,15 +66,6 @@ var ManageProvisionedServices = (function () {
                 pending.appendTo($(this));
             }
         });
-
-        _updateEndorsementTableShading(endorsement_count);
-    },
-
-    _updateEndorsementTableShading = function(endorsement_count) {
-        if (endorsement_count && !table_css) {
-            table_css = Endorse.endorsementTableStyling('.endorsed-netids-table', endorsement_count);
-            $("<style type='text/css'>" + table_css + " </style>").appendTo("head");
-        }
     },
 
     _exportProvisionedToCSV = function() {
@@ -253,7 +244,7 @@ var ManageProvisionedServices = (function () {
             $no_endorsements.addClass('visually-hidden');
         }
 
-        $.each(validated.validated, function () {
+        $.each(validated.validated, function (endorsee_index) {
             var netid = this.netid,
                 name = this.name,
                 email = this.email,
@@ -283,7 +274,9 @@ var ManageProvisionedServices = (function () {
                         name: name,
                         email: email,
                         service: svc,
-                        endorsement: endorsement
+                        endorsement: endorsement,
+                        endorsee_index: endorsee_index,
+                        endorsement_index: endorsement_count
                     });
 
                     Endorse.updateEndorsementForRowContext(endorsement);
@@ -296,8 +289,6 @@ var ManageProvisionedServices = (function () {
 
                     endorsement_count += 1;
                 });
-
-                _updateEndorsementTableShading(endorsement_count);
             } else {
                 context.netid_errors[this.netid] = this;
                 context.netid_error_count += 1;
@@ -308,6 +299,15 @@ var ManageProvisionedServices = (function () {
             .html(template(context))
             .removeClass('visually-hidden');
         $('#uwnetids-input', $panel).addClass('visually-hidden');
+
+        // restripe table
+        $('.endorsement_row_first', $table).each(function(index) {
+            var netid = $(this).attr('data-netid');
+
+            $('[data-netid='+ netid +']', $table)
+                .removeClass('endorsee_row_even endorsee_row_odd')
+                .addClass('endorsee_row_' + ((index % 2 === 0) ? 'even' : 'odd'));
+        });
     },
 
     _validateUWNetids = function(netids) {

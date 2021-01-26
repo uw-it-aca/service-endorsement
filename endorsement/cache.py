@@ -1,40 +1,29 @@
-from rc_django.cache_implementation import TimedCache
+from memcached_clients import RestclientPymemcacheClient
 import re
 
 
-class ProvisionCache(TimedCache):
-    """ A custom cache implementation for Provision Request Tool. """
+ONE_MINUTE = 60
+HALF_HOUR = 60 * 30
+ONE_HOUR = 60 * 60
 
-    url_policies = {}
-    url_policies["pws"] = (
-        (re.compile(r"^/identity/v\d/person/"), 60 * 30),
-        (re.compile(r"^/identity/v\d/entity/"), 60 * 30),
-    )
-    url_policies["gws"] = (
-        (re.compile(r"^/group_sws/v2/group/"), 60 * 2),
-    )
 
-    def getCache(self, service, url, headers):
-        cache_time = self.getCacheTime(service, url)
-        if cache_time is not None:
-            return self._response_from_cache(service, url, headers, cache_time)
-        else:
-            return None
+class RestClientsCache(RestclientPymemcacheClient):
+    def get_cache_expiration_time(self, service, url, status=200):
+        if "pws" == service:
+            if re.match(r"^/identity/v\d/person/", url):
+                return HALF_HOUR
 
-    def getCacheTime(self, service, url):
-        if service in ProvisionCache.url_policies:
-            service_policies = ProvisionCache.url_policies[service]
+            if re.match(r"^/identity/v\d/entity/", url):
+                return HALF_HOUR
 
-            for policy in service_policies:
-                pattern = policy[0]
-                policy_cache_time = policy[1]
+        if "gws" == service:
+            if re.match(r"^/group_sws/v2/group/", url):
+                return 2 * ONE_MINUTE
 
-                if pattern.match(url):
-                    return policy_cache_time
-        return
+        if "uwnetid" == service:
+            nws_supported = re.compile((r"^/nws/v\d/uwnetid/"
+                                        r"[a-z][a-z0-9\-\_\.]{,127}"
+                                        r"/supported.json"))
 
-    def processResponse(self, service, url, response):
-        if self.getCacheTime(service, url) is not None:
-            return self._process_response(service, url, response)
-        else:
-            return
+            if nws_supported.match(url):
+                return ONE_HOUR
