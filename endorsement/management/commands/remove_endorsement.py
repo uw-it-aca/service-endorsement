@@ -67,7 +67,3 @@ class Command(BaseCommand):
                 if actually_remove_category:
                     logger.info("Manually {}".format(msg))
                     clear_endorsement(er)
-
-
-
-
