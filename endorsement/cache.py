@@ -17,13 +17,17 @@ class RestClientsCache(RestclientPymemcacheClient):
                 return HALF_HOUR
 
         if "gws" == service:
-            if re.match(r"^/group_sws/v2/group/", url):
+            if re.match(r"^/group_sws/v\d/group/", url):
                 return 2 * ONE_MINUTE
 
         if "uwnetid" == service:
-            nws_supported = re.compile((r"^/nws/v\d/uwnetid/"
-                                        r"[a-z][a-z0-9\-\_\.]{,127}"
-                                        r"/supported.json"))
+            re_nws_base = r"^/nws/v\d/uwnetid/[a-z][a-z0-9\-\_\.]{,127}"
+            nws_supported = re.compile(
+                r"{}/supported.json".format(re_nws_base))
+            nws_category = re.compile(r"{}/category".format(re_nws_base))
 
             if nws_supported.match(url):
+                return ONE_HOUR
+
+            if nws_category.match(url):
                 return ONE_HOUR
