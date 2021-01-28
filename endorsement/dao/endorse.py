@@ -5,6 +5,7 @@ from uw_uwnetid.models import Subscription, Category
 from uw_uwnetid.category import update_catagory, get_netid_categories
 from uw_uwnetid.subscription import (
     get_netid_subscriptions, update_subscription)
+from endorsement.dao.gws import has_canvas_access
 from endorsement.models import EndorsementRecord
 from endorsement.exceptions import (
     NoEndorsementException, CategoryFailureException,
@@ -301,12 +302,7 @@ def is_canvas_permitted(endorser, endorsee):
         get_canvas_endorsement(endorser, endorsee)
         return True, True
     except NoEndorsementException:
-        return is_permitted(
-            endorser, endorsee, [
-                Subscription.SUBS_CODE_CANVAS_STUDENT,
-                Subscription.SUBS_CODE_CANVAS_AFFILIATE,
-                Subscription.SUBS_CODE_CANVAS_SPONSORED
-            ]), False
+        return has_canvas_access(endorsee.netid), False
 
 
 def _activate_category(netid, category_code):

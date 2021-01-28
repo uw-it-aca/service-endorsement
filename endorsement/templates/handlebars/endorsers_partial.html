@@ -81,7 +81,11 @@
         <br />The provisionee will be receiving email soon instructing them to confirm the terms and conditions of use.
         {{/if}}
       {{else}}
+        {{#if endorsement.active }}
+        <span class="significant">Has Access</span>
+        {{else}}
         <span class="significant">Not Provisioned</span>
+        {{/if}}
       {{/if}}
       {{/if}}
   {{/if}}
