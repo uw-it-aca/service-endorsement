@@ -5,7 +5,6 @@ from endorsement.userservice_validation import validate, can_override_user
 class TestNetIDValidation(TestViewApi):
     def test_validate_netid(self):
         self.assertTrue(validate('jstaff') is None)
-        self.assertFalse(validate('JStaff') is None)
         self.assertFalse(validate('notavalid_user_netid') is None)
         self.assertFalse(validate('') is None)
 
