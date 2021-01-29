@@ -12,5 +12,6 @@ class TestGwsDao(TestDao):
         self.assertFalse(is_valid_endorser("nomockid"))
 
     def test_has_canvas_access(self):
+        import pdb; pdb.set_trace()
         self.assertTrue(has_canvas_access('endorsee6'))
         self.assertFalse(has_canvas_access('endorsee2'))
