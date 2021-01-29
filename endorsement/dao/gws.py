@@ -17,11 +17,7 @@ logger = logging.getLogger(__name__)
 gws = GWS()
 
 ENDORSER_GROUP = "uw_employee"
-CANVAS_ACCESS_GROUPS = [
-    'u_subman_s-canvas-student',
-    'u_subman_s-canvas-affiliate'
-    # exclude 'u_subman_s-canvas-affiliate' since it is us
-]
+CANVAS_ACCESS_GROUP = "u_acadev_canvas_login-users"
 
 
 def is_valid_endorser(uwnetid):
@@ -53,15 +49,7 @@ def has_canvas_access(uwnetid):
     Return True if the netid is in a canvas access group
     """
     try:
-        group_refs = gws.search_groups(member=uwnetid,
-                                       scope="all",
-                                       type="direct",
-                                       name="u_subman_s-canvas-*")
-        if group_refs:
-            for gr in group_refs:
-                name = str(gr.name)
-                if name in CANVAS_ACCESS_GROUPS:
-                    return True
+        return gws.is_effective_member(CANVAS_ACCESS_GROUP, uwnetid)
     except DataFailureException as ex:
         if ex.status != 404:
             raise
