@@ -21,7 +21,8 @@ class RestClientsCache(RestclientPymemcacheClient):
                 return 2 * ONE_MINUTE
 
         if "uwnetid" == service:
-            re_nws_base = r"^/nws/v\d/uwnetid/[a-z][a-z0-9\-\_\.]{,127}"
+            re_nws_base = (r"^/nws/v\d(-eval)?/uwnetid/"
+                           r"[a-z][a-z0-9\-\_\.]{,127}")
             nws_supported = re.compile(
                 r"{}/supported.json".format(re_nws_base))
             nws_category = re.compile(r"{}/category".format(re_nws_base))
