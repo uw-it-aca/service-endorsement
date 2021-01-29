@@ -1,4 +1,4 @@
-from endorsement.dao.gws import is_valid_endorser
+from endorsement.dao.gws import is_valid_endorser, has_canvas_access
 from endorsement.test.dao import TestDao
 
 
@@ -10,3 +10,7 @@ class TestGwsDao(TestDao):
 
         self.assertFalse(is_valid_endorser("notareal_uwnetid"))
         self.assertFalse(is_valid_endorser("nomockid"))
+
+    def test_has_canvas_access(self):
+        self.assertTrue(has_canvas_access('endorsee6'))
+        self.assertFalse(has_canvas_access('endorsee2'))

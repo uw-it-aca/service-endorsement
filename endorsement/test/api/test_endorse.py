@@ -1,7 +1,7 @@
 import json
 from django.urls import reverse
 from endorsement.test.api import EndorsementApiTest
-from endorsement.services import ENDORSEMENT_SERVICES
+from endorsement.services import ENDORSEMENT_SERVICES, service_supports_shared
 
 
 class TestEndorsementEndorseAPI(EndorsementApiTest):
@@ -51,7 +51,7 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
                     self.assertTrue(s in v['endorsements'])
                     endorsement = v['endorsements'][s]
                     if (endorsement['endorsee']['is_person']
-                            or ENDORSEMENT_SERVICES[s]['valid_shared']):
+                            or service_supports_shared(s)):
                         if s == svc_tag:
                             self.assertEqual(
                                 endorsement['category_code'],

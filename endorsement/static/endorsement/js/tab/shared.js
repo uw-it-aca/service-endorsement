@@ -129,8 +129,6 @@ var ManageSharedNetids = (function () {
                             endorsement_count += 1;
                         }
                     }
-
-                    _updateEndorsementTableShading(endorsement_count);
                 }
             });
         } else {
@@ -141,13 +139,6 @@ var ManageSharedNetids = (function () {
         $content.html(template(context));
         _enableSharedEndorsability();
         Endorse.updateExpireWarning();
-    },
-
-    _updateEndorsementTableShading = function(endorsement_count) {
-        if (endorsement_count && !table_css) {
-            table_css = Endorse.endorsementTableStyling('.shared-netids-table', endorsement_count);
-            $("<style type='text/css'>" + table_css + " </style>").appendTo("head");
-        }
     },
 
     _enableSharedEndorsability = function() {

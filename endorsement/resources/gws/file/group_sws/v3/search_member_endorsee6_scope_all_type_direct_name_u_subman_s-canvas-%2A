@@ -1,0 +1,23 @@
+{
+  "schemas": ["urn:mace:washington.edu:schemas:groups:1.0"],
+  "meta": {
+    "resourceType": "search",
+    "version": "v3.0",
+    "totalResults": 1,
+    "searchParameters": {
+    "name":"u_subman_s-canvas-*",
+    "scope":"all"
+    ,"member":"endorsee6",
+    "type":"direct"
+    },
+    "selfRef": "https://iam-ws.u.washington.edu:7443/group_sws/v3/search?searchmember=endorsee6&scope=all&type=direct&name=u_subman_s-canvas-*",
+    "timestamp": 1524865176252
+  },
+  "data": [
+    {"regid":"40537abcc40247a28ccf223c772bd786",
+     "displayName":"UW Alumni",
+      "id":"u_subman_s-canvas-student",
+      "url":"https://iam-ws.u.washington.edu/group_sws/v3/group/u_subman_s-canvas-student"
+    }
+  ]
+}

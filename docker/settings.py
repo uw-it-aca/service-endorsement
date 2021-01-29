@@ -29,8 +29,7 @@ REST_FRAMEWORK = {
 }
 
 if not os.getenv("ENV") == "localdev":
-    INSTALLED_APPS += ['rc_django',]
-    RESTCLIENTS_DAO_CACHE_CLASS = 'endorsement.cache.ProvisionCache'
+    RESTCLIENTS_DAO_CACHE_CLASS = 'endorsement.cache.RestClientsCache'
     if os.getenv("ENV") == "prod":
         APP_SERVER_BASE = 'https://provision.uw.edu'
 

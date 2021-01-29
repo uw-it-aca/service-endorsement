@@ -208,9 +208,12 @@ var Endorse = (function () {
 
         updateEndorsementRows = function (endorsements) {
             var row_source = $('#endorsee-row').html(),
-                row_template = Handlebars.compile(row_source);
+                row_template = Handlebars.compile(row_source),
+                endorsee_index = 0;
 
             $.each(endorsements, function (netid, data) {
+                var endorsement_index = 0;
+
                 if (data.error) {
                     Notify.error('Error provisioning netid "' + netid + '"');
                     $('button.endorse_service', $('tr[data-netid="' + netid + '"]')).button('reset');
@@ -219,12 +222,17 @@ var Endorse = (function () {
 
                 $.each(data.endorsements, function (service, endorsement) {
                     var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]'),
+                        is_first,
+                        is_even,
                         type,
                         context;
 
                     if ($row.length === 0) {
                         return true;
                     }
+
+                    is_first = $row.hasClass('endorsement_row_first');
+                    is_even = $row.hasClass('endorsee_row_even');
 
                     updateEndorsementForRowContext(endorsement);
 
@@ -233,7 +241,9 @@ var Endorse = (function () {
                         name: data.name ? data.name : $row.attr('data-netid-name'),
                         email: data.email ? data.email : $row.attr('data-netid-initial-email'),
                         service: service,
-                        endorsement: endorsement
+                        endorsement: endorsement,
+                        endorsee_index: endorsee_index,
+                        endorsement_index: endorsement_index
                     };
 
                     type = $row.attr('data-netid-type');
@@ -242,28 +252,22 @@ var Endorse = (function () {
                     }
 
                     $row.replaceWith(row_template(context));
+
+                    // restore relative placement
+                    $('tr[data-netid="' + netid + '"][data-service="' + service + '"]')
+                        .removeClass('endorsee_row_even endorsee_row_odd' + 
+                                     'endorsement_row_first endorsement_row_first')
+                        .addClass('endorsement_row_' + (is_first ? 'first' : 'following'))
+                        .addClass('endorsee_row_' + (is_even ? 'even' : 'odd'));
+
+                    endorsement_index += 1;
                 });
+
+                endorsee_index += 1;
+                endorsement_index = 0;
             });
 
             updateExpireWarning();
-        },
-
-        endorsementTableStyling = function (table, endorsement_count) {
-            var css = '',
-                child;
-
-            for (var i = 0; i < endorsement_count; i++) {
-                if (i) { css += ', '; }
-                css += table + ' tr:nth-child(' + (endorsement_count * 2) + 'n';
-                css += ((i) ? ' - ' + i : '') + ')';
-            }
-
-            css += ' { background: #f8f8f8; } ';
-            child = table + ' tr:nth-child(' + endorsement_count + 'n + 1) ';
-            css += child + ' .endorsed-netid, ';
-            css += child + ' .endorsed-name ';
-            css += '{ color: black !important; border-top: 1px solid #ddd; }';
-            return css;
         },
 
         updateExpireWarning = function () {
@@ -281,7 +285,6 @@ var Endorse = (function () {
         gatherEndorsementsByRow: gatherEndorsementsByRow,
         updateEndorsementForRowContext: updateEndorsementForRowContext,
         updateEndorsementRows: updateEndorsementRows,
-        endorsementTableStyling: endorsementTableStyling,
         updateExpireWarning: updateExpireWarning
     };
 }());
