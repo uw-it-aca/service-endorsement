@@ -277,7 +277,7 @@ class EndorsementRecord(
     def accept_url(self):
         return None if (self.datetime_endorsed) else "{0}{1}".format(
             getattr(settings, "APP_SERVER_BASE",
-                    "http://provision-test.uw.edu"),
+                    "http://test.provision.uw.edu"),
             reverse('accept_view',
                     kwargs={'accept_id': self.accept_id}))
 
