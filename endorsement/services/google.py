@@ -31,5 +31,3 @@ class GSuite(EndorsementService):
             'supported_types': ['shared', 'administrator', 'support'],
             'excluded_categories': [22],
         }
-
-

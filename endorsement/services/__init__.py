@@ -9,7 +9,7 @@ from importlib import import_module
 
 EXPORTED_SERVICES = []
 
-## Endorsed Service base class
+# Endorsed Service base class
 
 
 class EndorsementService(object):
