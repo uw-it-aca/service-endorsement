@@ -13,12 +13,11 @@ class TestNetidSupported(TestDao):
     def test_shared_valid_supported_resource(self):
         for shared in get_shared_netids_for_netid('jstaff'):
             for service in endorsement_services():
-                svc_tag = service.service_name()
                 valid = valid_supported_resource(shared, service)
-                if svc_tag == 'canvas':
+                if service.service_name == 'canvas':
                     self.assertEqual(
                         valid, shared.netid_type == 'administrator')
-                elif svc_tag in ['o365', 'google']:
+                elif service.service_name in ['o365', 'google']:
                     self.assertEqual(valid, (shared.name != 'pppmsrv'))
                 else:
                     raise Exception("Missing shared netid service test")

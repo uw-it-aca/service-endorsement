@@ -4,7 +4,7 @@ from endorsement.test.views import require_url, TestViewApi
 from endorsement.models.core import EndorsementRecord
 from endorsement.exceptions import NoEndorsementException
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.services import endorsement_services
+from endorsement.services import endorsement_services, get_endorsement_service
 
 
 @require_url('accept_view', 'endorsement urls not configured',
@@ -14,10 +14,7 @@ class TestAccept(TestViewApi):
     @classmethod
     def setUpTestData(cls):
 
-        for service in endorsement_services():
-            if service.service_name() == 'o365':
-                break
-
+        service = get_endorsement_service('o365')
         endorser = get_endorser_model('jfaculty')
         endorsee = get_endorsee_model('endorsee7')
         try:

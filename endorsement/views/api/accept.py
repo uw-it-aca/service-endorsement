@@ -37,11 +37,11 @@ class Accept(RESTDispatch):
         record = records[0]
 
         for service in endorsement_services():
-            if record.category_code == service.category_code():
+            if record.category_code == service.category_code:
                 json_data = service.store_endorsement(
                     record.endorser, record.endorsee,
                     acted_as, record.reason).json_data()
-                json_data['service_tag'] = service.service_name()
-                json_data['service_list'] = service.service_link()
+                json_data['service_tag'] = service.service_name
+                json_data['service_list'] = service.service_link
 
         return self.json_response(json_data)

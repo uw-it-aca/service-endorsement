@@ -1,10 +1,7 @@
 from .base_settings import *
 
-ENDORSEMENT_SERVICES = [
-    'endorsement.services.office365',
-    'endorsement.services.google',
-    'endorsement.services.canvas'
-]
+ENDORSEMENT_SERVICES = [s.strip() for s in os.getenv(
+    'ENDORSEMENT_SERVICES', '*').split(',')]
 
 ALLOWED_HOSTS = ['*']
 

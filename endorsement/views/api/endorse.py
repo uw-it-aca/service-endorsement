@@ -72,9 +72,9 @@ class Endorse(RESTDispatch):
                                       endorsements['endorsements'])
                     else:
                         err = 'Shared netid {} not allowed for {}'.format(
-                            endorsee.netid, service.category_name())
+                            endorsee.netid, service.category_name)
                         endorsements['endorsements'][
-                            service.service_name()] = {
+                            service.service_name] = {
                                 'endorsee': endorsee.json_data(),
                                 'error': err
                             }
@@ -108,7 +108,7 @@ class Endorse(RESTDispatch):
                  endorsee, acted_as, endorsements):
         try:
             e = None
-            service_tag = service.service_name()
+            service_tag = service.service_name
             if to_endorse[service_tag]['state']:
                 reason = to_endorse[service_tag]['reason']
                 if to_endorse.get('store', False):

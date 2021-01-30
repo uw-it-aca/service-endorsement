@@ -31,8 +31,8 @@ def _create_endorsee_message(endorser):
     for k, v in endorser['services'].items():
         names.append(v['name'])
         for service in endorsement_services():
-            if k == service.service_name():
-                v['service_link'] = service.service_link()
+            if k == service.service_name:
+                v['service_link'] = service.service_link
 
     subject = "Action Required: Your new access to {0}".format(
         '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
@@ -69,11 +69,11 @@ def get_unendorsed_unnotified():
             }
 
         for service in endorsement_services():
-            if er.category_code == service.category_code():
+            if er.category_code == service.category_code:
                 endorsements[email]['endorsers'][
-                    er.endorser.netid]['services'][service.service_name()] = {
-                        'code': service.category_code(),
-                        'name': service.category_name(),
+                    er.endorser.netid]['services'][service.service_name] = {
+                        'code': service.category_code,
+                        'name': service.category_name,
                         'id': er.id,
                         'accept_url': er.accept_url()
                     }
@@ -128,8 +128,8 @@ def _create_endorser_message(endorsed):
     for s, v in params["endorsed"].items():
         services.append(s)
         for service in endorsement_services():
-            if v['svc'] == service.service_name():
-                v['service_link'] = service.service_link()
+            if v['svc'] == service.service_name:
+                v['service_link'] = service.service_link
 
     subject = "Shared NetID access to {}".format(
         '{} and {}'.format(', '.join(services[:-1]), services[-1]) if (
@@ -158,13 +158,12 @@ def get_endorsed_unnotified():
         }
 
         for service in endorsement_services():
-            service_tag = service.service_name()
-            if er.category_code == service.category_code():
-                data['name'] = service.category_name()
-                if service_tag in endorsements[email]:
-                    endorsements[email][service_tag].append(data)
+            if er.category_code == service.category_code:
+                data['name'] = service.category_name
+                if service.service_name in endorsements[email]:
+                    endorsements[email][service.service_name].append(data)
                 else:
-                    endorsements[email][service_tag] = [data]
+                    endorsements[email][service.service_name] = [data]
 
                 break
 
@@ -180,7 +179,7 @@ def notify_endorsers():
         try:
             send_email(
                 sender, [email], subject, text_body, html_body, "Endorser")
-            for svc in [s.service_name() for s in endorsement_services()]:
+            for svc in [s.service_name for s in endorsement_services()]:
                 if svc in endorsed:
                     for id in [x['id'] for x in endorsed[svc]]:
                         EndorsementRecord.objects.emailed(id)
@@ -197,14 +196,14 @@ def _create_invalid_endorser_message(endorsements):
     for e in endorsements:
         params['endorser_netid'] = e.endorser.netid
         for service in endorsement_services():
-            if e.category_code == service.category_code():
-                services[service.category_name()] = 1
+            if e.category_code == service.category_code:
+                services[service.category_name] = 1
                 try:
                     params['endorsed'][e.endorsee.netid].append(
-                        service.category_name())
+                        service.category_name)
                 except KeyError:
                     params['endorsed'][e.endorsee.netid] = [
-                        service.category_name()]
+                        service.category_name]
 
     params['services'] = list(services.keys())
 

@@ -45,8 +45,8 @@ class Shared(RESTDispatch):
 
                 for s in endorsement_services():
                     if valid_supported_resource(shared, s):
-                        data['endorsements'][s.service_name()] = {
-                            'category_name': s.category_name(),
+                        data['endorsements'][s.service_name] = {
+                            'category_name': s.category_name,
                             'valid_shared': True
                         }
 
@@ -58,19 +58,7 @@ class Shared(RESTDispatch):
                     data['name'] = endorsee.display_name
                     for endorsement in endorsements:
                         if endorsement.endorsee.id == endorsee.id:
-                            for er in get_endorsements_for_endorsee(endorsee):
-                                for s in endorsement_services():
-                                    if (er.category_code == s.category_code()
-                                            and valid_supported_resource(
-                                                shared, s)):
-                                        svc_tag = s.service_name()
-                                        data['endorsements'][svc_tag]\
-                                            = er.json_data()
-                                        data['endorsements'][svc_tag][
-                                            'endorser'] = endorser.json_data()
-                                        data['endorsements'][svc_tag][
-                                            'endorsers'] = [
-                                                endorser.json_data()]
+                            _add_endorsements(shared, endorser, endorsee, data)
 
                 except (UnrecognizedUWNetid, InvalidNetID):
                     pass
@@ -82,3 +70,14 @@ class Shared(RESTDispatch):
             'endorser': endorser.json_data(),
             'shared': owned
         })
+
+
+def _add_endorsements(shared, endorser, endorsee, data):
+    for er in get_endorsements_for_endorsee(endorsee):
+        for s in endorsement_services():
+            if (er.category_code == s.category_code
+                    and valid_supported_resource(shared, s)):
+                endorsement = er.json_data()
+                endorsement['endorser'] = endorser.json_data()
+                endorsement['endorsers'] = [endorser.json_data()]
+                data['endorsements'][s.service_name] = endorsement

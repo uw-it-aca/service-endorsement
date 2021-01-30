@@ -38,8 +38,8 @@ class Endorsed(RESTDispatch):
 
             service_tag = None
             for s in endorsement_services():
-                if (er.category_code == s.category_code()):
-                    service_tag = s.service_name()
+                if (er.category_code == s.category_code):
+                    service_tag = s.service_name
                     break
 
             if service_tag is None:

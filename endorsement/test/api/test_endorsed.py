@@ -30,9 +30,9 @@ class TestEndorsementEndorsedAPI(EndorsementApiTest):
         data = json.loads(response.content)
         self.assertTrue('endorsee7' in data['endorsed'])
         for s in endorsement_services():
-            self.assertTrue(s.service_name() in data[
+            self.assertTrue(s.service_name in data[
                 'endorsed']['endorsee7']['endorsements'])
-            if s.service_name() == service.service_name():
+            if s.service_name == service.service_name:
                 self.assertTrue(data['endorsed']['endorsee7'][
-                    'endorsements'][s.service_name()]['category_code'],
-                                s.category_code())
+                    'endorsements'][s.service_name]['category_code'],
+                                s.category_code)
