@@ -1,6 +1,6 @@
 from django.test import TransactionTestCase
 from django.core import mail
-from endorsement.services import ENDORSEMENT_SERVICES, service_names
+from endorsement.services import endorsement_services, service_names
 from endorsement.dao.notification import (
     notify_endorsees, notify_endorsers,
     get_unendorsed_unnotified, get_endorsed_unnotified,
@@ -15,11 +15,10 @@ class TestNotificationDao(TransactionTestCase):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
 
-        svc_key = random.choice(list(ENDORSEMENT_SERVICES.keys()))
-        svc = ENDORSEMENT_SERVICES[svc_key]
-        svc['initiate'](endorser, endorsee, 'because')
-        service_name = svc['category_name']
-        service_link = svc['service_link']
+        service = random.choice(endorsement_services())
+        service.initiate_endorsement(endorser, endorsee, 'because')
+        service_name = service.category_name()
+        service_link = service.service_link()
 
         endorsements = get_unendorsed_unnotified()
         self.assertEqual(len(endorsements), 1)
@@ -38,8 +37,8 @@ class TestNotificationDao(TransactionTestCase):
         endorsee = get_endorsee_model('endorsee7')
 
         service_list = service_names()
-        for service_tag, svc in ENDORSEMENT_SERVICES.items():
-            svc['initiate'](endorser, endorsee, 'because')
+        for service in endorsement_services():
+            service.initiate_endorsement(endorser, endorsee, 'because')
 
         endorsements = get_unendorsed_unnotified()
         self.assertEqual(len(endorsements), 1)
@@ -51,8 +50,8 @@ class TestNotificationDao(TransactionTestCase):
             'Action Required: Your new access to {}'.format(service_list))
         self.assertTrue(service_list in mail.outbox[0].body)
 
-        for service_tag, svc in ENDORSEMENT_SERVICES.items():
-            self.assertTrue(svc['service_link'] in mail.outbox[0].body)
+        for service in endorsement_services():
+            self.assertTrue(service.service_link() in mail.outbox[0].body)
 
         self.assertTrue('Appropriate Use' in mail.outbox[0].alternatives[0][0])
 
@@ -60,11 +59,10 @@ class TestNotificationDao(TransactionTestCase):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
 
-        svc_key = random.choice(list(ENDORSEMENT_SERVICES.keys()))
-        svc = ENDORSEMENT_SERVICES[svc_key]
-        svc['store'](endorser, endorsee, None, 'because')
-        service_name = svc['category_name']
-        service_link = svc['service_link']
+        service = random.choice(endorsement_services())
+        service.store_endorsement(endorser, endorsee, None, 'because')
+        service_name = service.category_name()
+        service_link = service.service_link()
 
         endorsements = get_endorsed_unnotified()
         self.assertEqual(len(endorsements), 1)
@@ -83,8 +81,8 @@ class TestNotificationDao(TransactionTestCase):
         endorsee = get_endorsee_model('endorsee7')
 
         service_list = service_names()
-        for service_tag, svc in ENDORSEMENT_SERVICES.items():
-            svc['store'](endorser, endorsee, None, 'because')
+        for service in endorsement_services():
+            service.store_endorsement(endorser, endorsee, None, 'because')
 
         endorsements = get_endorsed_unnotified()
         self.assertEqual(len(endorsements), 1)
@@ -94,8 +92,8 @@ class TestNotificationDao(TransactionTestCase):
         self.assertEqual(mail.outbox[0].subject,
                          'Shared NetID access to {}'.format(service_list))
         self.assertTrue(service_list in mail.outbox[0].body)
-        for service_tag, svc in ENDORSEMENT_SERVICES.items():
-            self.assertTrue(svc['service_link'] in mail.outbox[0].body)
+        for service in endorsement_services():
+            self.assertTrue(service.service_link() in mail.outbox[0].body)
 
         self.assertTrue('Shared UW NetID use of these services is bound'
                         in mail.outbox[0].alternatives[0][0])
@@ -104,10 +102,9 @@ class TestNotificationDao(TransactionTestCase):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
 
-        svc_key = random.choice(list(ENDORSEMENT_SERVICES.keys()))
-        svc = ENDORSEMENT_SERVICES[svc_key]
-        svc['store'](endorser, endorsee, None, 'because')
-        service_name = svc['category_name']
+        service = random.choice(endorsement_services())
+        service.store_endorsement(endorser, endorsee, None, 'because')
+        service_name = service.category_name()
 
         endorsements = get_endorsements_by_endorser(endorser)
 

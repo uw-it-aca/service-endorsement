@@ -1,20 +1,20 @@
 import json
 from django.urls import reverse
 from endorsement.test.api import EndorsementApiTest
-from endorsement.services import ENDORSEMENT_SERVICES, service_supports_shared
+from endorsement.services import endorsement_services, service_supports_shared
 
 
 class TestEndorsementEndorseAPI(EndorsementApiTest):
     reset_sequences = True
 
     def test_service_endorse_all(self):
-        services = list(ENDORSEMENT_SERVICES.keys())
 
         self.set_user('jstaff')
         url = reverse('endorse_api')
 
         seen = []
-        for svc_tag, svc in ENDORSEMENT_SERVICES.items():
+        for service in endorsement_services():
+            svc_tag = service.service_name()
             seen.append(svc_tag)
 
             data = {
@@ -31,7 +31,7 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
             }
 
             for endorsee, v in data["endorsees"].items():
-                for s in services:
+                for s in [s.service_name() for s in endorsement_services()]:
                     v[s] = {
                         "state": True,
                         "reason": "Student mentoring"
@@ -47,21 +47,21 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
             self.assertTrue('endorsee7' in data['endorsed'])
             self.assertTrue('endorsee3' in data['endorsed'])
             for endorsee, v in data["endorsed"].items():
-                for s in services:
-                    self.assertTrue(s in v['endorsements'])
-                    endorsement = v['endorsements'][s]
+                for s in endorsement_services():
+                    self.assertTrue(s.service_name() in v['endorsements'])
+                    endorsement = v['endorsements'][s.service_name()]
                     if (endorsement['endorsee']['is_person']
                             or service_supports_shared(s)):
-                        if s == svc_tag:
+                        if s.service_name() == svc_tag:
                             self.assertEqual(
                                 endorsement['category_code'],
-                                svc['category_code'])
+                                service.category_code())
                             self.assertEqual(
                                 endorsement['endorsee']['netid'],
                                 endorsee)
                             self.assertEqual(
                                 endorsement['endorser']['netid'], 'jstaff')
-                        elif s not in seen:
+                        elif s.service_name() not in seen:
                             self.assertFalse(endorsement['endorsed'])
                     else:
                         self.assertTrue('error' in endorsement)

@@ -2,7 +2,7 @@ import logging
 from userservice.user import UserService
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model, get_endorsee_email_model)
-from endorsement.services import ENDORSEMENT_SERVICES
+from endorsement.services import endorsement_services
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_person
 from endorsement.dao.endorse import get_endorsements_for_endorsee
@@ -63,20 +63,21 @@ class Endorse(RESTDispatch):
                     endorsements['email'] = get_endorsee_email_model(
                         endorsee, endorser, email=to_endorse['email']).email
 
-                for svc_tag, svc in ENDORSEMENT_SERVICES.items():
-                    if endorsee.is_person or valid_supported_netid(
-                            endorsee.netid, svc):
-                        self._endorse(to_endorse, svc_tag,
+                for service in endorsement_services():
+                    if endorsee.is_person or not valid_supported_netid(
+                            endorsee.netid, service):
+                        self._endorse(to_endorse, service,
                                       endorser, endorser_json,
                                       endorsee, acted_as,
                                       endorsements['endorsements'])
                     else:
                         err = 'Shared netid {} not allowed for {}'.format(
-                            endorsee.netid, svc['category_name'])
-                        endorsements['endorsements'][svc_tag] = {
-                            'endorsee': endorsee.json_data(),
-                            'error': err
-                        }
+                            endorsee.netid, service.category_name())
+                        endorsements['endorsements'][
+                            service.service_name()] = {
+                                'endorsee': endorsee.json_data(),
+                                'error': err
+                            }
             except InvalidNetID as ex:
                 endorsements = {
                     'endorsee': {
@@ -103,17 +104,18 @@ class Endorse(RESTDispatch):
 
         return self.json_response(endorsed)
 
-    def _endorse(self, to_endorse, service_tag, endorser, endorser_json,
+    def _endorse(self, to_endorse, service, endorser, endorser_json,
                  endorsee, acted_as, endorsements):
         try:
             e = None
+            service_tag = service.service_name()
             if to_endorse[service_tag]['state']:
                 reason = to_endorse[service_tag]['reason']
                 if to_endorse.get('store', False):
-                    e = ENDORSEMENT_SERVICES[service_tag]['store'](
+                    e = service.store_endorsement(
                         endorser, endorsee, acted_as, reason)
                 else:
-                    e = ENDORSEMENT_SERVICES[service_tag]['initiate'](
+                    e = service.initiate_endorsement(
                         endorser, endorsee, reason)
 
                 endorsements[service_tag] = e.json_data()
@@ -121,7 +123,7 @@ class Endorse(RESTDispatch):
                 endorsements[service_tag]['reason'] = reason
             else:
                 try:
-                    e = ENDORSEMENT_SERVICES[service_tag]['clear'](
+                    e = service.clear_endorsement(
                         endorser, endorsee)
                     endorsements[service_tag] = e.json_data()
                 except NoEndorsementException as ex:

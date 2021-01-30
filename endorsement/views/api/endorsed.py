@@ -1,6 +1,7 @@
 import logging
 from userservice.user import UserService
-from endorsement.services import ENDORSEMENT_SERVICES, endorsement_service_keys
+from endorsement.services import (endorsement_services,
+                                  endorsement_services_context)
 from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.user import get_endorser_model, get_endorsee_email_model
@@ -36,9 +37,9 @@ class Endorsed(RESTDispatch):
                 continue
 
             service_tag = None
-            for service, v in ENDORSEMENT_SERVICES.items():
-                if (er.category_code == v['category_code']):
-                    service_tag = service
+            for s in endorsement_services():
+                if (er.category_code == s.category_code()):
+                    service_tag = s.service_name()
                     break
 
             if service_tag is None:
@@ -50,8 +51,7 @@ class Endorsed(RESTDispatch):
                         'name': er.endorsee.display_name,
                         'email': get_endorsee_email_model(
                             er.endorsee, endorser).email,
-                        'endorsements': endorsement_service_keys(
-                            ['category_name'])
+                        'endorsements': endorsement_services_context()
                     }
             except UnrecognizedUWNetid as err:
                 logger.error('UnrecognizedUWNetid: {}'.format(err))
