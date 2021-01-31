@@ -4,8 +4,7 @@ from endorsement.models.core import EndorsementRecord
 from endorsement.test.api import EndorsementApiTest
 from endorsement.exceptions import NoEndorsementException
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.dao.endorse import (
-    clear_office365_endorsement, initiate_office365_endorsement)
+from endorsement.services import get_endorsement_service
 
 
 class TestEndorsementAcceptAPI(EndorsementApiTest):
@@ -13,11 +12,13 @@ class TestEndorsementAcceptAPI(EndorsementApiTest):
         endorser = get_endorser_model('jfaculty')
         endorsee = get_endorsee_model('endorsee7')
         try:
-            clear_office365_endorsement(endorser, endorsee)
+            get_endorsement_service('o365').clear_endorsement(
+                endorser, endorsee)
         except NoEndorsementException as ex:
             pass
 
-        initiate_office365_endorsement(endorser, endorsee, 'endorsee6')
+        get_endorsement_service('o365').initiate_endorsement(
+            endorser, endorsee, 'endorsee6')
 
         endorsement = EndorsementRecord.objects.get(endorser=endorser,
                                                     endorsee=endorsee)

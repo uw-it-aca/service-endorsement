@@ -1,7 +1,7 @@
 import logging
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
-from endorsement.services import ENDORSEMENT_SERVICES
+from endorsement.services import endorsement_services
 from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import RESTDispatch, invalid_session
 
@@ -36,12 +36,12 @@ class Accept(RESTDispatch):
 
         record = records[0]
 
-        for service_tag, keys in ENDORSEMENT_SERVICES.items():
-            if record.category_code == keys['category_code']:
-                json_data = keys['store'](
+        for service in endorsement_services():
+            if record.category_code == service.category_code:
+                json_data = service.store_endorsement(
                     record.endorser, record.endorsee,
                     acted_as, record.reason).json_data()
-                json_data['service_tag'] = service_tag
-                json_data['service_list'] = keys['service_link']
+                json_data['service_tag'] = service.service_name
+                json_data['service_list'] = service.service_link
 
         return self.json_response(json_data)

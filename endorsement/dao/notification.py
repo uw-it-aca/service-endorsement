@@ -3,7 +3,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.utils import timezone
 from endorsement.models import EndorsementRecord
-from endorsement.services import ENDORSEMENT_SERVICES
+from endorsement.services import endorsement_services
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
@@ -30,7 +30,9 @@ def _create_endorsee_message(endorser):
     names = []
     for k, v in endorser['services'].items():
         names.append(v['name'])
-        v['service_link'] = ENDORSEMENT_SERVICES[k]['service_link']
+        for service in endorsement_services():
+            if k == service.service_name:
+                v['service_link'] = service.service_link
 
     subject = "Action Required: Your new access to {0}".format(
         '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
@@ -66,12 +68,12 @@ def get_unendorsed_unnotified():
                 'services': {}
             }
 
-        for service_tag, v in ENDORSEMENT_SERVICES.items():
-            if er.category_code == v['category_code']:
+        for service in endorsement_services():
+            if er.category_code == service.category_code:
                 endorsements[email]['endorsers'][
-                    er.endorser.netid]['services'][service_tag] = {
-                        'code': v['category_code'],
-                        'name': v['category_name'],
+                    er.endorser.netid]['services'][service.service_name] = {
+                        'code': service.category_code,
+                        'name': service.category_name,
                         'id': er.id,
                         'accept_url': er.accept_url()
                     }
@@ -125,7 +127,9 @@ def _create_endorser_message(endorsed):
     services = []
     for s, v in params["endorsed"].items():
         services.append(s)
-        v['service_link'] = ENDORSEMENT_SERVICES[v['svc']]['service_link']
+        for service in endorsement_services():
+            if v['svc'] == service.service_name:
+                v['service_link'] = service.service_link
 
     subject = "Shared NetID access to {}".format(
         '{} and {}'.format(', '.join(services[:-1]), services[-1]) if (
@@ -153,13 +157,13 @@ def get_endorsed_unnotified():
             'id': er.id
         }
 
-        for service_tag, v in ENDORSEMENT_SERVICES.items():
-            if er.category_code == v['category_code']:
-                data['name'] = v['category_name']
-                if service_tag in endorsements[email]:
-                    endorsements[email][service_tag].append(data)
+        for service in endorsement_services():
+            if er.category_code == service.category_code:
+                data['name'] = service.category_name
+                if service.service_name in endorsements[email]:
+                    endorsements[email][service.service_name].append(data)
                 else:
-                    endorsements[email][service_tag] = [data]
+                    endorsements[email][service.service_name] = [data]
 
                 break
 
@@ -175,7 +179,7 @@ def notify_endorsers():
         try:
             send_email(
                 sender, [email], subject, text_body, html_body, "Endorser")
-            for svc in ENDORSEMENT_SERVICES.keys():
+            for svc in [s.service_name for s in endorsement_services()]:
                 if svc in endorsed:
                     for id in [x['id'] for x in endorsed[svc]]:
                         EndorsementRecord.objects.emailed(id)
@@ -191,15 +195,15 @@ def _create_invalid_endorser_message(endorsements):
     services = {}
     for e in endorsements:
         params['endorser_netid'] = e.endorser.netid
-        for svc_tag, svc in ENDORSEMENT_SERVICES.items():
-            if e.category_code == svc['category_code']:
-                services[svc['category_name']] = 1
+        for service in endorsement_services():
+            if e.category_code == service.category_code:
+                services[service.category_name] = 1
                 try:
                     params['endorsed'][e.endorsee.netid].append(
-                        svc['category_name'])
+                        service.category_name)
                 except KeyError:
                     params['endorsed'][e.endorsee.netid] = [
-                        svc['category_name']]
+                        service.category_name]
 
     params['services'] = list(services.keys())
 

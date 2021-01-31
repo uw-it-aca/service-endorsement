@@ -1,7 +1,7 @@
 import json
 from django.urls import reverse
 from endorsement.test.api import EndorsementApiTest
-from endorsement.services import ENDORSEMENT_SERVICES
+from endorsement.services import endorsement_services
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 import random
 
@@ -20,9 +20,8 @@ class TestEndorsementEndorsedAPI(EndorsementApiTest):
         endorsee = get_endorsee_model('endorsee7')
 
         # test udpate
-        svc_key = random.choice(list(ENDORSEMENT_SERVICES.keys()))
-        svc = ENDORSEMENT_SERVICES[svc_key]
-        svc['store'](endorser, endorsee, None, 'because')
+        service = random.choice(endorsement_services())
+        service.store_endorsement(endorser, endorsee, None, 'because')
 
         self.set_user('jstaff')
         url = reverse('endorsed_api')
@@ -30,8 +29,10 @@ class TestEndorsementEndorsedAPI(EndorsementApiTest):
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertTrue('endorsee7' in data['endorsed'])
-        for s, v in ENDORSEMENT_SERVICES.items():
-            self.assertTrue(s in data['endorsed']['endorsee7']['endorsements'])
-            if s == svc_key:
+        for s in endorsement_services():
+            self.assertTrue(s.service_name in data[
+                'endorsed']['endorsee7']['endorsements'])
+            if s.service_name == service.service_name:
                 self.assertTrue(data['endorsed']['endorsee7'][
-                    'endorsements'][s]['category_code'], v['category_code'])
+                    'endorsements'][s.service_name]['category_code'],
+                                s.category_code)

@@ -5,7 +5,6 @@ from uw_uwnetid.models import Subscription, Category
 from uw_uwnetid.category import update_catagory, get_netid_categories
 from uw_uwnetid.subscription import (
     get_netid_subscriptions, update_subscription)
-from endorsement.dao.gws import has_canvas_access
 from endorsement.models import EndorsementRecord
 from endorsement.exceptions import (
     NoEndorsementException, CategoryFailureException,
@@ -137,110 +136,6 @@ def get_endorsement_records_for_endorsee_re(endorsee_regex):
         endorsee_regex)
 
 
-def get_office365_endorsement(endorser, endorsee):
-    return get_endorsement(endorser, endorsee,
-                           EndorsementRecord.OFFICE_365_ENDORSEE)
-
-
-def get_google_endorsement(endorser, endorsee):
-    return get_endorsement(endorser, endorsee,
-                           EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
-
-
-def get_canvas_endorsement(endorser, endorsee):
-    return get_endorsement(endorser, endorsee,
-                           EndorsementRecord.CANVAS_PROVISIONEE)
-
-
-def initiate_office365_endorsement(endorser, endorsee, reason):
-    """
-    Create record that endorsee requested endorsement for endorsee
-    """
-    return initiate_endorsement(
-        endorser, endorsee, reason, EndorsementRecord.OFFICE_365_ENDORSEE)
-
-
-def store_office365_endorsement(endorser, endorsee, acted_as, reason):
-    """
-    To endorse O365, the tools should:
-      *  Add category 235, status 1 for given endorsee
-      *  Activate subscription 59 Office 365 Pilot
-      *  Activate subscription 250 Future Office 365
-    """
-    _activate_category(endorsee.netid, Category.OFFICE_365_ENDORSEE)
-    _activate_subscriptions(endorsee.netid, endorser.netid,
-                            [Subscription.SUBS_CODE_FUTURE_OFFICE_365])
-    return store_endorsement(
-        endorser, endorsee, acted_as, reason,
-        EndorsementRecord.OFFICE_365_ENDORSEE)
-
-
-def initiate_google_endorsement(endorser, endorsee, reason):
-    """
-    Create record that endorsee requested endorsement for endorsee
-    """
-    return initiate_endorsement(
-        endorser, endorsee, reason, EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
-
-
-def store_google_endorsement(endorser, endorsee, acted_as, reason):
-    """
-    The expected life cycle for a UW G Suite endorsement would be:
-      *  Add category 234, status 1 record for given endorsee
-      *  Activate subscription 144 for endorsee
-    """
-    _activate_category(endorsee.netid, Category.GOOGLE_SUITE_ENDORSEE)
-    _activate_subscriptions(endorsee.netid, endorser.netid,
-                            [Subscription.SUBS_CODE_GOOGLE_APPS])
-    return store_endorsement(endorser, endorsee, acted_as, reason,
-                             EndorsementRecord.GOOGLE_SUITE_ENDORSEE)
-
-
-def initiate_canvas_endorsement(endorser, endorsee, reason):
-    """
-    Create record that endorsee requested endorsement for endorsee
-    """
-    return initiate_endorsement(
-        endorser, endorsee, reason, EndorsementRecord.CANVAS_PROVISIONEE)
-
-
-def store_canvas_endorsement(endorser, endorsee, acted_as, reason):
-    """
-    The expected life cycle for a Canvas endorsement would be:
-      *  Add category 236, status 1 record for given endorsee
-      *  Activate subscription 79 for endorsee
-    """
-    _activate_category(endorsee.netid, Category.CANVAS_PROVISIONEE)
-    _activate_subscriptions(endorsee.netid, endorser.netid,
-                            [Subscription.SUBS_CODE_CANVAS_SPONSORED])
-    return store_endorsement(endorser, endorsee, acted_as, reason,
-                             EndorsementRecord.CANVAS_PROVISIONEE)
-
-
-def clear_office365_endorsement(endorser, endorsee):
-    """
-    Upon failure to renew, the endorsement tools should:
-      *  mark category 235 it former (status 3).
-    """
-    return clear_endorsement(get_office365_endorsement(endorser, endorsee))
-
-
-def clear_google_endorsement(endorser, endorsee):
-    """
-    Upon failure to renew, the endorsement tools should:
-      *  mark category 234 it former (status 3).
-    """
-    return clear_endorsement(get_google_endorsement(endorser, endorsee))
-
-
-def clear_canvas_endorsement(endorser, endorsee):
-    """
-    Upon failure to renew, the endorsement tools should:
-      *  mark category 236 it former (status 3).
-    """
-    return clear_endorsement(get_canvas_endorsement(endorser, endorsee))
-
-
 def is_endorsed(endorsement):
     endorsed = False
     for cat in get_netid_categories(
@@ -275,37 +170,7 @@ def is_permitted(endorser, endorsee, subscription_codes):
     return active
 
 
-def is_office365_permitted(endorser, endorsee):
-    try:
-        get_office365_endorsement(endorser, endorsee)
-        return True, True
-    except NoEndorsementException:
-        return is_permitted(
-            endorser, endorsee, [
-                Subscription.SUBS_CODE_FUTURE_OFFICE_365
-            ]), False
-
-
-def is_google_permitted(endorser, endorsee):
-    try:
-        get_google_endorsement(endorser, endorsee)
-        return True, True
-    except NoEndorsementException:
-        return is_permitted(
-            endorser, endorsee, [
-                Subscription.SUBS_CODE_GOOGLE_APPS
-            ]), False
-
-
-def is_canvas_permitted(endorser, endorsee):
-    try:
-        get_canvas_endorsement(endorser, endorsee)
-        return True, True
-    except NoEndorsementException:
-        return has_canvas_access(endorsee.netid), False
-
-
-def _activate_category(netid, category_code):
+def activate_category(netid, category_code):
     """
     return with given netid activated in category_code
     """
@@ -330,7 +195,7 @@ def _update_category(netid, category_code, status):
         raise CategoryFailureException('{0}'.format(ex))
 
 
-def _activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
+def activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
     try:
         response_list = update_subscription(
             endorsee_netid, 'activate', subscriptions)

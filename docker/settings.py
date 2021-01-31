@@ -1,5 +1,8 @@
 from .base_settings import *
 
+ENDORSEMENT_SERVICES = [s.strip() for s in os.getenv(
+    'ENDORSEMENT_SERVICES', '*').split(',')]
+
 ALLOWED_HOSTS = ['*']
 
 CACHES = {

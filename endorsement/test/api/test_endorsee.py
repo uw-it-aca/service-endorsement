@@ -2,8 +2,7 @@ import json
 from django.urls import reverse
 from endorsement.test.api import EndorsementApiTest
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.dao.endorse import (
-    store_office365_endorsement)
+from endorsement.services import get_endorsement_service
 
 
 class TestEndorsementEndorseeAPI(EndorsementApiTest):
@@ -19,7 +18,8 @@ class TestEndorsementEndorseeAPI(EndorsementApiTest):
         endorser = get_endorser_model('jfaculty')
         endorsee = get_endorsee_model('endorsee7')
 
-        store_office365_endorsement(endorser, endorsee, None, 'foobar')
+        get_endorsement_service('o365').store_endorsement(
+            endorser, endorsee, None, 'foobar')
 
         self.set_user('jstaff')
         url = reverse('endorsee_api', kwargs={'endorsee': 'endorsee7'})

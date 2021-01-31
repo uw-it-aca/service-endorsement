@@ -1,7 +1,6 @@
 import logging
 from userservice.user import UserService
-from endorsement.services import (
-    ENDORSEMENT_SERVICES, endorsement_service_keys)
+from endorsement.services import endorsement_services
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.uwnetid_supported import (
     get_shared_netids_for_netid, valid_supported_resource)
@@ -44,10 +43,10 @@ class Shared(RESTDispatch):
                     'endorsements': {}
                 }
 
-                for svc_tag, v in ENDORSEMENT_SERVICES.items():
-                    if valid_supported_resource(shared, v):
-                        data['endorsements'][svc_tag] = {
-                            'category_name': v['category_name'],
+                for s in endorsement_services():
+                    if valid_supported_resource(shared, s):
+                        data['endorsements'][s.service_name] = {
+                            'category_name': s.category_name,
                             'valid_shared': True
                         }
 
@@ -59,18 +58,7 @@ class Shared(RESTDispatch):
                     data['name'] = endorsee.display_name
                     for endorsement in endorsements:
                         if endorsement.endorsee.id == endorsee.id:
-                            for er in get_endorsements_for_endorsee(endorsee):
-                                for svc_tag, v in ENDORSEMENT_SERVICES.items():
-                                    if (er.category_code == v['category_code']
-                                            and valid_supported_resource(
-                                                shared, v)):
-                                        data['endorsements'][svc_tag]\
-                                            = er.json_data()
-                                        data['endorsements'][svc_tag][
-                                            'endorser'] = endorser.json_data()
-                                        data['endorsements'][svc_tag][
-                                            'endorsers'] = [
-                                                endorser.json_data()]
+                            _add_endorsements(shared, endorser, endorsee, data)
 
                 except (UnrecognizedUWNetid, InvalidNetID):
                     pass
@@ -82,3 +70,14 @@ class Shared(RESTDispatch):
             'endorser': endorser.json_data(),
             'shared': owned
         })
+
+
+def _add_endorsements(shared, endorser, endorsee, data):
+    for er in get_endorsements_for_endorsee(endorsee):
+        for s in endorsement_services():
+            if (er.category_code == s.category_code
+                    and valid_supported_resource(shared, s)):
+                endorsement = er.json_data()
+                endorsement['endorser'] = endorser.json_data()
+                endorsement['endorsers'] = [endorser.json_data()]
+                data['endorsements'][s.service_name] = endorsement

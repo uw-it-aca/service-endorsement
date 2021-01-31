@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
 from userservice.user import UserService
-from endorsement.services import endorsement_service_keys
+from endorsement.services import endorsement_services_context
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.util.time_helper import Timer
 from endorsement.util.log import log_resp_time
@@ -34,8 +34,7 @@ def index(request):
                 "netid": netid,
                 "session_key": session_key,
             },
-            'services': json.dumps(endorsement_service_keys(
-                ['category_code', 'category_name', 'service_link']))
+            'services': json.dumps(endorsement_services_context())
         }
 
         if not is_valid_endorser(netid):

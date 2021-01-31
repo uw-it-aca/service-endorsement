@@ -13,7 +13,7 @@ ingress:
   hosts:
     prt-prod:
       host: provision.uw.edu
-      paths: 
+      paths:
         - "/"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
@@ -98,6 +98,8 @@ certs:
 environmentVariables:
   - name: ENV
     value: prod
+  - name: ENDORSEMENT_SERVICES
+    value: "office365, google"
   - name: WEBSERVER
     value: nginx
   - name: GWS_ENV

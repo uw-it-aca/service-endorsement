@@ -2,7 +2,7 @@ import logging
 from django.conf import settings
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
-from endorsement.services import ENDORSEMENT_SERVICES
+from endorsement.services import endorsement_services
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model,
     get_endorsee_email_model, is_shared_netid)
@@ -74,10 +74,11 @@ class Validate(RESTDispatch):
                         valid['reason'] = e.reason
                         break
 
-                for service_tag, v in ENDORSEMENT_SERVICES.items():
-                    valid['endorsements'][service_tag] = self._endorsement(
-                        endorser, endorsee, v['permitted'],
-                        endorsements, v['category_code'])
+                for s in endorsement_services():
+                    valid['endorsements'][
+                        s.service_name] = self._endorsement(
+                            endorser, endorsee, s.is_permitted,
+                            endorsements, s.category_code)
 
             except UnrecognizedUWNetid as ex:
                 valid = {
