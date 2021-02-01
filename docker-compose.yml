@@ -6,6 +6,7 @@ services:
       ENV: localdev
       PORT: 8000
       AUTH: SAML_MOCK
+      # ENDORSEMENT_SERVICES: "google, office365"
     restart: always
     container_name: app-provision
     build:

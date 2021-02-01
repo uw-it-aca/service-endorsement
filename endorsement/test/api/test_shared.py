@@ -1,6 +1,7 @@
 import json
 from django.urls import reverse
 from endorsement.test.api import EndorsementApiTest
+from endorsement.services import get_endorsement_service
 
 
 class TestEndorsementSharedNetidsAPI(EndorsementApiTest):
@@ -16,17 +17,27 @@ class TestEndorsementSharedNetidsAPI(EndorsementApiTest):
 
         netids = {v['netid']: i for i, v in enumerate(data['shared'])}
 
-        self.assertTrue('cpnebeng' in netids)
-        self.assertTrue('wadm_jstaff' in netids)
+        if (get_endorsement_service('o365') or
+                get_endorsement_service('google') or
+                get_endorsement_service('canvas')):
+            self.assertTrue('cpnebeng' in netids)
+            self.assertTrue('wadm_jstaff' in netids)
 
         # test o365 and g suite for cat 22
-        self.assertTrue('nebionotic' not in netids)
+        if get_endorsement_service('o365'):
+            self.assertTrue('nebionotic' not in netids)
+
+        if get_endorsement_service('google'):
+            self.assertTrue('nebionotic' not in netids)
 
         # test canvas administrator
-        self.assertTrue(
-            'canvas' not in data['shared'][netids['cpnebeng']]['endorsements'])
-        self.assertTrue(
-            'canvas' in data['shared'][netids['wadm_jstaff']]['endorsements'])
+        if get_endorsement_service('canvas'):
+            self.assertTrue(
+                'canvas' not in data['shared'][netids[
+                    'cpnebeng']]['endorsements'])
+            self.assertTrue(
+                'canvas' in data['shared'][netids[
+                    'wadm_jstaff']]['endorsements'])
 
     def test_invalid_shared_netids(self):
         self.set_user('endorsee7')

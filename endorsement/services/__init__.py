@@ -1,3 +1,13 @@
+"""
+Base class for endorsed services and and common support functions
+neccessary to endorse a service
+
+By default, all services defined by the EndorsementServiceBase class
+are available for endorsment, but this list can be overridded by the
+ENDORSEMENT_SERVICES setting, where endorsement classes are either
+listed individually or all grouped together by "['*']".
+"""
+
 from django.conf import settings
 from endorsement.models import EndorsementRecord
 from endorsement.dao.endorse import (
@@ -109,8 +119,13 @@ def endorsement_services():
                             if re.match(r'^[a-z].*\.py$', s)]
 
         for module_name in module_names:
-            module = import_module(
-                "endorsement.services.{}".format(module_name))
+            try:
+                module = import_module(
+                    "endorsement.services.{}".format(module_name))
+            except Exception as ex:
+                raise Exception(
+                    "Cannot load module {}: {}".format(module_name, ex))
+
             ENDORSEMENT_SERVICES.append(
                 getattr(module, 'EndorsementService')())
 
