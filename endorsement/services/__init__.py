@@ -1,9 +1,9 @@
 """
-Base class for endorsed services and and common support functions
-neccessary to endorse a service
+Base class for endorsed services encapsulating common support functions
+and lifecycle values
 
 By default, all services defined by the EndorsementServiceBase class
-are available for endorsment, but this list can be overridded by the
+are available for endorsement, but this list can be overridded by the
 ENDORSEMENT_SERVICES setting, where endorsement classes are either
 listed individually or all grouped together by "['*']".
 """
@@ -19,10 +19,23 @@ from importlib import import_module
 from os import listdir
 import re
 
+# Services available for endorsement
 ENDORSEMENT_SERVICES = None
+
+# Default lifecycle day counts
+DEFAULT_ENDORSEMENT_LIFETIME = 365
+DEFAULT_ENDORSEMENT_GRACETIME = 90
+PRIOR_DAYS_NOTICE_WARNING_1 = 90
+PRIOR_DAYS_NOTICE_WARNING_2 = 30
+PRIOR_DAYS_NOTICE_WARNING_3 = 7
+PRIOR_DAYS_NOTICE_WARNING_4 = 0
 
 
 class EndorsementServiceBase(ABC):
+    """
+    Properties and methods to support creating, revoking, renewing and
+    expiring service endorsements.
+    """
     @property
     @abstractmethod
     def service_name(self):
@@ -76,6 +89,14 @@ class EndorsementServiceBase(ABC):
         return dict(
             EndorsementRecord.CATEGORY_CODE_CHOICES)[self.category_code]
 
+    @property
+    def endorsement_lifetime(self):
+        return DEFAULT_ENDORSEMENT_LIFETIME
+
+    @property
+    def endorsement_graceperiod(self):
+        return DEFAULT_ENDORSEMENT_GRACETIME
+
     def get_endorsement(self, endorser, endorsee):
         return get_endorsement(endorser, endorsee, self.category_code)
 
@@ -100,6 +121,24 @@ class EndorsementServiceBase(ABC):
 
     def clear_endorsement(self, endorser, endorsee):
         return clear_endorsement(self.get_endorsement(endorser, endorsee))
+
+    def endorsement_expiration_warning(self, level=1):
+        """
+        for the given warning message level, return days prior to
+        expiration that a warning should be sent.
+
+        level 1 is the first warning, level 2 the second and so on
+        to final warning at 0 days before expiration
+        """
+        try:
+            return [
+                PRIOR_DAYS_NOTICE_WARNING_1,
+                PRIOR_DAYS_NOTICE_WARNING_2,
+                PRIOR_DAYS_NOTICE_WARNING_3,
+                PRIOR_DAYS_NOTICE_WARNING_4
+            ][level - 1]
+        except IndexError:
+            return None
 
 
 def endorsement_services():

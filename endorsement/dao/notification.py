@@ -3,14 +3,16 @@ from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.utils import timezone
 from endorsement.models import EndorsementRecord
-from endorsement.services import endorsement_services
+from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.exceptions import EmailFailureException
-from endorsement.policy import (
-    endorsements_to_warn, DEFAULT_ENDORSEMENT_LIFETIME, NOTICE_1_DAYS_PRIOR,
-    NOTICE_2_DAYS_PRIOR, NOTICE_3_DAYS_PRIOR, NOTICE_4_DAYS_PRIOR)
+from endorsement.policy import endorsements_to_warn
+from endorsement.services import (
+    DEFAULT_ENDORSEMENT_LIFETIME, PRIOR_DAYS_NOTICE_WARNING_1,
+    PRIOR_DAYS_NOTICE_WARNING_2, PRIOR_DAYS_NOTICE_WARNING_3,
+    PRIOR_DAYS_NOTICE_WARNING_4)
 import logging
 
 
@@ -244,8 +246,9 @@ def notify_invalid_endorser(endorser, endorsements):
 def _create_expire_notice_message(notice_level, lifetime, endorsed):
     context = {
         'endorser': endorsed[0].endorser,
-        'notice_time': globals()['NOTICE_{}_DAYS_PRIOR'.format(notice_level)],
-        'lifetime': lifetime,
+        'notice_time': globals()[
+            'PRIOR_DAYS_NOTICE_WARNING_{}'.format(notice_level)],
+        'lifetime': DEFAULT_ENDORSEMENT_LIFETIME,
         'expiring': endorsed,
         'expiring_count': len(endorsed)
     }
@@ -267,8 +270,9 @@ def _create_expire_notice_message(notice_level, lifetime, endorsed):
             loader.render_to_string(html_template, context))
 
 
-def warn_endorsers(notice_level, lifetime):
-    endorsements = endorsements_to_warn(notice_level, lifetime)
+def warn_endorsers(notice_level):
+    endorsements = endorsements_to_warn(notice_level)
+    lifetime = DEFAULT_ENDORSEMENT_LIFETIME
 
     if len(endorsements):
         endorsers = {}
@@ -305,7 +309,7 @@ def _create_warn_shared_owner_message(owner_netid, endorsements):
     context = {
         'endorser': owner_netid,
         'lifetime': DEFAULT_ENDORSEMENT_LIFETIME,
-        'notice_time': NOTICE_1_DAYS_PRIOR,
+        'notice_time': PRIOR_DAYS_NOTICE_WARNING_1,
         'expiring': endorsements,
         'expiring_count': len(endorsements)
     }

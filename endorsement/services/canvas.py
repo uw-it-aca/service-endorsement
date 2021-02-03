@@ -16,6 +16,7 @@ from django.conf import settings
 from endorsement.services import EndorsementServiceBase
 from endorsement.models import EndorsementRecord
 from endorsement.dao.gws import is_group_member
+from endorsement.dao.canvas import is_canvas_user, create_canvas_user
 from endorsement.exceptions import NoEndorsementException
 from uw_uwnetid.models import Subscription
 
@@ -56,7 +57,7 @@ class EndorsementService(EndorsementServiceBase):
             return is_group_member(endorsee.netid, CANVAS_ACCESS_GROUP), False
 
     def store_endorsement(self, endorser, endorsee, acted_as, reason):
-        # make endorsee netid is provisioned as a user in Canvas
+        # make certain endorsee netid is provisioned as a Canvas user
 
         return super(EndorsementService, self).store_endorsement(
             endorser, endorsee, acted_as, reason)
