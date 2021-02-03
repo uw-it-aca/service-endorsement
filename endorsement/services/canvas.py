@@ -16,7 +16,6 @@ from django.conf import settings
 from endorsement.services import EndorsementServiceBase
 from endorsement.models import EndorsementRecord
 from endorsement.dao.gws import is_group_member
-from endorsement.dao.canvas import is_canvas_user, create_canvas_user
 from endorsement.exceptions import NoEndorsementException
 from uw_uwnetid.models import Subscription
 
