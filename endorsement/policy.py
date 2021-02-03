@@ -72,7 +72,7 @@ def _endorsements_to_warn(now, level):
 
 def endorsements_to_expire():
     """
-    Return query set of endorsement records to expire 
+    Return query set of endorsement records to expire
     """
     return _endorsements_to_expire(timezone.now())
 
