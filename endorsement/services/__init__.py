@@ -193,9 +193,16 @@ def service_name_list():
     return [s.category_name for s in endorsement_services()]
 
 
-def get_endorsement_service(service_tag):
-    for service in endorsement_services():
-        if service_tag == service.service_name:
-            return service
+def get_endorsement_service(service_ref):
+    """
+    Return endorsment service based on service name
+    """
+    key = ('service_name' if isinstance(service_ref, str) else
+           'category_code' if isinstance(service_ref, int) else None)
+
+    if key:
+        for service in endorsement_services():
+            if service_ref == getattr(service, key):
+                return service
 
     return None
