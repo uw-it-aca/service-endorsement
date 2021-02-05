@@ -54,9 +54,3 @@ class EndorsementService(EndorsementServiceBase):
             return True, True
         except NoEndorsementException:
             return is_group_member(endorsee.netid, CANVAS_ACCESS_GROUP), False
-
-    def store_endorsement(self, endorser, endorsee, acted_as, reason):
-        # make certain endorsee netid is provisioned as a Canvas user
-
-        return super(EndorsementService, self).store_endorsement(
-            endorser, endorsee, acted_as, reason)
