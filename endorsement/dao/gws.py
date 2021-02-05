@@ -1,34 +1,37 @@
 """
-This module encapsulates the interactions with the uw_gws,
-provides access to the existing endorsement groups
+Module encapsulates the interactions with the uw_gws,
+valid endorser authorization test
+
+Valid endorsers are defined as being in the GWS group defined
+by VALID_ENDORSER_GROUP.  Unless defined in settings, the group
+used for validation is "uw_employee"
 """
 
-import logging
-import sys
-import traceback
+from django.conf import settings
+from endorsement.util.log import log_exception, log_resp_time
+from endorsement.util.time_helper import Timer
 from restclients_core.exceptions import InvalidNetID
 from restclients_core.exceptions import DataFailureException
 from uw_gws import GWS
-from endorsement.util.log import log_exception, log_resp_time
-from endorsement.util.time_helper import Timer
-
+import logging
+import sys
+import traceback
 
 logger = logging.getLogger(__name__)
 gws = GWS()
 
-ENDORSER_GROUP = "uw_employee"
-CANVAS_ACCESS_GROUP = "u_acadev_canvas_login-users"
+ENDORSER_GROUP = getattr(settings, "VALID_ENDORSER_GROUP", "uw_employee")
 
 
 def is_valid_endorser(uwnetid):
     """
-    Return True if the user is in PersonReg currently
+    Return True if the user is in the valid endorsers GWS group
     """
     action = '{0} is_effective_member of {1} group'.format(
         uwnetid, ENDORSER_GROUP)
     timer = Timer()
     try:
-        return gws.is_effective_member(ENDORSER_GROUP, uwnetid)
+        return is_group_member(uwnetid, ENDORSER_GROUP)
     except Exception:
         log_exception(logger,
                       action,
@@ -44,12 +47,12 @@ def is_valid_endorser(uwnetid):
         log_resp_time(logger, action, timer)
 
 
-def has_canvas_access(uwnetid):
+def is_group_member(uwnetid, group):
     """
-    Return True if the netid is in a canvas access group
+    Return True if the netid is in the specified group
     """
     try:
-        return gws.is_effective_member(CANVAS_ACCESS_GROUP, uwnetid)
+        return gws.is_effective_member(group, uwnetid)
     except DataFailureException as ex:
         if ex.status != 404:
             raise

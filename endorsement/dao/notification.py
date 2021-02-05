@@ -3,19 +3,47 @@ from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.utils import timezone
 from endorsement.models import EndorsementRecord
-from endorsement.services import endorsement_services
+from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.exceptions import EmailFailureException
-from endorsement.policy import (
-    endorsements_to_warn, DEFAULT_ENDORSEMENT_LIFETIME, NOTICE_1_DAYS_PRIOR,
-    NOTICE_2_DAYS_PRIOR, NOTICE_3_DAYS_PRIOR, NOTICE_4_DAYS_PRIOR)
+from endorsement.policy import endorsements_to_warn
 import logging
 
 
 logger = logging.getLogger(__name__)
 logging.captureWarnings(True)
+
+
+# This function is a monument to technical debt and intended
+# to blow up tests as soon as the first endorsemnnt service lifecycle
+# definition strays from current common set of values
+def confirm_common_lifecyle_values():
+    lifetime = None
+    warnings = None
+
+    for service in endorsement_services():
+        if lifetime is None:
+            lifetime = service.endorsement_lifetime
+        else:
+            if lifetime != service.endorsement_lifetime:
+                raise Exception(
+                    "Messaging does not support mixed service lifetimes")
+
+        if warnings is None:
+            warnings = [
+                service.endorsement_expiration_warning(1),
+                service.endorsement_expiration_warning(2),
+                service.endorsement_expiration_warning(3),
+                service.endorsement_expiration_warning(4),
+            ]
+        elif (warnings[0] != service.endorsement_expiration_warning(1) or
+                warnings[1] != service.endorsement_expiration_warning(2) or
+                warnings[2] != service.endorsement_expiration_warning(3) or
+                warnings[3] != service.endorsement_expiration_warning(4)):
+            raise Exception(
+                "Messaging does not support mismatched service warning spans")
 
 
 def _create_endorsee_message(endorser):
@@ -242,10 +270,10 @@ def notify_invalid_endorser(endorser, endorsements):
 
 
 def _create_expire_notice_message(notice_level, lifetime, endorsed):
+    service = get_endorsement_service(endorsed[0].category_code)
     context = {
         'endorser': endorsed[0].endorser,
-        'notice_time': globals()['NOTICE_{}_DAYS_PRIOR'.format(notice_level)],
-        'lifetime': lifetime,
+        'notice_time': service.endorsement_expiration_warning(notice_level),
         'expiring': endorsed,
         'expiring_count': len(endorsed)
     }
@@ -267,8 +295,12 @@ def _create_expire_notice_message(notice_level, lifetime, endorsed):
             loader.render_to_string(html_template, context))
 
 
-def warn_endorsers(notice_level, lifetime):
-    endorsements = endorsements_to_warn(notice_level, lifetime)
+def warn_endorsers(notice_level):
+    confirm_common_lifecyle_values()
+
+    endorsements = endorsements_to_warn(notice_level)
+
+    lifetime = endorsement_services()[0].endorsement_lifetime
 
     if len(endorsements):
         endorsers = {}
@@ -302,10 +334,11 @@ def warn_endorsers(notice_level, lifetime):
 
 
 def _create_warn_shared_owner_message(owner_netid, endorsements):
+    service = get_endorsement_service(endorsements[0].category_code)
     context = {
         'endorser': owner_netid,
-        'lifetime': DEFAULT_ENDORSEMENT_LIFETIME,
-        'notice_time': NOTICE_1_DAYS_PRIOR,
+        'lifetime': service.endorsement_lifetime,
+        'notice_time': service.endorsement_expiration_warning(1),
         'expiring': endorsements,
         'expiring_count': len(endorsements)
     }
@@ -324,6 +357,8 @@ def _create_warn_shared_owner_message(owner_netid, endorsements):
 def warn_new_shared_netid_owner(new_owner, endorsements):
     if not (endorsements and len(endorsements) > 0):
         return
+
+    confirm_common_lifecyle_values()
 
     sent_date = timezone.now()
     email = "{0}@uw.edu".format(new_owner.netid)

@@ -1,14 +1,26 @@
+"""
+Defines UW Canvas service endorsement steps
+
+Valid Canvas endorsees are members of the UW group defined by
+CANVAS_ACCESS_GROUP, default: "u_acadev_canvas_login-users"
+
+The expected Canvas endorsement lifecycle is:
+   *  Add category 236, status 1 record for given endorsee
+   *  Activate subscription 79 for endorsee
+
+Shared netids that are endorser owned and of type administrator
+are allowed.
+"""
+
+from django.conf import settings
 from endorsement.services import EndorsementServiceBase
 from endorsement.models import EndorsementRecord
-from endorsement.dao.gws import has_canvas_access
+from endorsement.dao.gws import is_group_member
 from endorsement.exceptions import NoEndorsementException
 from uw_uwnetid.models import Subscription
 
-# Endorsed Canvas LMS implementation
-
-#  The expected life cycle for a Canvas endorsement would be:
-#    *  Add category 236, status 1 record for given endorsee
-#    *  Activate subscription 79 for endorsee
+CANVAS_ACCESS_GROUP = getattr(settings, "CANVAS_ACCESS_GROUP",
+                              "u_acadev_canvas_login-users")
 
 
 class EndorsementService(EndorsementServiceBase):
@@ -41,4 +53,4 @@ class EndorsementService(EndorsementServiceBase):
             self.get_endorsement(endorser, endorsee)
             return True, True
         except NoEndorsementException:
-            return has_canvas_access(endorsee.netid), False
+            return is_group_member(endorsee.netid, CANVAS_ACCESS_GROUP), False
