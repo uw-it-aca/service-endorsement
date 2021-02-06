@@ -5,8 +5,9 @@ Shared UW NetIDs listed below.  The previous owner of the Shared UW
 NetIDs provisioned access to UW-IT services for the Shared UW NetIDs. 
 
 Access to provisioned UW-IT services lasts for {{lifetime}} day{{lifetime|pluralize}} and must be renewed or
-revoked annually.  Unless you take action to renew them, access to provisioned UW-IT services for the following UW NetID{{expiring_count|pluralize}} will be revoked in {{notice_time}} day{{notice_time|pluralize}}, and
-the associated UW-IT service account (e.g. UW G Suite or UW Office 365) will be
+revoked annually.  Unless you take action to renew them, access to provisioned
+UW-IT services for the following UW NetID{{expiring_count|pluralize}} will be revoked in {{notice_time}} day{{notice_time|pluralize}}, and the
+associated UW-IT service account (e.g. UW G Suite or UW Office 365) will be
 deleted.
 
 UW NetID       UW-IT Service  Date Provisioned   Reason

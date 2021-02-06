@@ -172,8 +172,13 @@ def _create_endorser_message(endorsed):
 
 
 def get_endorsed_unnotified():
+    return _get_endorsed_unnotified(
+        EndorsementRecord.objects.get_endorsed_unnotified())
+
+
+def _get_endorsed_unnotified(endorsed_unnotified):
     endorsements = {}
-    for er in EndorsementRecord.objects.get_endorsed_unnotified():
+    for er in endorsed_unnotified:
         # rely on @u forwarding for valid address
         email = "{0}@uw.edu".format(er.endorser.netid)
         if email not in endorsements:
@@ -273,6 +278,7 @@ def _create_expire_notice_message(notice_level, lifetime, endorsed):
     service = get_endorsement_service(endorsed[0].category_code)
     context = {
         'endorser': endorsed[0].endorser,
+        'lifetime': lifetime,
         'notice_time': service.endorsement_expiration_warning(notice_level),
         'expiring': endorsed,
         'expiring_count': len(endorsed)

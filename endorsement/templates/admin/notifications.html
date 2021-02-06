@@ -1,0 +1,88 @@
+{% extends wrapper_template %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<style>
+.current_message { background-color: #fbfbe3; }
+h4 {font-weight: 900;}
+.info { padding-left: 16px; display: none; background-color: #f0f0f0; font-size: larger; }
+</style>
+<div class="container" style="max-width: 100%;">
+<h2>Lifecycle Notifications</h2>
+
+<p>
+Choose a notification type and select services to see the email subject and message content that will be sent.  Notification email is sent as multipart messages containing a text and html representation.
+</p>
+
+<form>
+  {% csrf_token %}
+  
+  <div class="container">
+    <div class="row">
+    <h4>Notification</h4>
+    <div class="form-group">
+      <select class="form-control" id="notification">
+        <option value="endorsee">Provisionee Welcome</option>
+<!--        <option value="endorser">Provisioner Shared NetId</option> -->
+        <option value="new_shared">New Share Netid Owner</option>
+        <option value="warning_1" selected="selected">Initial Expiration Warning</option>
+        <option value="warning_2">Penultimate Expiration Warning</option>
+        <option value="warning_3">Final Expiration Warning</option>
+        <option value="warning_4">Expiration</option>
+      </select>
+    </div>
+    </div>
+
+    <div class="row">
+        <div class="info" id="info_endorsee">
+          Sent to provisionee on provisioning containing the acceptance link.
+        </div>
+        <div class="info" id="info_endorser">
+          Sent to shared netid provisioner.
+        </div>
+        <div class="info" id="info_new_shared">
+          Sent to new owner when a shared netid changes ownership.
+        </div>
+        <div class="info" id="info_warning_1">
+          Sent to provisioner {{ warning_1 }} days prior to expiration.
+        </div>
+        <div class="info" id="info_warning_2">
+          Sent to provisioner {{ warning_2 }} days prior to expiration.
+        </div>
+        <div class="info" id="info_warning_3">
+          Sent to provisioner {{ warning_3 }} days before expiration.
+        </div>
+        <div class="info" id="info_warning_4">
+          Sent to provioneer on expiration day.
+        </div>
+    </div>
+    
+    <div class="row">
+      <h4>Services</h4>
+      {% for i in "123" %}
+      <div class="col-md-4 endorsee" id="endorsee_{{ i }}">
+        <h5>Endorsee {{ i }}</h5>
+        {% for k, v in services.items %}
+        <div>
+          <label><input class="service" type="checkbox" value="{{ k }}"> {{ v.name }}</label>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="button">
+    <button type="button" name="GenerateNotification" id="generate_notification" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Generating">Show Notification</button>
+    </div>
+  </div>
+</form>
+
+<div id="notification_text">
+</div>
+
+{% endblock %}
+
+{% block extra_js%}
+{% render_bundle 'notifications' 'js' %}
+
+{% endblock %}

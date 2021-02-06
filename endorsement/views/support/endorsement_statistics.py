@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from uw_saml.decorators import group_required
-from endorsement.views import set_admin_wrapper_template
+from endorsement.views.support import set_admin_wrapper_template
 from string import ascii_uppercase
 import logging
 
