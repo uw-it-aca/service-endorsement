@@ -273,6 +273,7 @@ def _create_expire_notice_message(notice_level, lifetime, endorsed):
     service = get_endorsement_service(endorsed[0].category_code)
     context = {
         'endorser': endorsed[0].endorser,
+        'lifetime': lifetime,
         'notice_time': service.endorsement_expiration_warning(notice_level),
         'expiring': endorsed,
         'expiring_count': len(endorsed)
