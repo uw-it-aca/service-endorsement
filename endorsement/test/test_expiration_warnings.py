@@ -137,9 +137,6 @@ class TestProvisioneExpirationNotices(TestCase):
     def test_expiration_and_notice_email(self):
         warn_endorsers(1)
         self.assertEqual(len(mail.outbox), 2)
-        print("Subject: {0}".format(mail.outbox[0].subject))
-        print("Text: {0}".format(mail.outbox[0].body))
-        print("HTML: {0}".format(mail.outbox[0].alternatives[0][0]))
 
         EndorsementRecord.objects.filter(
             datetime_notice_1_emailed__isnull=False).update(
@@ -163,8 +160,4 @@ class TestProvisioneExpirationNotices(TestCase):
                     'datetime_notice_2_emailed')-timedelta(days=23))
 
         warn_endorsers(4)
-        print("Subject: {0}".format(mail.outbox[-1].subject))
-        print("Text: {0}".format(mail.outbox[-1].body))
-        print("HTML: {0}".format(mail.outbox[-1].alternatives[0][0]))
-
         self.assertEqual(len(mail.outbox), 8)

@@ -38,9 +38,6 @@ class TestProvisionerValidation(TestCase):
         endorsee1 = Endorsee.objects.get(netid='endorsee1')
 
         self.assertEqual(len(mail.outbox), 1)
-        print("Subject: {0}".format(mail.outbox[0].subject))
-        print("Text: {0}".format(mail.outbox[0].body))
-        print("HTML: {0}".format(mail.outbox[0].alternatives[0][0]))
 
         self.assertTrue(Endorser.objects.get(
             netid='notvalid').datetime_emailed is not None)
