@@ -3,6 +3,7 @@
 $(window.document).ready(function() {
     registerEvents();
     $('[data-toggle="tooltip"]').tooltip();
+    showInfoMessage('warning_1');
 });
 
 var registerEvents = function() {
@@ -11,18 +12,43 @@ var registerEvents = function() {
         generateNotification();
     });
 
+    $('select#notification').on('change', function (e) {
+        showInfoMessage($(this).val());
+    });
+
     $(document).on('endorse:NotificationResult', function (e, notification) {
         displayNotification(notification);
     });
 };
 
 var displayNotification = function(notification) {
-    $('#notification_text').html('<h4>Emailed Subject</h4><div>' + notification.subject + '</div><h4>Emailed HTML part</h4><div style="border: 1px solid #ccc; background-color: #f5f5f5;">' + notification.html + '</div><h4>Emailed Text Part</h4><pre>' + notification.text + '</pre>');
+    var box_style = 'style="border: 1px solid #ccc; background-color: #f5f5f5;"';
+
+    $('#notification_text').html('<h4>Email Subject</h4><div ' + box_style + '>' + notification.subject + '</div><h4>Email HTML part</h4><div ' + box_style + '>' + notification.html + '</div><h4>Email Text Part</h4><pre>' + notification.text + '</pre>');
 };
 
+var showInfoMessage = function(opt) {
+    $("div.info").hide();
+    $("div.info#info_" + opt).show();
+
+    var $extra_endorsees = $("div#endorsee_2 .service, div#endorsee_3 .service");
+    if (opt == 'endorsee') {
+        $extra_endorsees.attr("disabled", true);
+    } else {
+        $extra_endorsees.removeAttr("disabled");
+    }
+};
 
 var displayNotificationError = function(json_data) {
-    $('#notification_text').html(JSON.stringify(json_data));
+    var text = "<h4>Error:</h4><div><pre>";
+
+    if (json_data.hasOwnProperty('error')) {
+        text += json_data.error
+    } else {
+        text += JSON.stringify(json_data);
+    }
+
+    $('#notification_text').html(text + '</pre></div>')
 };
 
 

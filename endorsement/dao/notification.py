@@ -172,8 +172,13 @@ def _create_endorser_message(endorsed):
 
 
 def get_endorsed_unnotified():
+    return _get_endorsed_unnotified(
+        EndorsementRecord.objects.get_endorsed_unnotified())
+
+
+def _get_endorsed_unnotified(endorsed_unnotified):
     endorsements = {}
-    for er in EndorsementRecord.objects.get_endorsed_unnotified():
+    for er in endorsed_unnotified:
         # rely on @u forwarding for valid address
         email = "{0}@uw.edu".format(er.endorser.netid)
         if email not in endorsements:
