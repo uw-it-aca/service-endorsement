@@ -1,0 +1,60 @@
+{% extends wrapper_template %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<style>
+.current_message { background-color: #fbfbe3; }
+h4 {font-weight: 900;}
+</style>
+<div class="container" style="max-width: 100%;">
+<h2>Lifecycle Notifications</h2>
+
+<p>
+
+</p>
+
+<form>
+  {% csrf_token %}
+  
+  <div class="container">
+    <div class="row">
+    <h4>Notification</h4>
+    <div class="form-group">
+      <select class="form-control" id="notification">
+        <option value="warning_1">Initial Warning ({{ warning_1 }} days prior)</option>
+        <option value="warning_2">Penultimate Warning ({{ warning_2 }} days prior)</option>
+        <option value="warning_3">Final Warning ({{ warning_3 }} day prior)</option>
+        <option value="warning_4">Expiration</option>
+      </select>
+    </div>
+    </div>
+    
+    <div class="row">
+      <h4>Services</h4>
+      {% for i in "123" %}
+      <div class="col-md-4 endorsee" id="endorsee_{{ i }}">
+        <h5>Endorsee {{ i }}</h5>
+        {% for k, v in services.items %}
+        <div>
+          <label><input class="service" type="checkbox" value="{{ k }}"> {{ v.name }}</label>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="button">
+    <button type="button" name="GenerateNotification" id="generate_notification" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Generating">Show Notification</button>
+    </div>
+  </div>
+</form>
+
+<div id="notification_text">
+</div>
+
+{% endblock %}
+
+{% block extra_js%}
+{% render_bundle 'notifications' 'js' %}
+
+{% endblock %}
