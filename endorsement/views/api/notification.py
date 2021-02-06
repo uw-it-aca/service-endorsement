@@ -5,7 +5,8 @@ from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.dao.notification import (
     _get_endorsed_unnotified,
     _create_expire_notice_message,
-    _create_endorsee_message, _create_endorser_message)
+    _create_endorsee_message, _create_endorser_message,
+    _create_warn_shared_owner_message)
 from datetime import datetime, timedelta
 import re
 import uuid
@@ -47,7 +48,7 @@ class Notification(RESTDispatch):
                         netid=netid, regid=regid, display_name=n,
                         is_person=True, kerberos_active_permitted=True),
                     category_code=s.category_code,
-                    reason='testing',
+                    reason='An example reason',
                     accept_salt="".join(
                         ["0123456789abcdef"[
                             random.randint(0, 0xF)] for _ in range(32)]))
@@ -86,6 +87,9 @@ class Notification(RESTDispatch):
                 for email, endorsed in endorsed_unnotified.items():
                     subject, text, html = _create_endorser_message(endorsed)
                     break
+            elif notification == 'new_shared':
+                subject, text, html = _create_warn_shared_owner_message(
+                    endorser, endorsed)
             else:
                 return self.error_response(
                     405, "unknown notification: {}".format(notification))
