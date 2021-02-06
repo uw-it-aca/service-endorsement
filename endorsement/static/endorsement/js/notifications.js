@@ -43,12 +43,12 @@ var displayNotificationError = function(json_data) {
     var text = "<h4>Error:</h4><div><pre>";
 
     if (json_data.hasOwnProperty('error')) {
-        text += json_data.error
+        text += json_data.error;
     } else {
         text += JSON.stringify(json_data);
     }
 
-    $('#notification_text').html(text + '</pre></div>')
+    $('#notification_text').html(text + '</pre></div>');
 };
 
 
