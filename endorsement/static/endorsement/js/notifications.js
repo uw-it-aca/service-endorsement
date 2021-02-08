@@ -12,8 +12,13 @@ var registerEvents = function() {
         generateNotification();
     });
 
+    $('input.service').on('change', function (e) {
+        generateNotification();
+    });
+
     $('select#notification').on('change', function (e) {
         showInfoMessage($(this).val());
+        generateNotification();
     });
 
     $(document).on('endorse:NotificationResult', function (e, notification) {
@@ -22,16 +27,22 @@ var registerEvents = function() {
 };
 
 var displayNotification = function(notification) {
-    var box_style = 'style="border: 1px solid #ccc; background-color: #f5f5f5;"';
+    var template_source = $("#admin-notifications-result").html(),
+        template = Handlebars.compile(template_source);
 
-    $('#notification_text').html('<h4>Email Subject</h4><div ' + box_style + '>' + notification.subject + '</div><h4>Email HTML part</h4><div ' + box_style + '>' + notification.html + '</div><h4>Email Text Part</h4><pre>' + notification.text + '</pre>');
+    $('#notification_result').html(template({
+        subject: notification.subject,
+        text: notification.text
+    }));
+
+    $('.notification-html').html(notification.html);
 };
 
 var showInfoMessage = function(opt) {
     $("div.info").hide();
     $("div.info#info_" + opt).show();
 
-    var $extra_endorsees = $("div#endorsee_2 .service, div#endorsee_3 .service");
+    var $extra_endorsees = $("div#endorsee2 .service, div#endorsee3 .service");
     if (opt == 'endorsee') {
         $extra_endorsees.attr("disabled", true);
     } else {
@@ -40,31 +51,33 @@ var showInfoMessage = function(opt) {
 };
 
 var displayNotificationError = function(json_data) {
-    var text = "<h4>Error:</h4><div><pre>";
+    var template_source = $("#admin-notifications-error").html(),
+        template = Handlebars.compile(template_source);
 
-    if (json_data.hasOwnProperty('error')) {
-        text += json_data.error;
-    } else {
-        text += JSON.stringify(json_data);
-    }
-
-    $('#notification_text').html(text + '</pre></div>');
+    $('#notification_result').html(template({
+        text: json_data.hasOwnProperty('error') ? json_data.error : JSON.stringify(json_data)
+    }));
 };
 
 
 var generateNotification = function () {
-    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
-    var data = {
-        notification: $("select#notification option:selected").val(),
-        endorsees: {}
-    };
+    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
+        data = {
+            notification: $("select#notification option:selected").val(),
+            endorsees: {}
+        };
+
+    if (!$(".service:enabled:checked").length) {
+        $('#notification_result').html("");
+        return;
+    }
 
     $('div.endorsee').each(function () {
         var $this = $(this),
             netid = $this.attr('id');
 
         data.endorsees[netid] = [];
-        $(".service:checked", $this).each(function () {
+        $(".service:enabled:checked", $this).each(function () {
             data.endorsees[netid].push($(this).val());
         });
     });
