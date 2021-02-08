@@ -1,0 +1,29 @@
+{% verbatim %}
+
+<script id="admin-notifications-result" type="text/x-handlebars-template">
+  <hr/>
+  <h4>Notification Email Content</h4>
+  <h5>Subject</h5>
+  <div class="notification notification-subject">
+    {{ subject }}
+  </div>
+<h5>HTML part</h5>
+<div class="notification notification-html">
+</div>
+<h5>Text Part</h5>
+<div class="notification notification-text">
+  <pre>
+{{ text }}
+  </pre>
+</div>
+</script>
+
+<script id="admin-notifications-error" type="text/x-handlebars-template">
+  <h4>Error:</h4>
+  <div class="notification notification-error">
+    <pre>
+      {{ text }}
+    </pre>
+  </div>
+</script>
+{% endverbatim %}
