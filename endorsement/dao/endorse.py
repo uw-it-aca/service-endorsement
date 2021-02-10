@@ -1,15 +1,13 @@
-import logging
 from django.utils import timezone
 from django.conf import settings
-from uw_uwnetid.models import Subscription, Category
-from uw_uwnetid.category import update_catagory, get_netid_categories
-from uw_uwnetid.subscription import (
-    get_netid_subscriptions, update_subscription)
+from endorsement.dao.uwnetid_categories import (
+    set_active_category, set_former_category)
+from endorsement.dao.uwnetid_subscriptions import (
+    activate_subscriptions, active_subscriptions_for_netid)
 from endorsement.models import EndorsementRecord
-from endorsement.exceptions import (
-    NoEndorsementException, CategoryFailureException,
-    SubscriptionFailureException)
+from endorsement.exceptions import NoEndorsementException
 from restclients_core.exceptions import DataFailureException
+import logging
 
 
 logger = logging.getLogger(__name__)
@@ -47,11 +45,23 @@ def initiate_endorsement(endorser, endorsee, reason, category_code):
     return en
 
 
-def store_endorsement(endorser, endorsee, acted_as, reason, category_code):
+def store_endorsement(endorser, endorsee, category_code,
+                      subscription_codes, acted_as, reason):
+    """Return with endorsee category active and subscribed
+    """
     logger.info('activate category {0} for {1}{2} because {3} by {4}'.format(
         category_code, endorsee.netid,
         " (by {0})".format(acted_as if acted_as else ""),
         reason, endorser.netid))
+
+    set_active_category(endorsee.netid, category_code)
+    activate_subscriptions(
+        endorsee.netid, endorser.netid, subscription_codes)
+    return _store_endorsement(
+        endorser, endorsee, acted_as, reason, category_code)
+
+
+def _store_endorsement(endorser, endorsee, acted_as, reason, category_code):
     now = timezone.now()
     try:
         en = EndorsementRecord.objects.get(
@@ -94,7 +104,8 @@ def clear_endorsement(endorsement):
     if (endorsement.datetime_endorsed is not None and
         EndorsementRecord.objects.get_endorsements_for_endorsee(
             endorsement.endorsee, endorsement.category_code).count() <= 1):
-        _former_category(endorsement)
+        set_former_category(
+            endorsement.endorsee.netid, endorsement.category_code)
 
         logger.info('former category {0} for {1} by {2}'.format(
             endorsement.category_code,
@@ -136,26 +147,11 @@ def get_endorsement_records_for_endorsee_re(endorsee_regex):
         endorsee_regex)
 
 
-def is_endorsed(endorsement):
-    endorsed = False
-    for cat in get_netid_categories(
-            endorsement.endorsee.netid, endorsement.category_code):
-        if cat.category_code == endorsement.category_code:
-            endorsed = (cat.status_code == Category.STATUS_ACTIVE)
-
-    return endorsed
-
-
 def is_permitted(endorser, endorsee, subscription_codes):
     active = False
     try:
-        response = get_netid_subscriptions(endorsee.netid, subscription_codes)
-        for sub in response:
-            if (sub.subscription_code in subscription_codes and
-                    sub.status_code != Subscription.STATUS_UNPERMITTED):
-                subscription_codes.remove(sub.subscription_code)
-
-        active = len(subscription_codes) == 0
+        active = active_subscriptions_for_netid(
+            endorsee.netid, subscription_codes)
     except DataFailureException as ex:
         if ex.status == 404:
             active = False
@@ -168,54 +164,3 @@ def is_permitted(endorser, endorsee, subscription_codes):
             raise
 
     return active
-
-
-def activate_category(netid, category_code):
-    """
-    return with given netid activated in category_code
-    """
-    _update_category(netid, category_code, Category.STATUS_ACTIVE)
-
-
-def _former_category(endorsement):
-    """
-    return with given netid activated in category_code
-    """
-    _update_category(endorsement.endorsee.netid,
-                     endorsement.category_code, Category.STATUS_FORMER)
-
-
-def _update_category(netid, category_code, status):
-    try:
-        response = update_catagory(netid, category_code, status)
-        if response['responseList'][0]['result'].lower() != "success":
-            raise CategoryFailureException(
-                '{0}'.format(response['responseList'][0]['result']))
-    except (KeyError, DataFailureException) as ex:
-        raise CategoryFailureException('{0}'.format(ex))
-
-
-def activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
-    try:
-        response_list = update_subscription(
-            endorsee_netid, 'activate', subscriptions)
-
-        for response in response_list:
-            sub_code = int(response.query['subscriptionCode'])
-            if (response.http_status == 200 and
-                sub_code in subscriptions and
-                    response.result.lower() == 'success'):
-                subscriptions.remove(sub_code)
-
-        if len(subscriptions) > 0:
-            for response in response_list:
-                if response.result.lower() != 'success':
-                    logger.error('subscription error: {0}: {1} - {2}'.format(
-                            response.query['subscriptionCode'],
-                            response.result, response.more_info))
-
-            raise SubscriptionFailureException(
-                'Invalid Subscription Response')
-
-    except DataFailureException as ex:
-        raise SubscriptionFailureException('{0}'.format(ex))

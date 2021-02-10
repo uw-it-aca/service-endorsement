@@ -5,7 +5,6 @@ the UW NeTID Subscription code 60
 
 import logging
 import traceback
-from uw_uwnetid.models import SubscriptionPermit
 from uw_uwnetid.subscription_60 import get_kerberos_subs
 from endorsement.dao import handel_err
 

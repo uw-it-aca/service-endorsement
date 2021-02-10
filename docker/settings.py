@@ -66,6 +66,9 @@ STATICFILES_FINDERS = (
 
 if os.getenv("ENV") == "localdev":
     DEBUG = True
+else:
+    RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
+    RESTCLIENTS_PRT_DAO_CLASS = 'Live'
 
 PROVISION_ADMIN_GROUP = 'u_acadev_provision_support'
 
@@ -76,9 +79,6 @@ RESTCLIENTS_ADMIN_GROUP='u_acadev_provision_support'
 AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.uw_group_service.UWGroupService'
 
 RESTCLIENTS_DEFAULT_TIMEOUT = 3
-
-RESTCLIENTS_PRT_DAO_CLASS = 'Live'
-RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
 
 SUPPORTTOOLS_PARENT_APP = "PRT"
 SUPPORTTOOLS_PARENT_APP_URL = "/"
