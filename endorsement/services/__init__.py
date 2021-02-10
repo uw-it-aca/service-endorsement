@@ -174,6 +174,7 @@ def endorsement_categories():
     for service in endorsement_services():
         categories.append(service.category_code)
 
+    categories.sort()
     return categories
 
 

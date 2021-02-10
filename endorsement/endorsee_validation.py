@@ -16,21 +16,28 @@ def validate_endorsees():
         # clear all endorsements we know about
         for e in ER.objects.filter(endorsee__netid=netid):
             if e.is_deleted:
-                logger.info('kerberos_inactive: already cleared')
+                logger.info(
+                    "Invalid Provisionee: already cleared {} for {}".format(
+                        e.category_code, netid))
             else:
-                logger.info('kerberos_inactive: clearing')
+                logger.info(
+                    "Invalid Provisionee: clearing {} for {}".format(
+                        e.category_code, netid))
                 try:
                     clear_endorsement(e)
                 except Exception as ex:
-                    logger.error("Clearing {} with {}: {}".format(
-                        e.endorsee.netid, e.category_code, ex))
+                    logger.error("Error clearing {} with {}: {}".format(
+                        netid, e.category_code, ex))
 
-        # and then the endorsements we don't, but should
+        # then any categories we don't have a record of setting (but should)
         for cat in get_netid_categories(netid, endorsement_categories()):
             if is_active_category(cat):
-                logger.info('kerberos_inactive: category we should know about')
+                logger.info(
+                    "Invalid Provisionee: clearing unstored {} for {}".format(
+                        e.category_code, netid))
                 try:
                     set_former_category(netid, cat.category_code)
                 except Exception as ex:
                     logger.error("Clearing {} with {}: {}".format(
                         netid, cat.category_code, ex))
+
