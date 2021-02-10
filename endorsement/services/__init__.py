@@ -11,8 +11,8 @@ listed individually or all grouped together by "['*']".
 from django.conf import settings
 from endorsement.models import EndorsementRecord
 from endorsement.dao.endorse import (
-    is_permitted, get_endorsement, initiate_endorsement, activate_category,
-    activate_subscriptions, store_endorsement, clear_endorsement)
+    is_permitted, get_endorsement, initiate_endorsement,
+    store_endorsement, clear_endorsement)
 from endorsement.exceptions import NoEndorsementException
 from abc import ABC, abstractmethod
 from importlib import import_module
@@ -113,11 +113,9 @@ class EndorsementServiceBase(ABC):
             endorser, endorsee, reason, self.category_code)
 
     def store_endorsement(self, endorser, endorsee, acted_as, reason):
-        activate_category(endorsee.netid, self.category_code)
-        activate_subscriptions(
-            endorsee.netid, endorser.netid, self.subscription_codes)
         return store_endorsement(
-            endorser, endorsee, acted_as, reason, self.category_code)
+            endorser, endorsee, self.category_code,
+            self.subscription_codes, acted_as, reason)
 
     def clear_endorsement(self, endorser, endorsee):
         return clear_endorsement(self.get_endorsement(endorser, endorsee))
@@ -169,6 +167,14 @@ def endorsement_services():
                 getattr(module, 'EndorsementService')())
 
     return ENDORSEMENT_SERVICES
+
+
+def endorsement_categories():
+    categories = []
+    for service in endorsement_services():
+        categories.append(service.category_code)
+
+    return categories
 
 
 def endorsement_services_context():

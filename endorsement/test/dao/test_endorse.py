@@ -3,7 +3,8 @@ from endorsement.models.core import EndorsementRecord
 from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 import random
-from endorsement.dao.endorse import get_endorsements_by_endorser, is_endorsed
+from endorsement.dao.endorse import get_endorsements_by_endorser
+from endorsement.dao.uwnetid_categories import is_endorsed
 
 
 class TestEndorseDao(TransactionTestCase):
