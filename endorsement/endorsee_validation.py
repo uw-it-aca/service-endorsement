@@ -40,4 +40,3 @@ def validate_endorsees():
                 except Exception as ex:
                     logger.error("Clearing {} with {}: {}".format(
                         netid, cat.category_code, ex))
-

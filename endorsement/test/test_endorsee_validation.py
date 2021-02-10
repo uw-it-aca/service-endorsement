@@ -72,6 +72,3 @@ class TestProvisionerValidation(TestCase):
         self.assertEqual(EndorsementRecord.objects.filter(
             endorsee__netid='endorsee3', is_deleted__isnull=True).count(),
                          service_count - 2)
-
-
-
