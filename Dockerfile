@@ -1,4 +1,4 @@
-FROM gcr.io/uwit-mci-axdd/django-container:1.2.8 as app-container
+FROM gcr.io/uwit-mci-axdd/django-container:1.2.8 as app-prewebpack-container
 
 USER root
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
