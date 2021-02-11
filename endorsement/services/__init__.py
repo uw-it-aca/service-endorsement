@@ -166,6 +166,8 @@ def endorsement_services():
             ENDORSEMENT_SERVICES.append(
                 getattr(module, 'EndorsementService')())
 
+        ENDORSEMENT_SERVICES.sort(key=lambda s: s.category_name)
+
     return ENDORSEMENT_SERVICES
 
 
