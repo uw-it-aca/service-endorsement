@@ -13,6 +13,8 @@ from endorsement.models import EndorsementRecord
 from endorsement.dao.endorse import (
     is_permitted, get_endorsement, initiate_endorsement,
     store_endorsement, clear_endorsement)
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
+from endorsement.dao.uwnetid_categories import shared_netid_has_category
 from endorsement.exceptions import NoEndorsementException
 from abc import ABC, abstractmethod
 from importlib import import_module
@@ -36,6 +38,13 @@ class EndorsementServiceBase(ABC):
     Properties and methods to support creating, revoking, renewing and
     expiring service endorsements.
     """
+
+    # properties required for shared netid service provisioning
+    SHARED_SUPPORTED_ROLES = []
+    SHARED_SUPPORTED_TYPES = []
+    SHARED_EXCLUDED_CATEGORIES = []
+    SHARED_ALLOW_EXISTING = False
+
     @property
     @abstractmethod
     def service_name(self):
@@ -61,27 +70,10 @@ class EndorsementServiceBase(ABC):
         pass
 
     @property
-    @abstractmethod
-    def shared_parameters(self):
-        """Shared UWNetId requirements
-
-        Defines roles and types associated with shared netids that are
-        elible for endorsement as well as associated categories that
-        exclude otherwise eligible netids.
-        """
-        return {
-            'supported_roles': [],
-            'supported_types': [],
-            'excluded_categories': [],
-        }
-
-    @property
-    def supports_shared(self):
-        return (self.shared_parameters is not None and
-                ((self.shared_parameters['supported_roles'] is not None and
-                  len(self.shared_parameters['supported_roles']) > 0) or
-                 (self.shared_parameters['supported_types'] is not None and
-                  len(self.shared_parameters['supported_types']) > 0)))
+    def supports_shared_netids(self):
+        return ((len(self.SHARED_SUPPORTED_ROLES) > 0) or
+                (self.SHARED_SUPPORTED_TYPES is not None and
+                 len(self.SHARED_SUPPORTED_TYPES) > 0))
 
     @property
     def category_name(self):
@@ -99,6 +91,45 @@ class EndorsementServiceBase(ABC):
 
     def get_endorsement(self, endorser, endorsee):
         return get_endorsement(endorser, endorsee, self.category_code)
+
+    def valid_endorsee(self, endorsee):
+        if endorsee.is_person:
+            return True
+
+        for supported in get_supported_resources_for_netid(endorsee.netid):
+            if endorsee.netid == supported.name:
+                return self.valid_supported_netid(supported)
+
+        return False
+
+    def valid_supported_netid(self, supported):
+        """
+
+        Based on roles and types associated with shared netids that are
+        elible for endorsement as well as associated categories that
+        exclude otherwise eligible netids.
+        """
+
+        # length based on
+        # https://wiki.cac.washington.edu/display/SMW/UW+NetID+Namespace
+        max_length = 29
+
+        return (self.supports_shared_netids and
+                self.valid_shared_netid_role(supported.role) and
+                self.valid_shared_netid_type(supported.netid_type) and
+                len(supported.netid_type) <= max_length and
+                not shared_netid_has_category(
+                    supported.name, self.SHARED_EXCLUDED_CATEGORIES))
+
+    def valid_shared_netid_role(self, role):
+        """Return whether or not shared netid role is valid for this service
+        """
+        return (role in self.SHARED_SUPPORTED_ROLES)
+
+    def valid_shared_netid_type(self, netid_type):
+        """Return whether or not shared netid type is valid for this service
+        """
+        return (netid_type in self.SHARED_SUPPORTED_TYPES)
 
     def is_permitted(self, endorser, endorsee):
         try:

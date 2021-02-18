@@ -24,6 +24,9 @@ CANVAS_ACCESS_GROUP = getattr(settings, "CANVAS_ACCESS_GROUP",
 
 
 class EndorsementService(EndorsementServiceBase):
+    SHARED_SUPPORTED_ROLES = ['owner', 'owner-admin']
+    SHARED_SUPPORTED_TYPES = ['administrator']
+
     @property
     def service_name(self):
         return 'canvas'
@@ -39,14 +42,6 @@ class EndorsementService(EndorsementServiceBase):
     @property
     def service_link(self):
         return 'https://itconnect.uw.edu/learn/tools/canvas/'
-
-    @property
-    def shared_parameters(self):
-        return {
-            'supported_roles': ['owner', 'owner-admin'],
-            'supported_types': ['administrator'],
-            'excluded_categories': None,
-        }
 
     def is_permitted(self, endorser, endorsee):
         try:

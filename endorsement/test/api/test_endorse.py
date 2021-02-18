@@ -1,5 +1,6 @@
 import json
 from django.urls import reverse
+from endorsement.dao.user import get_endorsee_model
 from endorsement.test.api import EndorsementApiTest
 from endorsement.services import endorsement_services
 
@@ -50,17 +51,29 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
                     self.assertTrue(s.service_name in v['endorsements'])
                     endorsement = v['endorsements'][s.service_name]
                     if (endorsement['endorsee']['is_person']
-                            or s.supports_shared):
+                            or s.supports_shared_netids):
                         if s.service_name == service.service_name:
-                            self.assertEqual(
-                                endorsement['category_code'],
-                                service.category_code)
-                            self.assertEqual(
-                                endorsement['endorsee']['netid'],
-                                endorsee)
-                            self.assertEqual(
-                                endorsement['endorser']['netid'], 'jstaff')
+                            if 'error' in endorsement:
+                                self.assertFalse(
+                                    s.valid_endorsee(
+                                        get_endorsee_model(
+                                            endorsement['endorsee']['netid'])))
+                            else:
+                                self.assertEqual(
+                                    endorsement['category_code'],
+                                    service.category_code)
+                                self.assertEqual(
+                                    endorsement['endorsee']['netid'],
+                                    endorsee)
+                                self.assertEqual(
+                                    endorsement['endorser']['netid'], 'jstaff')
                         elif s.service_name not in seen:
-                            self.assertFalse(endorsement['endorsed'])
+                            if 'error' in endorsement:
+                                self.assertFalse(
+                                    s.valid_endorsee(
+                                        get_endorsee_model(
+                                            endorsement['endorsee']['netid'])))
+                            else:
+                                self.assertFalse(endorsement['endorsed'])
                     else:
                         self.assertTrue('error' in endorsement)

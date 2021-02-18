@@ -1,5 +1,4 @@
 import sys
-from uw_pws.dao import PWS_DAO
 from restclients_core.exceptions import (
     DataFailureException, InvalidNetID)
 from endorsement.util.log import log_exception
