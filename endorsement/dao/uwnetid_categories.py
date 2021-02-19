@@ -52,3 +52,12 @@ def get_shared_categories_for_netid(netid):
         Category.ALTID_SHARED_SAO,
         Category.ALTID_SHARED_CLINICAL_1,
         Category.ALTID_SUPPORT_DEPARTMENTAL])
+
+
+def shared_netid_has_category(netid, categories):
+    for category in get_shared_categories_for_netid(netid):
+        if (category.status_code != Category.STATUS_FORMER and
+                category.category_code in categories):
+            return True
+
+    return False

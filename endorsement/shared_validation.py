@@ -1,5 +1,5 @@
 from endorsement.models import Endorser, EndorsementRecord
-from endorsement.dao.uwnetid_supported import get_shared_netids_for_netid
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.user import get_endorser_model
 from endorsement.dao.uwnetid_admin import get_owner_for_shared_netid
 from endorsement.dao.notification import warn_new_shared_netid_owner
@@ -21,7 +21,7 @@ def validate_shared_endorsers():
 
         if len(endorsements):
             owned = [
-                n.name for n in get_shared_netids_for_netid(
+                n.name for n in get_supported_resources_for_netid(
                     endorser.netid) if n.is_owner()]
 
             for e in endorsements:

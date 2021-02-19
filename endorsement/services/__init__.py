@@ -12,7 +12,9 @@ from django.conf import settings
 from endorsement.models import EndorsementRecord
 from endorsement.dao.endorse import (
     is_permitted, get_endorsement, initiate_endorsement,
-    store_endorsement, clear_endorsement)
+    store_endorsement, clear_endorsement, get_endorsements_by_endorser)
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
+from endorsement.dao.uwnetid_categories import shared_netid_has_category
 from endorsement.exceptions import NoEndorsementException
 from abc import ABC, abstractmethod
 from importlib import import_module
@@ -36,6 +38,7 @@ class EndorsementServiceBase(ABC):
     Properties and methods to support creating, revoking, renewing and
     expiring service endorsements.
     """
+
     @property
     @abstractmethod
     def service_name(self):
@@ -62,26 +65,19 @@ class EndorsementServiceBase(ABC):
 
     @property
     @abstractmethod
-    def shared_parameters(self):
-        """Shared UWNetId requirements
-
-        Defines roles and types associated with shared netids that are
-        elible for endorsement as well as associated categories that
-        exclude otherwise eligible netids.
-        """
+    def shared_params(self):
         return {
-            'supported_roles': [],
-            'supported_types': [],
+            'roles': [],
+            'types': [],
             'excluded_categories': [],
+            'allow_existing_endorsement': False
         }
 
     @property
-    def supports_shared(self):
-        return (self.shared_parameters is not None and
-                ((self.shared_parameters['supported_roles'] is not None and
-                  len(self.shared_parameters['supported_roles']) > 0) or
-                 (self.shared_parameters['supported_types'] is not None and
-                  len(self.shared_parameters['supported_types']) > 0)))
+    def supports_shared_netids(self):
+        return ((len(self.shared_params['roles']) > 0) or
+                (self.shared_params['types'] is not None and
+                 len(self.shared_params['types']) > 0))
 
     @property
     def category_name(self):
@@ -99,6 +95,57 @@ class EndorsementServiceBase(ABC):
 
     def get_endorsement(self, endorser, endorsee):
         return get_endorsement(endorser, endorsee, self.category_code)
+
+    def valid_endorsee(self, endorsee, endorser):
+        if self.valid_person_endorsee(endorsee):
+            return True
+
+        for supported in get_supported_resources_for_netid(endorser.netid):
+            if endorsee.netid == supported.name:
+                return self.valid_supported_netid(supported, endorser)
+
+        return False
+
+    def valid_person_endorsee(self, endorsee):
+        return endorsee.is_person
+
+    def valid_supported_netid(self, resource, endorser):
+        """
+
+        Based on roles and types associated with shared netids that are
+        elible for endorsement as well as associated categories that
+        exclude otherwise eligible netids.
+        """
+        return (self.supports_shared_netids
+                and ((self.valid_supported_role(resource)
+                      and self.valid_supported_type(resource)
+                      and not self.invalid_supported_category(resource))
+                     or self.valid_existing_endorsement(resource, endorser)))
+
+    def valid_supported_role(self, resource):
+        roles = self.shared_params.get('roles', '*')
+        return (roles == '*' or resource.role in roles)
+
+    def valid_supported_type(self, resource):
+        # length based on https://wiki.cac.washington.edu/x/YYkW
+        max_length = 29
+
+        types = self.shared_params.get('types', '*')
+        return ((types == '*' or resource.netid_type in types) and
+                len(resource.netid_type) <= max_length)
+
+    def invalid_supported_category(self, resource):
+        return shared_netid_has_category(
+            resource.name, self.shared_params['excluded_categories'])
+
+    def valid_existing_endorsement(self, resource, endorser):
+        if self.shared_params['allow_existing_endorsement']:
+            return (next((er for er in get_endorsements_by_endorser(endorser)
+                          if (er.category_code == self.category_code
+                              and er.endorsee.netid == resource.name)), None)
+                    is not None)
+
+        return False
 
     def is_permitted(self, endorser, endorsee):
         try:
@@ -163,8 +210,8 @@ def endorsement_services():
                 raise Exception(
                     "Cannot load module {}: {}".format(module_name, ex))
 
-            ENDORSEMENT_SERVICES.append(
-                getattr(module, 'EndorsementService')())
+            ENDORSEMENT_SERVICES.append(getattr(
+                module, 'EndorsementService')())
 
         ENDORSEMENT_SERVICES.sort(key=lambda s: s.category_name)
 
@@ -172,24 +219,17 @@ def endorsement_services():
 
 
 def endorsement_categories():
-    categories = []
-    for service in endorsement_services():
-        categories.append(service.category_code)
-
+    categories = [s.category_code for s in endorsement_services()]
     categories.sort()
     return categories
 
 
 def endorsement_services_context():
-    services = {}
-    for service in endorsement_services():
-        services[service.service_name] = {
-            'category_code': service.category_code,
-            'category_name': service.category_name,
-            'service_link': service.service_link
-        }
-
-    return services
+    return {service.service_name: {
+        'category_code': service.category_code,
+        'category_name': service.category_name,
+        'service_link': service.service_link
+    } for service in endorsement_services()}
 
 
 def service_names():
@@ -209,9 +249,5 @@ def get_endorsement_service(service_ref):
     key = ('service_name' if isinstance(service_ref, str) else
            'category_code' if isinstance(service_ref, int) else None)
 
-    if key:
-        for service in endorsement_services():
-            if service_ref == getattr(service, key):
-                return service
-
-    return None
+    return next((s for s in endorsement_services() if (
+        service_ref == getattr(s, key))), None) if key else None

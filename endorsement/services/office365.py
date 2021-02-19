@@ -30,14 +30,15 @@ class EndorsementService(EndorsementServiceBase):
         return [Subscription.SUBS_CODE_FUTURE_OFFICE_365]
 
     @property
+    def shared_params(self):
+        return {
+            'roles': ['owner', 'owner-admin'],
+            'types': ['shared', 'administrator', 'support'],
+            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1],
+            'allow_existing_endorsement': False
+        }
+
+    @property
     def service_link(self):
         return ('https://itconnect.uw.edu/connect/'
                 'productivity-platforms/uw-office-365/')
-
-    @property
-    def shared_parameters(self):
-        return {
-            'supported_roles': ['owner', 'owner-admin'],
-            'supported_types': ['shared', 'administrator', 'support'],
-            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1]
-        }

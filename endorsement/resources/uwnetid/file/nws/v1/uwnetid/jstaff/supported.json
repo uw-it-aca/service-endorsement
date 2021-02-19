@@ -4,7 +4,8 @@
     {
       "name": "a_br11",
       "role": "administrator",
-      "netidType": "shared"
+      "netidType": "shared",
+      "status": "former"
     },
     {
       "name": "a_vida_tools",

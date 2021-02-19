@@ -2,8 +2,7 @@ import logging
 from userservice.user import UserService
 from endorsement.services import endorsement_services
 from endorsement.dao.gws import is_valid_endorser
-from endorsement.dao.uwnetid_supported import (
-    get_shared_netids_for_netid, valid_supported_resource)
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.endorse import (
     get_endorsements_by_endorser, get_endorsements_for_endorsee)
@@ -34,35 +33,56 @@ class Shared(RESTDispatch):
         endorser = get_endorser_model(netid)
         endorsements = get_endorsements_by_endorser(endorser)
         owned = []
-        for shared in get_shared_netids_for_netid(netid):
-            if shared.is_owner():
-                data = {
-                    'netid': shared.name,
-                    'name': None,
-                    'type': shared.netid_type,
-                    'endorsements': {}
-                }
 
-                for s in endorsement_services():
-                    if valid_supported_resource(shared, s):
-                        data['endorsements'][s.service_name] = {
-                            'category_name': s.category_name,
-                            'valid_shared': True
-                        }
+        for supported in get_supported_resources_for_netid(netid):
+            # make sure endorsee is base-line valid (i.e.,
+            # has pws entry, kerberos principle and such)
+            try:
+                endorsee = get_endorsee_model(supported.name)
+                if not endorsee.kerberos_active_permitted:
+                    logger.info(("Skip shared netid {}: "
+                                 "inactive kerberos permit").format(
+                                     supported.name))
+                    continue
+            except (UnrecognizedUWNetid, InvalidNetID):
+                logger.info(("Skip shared netid {}: "
+                             "Unrecognized or invalid netid").format(
+                                 supported.name))
+                continue
 
-                try:
-                    endorsee = get_endorsee_model(shared.name)
-                    if not endorsee.kerberos_active_permitted:
-                        continue
+            data = {
+                'netid': endorsee.netid,
+                'name': endorsee.display_name,
+                'type': supported.netid_type,
+                'endorsements': {}
+            }
 
-                    data['name'] = endorsee.display_name
-                    for endorsement in endorsements:
-                        if endorsement.endorsee.id == endorsee.id:
-                            _add_endorsements(shared, endorser, endorsee, data)
+            # list and record eligible services and their endorsements
+            for service in endorsement_services():
+                record = next((er for er in endorsements if (
+                    er.category_code == service.category_code
+                    and er.endorser == endorser
+                    and er.endorsee == endorsee)), None)
 
-                except (UnrecognizedUWNetid, InvalidNetID):
-                    pass
+                if not service.valid_supported_netid(supported, endorser):
+                    continue
 
+                if record:
+                    endorsement = record.json_data()
+                    endorsement['endorser'] = record.endorser.json_data()
+                    endorsement['endorsers'] = [
+                        ee.endorser.json_data()
+                        for ee in get_endorsements_for_endorsee(endorsee)
+                        if ee.category_code == service.category_code]
+                else:
+                    endorsement = {
+                        'category_name': service.category_name,
+                        'valid_shared': True
+                    }
+
+                data['endorsements'][service.service_name] = endorsement
+
+            if data['endorsements']:
                 owned.append(data)
 
         log_resp_time(logger, "shared", timer)
@@ -70,14 +90,3 @@ class Shared(RESTDispatch):
             'endorser': endorser.json_data(),
             'shared': owned
         })
-
-
-def _add_endorsements(shared, endorser, endorsee, data):
-    for er in get_endorsements_for_endorsee(endorsee):
-        for s in endorsement_services():
-            if (er.category_code == s.category_code
-                    and valid_supported_resource(shared, s)):
-                endorsement = er.json_data()
-                endorsement['endorser'] = endorser.json_data()
-                endorsement['endorsers'] = [endorser.json_data()]
-                data['endorsements'][s.service_name] = endorsement

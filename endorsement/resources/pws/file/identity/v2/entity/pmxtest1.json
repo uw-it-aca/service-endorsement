@@ -1,10 +1,10 @@
 {
-        "DisplayName":"pmxtest1 Account",
+        "DisplayName":"pmxtest Account",
         "EntityAffiliations":null,
         "IsTestEntity":false,
         "PriorUWNetIDs":[],
         "PriorUWRegIDs":[],
-        "UIDNumber":"507001",
-        "UWNetID":"pmxtest1",
-        "UWRegID":"50000000070000000000000000000001"
+        "UIDNumber":"507011",
+        "UWNetID":"pmxtest",
+        "UWRegID":"50000100070000000000000000000001"
 }

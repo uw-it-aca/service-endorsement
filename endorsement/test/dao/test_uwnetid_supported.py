@@ -1,23 +1,21 @@
 from endorsement.services import endorsement_services
-from endorsement.dao.uwnetid_supported import (
-    get_shared_netids_for_netid, valid_supported_resource)
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
+from endorsement.dao.user import get_endorser_model
 from endorsement.test.dao import TestDao
 
 
 class TestNetidSupported(TestDao):
 
-    def test_get_shared_netids_for_netid(self):
-        shared = get_shared_netids_for_netid('jstaff')
-        self.assertEqual(len(shared), 16)
+    def test_get_supported_netids_for_netid(self):
+        endorser = get_endorser_model('jstaff')
+        supported = get_supported_resources_for_netid(endorser.netid)
+        self.assertEqual(len(supported), 23)
 
-    def test_shared_valid_supported_resource(self):
-        for shared in get_shared_netids_for_netid('jstaff'):
+        netids = []
+        for s in supported:
             for service in endorsement_services():
-                valid = valid_supported_resource(shared, service)
-                if service.service_name == 'canvas':
-                    self.assertEqual(
-                        valid, shared.netid_type == 'administrator')
-                elif service.service_name in ['o365', 'google']:
-                    self.assertEqual(valid, (shared.name != 'pppmsrv'))
-                else:
-                    raise Exception("Missing shared netid service test")
+                if service.valid_supported_netid(s, endorser):
+                    netids.append(s.name)
+                    break
+
+        self.assertEqual(len(netids), 15)

@@ -30,14 +30,15 @@ class EndorsementService(EndorsementServiceBase):
         return [Subscription.SUBS_CODE_GOOGLE_APPS]
 
     @property
+    def shared_params(self):
+        return {
+            'roles': ['owner', 'owner-admin'],
+            'types': ['administrator'],
+            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1],
+            'allow_existing_endorsement': True
+        }
+
+    @property
     def service_link(self):
         return ('https://itconnect.uw.edu/connect/email/'
                 'google-apps/getting-started/#activate')
-
-    @property
-    def shared_parameters(self):
-        return {
-            'supported_roles': ['owner', 'owner-admin'],
-            'supported_types': ['shared', 'administrator', 'support'],
-            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1]
-        }

@@ -41,11 +41,12 @@ class EndorsementService(EndorsementServiceBase):
         return 'https://itconnect.uw.edu/learn/tools/canvas/'
 
     @property
-    def shared_parameters(self):
+    def shared_params(self):
         return {
-            'supported_roles': ['owner', 'owner-admin'],
-            'supported_types': ['administrator'],
-            'excluded_categories': None,
+            'roles': ['owner', 'owner-admin'],
+            'types': ['administrator'],
+            'excluded_categories': [],
+            'allow_existing_endorsement': False
         }
 
     def is_permitted(self, endorser, endorsee):
