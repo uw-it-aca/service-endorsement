@@ -7,7 +7,7 @@ class TestNetidSupported(TestDao):
 
     def test_get_supported_netids_for_netid(self):
         supported = get_supported_resources_for_netid('jstaff')
-        self.assertEqual(len(supported), 24)
+        self.assertEqual(len(supported), 23)
 
         netids = []
         for s in supported:

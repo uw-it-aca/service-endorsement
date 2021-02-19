@@ -34,36 +34,55 @@ class Shared(RESTDispatch):
         endorsements = get_endorsements_by_endorser(endorser)
         owned = []
         for supported in get_supported_resources_for_netid(netid):
+            # make sure endorsee is base-line valid (i.e.,
+            # has pws entry, kerberos principle and such)
+            try:
+                endorsee = get_endorsee_model(supported.name)
+                if not endorsee.kerberos_active_permitted:
+                    logger.info(("Skip shared netid {}: "
+                                 "inactive kerberos permit").format(
+                                     supported.name))
+                    continue
+            except (UnrecognizedUWNetid, InvalidNetID):
+                logger.info(("Skip shared netid {}: "
+                             "Unrecognized or invalid netid").format(
+                                 supported.name))
+                continue
+
             data = {
-                'netid': supported.name,
-                'name': None,
-                'type': supported.netid_type
+                'netid': endorsee.netid,
+                'name': endorsee.display_name,
+                'type': supported.netid_type,
+                'endorsements': {}
             }
 
-            netid_endorsements = {}
+            # list and record eligible services and their endorsements
             for service in endorsement_services():
-                if service.valid_supported_netid(supported):
-                    netid_endorsements[service.service_name] = {
-                        'category_name': service.category_name,
-                        'valid_shared': True
-                    }
+                if not service.valid_supported_netid(supported):
+                    continue
 
-                    try:
-                        endorsee = get_endorsee_model(supported.name)
-                        if not endorsee.kerberos_active_permitted:
-                            continue
+                # indicate eligibility
+                endorsement = {
+                    'category_name': service.category_name,
+                    'valid_shared': True
+                }
 
-                        data['name'] = endorsee.display_name
-                        for endorsement in endorsements:
-                            if endorsement.endorsee.id == endorsee.id:
-                                _add_endorsements(
-                                    supported, endorser, endorsee, data)
+                # with current endorsement if present
+                for er in endorsements:
+                    if er.category_code == service.category_code:
+                        endorsement = er.json_data()
+                        endorsement['endorser'] = er.endorser.json_data()
 
-                    except (UnrecognizedUWNetid, InvalidNetID):
-                        pass
+                # record other endorsers
+                endorsement['endorsers'] = []
+                for er in get_endorsements_for_endorsee(endorsee):
+                    if er.category_code == service.category_code:
+                        endorsement['endorsers'].append(
+                            er.endorser.json_data())
 
-            if netid_endorsements:
-                data['endorsements'] = netid_endorsements
+                data['endorsements'][service.service_name] = endorsement
+
+            if data['endorsements']:
                 owned.append(data)
 
         log_resp_time(logger, "shared", timer)
@@ -71,14 +90,3 @@ class Shared(RESTDispatch):
             'endorser': endorser.json_data(),
             'shared': owned
         })
-
-
-def _add_endorsements(shared, endorser, endorsee, data):
-    for er in get_endorsements_for_endorsee(endorsee):
-        for s in endorsement_services():
-            if (er.category_code == s.category_code
-                    and s.valid_shared_netid(shared)):
-                endorsement = er.json_data()
-                endorsement['endorser'] = endorser.json_data()
-                endorsement['endorsers'] = [endorser.json_data()]
-                data['endorsements'][s.service_name] = endorsement

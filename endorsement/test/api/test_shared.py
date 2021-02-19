@@ -13,7 +13,7 @@ class TestEndorsementSharedNetidsAPI(EndorsementApiTest):
         data = json.loads(response.content)
 
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
-        self.assertEqual(len(data['shared']), 14)
+        self.assertEqual(len(data['shared']), 12)
 
         netids = {v['netid']: i for i, v in enumerate(data['shared'])}
 

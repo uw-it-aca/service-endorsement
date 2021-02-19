@@ -16,7 +16,6 @@ def get_supported_resources_for_netid(netid):
     """
     Return supported resources
     """
-
     try:
         supported = []
         for resource in get_supported_resources(netid):
