@@ -17,13 +17,6 @@ from uw_uwnetid.models import Subscription, Category
 
 
 class EndorsementService(EndorsementServiceBase):
-    # properties required for shared netid service provisioning
-    SHARED_SUPPORTED_ROLES = ['owner', 'owner-admin']
-    SHARED_SUPPORTED_TYPES = ['shared', 'administrator', 'support']
-#    SHARED_SUPPORTED_TYPES = ['administrator']
-    SHARED_EXCLUDED_CATEGORIES = [Category.ALTID_SHARED_CLINICAL_1]
-    SHARED_ALLOW_EXISTING = True
-
     @property
     def service_name(self):
         return 'google'
@@ -35,6 +28,15 @@ class EndorsementService(EndorsementServiceBase):
     @property
     def subscription_codes(self):
         return [Subscription.SUBS_CODE_GOOGLE_APPS]
+
+    @property
+    def shared_params(self):
+        return {
+            'roles': ['owner', 'owner-admin'],
+            'types': ['administrator'],
+            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1],
+            'allow_existing_endorsement': True
+        }
 
     @property
     def service_link(self):

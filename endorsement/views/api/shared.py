@@ -33,6 +33,7 @@ class Shared(RESTDispatch):
         endorser = get_endorser_model(netid)
         endorsements = get_endorsements_by_endorser(endorser)
         owned = []
+
         for supported in get_supported_resources_for_netid(netid):
             # make sure endorsee is base-line valid (i.e.,
             # has pws entry, kerberos principle and such)
@@ -58,27 +59,26 @@ class Shared(RESTDispatch):
 
             # list and record eligible services and their endorsements
             for service in endorsement_services():
-                if not service.valid_supported_netid(supported):
+                record = next((er for er in endorsements if (
+                    er.category_code == service.category_code
+                    and er.endorser == endorser
+                    and er.endorsee == endorsee)), None)
+
+                if not service.valid_supported_netid(supported, endorser):
                     continue
 
-                # indicate eligibility
-                endorsement = {
-                    'category_name': service.category_name,
-                    'valid_shared': True
-                }
-
-                # with current endorsement if present
-                for er in endorsements:
-                    if er.category_code == service.category_code:
-                        endorsement = er.json_data()
-                        endorsement['endorser'] = er.endorser.json_data()
-
-                # record other endorsers
-                endorsement['endorsers'] = []
-                for er in get_endorsements_for_endorsee(endorsee):
-                    if er.category_code == service.category_code:
-                        endorsement['endorsers'].append(
-                            er.endorser.json_data())
+                if record:
+                    endorsement = record.json_data()
+                    endorsement['endorser'] = record.endorser.json_data()
+                    endorsement['endorsers'] = [
+                        ee.endorser.json_data()
+                        for ee in get_endorsements_for_endorsee(endorsee)
+                        if ee.category_code == service.category_code]
+                else:
+                    endorsement = {
+                        'category_name': service.category_name,
+                        'valid_shared': True
+                    }
 
                 data['endorsements'][service.service_name] = endorsement
 

@@ -63,7 +63,7 @@ class Endorse(RESTDispatch):
                         endorsee, endorser, email=to_endorse['email']).email
 
                 for service in endorsement_services():
-                    if service.valid_endorsee(endorsee):
+                    if service.valid_endorsee(endorsee, endorser):
                         self._endorse(to_endorse, service,
                                       endorser, endorser_json,
                                       endorsee, acted_as,

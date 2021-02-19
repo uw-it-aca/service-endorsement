@@ -17,11 +17,6 @@ from uw_uwnetid.models import Subscription, Category
 
 
 class EndorsementService(EndorsementServiceBase):
-    # properties required for shared netid service provisioning
-    SHARED_SUPPORTED_ROLES = ['owner', 'owner-admin']
-    SHARED_SUPPORTED_TYPES = ['shared', 'administrator', 'support']
-    SHARED_EXCLUDED_CATEGORIES = [Category.ALTID_SHARED_CLINICAL_1]
-
     @property
     def service_name(self):
         return 'o365'
@@ -33,6 +28,15 @@ class EndorsementService(EndorsementServiceBase):
     @property
     def subscription_codes(self):
         return [Subscription.SUBS_CODE_FUTURE_OFFICE_365]
+
+    @property
+    def shared_params(self):
+        return {
+            'roles': ['owner', 'owner-admin'],
+            'types': ['shared', 'administrator', 'support'],
+            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1],
+            'allow_existing_endorsement': False
+        }
 
     @property
     def service_link(self):

@@ -1,6 +1,6 @@
 import json
 from django.urls import reverse
-from endorsement.dao.user import get_endorsee_model
+from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.test.api import EndorsementApiTest
 from endorsement.services import endorsement_services
 
@@ -57,7 +57,8 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
                                 self.assertFalse(
                                     s.valid_endorsee(
                                         get_endorsee_model(
-                                            endorsement['endorsee']['netid'])))
+                                            endorsement['endorsee']['netid']),
+                                        get_endorser_model('jstaff')))
                             else:
                                 self.assertEqual(
                                     endorsement['category_code'],
@@ -72,7 +73,8 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
                                 self.assertFalse(
                                     s.valid_endorsee(
                                         get_endorsee_model(
-                                            endorsement['endorsee']['netid'])))
+                                            endorsement['endorsee']['netid']),
+                                        get_endorser_model('jstaff')))
                             else:
                                 self.assertFalse(endorsement['endorsed'])
                     else:
