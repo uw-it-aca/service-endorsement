@@ -12,10 +12,12 @@ from django.conf import settings
 from endorsement.models import EndorsementRecord
 from endorsement.dao.endorse import (
     is_permitted, get_endorsement, initiate_endorsement,
-    store_endorsement, clear_endorsement, get_endorsements_by_endorser)
+    store_endorsement, clear_endorsement)
+from endorsement.dao.user import get_endorsee_model
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.uwnetid_categories import shared_netid_has_category
-from endorsement.exceptions import NoEndorsementException
+from endorsement.exceptions import NoEndorsementException, UnrecognizedUWNetid
+
 from abc import ABC, abstractmethod
 from importlib import import_module
 from os import listdir
@@ -134,16 +136,18 @@ class EndorsementServiceBase(ABC):
         return ((types == '*' or resource.netid_type in types) and
                 len(resource.netid_type) <= max_length)
 
-    def invalid_supported_category(self, resource):
+    def invalid_supported_category(self, supported):
         return shared_netid_has_category(
-            resource.name, self.shared_params['excluded_categories'])
+            supported.name, self.shared_params['excluded_categories'])
 
     def valid_existing_endorsement(self, resource, endorser):
         if self.shared_params['allow_existing_endorsement']:
-            return (next((er for er in get_endorsements_by_endorser(endorser)
-                          if (er.category_code == self.category_code
-                              and er.endorsee.netid == resource.name)), None)
-                    is not None)
+            try:
+                self.get_endorsement(
+                    endorser, get_endorsee_model(resource.name))
+                return True
+            except (NoEndorsementException, UnrecognizedUWNetid):
+                pass
 
         return False
 
@@ -246,8 +250,12 @@ def get_endorsement_service(service_ref):
     """
     Return endorsment service based on service name
     """
-    key = ('service_name' if isinstance(service_ref, str) else
-           'category_code' if isinstance(service_ref, int) else None)
+    if isinstance(service_ref, str):
+        key = 'service_name'
+    elif isinstance(service_ref, int):
+        key = 'category_code'
+    else:
+        return None
 
     return next((s for s in endorsement_services() if (
-        service_ref == getattr(s, key))), None) if key else None
+        service_ref == getattr(s, key))), None)

@@ -1,6 +1,6 @@
 import logging
 from userservice.user import UserService
-from endorsement.services import (endorsement_services,
+from endorsement.services import (get_endorsement_service,
                                   endorsement_services_context)
 from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.dao.gws import is_valid_endorser
@@ -36,13 +36,8 @@ class Endorsed(RESTDispatch):
             if not er.endorsee.is_person:
                 continue
 
-            service_tag = None
-            for s in endorsement_services():
-                if (er.category_code == s.category_code):
-                    service_tag = s.service_name
-                    break
-
-            if service_tag is None:
+            service = get_endorsement_service(er.category_code)
+            if service is None:
                 continue
 
             try:
@@ -58,7 +53,7 @@ class Endorsed(RESTDispatch):
                 continue
 
             endorsed[er.endorsee.netid]['endorsements'][
-                service_tag] = er.json_data()
+                service.service_name] = er.json_data()
 
             endorsers = []
             for ee in get_endorsements_for_endorsee(
@@ -66,7 +61,7 @@ class Endorsed(RESTDispatch):
                 endorsers.append(ee.endorser.json_data())
 
             endorsed[er.endorsee.netid]['endorsements'][
-                service_tag]['endorsers'] = endorsers
+                service.service_name]['endorsers'] = endorsers
 
         log_resp_time(logger, "endorsed", timer)
         return self.json_response({
