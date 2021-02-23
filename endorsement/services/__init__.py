@@ -198,28 +198,33 @@ def endorsement_services():
     global ENDORSEMENT_SERVICES
 
     if ENDORSEMENT_SERVICES is None:
-        ENDORSEMENT_SERVICES = []
-
-        module_names = getattr(settings, 'ENDORSEMENT_SERVICES', ["*"])
-        if module_names and module_names[0] == '*':
-            module_names = [s.split('.')[0]
-                            for s in listdir('endorsement/services')
-                            if re.match(r'^[a-z].*\.py$', s)]
-
-        for module_name in module_names:
-            try:
-                module = import_module(
-                    "endorsement.services.{}".format(module_name))
-            except Exception as ex:
-                raise Exception(
-                    "Cannot load module {}: {}".format(module_name, ex))
-
-            ENDORSEMENT_SERVICES.append(getattr(
-                module, 'EndorsementService')())
-
-        ENDORSEMENT_SERVICES.sort(key=lambda s: s.category_name)
+        ENDORSEMENT_SERVICES = _load_endorsement_services()
 
     return ENDORSEMENT_SERVICES
+
+
+def _load_endorsement_services():
+    endorsement_services = []
+
+    module_names = getattr(settings, 'ENDORSEMENT_SERVICES', ["*"])
+    if module_names and module_names[0] == '*':
+        module_names = [s.split('.')[0]
+                        for s in listdir('endorsement/services')
+                        if re.match(r'^[a-z].*\.py$', s)]
+
+    for module_name in module_names:
+        try:
+            module = import_module(
+                "endorsement.services.{}".format(module_name))
+        except Exception as ex:
+            raise Exception(
+                "Cannot load module {}: {}".format(module_name, ex))
+
+        endorsement_services.append(getattr(
+            module, 'EndorsementService')())
+
+    endorsement_services.sort(key=lambda s: s.category_name)
+    return endorsement_services
 
 
 def endorsement_categories():
