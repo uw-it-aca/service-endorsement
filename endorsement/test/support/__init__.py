@@ -12,7 +12,7 @@ class SupportApiTest(EndorsementApiTest):
         url = reverse(self.reverse_id)
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
-        
+
     def _test_invalid_user(self):
         self.set_user('jstudent')
         self.request.session['samlUserdata'] = {
