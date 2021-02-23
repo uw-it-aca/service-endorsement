@@ -1,8 +1,7 @@
 import logging
 from django.utils import timezone
 from endorsement.models import EndorsementRecord
-from endorsement.util.time_helper import Timer
-from endorsement.util.log import log_resp_time, log_data_error_response
+from endorsement.util.log import log_data_error_response
 from endorsement.views.rest_dispatch import RESTDispatch
 from datetime import date, time, datetime, timedelta
 from endorsement.util.auth import AdminGroupAuthentication
@@ -19,8 +18,6 @@ class Statistics(RESTDispatch):
     authentication_classes = [AdminGroupAuthentication]
 
     def get(self, request, *args, **kwargs):
-        timer = Timer()
-
         stats = {}
         try:
             if self.kwargs['type'] == 'service':
@@ -168,9 +165,8 @@ class Statistics(RESTDispatch):
                 }
 
         except Exception:
-            log_data_error_response(logger, timer)
+            log_data_error_response(logger)
             return RESTDispatch().error_response(
                 543, "Data not available due to an error.")
 
-        log_resp_time(logger, "statistics", timer)
         return self.json_response(stats)
