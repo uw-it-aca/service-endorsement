@@ -37,7 +37,8 @@ class TestGoogleService(ServicesApiTest):
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 4)
+        self.assertEquals(len(endorsible), 4 if (
+            len(self.service.shared_params['types']) == 1) else 12)
         self.assertEquals(len(endorsed), 2)
 
         self.assertTrue('cpnebeng' in endorsible)
@@ -45,18 +46,20 @@ class TestGoogleService(ServicesApiTest):
         # exclude category 22
         self.assertFalse('nebionotic' in endorsible)
 
-        # remove pre-existing non-admin
-        self.service.clear_endorsement(endorser, endorsee_pre)
+        if self.service.shared_params['allow_existing_endorsement']:
+            # remove pre-existing non-admin
+            self.service.clear_endorsement(endorser, endorsee_pre)
 
-        url = reverse('shared_api')
-        response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
-        data = json.loads(response.content)
+            url = reverse('shared_api')
+            response = self.client.get(url)
+            self.assertEquals(response.status_code, 200)
+            data = json.loads(response.content)
 
-        endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 3)
-        self.assertEquals(len(endorsed), 1)
-        self.assertTrue(endorsee_pre.netid not in endorsible)
+            endorsible, endorsed = self.get_shared(data)
+
+            self.assertEquals(len(endorsible), 3)
+            self.assertEquals(len(endorsed), 1)
+            self.assertTrue(endorsee_pre.netid not in endorsible)
 
     def test_endorse_netid(self):
         self._test_endorse_netid()
@@ -64,7 +67,7 @@ class TestGoogleService(ServicesApiTest):
     def test_endorse_shared(self):
         endorsible, endorsing, endorsed, errored = self._test_endorse({
             "endorsees": {
-                # endorse valid shared
+                # shared resource of administrator type
                 "wadm_jstaff": {
                     "name": "ADMIN NETID JSTAFF",
                     "email": "wadm_jstaff@uw.edu",
@@ -74,7 +77,7 @@ class TestGoogleService(ServicesApiTest):
                         "reason": "testing"
                     }
                 },
-                # endorse invalid shared
+                # shared resource of 
                 "cpnebeng": {
                     "name": "cpneb eng",
                     "email": "cpnebeng@uw.edu",
@@ -87,12 +90,18 @@ class TestGoogleService(ServicesApiTest):
             }
         })
 
-        self.assertEqual(len(endorsible), 1)
         self.assertEqual(len(endorsing), 0)
-        self.assertEqual(len(endorsed), 1)
-        self.assertEqual(len(errored), 1)
         self.assertTrue('wadm_jstaff' in endorsed)
-        self.assertTrue('cpnebeng' in errored)
+        if len(self.service.shared_params['types']) == 1:
+            self.assertEqual(len(endorsible), 1)
+            self.assertEqual(len(endorsed), 1)
+            self.assertEqual(len(errored), 1)
+            self.assertTrue('cpnebeng' in errored)
+        else:
+            self.assertEqual(len(endorsible), 2)
+            self.assertEqual(len(endorsed), 2)
+            self.assertEqual(len(errored), 0)
+            self.assertTrue('cpnebeng' in endorsed)
 
     def test_preexisting_endorse(self):
         endorser = get_endorser_model('jstaff')
