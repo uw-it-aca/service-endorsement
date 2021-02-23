@@ -2,11 +2,11 @@ import json
 from django.urls import reverse
 from endorsement.models import EndorsementRecord
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.test.api import EndorsementApiTest
+from endorsement.test.services import ServicesApiTest
 from endorsement.services import get_endorsement_service
 
 
-class TestOffice365Service(EndorsementApiTest):
+class TestOffice365Service(ServicesApiTest):
     @property
     def service(self):
         return get_endorsement_service('o365')

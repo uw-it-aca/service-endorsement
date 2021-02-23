@@ -3,10 +3,10 @@ from django.urls import reverse
 from endorsement.models import EndorsementRecord
 from endorsement.services import get_endorsement_service
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.test.api import EndorsementApiTest
+from endorsement.test.services import ServicesApiTest
 
 
-class TestCanvasService(EndorsementApiTest):
+class TestCanvasService(ServicesApiTest):
     @property
     def service(self):
         return get_endorsement_service('canvas')
