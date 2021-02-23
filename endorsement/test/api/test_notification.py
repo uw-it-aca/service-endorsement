@@ -1,10 +1,10 @@
 import json
 from django.urls import reverse
-from endorsement.test.support import SupportApiTest
+from endorsement.test.api import EndorsementApiTest
 
 
-class TestSupportNotificationAPI(SupportApiTest):
-    def test_search_api(self):
+class TestNotificationAPI(EndorsementApiTest):
+    def test_notification_api(self):
         self.set_user('jstaff')
         url = reverse('notification_api')
         notification_data = {
