@@ -77,7 +77,7 @@ class TestGoogleService(ServicesApiTest):
                         "reason": "testing"
                     }
                 },
-                # shared resource of 
+                # shared resource of shared type
                 "cpnebeng": {
                     "name": "cpneb eng",
                     "email": "cpnebeng@uw.edu",
