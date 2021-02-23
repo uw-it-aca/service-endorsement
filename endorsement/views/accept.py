@@ -2,11 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from userservice.user import UserService
 from endorsement.services import service_name_list
-from endorsement.util.time_helper import Timer
 from endorsement.models import EndorsementRecord
 from endorsement.dao.user import get_endorsee_model
-from endorsement.views.rest_dispatch import (
-    invalid_session, handle_exception)
+from endorsement.views.rest_dispatch import invalid_session, handle_exception
 import traceback
 import logging
 import json
@@ -17,11 +15,10 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def accept(request, accept_id):
-    timer = Timer()
     try:
         netid = UserService().get_user()
         if not netid:
-            return invalid_session(logger, timer)
+            return invalid_session(logger)
 
         context = {
             "user": {
@@ -52,5 +49,5 @@ def accept(request, accept_id):
 
         return render(request, "accept.html", context)
 
-    except Exception:
-        handle_exception(logger, timer, traceback)
+    except Exception as ex:
+        handle_exception(logger, "{}".format(ex), traceback)

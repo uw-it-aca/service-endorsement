@@ -2,7 +2,6 @@ import logging
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
 from endorsement.services import endorsement_services
-from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import RESTDispatch, invalid_session
 
 
@@ -15,24 +14,22 @@ class Accept(RESTDispatch):
     """
 
     def post(self, request, *args, **kwargs):
-        timer = Timer()
-
         try:
             accept_id = request.data['accept_id']
         except KeyError:
-            return invalid_session(logger, timer)
+            return invalid_session(logger)
 
         user_service = UserService()
         netid = user_service.get_user()
         if not netid:
-            return invalid_session(logger, timer)
+            return invalid_session(logger)
 
         original_user = user_service.get_original_user()
         acted_as = None if (netid == original_user) else original_user
 
         records = EndorsementRecord.objects.get_accept_endorsement(accept_id)
         if len(records) != 1:
-            return invalid_session(logger, timer)
+            return invalid_session(logger)
 
         record = records[0]
 

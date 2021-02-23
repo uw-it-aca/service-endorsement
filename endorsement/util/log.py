@@ -32,30 +32,22 @@ def log_exception(logger, message, exc_info):
         add_user_info(message), exc_info.splitlines()))
 
 
-def log_invalid_netid_response(logger, timer):
-    logger.error("{0} {1}".format('Invalid netid, abort', timer))
+def log_invalid_netid_response(logger):
+    logger.error("{}".format('Invalid netid, abort'))
 
 
-def log_err_with_netid(logger, timer, message):
-    logger.error("{0} {1}".format(add_user_info(message), timer))
+def log_err_with_netid(logger, message):
+    logger.error("{}".format(add_user_info(message)))
 
 
-def log_exception_with_timer(logger, timer, exc_info):
-    log_err_with_netid(logger, timer, exc_info.splitlines())
+def log_invalid_endorser_response(logger):
+    log_err_with_netid(logger, 'Invalid endorser, abort')
 
 
-def log_invalid_endorser_response(logger, timer):
-    log_err_with_netid(logger, timer, 'Invalid endorser, abort')
-
-
-def log_data_error_response(logger, timer):
-    log_err_with_netid(logger, timer,
+def log_data_error_response(logger):
+    log_err_with_netid(logger,
                        'Data not available due to a backend error, abort')
 
 
-def log_resp_time(logger, message, timer):
-    logger.info("{0} {1}".format(add_user_info(message), timer))
-
-
-def log_data_not_found_response(logger, timer):
-    log_resp_time(logger, 'Data not found', timer)
+def log_data_not_found_response(logger):
+    log_err_with_netid(logger, 'Data not found')

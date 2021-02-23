@@ -6,7 +6,6 @@ from endorsement.services import endorsement_services
 from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.pws import get_person
 from endorsement.dao.endorse import get_endorsements_for_endorsee
-from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
@@ -23,16 +22,14 @@ class Endorse(RESTDispatch):
     Endorse provided endorsee list
     """
     def post(self, request, *args, **kwargs):
-        timer = Timer()
-
         endorsees = request.data.get('endorsees', {})
         user_service = UserService()
         netid = user_service.get_user()
         if not netid:
-            return invalid_session(logger, timer)
+            return invalid_session(logger)
 
         if not is_valid_endorser(netid):
-            return invalid_endorser(logger, timer)
+            return invalid_endorser(logger)
 
         original_user = user_service.get_original_user()
         acted_as = None if (netid == original_user) else original_user

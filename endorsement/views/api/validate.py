@@ -9,7 +9,6 @@ from endorsement.dao.user import (
 from endorsement.dao.endorse import (
     get_endorsements_for_endorsee, get_endorsements_by_endorser)
 from endorsement.dao.gws import is_valid_endorser
-from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
@@ -24,14 +23,12 @@ class Validate(RESTDispatch):
     Validate provided endorsement list
     """
     def post(self, request, *args, **kwargs):
-        timer = Timer()
-
         netid = UserService().get_user()
         if not netid:
-            return invalid_session(logger, timer)
+            return invalid_session(logger)
 
         if not is_valid_endorser(netid):
-            return invalid_endorser(logger, timer)
+            return invalid_endorser(logger)
 
         endorser = get_endorser_model(netid)
         netids = request.data.get('netids', [])
