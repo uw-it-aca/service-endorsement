@@ -37,7 +37,7 @@ jobs:
 
       - name: Generate Override Values
         id: overrides
-        uses: actions/time-values@feature/time-values
+        uses: uw-it-aca/actions/time-values@feature/time-values
         with:
           config_file: ${{ env.OVERRIDE_CONFIG }}
 
@@ -47,7 +47,7 @@ jobs:
             cat "${{ steps.overrides.outputs.values }}" > $OVERRIDE_FILE
           else
             echo "No overrides scheduled at this time"
-            exit 1
+            exit
           fi
 
       - name: Set up Context
