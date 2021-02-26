@@ -9,8 +9,10 @@ env:
   OVERRIDE_FILE: ./overrides.yml
 
 on:
-  schedule:
-    - cron: "*/15 * * * *"
+  push:
+    branches: [feature/github-actions]
+#  schedule:
+#    - cron: "*/15 * * * *"
 
 jobs:
   override:
