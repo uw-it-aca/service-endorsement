@@ -38,16 +38,17 @@ jobs:
             cat "${{ steps.overrides.outputs.values }}" > $OVERRIDE_FILE
           else
             echo "No overrides scheduled at this time"
-            exit
           fi
 
       - name: Set up Context
+        if: hashFiles(${{ env.OVERRIDE_FILE }}) != ''
         id: cicd
         uses: uw-it-aca/actions/cicd-context@v1.4
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
       - name: Deploy with Overridden Values
+        if: hashFiles(${{ env.OVERRIDE_FILE }}) != ''
         shell: bash
         run: |
           echo "Would override values file ${OVERRIDE_FILE}:"
