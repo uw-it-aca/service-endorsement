@@ -1,0 +1,69 @@
+---
+name: UW Registration Period Load Preparation
+
+env:
+  RELEASE_NAME: prt
+  DJANGO_APP: endorsement
+  OVERRIDE_REF: refs/heads/feature/github-actions
+  OVERRIDE_CONFIG: docker/overrides.yml
+  OVERRIDE_FILE: ./overrides.yml
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  override:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.OVERRIDE_REF }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - name: Install Dependencies
+          python -m pip install --upgrade pip
+          pip install setuptools pyyaml pytz
+
+      - name: Generate Override Values
+        id: overrides
+        uses: actions/time-values@feature/time-values
+        with:
+          config_file: ${{ env.OVERRIDE_CONFIG }}
+
+      - name: Write Override Values File
+        run: |
+          if [[ -n "${{ steps.overrides.outputs.values }}" ]] ; then
+            cat "${{ steps.overrides.outputs.values }}" > $OVERRIDE_FILE
+          else
+            echo "No overrides scheduled at this time"
+            exit 1
+          fi
+
+      - name: Set up Context
+        id: cicd
+        uses: uw-it-aca/actions/cicd-context@v1.4
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+
+      - name: Deploy with Overridden Values
+        shell: bash
+        run: |
+          echo "Would override values file ${OVERRIDE_FILE}:"
+          cat $OVERRIDE_FILE
+##        uses: uw-it-aca/actions/cicd-deploy@main
+##        with:
+##          release_name: ${{ env.RELEASE_NAME }}
+##          commit_hash: ${{ steps.cicd.outputs.commit_hash }}
+##          git_repo_branch: ${{ steps.cicd.outputs.git_repo_branch }}
+##          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+##          helm_override_values_file: ${{ env.OVERRIDE_FILE }}
+
+
