@@ -33,6 +33,7 @@ jobs:
 
       - name: Write Override Values File
         run: |
+          echo OVERRIDES ARE: "${{ steps.overrides.outputs.values }}"
           if [[ -n "${{ steps.overrides.outputs.values }}" ]] ; then
             cat "${{ steps.overrides.outputs.values }}" > $OVERRIDE_FILE
           else
