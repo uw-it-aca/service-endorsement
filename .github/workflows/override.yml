@@ -32,19 +32,19 @@ jobs:
           config_file: ${{ env.OVERRIDE_CONFIG }}
 
       - name: Write Overrides to File
-        if: ${{ steps.override.values != '' }}
+        if: ${{ steps.override.outputs.values != '' }}
         run: |
-          echo ${{ steps.override.values }} > $OVERRIDE_FILE
+          echo ${{ steps.override.outputs.values }} > $OVERRIDE_FILE
 
       - name: Set up Context
-        if: ${{ steps.override.values != '' }}
+        if: ${{ steps.override.outputs.values != '' }}
         id: cicd
         uses: uw-it-aca/actions/cicd-context@v1.4
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
       - name: Deploy with Overridden Values
-        if: ${{ steps.override.values != '' }}
+        if: ${{ steps.override.outputs.values != '' }}
         shell: bash
         run: |
           echo "Would override values file ${OVERRIDE_FILE}:"
