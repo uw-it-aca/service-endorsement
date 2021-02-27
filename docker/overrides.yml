@@ -9,7 +9,7 @@ overrides:
         maxReplicas: 8
     timezone: 'US/Pacific'
     dates: 
-      - '2021-02-26 16:10:00'
+      - '2021-02-26 16:15:00'
   restore-default:
     description: "Drop min replicas to default after anticipated load spike"
     override-values: []
