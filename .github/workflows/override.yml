@@ -26,25 +26,25 @@ jobs:
           ref: ${{ env.OVERRIDE_REF }}
 
       - name: Generate Override Values
-        id: overrides
+        id: override
         uses: uw-it-aca/actions/time-values@feature/time-values
         with:
           config_file: ${{ env.OVERRIDE_CONFIG }}
 
       - name: Write Overrides to File
-        if: {{ steps.overrides.values }}
+        if: ${{ steps.override.values != '' }}
         run: |
-          echo ${{ steps.overrides.values }} > $OVERRIDE_FILE
+          echo ${{ steps.override.values }} > $OVERRIDE_FILE
 
       - name: Set up Context
-        if: {{ steps.overrides.values }}
+        if: ${{ steps.override.values != '' }}
         id: cicd
         uses: uw-it-aca/actions/cicd-context@v1.4
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
       - name: Deploy with Overridden Values
-        if: {{ steps.overrides.values }}
+        if: ${{ steps.override.values != '' }}
         shell: bash
         run: |
           echo "Would override values file ${OVERRIDE_FILE}:"
