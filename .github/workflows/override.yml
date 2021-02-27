@@ -34,7 +34,7 @@ jobs:
       - name: Write Overrides to File
         if: ${{ steps.override.outputs.values != '' }}
         run: |
-          echo ${{ steps.override.outputs.values }} > $OVERRIDE_FILE
+          echo "${{ steps.override.outputs.values }}" > $OVERRIDE_FILE
 
       - name: Set up Context
         if: ${{ steps.override.outputs.values != '' }}
