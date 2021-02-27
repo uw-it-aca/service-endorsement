@@ -30,6 +30,7 @@ jobs:
         uses: uw-it-aca/actions/time-values@feature/time-values
         with:
           config_file: ${{ env.OVERRIDE_CONFIG }}
+          debug_option: true
 
       - name: Write Override Values to File
         run: |
