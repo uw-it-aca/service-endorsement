@@ -30,26 +30,21 @@ jobs:
         uses: uw-it-aca/actions/time-values@feature/time-values
         with:
           config_file: ${{ env.OVERRIDE_CONFIG }}
-          debug_option: true
 
-      - name: Write Override Values to File
+      - name: Write Overrides to File
+        if: {{ steps.overrides.values }}
         run: |
-          echo OVERRIDES ARE: "${{ steps.overrides.outputs.values }}"
-          if [[ -n "${{ steps.overrides.outputs.values }}" ]] ; then
-            cat "${{ steps.overrides.outputs.values }}" > $OVERRIDE_FILE
-          else
-            echo "No overrides scheduled at this time"
-          fi
+          echo ${{ steps.overrides.values }} > $OVERRIDE_FILE
 
       - name: Set up Context
-        if: hashFiles(${{ env.OVERRIDE_FILE }}) != ''
+        if: {{ steps.overrides.values }}
         id: cicd
         uses: uw-it-aca/actions/cicd-context@v1.4
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
       - name: Deploy with Overridden Values
-        if: hashFiles(${{ env.OVERRIDE_FILE }}) != ''
+        if: {{ steps.overrides.values }}
         shell: bash
         run: |
           echo "Would override values file ${OVERRIDE_FILE}:"
