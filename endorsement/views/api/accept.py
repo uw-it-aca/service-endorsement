@@ -39,6 +39,6 @@ class Accept(RESTDispatch):
                     record.endorser, record.endorsee,
                     acted_as, record.reason).json_data()
                 json_data['service_tag'] = service.service_name
-                json_data['service_list'] = service.service_link
+                json_data['service_link'] = service.service_link
 
         return self.json_response(json_data)

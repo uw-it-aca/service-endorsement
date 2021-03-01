@@ -100,8 +100,6 @@ environmentVariables:
     value: prod
   - name: ENDORSEMENT_SERVICES
     value: "google, office365"
-  - name: WEBSERVER
-    value: nginx
   - name: GWS_ENV
     value: PROD
   - name: PWS_ENV
