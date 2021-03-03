@@ -49,7 +49,6 @@ jobs:
         run: |
           echo "Would override values file ${OVERRIDE_FILE}:"
           cat $OVERRIDE_FILE
-        if: steps.cicd.outputs.git_repo_branch == 'develop'
 #        uses: uw-it-aca/actions/cicd-deploy@main
 #        with:
 #          release_name: ${{ env.RELEASE_NAME }}
