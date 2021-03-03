@@ -49,11 +49,13 @@ jobs:
         run: |
           echo "Would override values file ${OVERRIDE_FILE}:"
           cat $OVERRIDE_FILE
-##        uses: uw-it-aca/actions/cicd-deploy@main
-##        with:
-##          release_name: ${{ env.RELEASE_NAME }}
-##          commit_hash: ${{ steps.cicd.outputs.commit_hash }}
-##          git_repo_branch: ${{ steps.cicd.outputs.git_repo_branch }}
-##          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
-##          helm_override_values_file: ${{ env.OVERRIDE_FILE }}
+        if: steps.cicd.outputs.git_repo_branch == 'develop'
+#        uses: uw-it-aca/actions/cicd-deploy@main
+#        with:
+#          release_name: ${{ env.RELEASE_NAME }}
+#          commit_hash: ${{ steps.cicd.outputs.commit_hash }}
+#          git_repo_branch: ${{ steps.cicd.outputs.git_repo_branch }}
+#          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+#          app_instance: test
+#          helm_override_values_file: ${{ env.OVERRIDE_FILE }}
 
