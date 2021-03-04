@@ -40,7 +40,7 @@ jobs:
           echo "::add-mask::${{ secrets.GH_AUTH_TOKEN }}"
           FLUX_REPO="uw-it-aca/gcp-flux-${FLUX_INSTANCE}"
           MANIFEST_NAME=${RELEASE_NAME}.yaml
-          curl -s --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' "https://raw.githubusercontent.com/${FLUX_REPO}/master/releases/${FLUX_INSTANCE}/${MANIFEST_NAME}" > ./$MANIFEST_NAME
+          curl -O -s --header 'Authorization: Token ${{ secrets.GITHUB_TOKEN }}' -L "https://raw.githubusercontent.com/${FLUX_REPO}/master/releases/${FLUX_INSTANCE}/${MANIFEST_NAME}"
           ls -l ./$MANIFEST_NAME
           if ! grep -qE "\s+image: \"gcr.io/uwit-mci-axdd/${RELEASE_NAME}:${{ steps.cicd.outputs.commit_hash }}\"$" ./$MANIFEST_NAME; then
             echo "Override hash (${{ steps.cicd.outputs.commit_hash }}) mismatch"
