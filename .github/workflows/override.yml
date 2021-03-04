@@ -41,14 +41,11 @@ jobs:
           FLUX_REPO="uw-it-aca/gcp-flux-${FLUX_INSTANCE}"
           MANIFEST_NAME=${RELEASE_NAME}.yaml
           FILE_LINK="https://raw.githubusercontent.com/${FLUX_REPO}/master/releases/${FLUX_INSTANCE}/${MANIFEST_NAME}"
-          echo "FILE_LINK=$FILE_LINK"
-          curl -O -s -L ${FILE_LINK}?token=${{ secrets.GITHUB_TOKEN }}
-          echo "ls -l ./$MANIFEST_NAME"
+          curl -s -O -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" ${FILE_LINK}
           ls -l ./$MANIFEST_NAME
           if ! grep -qE "\s+image: \"gcr.io/uwit-mci-axdd/${RELEASE_NAME}:${{ steps.cicd.outputs.commit_hash }}\"$" ./$MANIFEST_NAME; then
             echo "Override hash (${{ steps.cicd.outputs.commit_hash }}) mismatch"
-            OVERRIDE_CONFIG=/dev/null
-            echo "OVERRIDE_CONFIG=$OVERRIDE_CONFIG" >> $GITHUB_ENV
+            echo "OVERRIDE_CONFIG=/dev/null" >> $GITHUB_ENV
           fi
 
       - name: Generate Override Values
