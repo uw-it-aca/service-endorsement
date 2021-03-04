@@ -5,11 +5,11 @@ overrides:
     description: "Bump up min replicas to anticpate quick load spike"
     values:
       autoscaling:
-        minReplicas: 4
-        maxReplicas: 8
+        minReplicas: 2
+        maxReplicas: 4
     timezone: 'US/Pacific'
     dates: 
-      - '2021-03-03 11:05:00'
+      - '2021-03-03 17:23:00'
   restore-default:
     description: "Drop min replicas to default after anticipated load spike"
     values: []

@@ -4,6 +4,8 @@ name: UW Registration Period Load Preparation
 env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
+  FLUX_INSTANCE: dev
+  APP_INSTANCE: test
   OVERRIDE_REF: refs/heads/feature/github-actions
   OVERRIDE_CONFIG: docker/overrides.yml
   OVERRIDE_FILE: ./overrides.yml
@@ -12,7 +14,8 @@ on:
   push:
     branches: [feature/github-actions]
 #  schedule:
-#    - cron: "*/15 * * * *"
+##     Wake hourly to see if there's work to do
+#    - cron: "0 * * * *"
 
 jobs:
   override:
@@ -25,6 +28,25 @@ jobs:
         with:
           ref: ${{ env.OVERRIDE_REF }}
 
+      - name: Set up Context
+        if: ${{ steps.override.outputs.values != '' }}
+        id: cicd
+        uses: uw-it-aca/actions/cicd-context@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+
+      - name: Verify deployed branch hash
+        run: |
+          echo "::add-mask::${{ secrets.GH_AUTH_TOKEN }}"
+          FLUX_REPO="uw-it-aca/gcp-flux-${FLUX_INSTANCE}"
+          MANIFEST_NAME=${RELEASE_NAME}.yaml
+          curl -s "https://raw.githubusercontent.com/${FLUX_REPO}/master/releases/${FLUX_INSTANCE}/${MANIFEST_NAME}?token=${{ secrets.GH_AUTH_TOKEN }}" > ./$MANIFEST_NAME
+          if ! grep -qE "\s+image: \"gcr.io/uwit-mci-axdd/${RELEASE_NAME}:${{ steps.cicd.outputs.commit_hash }}\"$" ./$MANIFEST_NAME; then
+            echo "Override hash (${{ steps.cicd.outputs.commit_hash }}) mismatch"
+            OVERRIDE_CONFIG=/dev/null
+            echo "OVERRIDE_CONFIG=$OVERRIDE_CONFIG" >> $GITHUB_ENV
+          fi
+
       - name: Generate Override Values
         id: override
         uses: uw-it-aca/actions/time-values@feature/time-values
@@ -36,18 +58,11 @@ jobs:
         run: |
           echo "${{ steps.override.outputs.values }}" > $OVERRIDE_FILE
 
-      - name: Set up Context
-        if: ${{ steps.override.outputs.values != '' }}
-        id: cicd
-        uses: uw-it-aca/actions/cicd-context@v1.4
-        with:
-          release_name: ${{ env.RELEASE_NAME }}
-
       - name: Deploy with Overridden Values
         if: ${{ steps.override.outputs.values != '' }}
         shell: bash
         run: |
-          echo "Would override values file ${OVERRIDE_FILE}:"
+          echo "Override with file ${OVERRIDE_FILE}:"
           cat $OVERRIDE_FILE
 #        uses: uw-it-aca/actions/cicd-deploy@main
 #        with:
@@ -55,6 +70,6 @@ jobs:
 #          commit_hash: ${{ steps.cicd.outputs.commit_hash }}
 #          git_repo_branch: ${{ steps.cicd.outputs.git_repo_branch }}
 #          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
-#          app_instance: test
+#          app_instance: ${{ env.APP_INSTANCE }}
 #          helm_override_values_file: ${{ env.OVERRIDE_FILE }}
 
