@@ -253,11 +253,8 @@ def service_names(service_list=None):
         len(names) > 1) else names[0]
 
 
-def service_name_list(services=None):
-    if services is not None:
-        services = endorsement_services()
-
-    return [s.category_name for s in services]
+def service_name_list():
+    return [s.category_name for s in endorsement_services()]
 
 
 def get_endorsement_service(service_ref):
