@@ -1,14 +1,16 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.template import loader
+from django.template import loader, Template, Context
 from django.utils import timezone
 from endorsement.models import EndorsementRecord
-from endorsement.services import endorsement_services, get_endorsement_service
+from endorsement.services import (
+    endorsement_services, get_endorsement_service, service_names)
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.exceptions import EmailFailureException
 from endorsement.policy import endorsements_to_warn
+import re
 import logging
 
 
@@ -275,14 +277,40 @@ def notify_invalid_endorser(endorser, endorsements):
 
 
 def _create_expire_notice_message(notice_level, lifetime, endorsed):
-    service = get_endorsement_service(endorsed[0].category_code)
+    category_codes = list(set([e.category_code for e in endorsed]))
+    services = [get_endorsement_service(c) for c in category_codes]
     context = {
         'endorser': endorsed[0].endorser,
         'lifetime': lifetime,
-        'notice_time': service.endorsement_expiration_warning(notice_level),
+        'notice_time': services[0].endorsement_expiration_warning(
+            notice_level),
         'expiring': endorsed,
-        'expiring_count': len(endorsed)
+        'expiring_count': len(endorsed),
+        'impacts': []
     }
+
+    for impact in list(set([s.service_renewal_statement for s in services])):
+        m = re.match(
+            r'.*{{[\s]*(service_names((_([0-9a-z]+))+))[\s]*}}.*', impact)
+        if m:
+            names = []
+            for n in re.findall(r'_([^_]*)', m.group(2)):
+                impact_service = get_endorsement_service(n)
+                if impact_service.category_code in category_codes:
+                    names.append(impact_service.category_name)
+
+            impact_context = {
+                m.group(1): service_names(service_list=names),
+                'service_names_count': len(names)
+            }
+
+            template = Template(impact)
+            impact_statement = template.render(Context(impact_context))
+        else:
+            impact_statement = impact
+
+        context['impacts'].append(impact_statement)
+
     if notice_level < 4:
         subject = "{0}{1}".format(
             "Action Required: UW-IT services that you provisioned access to ",

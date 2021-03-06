@@ -37,6 +37,10 @@ class EndorsementService(EndorsementServiceBase):
         return [Subscription.SUBS_CODE_CANVAS_SPONSORED]
 
     @property
+    def service_renewal_statement(self):
+        return "Data accessible by UW Canvas accounts will not be deleted."
+
+    @property
     def service_link(self):
         return 'https://itconnect.uw.edu/learn/tools/canvas/'
 
