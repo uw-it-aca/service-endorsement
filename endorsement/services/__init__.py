@@ -61,6 +61,12 @@ class EndorsementServiceBase(ABC):
 
     @property
     @abstractmethod
+    def service_renewal_statement(self):
+        """Statement to include with renewal notification"""
+        pass
+
+    @property
+    @abstractmethod
     def service_link(self):
         """URL to end-user information about the endorsed service"""
         pass
@@ -241,14 +247,17 @@ def endorsement_services_context():
     } for service in endorsement_services()}
 
 
-def service_names():
-    names = service_name_list()
+def service_names(service_list=None):
+    names = service_list if service_list else service_name_list()
     return '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
         len(names) > 1) else names[0]
 
 
-def service_name_list():
-    return [s.category_name for s in endorsement_services()]
+def service_name_list(services=None):
+    if services is not None:
+        services = endorsement_services()
+
+    return [s.category_name for s in services]
 
 
 def get_endorsement_service(service_ref):
