@@ -5,7 +5,10 @@ Hello {{endorser.display_name}} ({{endorser.netid}}),
 You are receiving this message because you used the Provisioning Request Tool (PRT) to provision access to {{expiring_count|pluralize:"a ,"}}UW-IT service{{expiring_count|pluralize}} to another UW NetID (retiree, alumni, Sponsored, Shared, and/or Admin).
 </p>
 <p>
-Access to provisioned UW-IT services lasts for {{lifetime}} day{{lifetime|pluralize}} and must be renewed or revoked annually.  Access to provisioned UW-IT services for the following ({{expiring_count}}) UW NetID{{expiring_count|pluralize}} has expired and the associated UW-IT service account is in the process of being deleted.
+Access to provisioned UW-IT services lasts for {{lifetime}} day{{lifetime|pluralize}} and must be renewed or revoked annually.  Access to provisioned UW-IT services for the following ({{expiring_count}}) UW NetID{{expiring_count|pluralize}} has expired.
+{%for impact in impacts %}
+{{ impact }}
+{% endfor %}
 </p>
 <table style="width: 100%;">
 <thead>
@@ -19,12 +22,7 @@ Access to provisioned UW-IT services lasts for {{lifetime}} day{{lifetime|plural
 </tbody>
 </table>
 <p>
-To log in to the Provisioning Request Tool (PRT) and complete the annual review process for UW affiliate NetIDs (retirees, alums, Sponsored UW NetIDs, etc.),
-<a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/#annual_renewal" target="_blank">click here</a>
-</p>
-<p>
-To log in to the Provisioning Request Tool (PRT) and complete the annual review process for Shared or Admin UW NetIDs,
-<a href="https://itconnect.uw.edu/connect/email/resources/endorse-uw-netids/#annual_renewal" target="_blank">click here</a>
+<a href="https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/" target="_blank">Learn more about the annual review process and access the PRT</a> to complete the annual review process.
 </p>
 <p>
 If you have any questions, please contact <a href="mailto:help@uw.edu" target="_blank">help@uw.edu</a> or 206-221-5000.

@@ -285,7 +285,7 @@ def _create_expire_notice_message(notice_level, lifetime, endorsed):
         'notice_time': services[0].endorsement_expiration_warning(
             notice_level),
         'expiring': endorsed,
-        'expiring_count': len(endorsed),
+        'expiring_count': len(set(e.endorsee.netid for e in endorsed)),
         'impacts': []
     }
 
