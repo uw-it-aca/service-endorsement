@@ -40,7 +40,7 @@ class EndorsementService(EndorsementServiceBase):
 
     @property
     def service_renewal_statement(self):
-        return ("Additionally, data in {{ service_names_google_o365 }} "
+        return ("Data in {{ service_names_google_o365 }} "
                 "account{{service_names_count|pluralize}} may be deleted.")
 
     @property
