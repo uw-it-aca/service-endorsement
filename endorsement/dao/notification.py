@@ -1,15 +1,16 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.template import loader
+from django.template import loader, Template, Context
 from django.utils import timezone
 from endorsement.models import EndorsementRecord
+from endorsement.services import (
+    endorsement_services, get_endorsement_service, service_names)
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.exceptions import EmailFailureException
-from endorsement.policy import (
-    endorsements_to_warn, DEFAULT_ENDORSEMENT_LIFETIME, NOTICE_1_DAYS_PRIOR,
-    NOTICE_2_DAYS_PRIOR, NOTICE_3_DAYS_PRIOR, NOTICE_4_DAYS_PRIOR)
+from endorsement.policy import endorsements_to_warn
+import re
 import logging
 
 
@@ -17,39 +18,55 @@ logger = logging.getLogger(__name__)
 logging.captureWarnings(True)
 
 
+# This function is a monument to technical debt and intended
+# to blow up tests as soon as the first endorsemnnt service lifecycle
+# definition strays from current common set of values
+def confirm_common_lifecyle_values():
+    lifetime = None
+    warnings = None
+
+    for service in endorsement_services():
+        if lifetime is None:
+            lifetime = service.endorsement_lifetime
+        else:
+            if lifetime != service.endorsement_lifetime:
+                raise Exception(
+                    "Messaging does not support mixed service lifetimes")
+
+        if warnings is None:
+            warnings = [
+                service.endorsement_expiration_warning(1),
+                service.endorsement_expiration_warning(2),
+                service.endorsement_expiration_warning(3),
+                service.endorsement_expiration_warning(4),
+            ]
+        elif (warnings[0] != service.endorsement_expiration_warning(1) or
+                warnings[1] != service.endorsement_expiration_warning(2) or
+                warnings[2] != service.endorsement_expiration_warning(3) or
+                warnings[3] != service.endorsement_expiration_warning(4)):
+            raise Exception(
+                "Messaging does not support mismatched service warning spans")
+
+
 def _create_endorsee_message(endorser):
     sent_date = timezone.now()
     params = {
         "endorser_netid": endorser['netid'],
         "endorser_name": endorser['display_name'],
-        "endorsed_date": display_datetime(sent_date)
+        "endorsed_date": display_datetime(sent_date),
+        "services": endorser['services']
     }
 
-    services = ""
-    try:
-        params['o365_accept_url'] =\
-            endorser['services']['o365']['accept_url']
-        services += "UW Office 365"
-        params['o365_endorsed'] = True
-    except KeyError:
-        params['o365_endorsed'] = False
+    names = []
+    for k, v in endorser['services'].items():
+        names.append(v['name'])
+        for service in endorsement_services():
+            if k == service.service_name:
+                v['service_link'] = service.service_link
 
-    try:
-        params['google_accept_url'] =\
-            endorser['services']['google']['accept_url']
-
-        if len(services):
-            services += " and "
-
-        services += "UW G Suite"
-        params['google_endorsed'] = True
-    except KeyError:
-        params['google_endorsed'] = False
-
-    params['both_endorsed'] = (params['google_endorsed'] > 0 and
-                               params['o365_endorsed'] > 0)
-
-    subject = "Action Required: Your new access to {0}".format(services)
+    subject = "Action Required: Your new access to {0}".format(
+        '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
+            len(names) > 1) else names[0])
 
     text_template = "email/endorsee.txt"
     html_template = "email/endorsee.html"
@@ -63,11 +80,11 @@ def get_unendorsed_unnotified():
     endorsements = {}
     for er in EndorsementRecord.objects.get_unendorsed_unnotified():
         try:
-            email = get_endorsee_email_model(
-                er.endorsee, er.endorser).email
+            email = get_endorsee_email_model(er.endorsee, er.endorser).email
         except Exception as ex:
             logger.error("Notify get email failed: {0}, netid: {1}"
                          .format(ex, er.endorsee))
+            continue
 
         if email not in endorsements:
             endorsements[email] = {
@@ -81,20 +98,16 @@ def get_unendorsed_unnotified():
                 'services': {}
             }
 
-        s = endorsements[email]['endorsers'][er.endorser.netid]['services']
-        if er.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
-            s['o365'] = {
-                'id': er.id,
-                'accept_url': er.accept_url()
-            }
-
-        if er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
-            s['google'] = {
-                'id': er.id,
-                'accept_url': er.accept_url()
-            }
-
-        endorsements[email]['endorsers'][er.endorser.netid]['services'] = s
+        for service in endorsement_services():
+            if er.category_code == service.category_code:
+                endorsements[email]['endorsers'][
+                    er.endorser.netid]['services'][service.service_name] = {
+                        'code': service.category_code,
+                        'name': service.category_name,
+                        'id': er.id,
+                        'accept_url': er.accept_url()
+                    }
+                break
 
     return endorsements
 
@@ -121,23 +134,36 @@ def notify_endorsees():
 def _create_endorser_message(endorsed):
     sent_date = timezone.now()
     params = {
-        "o365_endorsed": endorsed.get('o365', None),
-        "google_endorsed": endorsed.get('google', None),
-        "o365_endorsed_count": len(endorsed.get('o365', [])),
-        "google_endorsed_count": len(endorsed.get('google', [])),
-        "endorsed_date": display_datetime(sent_date)
+        "endorsed_date": display_datetime(sent_date),
+        "endorsed": {}
     }
 
-    params["endorsed_count"] = params["o365_endorsed_count"]
-    params["endorsed_count"] += params["google_endorsed_count"]
-    params['both_endorsed'] = (params['google_endorsed'] is not None and
-                               params['o365_endorsed'] is not None)
+    unique = {}
+    for svc, endorsee_list in endorsed.items():
+        for e in endorsee_list:
+            service_name = e["name"]
+            netid = e["netid"]
+            unique[netid] = 1
+            if service_name in params["endorsed"]:
+                params["endorsed"][service_name]['netids'].append(netid)
+            else:
+                params["endorsed"][service_name] = {
+                    'svc': svc,
+                    'netids': [netid]
+                }
 
-    subject = "Shared NetID access to {0}{1}{2}".format(
-        'UW Office 365' if params['o365_endorsed'] else '',
-        ' and ' if (
-            params['o365_endorsed'] and params['google_endorsed']) else '',
-        'UW G Suite' if params['google_endorsed'] else '')
+    params["endorsees"] = list(unique.keys())
+
+    services = []
+    for s, v in params["endorsed"].items():
+        services.append(s)
+        for service in endorsement_services():
+            if v['svc'] == service.service_name:
+                v['service_link'] = service.service_link
+
+    subject = "Shared NetID access to {}".format(
+        '{} and {}'.format(', '.join(services[:-1]), services[-1]) if (
+            len(services) > 1) else services[0])
 
     text_template = "email/endorser.txt"
     html_template = "email/endorser.html"
@@ -148,8 +174,13 @@ def _create_endorser_message(endorsed):
 
 
 def get_endorsed_unnotified():
+    return _get_endorsed_unnotified(
+        EndorsementRecord.objects.get_endorsed_unnotified())
+
+
+def _get_endorsed_unnotified(endorsed_unnotified):
     endorsements = {}
-    for er in EndorsementRecord.objects.get_endorsed_unnotified():
+    for er in endorsed_unnotified:
         # rely on @u forwarding for valid address
         email = "{0}@uw.edu".format(er.endorser.netid)
         if email not in endorsements:
@@ -157,19 +188,19 @@ def get_endorsed_unnotified():
 
         data = {
             'netid': er.endorsee.netid,
+            'name': '',
             'id': er.id
         }
 
-        if er.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
-            if 'o365' in endorsements[email]:
-                endorsements[email]['o365'].append(data)
-            else:
-                endorsements[email]['o365'] = [data]
-        elif er.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
-            if 'google' in endorsements[email]:
-                endorsements[email]['google'].append(data)
-            else:
-                endorsements[email]['google'] = [data]
+        for service in endorsement_services():
+            if er.category_code == service.category_code:
+                data['name'] = service.category_name
+                if service.service_name in endorsements[email]:
+                    endorsements[email][service.service_name].append(data)
+                else:
+                    endorsements[email][service.service_name] = [data]
+
+                break
 
     return endorsements
 
@@ -183,7 +214,7 @@ def notify_endorsers():
         try:
             send_email(
                 sender, [email], subject, text_body, html_body, "Endorser")
-            for svc in ['o365', 'google']:
+            for svc in [s.service_name for s in endorsement_services()]:
                 if svc in endorsed:
                     for id in [x['id'] for x in endorsed[svc]]:
                         EndorsementRecord.objects.emailed(id)
@@ -193,31 +224,24 @@ def notify_endorsers():
 
 def _create_invalid_endorser_message(endorsements):
     params = {
-        "endorsed": {},
-        "endorser": endorsements[0].endorser.json_data(),
-        "o365_endorsed_count": 0,
-        "google_endorsed_count": 0,
-        "total_endorsed_count": 0
+        "endorsed": {}
     }
 
+    services = {}
     for e in endorsements:
-        data = {
-            'service': e.get_category_code_display(),
-            'reason': e.reason
-        }
+        params['endorser_netid'] = e.endorser.netid
+        for service in endorsement_services():
+            if e.category_code == service.category_code:
+                services[service.category_name] = 1
+                try:
+                    params['endorsed'][e.endorsee.netid].append(
+                        service.category_name)
+                except KeyError:
+                    params['endorsed'][e.endorsee.netid] = [
+                        service.category_name]
 
-        try:
-            params['endorsed'][e.endorsee.netid].append(data)
-        except KeyError:
-            params['endorsed'][e.endorsee.netid] = [data]
+    params['services'] = list(services.keys())
 
-        if e.category_code == EndorsementRecord.GOOGLE_SUITE_ENDORSEE:
-            params['google_endorsed_count'] += 1
-        elif e.category_code == EndorsementRecord.OFFICE_365_ENDORSEE:
-            params['o365_endorsed_count'] += 1
-
-    params["total_endorsed_count"] = (params["o365_endorsed_count"] +
-                                      params["google_endorsed_count"])
     subject = "{0}{1}".format(
         "Action Required: Services that you provisioned for other ",
         "UW NetIDs will be revoked soon")
@@ -253,13 +277,40 @@ def notify_invalid_endorser(endorser, endorsements):
 
 
 def _create_expire_notice_message(notice_level, lifetime, endorsed):
+    category_codes = list(set([e.category_code for e in endorsed]))
+    services = [get_endorsement_service(c) for c in category_codes]
     context = {
         'endorser': endorsed[0].endorser,
-        'notice_time': globals()['NOTICE_{}_DAYS_PRIOR'.format(notice_level)],
         'lifetime': lifetime,
+        'notice_time': services[0].endorsement_expiration_warning(
+            notice_level),
         'expiring': endorsed,
-        'expiring_count': len(endorsed)
+        'expiring_count': len(set(e.endorsee.netid for e in endorsed)),
+        'impacts': []
     }
+
+    for impact in list(set([s.service_renewal_statement for s in services])):
+        m = re.match(
+            r'.*{{[\s]*(service_names((_([0-9a-z]+))+))[\s]*}}.*', impact)
+        if m:
+            names = []
+            for n in re.findall(r'_([^_]*)', m.group(2)):
+                impact_service = get_endorsement_service(n)
+                if impact_service.category_code in category_codes:
+                    names.append(impact_service.category_name)
+
+            impact_context = {
+                m.group(1): service_names(service_list=names),
+                'service_names_count': len(names)
+            }
+
+            template = Template(impact)
+            impact_statement = template.render(Context(impact_context))
+        else:
+            impact_statement = impact
+
+        context['impacts'].append(impact_statement)
+
     if notice_level < 4:
         subject = "{0}{1}".format(
             "Action Required: UW-IT services that you provisioned access to ",
@@ -278,8 +329,12 @@ def _create_expire_notice_message(notice_level, lifetime, endorsed):
             loader.render_to_string(html_template, context))
 
 
-def warn_endorsers(notice_level, lifetime):
-    endorsements = endorsements_to_warn(notice_level, lifetime)
+def warn_endorsers(notice_level):
+    confirm_common_lifecyle_values()
+
+    endorsements = endorsements_to_warn(notice_level)
+
+    lifetime = endorsement_services()[0].endorsement_lifetime
 
     if len(endorsements):
         endorsers = {}
@@ -313,10 +368,11 @@ def warn_endorsers(notice_level, lifetime):
 
 
 def _create_warn_shared_owner_message(owner_netid, endorsements):
+    service = get_endorsement_service(endorsements[0].category_code)
     context = {
         'endorser': owner_netid,
-        'lifetime': DEFAULT_ENDORSEMENT_LIFETIME,
-        'notice_time': NOTICE_1_DAYS_PRIOR,
+        'lifetime': service.endorsement_lifetime,
+        'notice_time': service.endorsement_expiration_warning(1),
         'expiring': endorsements,
         'expiring_count': len(endorsements)
     }
@@ -335,6 +391,8 @@ def _create_warn_shared_owner_message(owner_netid, endorsements):
 def warn_new_shared_netid_owner(new_owner, endorsements):
     if not (endorsements and len(endorsements) > 0):
         return
+
+    confirm_common_lifecyle_values()
 
     sent_date = timezone.now()
     email = "{0}@uw.edu".format(new_owner.netid)

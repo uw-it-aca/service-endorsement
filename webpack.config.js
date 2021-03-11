@@ -15,6 +15,7 @@ module.exports = {
         handlebars: ['./endorsement/static/endorsement/js/handlebars-helpers.js'],
         accept: ['./endorsement/static/endorsement/js/accept.js'],
         endorsee: ['./endorsement/static/endorsement/js/endorsee.js'],
+        notifications: ['./endorsement/static/endorsement/js/notifications.js'],
         statistics: ['./endorsement/static/endorsement/js/statistics.js']
     },
 

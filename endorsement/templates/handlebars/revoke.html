@@ -25,8 +25,9 @@
     <div class="row">
       You are about to revoke the provision for {{#gt unique.length 1}}{{unique.length}} {{/gt}}UW NetID{{plural unique.length '' 's'}}{{#gt unique.length 1}}{{else}} <ul class="comma-list">{{#each unique}}<li class="significant">{{this}}</li>{{/each}}</ul>{{/gt}} to
       <ul class="comma-list">
-        {{#if revoke_google.length}}<li class="significant">UW G Suite</li>{{/if}}
-        {{#if revoke_o365.length}}<li class="significant">UW Office 365</li>{{/if}}
+        {{#each services}}
+        {{#if this.count}}<li class="significant">{{this.name}}</li>{{/if}}
+        {{/each}}
       </ul>.
     </div>
     <div class="row">

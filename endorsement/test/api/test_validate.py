@@ -3,18 +3,20 @@ from django.urls import reverse
 from endorsement.test.api import EndorsementApiTest
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.exceptions import NoEndorsementException
-from endorsement.dao.endorse import (
-    store_google_endorsement, clear_office365_endorsement)
+from endorsement.services import get_endorsement_service
 
 
 class TestEndorsementValidateAPI(EndorsementApiTest):
     def test_validate(self):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
-        store_google_endorsement(endorser, endorsee, None, 'because')
+
+        get_endorsement_service('google').store_endorsement(
+            endorser, endorsee, None, 'because')
 
         try:
-            clear_office365_endorsement(endorser, endorsee)
+            get_endorsement_service('o365').clear_endorsement(
+                endorser, endorsee)
         except NoEndorsementException as ex:
             pass
 

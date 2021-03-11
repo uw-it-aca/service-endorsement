@@ -1,46 +1,22 @@
 <p>
-  You have requested access to
-{% if both_endorsed and o365_endorsed_count == 1 and google_endorsed_count == 1 and o365_endorsed.0.netid == google_endorsed.0.netid%}
-UW Office 365 and UW G Suite (Google) for the Shared UW NetID {{o365_endorsed.0.netid}}.
-{% else %}
-{% if o365_endorsed %}
-  UW Office 365 for 
-  {% if o365_endorsed_count > 10 %}
-  {{ o365_endorsed_count }} of your Shared UW Netids{% if not both_endorsed %}.{% endif %}
-  {% else %}
-  the Shared UW NetID{{ o365_endorsed_count|pluralize}}
-  {% for e in o365_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last and not forloop.first %} and {% endif %}'{{e.netid}}'{% endfor %}{% if not both_endorsed %}.{% endif %}
-  {% endif %}
-{% endif %}
-
-{% if both_endorsed %} and {% endif %}
-
-{% if google_endorsed %}
-  UW G Suite (Google) for
-  {% if google_endorsed_count > 10 %}
-  {{ google_endorsed_count }} of your shared UW Netids.
-  {% else %}
-  the shared UW NetID{{ google_endorsed_count|pluralize}}
-  {% for e in google_endorsed %}{% if not forloop.first and not forloop.last %}, {% endif %}{% if forloop.last and not forloop.first %} and {% endif %}'{{e.netid}}'{% endfor %}.
-  {% endif %}
-{% endif %}
-{% endif %}
+  You have requested access to {% if endorsees|length == 1 %}{% for s in endorsed.keys %}{% if not forloop.first %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ s }}{% endfor %} for the Shared UW NetID '{{ endorsees.0 }}'.
+{% else %}{% for s, v in endorsed.items %}{{ svc }} for {% if v.netids|length > 6 %}{{ v.netids|length }} of your Shared UW NetID{{s.netids|length}}{% else %}the Shared UW NetID{{ v.netids|length|pluralize}}
+    {% for netid in v.netids %}{% if not forloop.first %}{% if forloop.last%} and {% else %}, {% endif %}{% endif %}'{{ netid }}'{% endfor %}
+{% endif %}{% if not forloop.last %}
+and {% endif %}
+{% endfor %}.{% endif %}
 </p>
 
 <p>
-We are in the process of provisioning access for {{ endorsed_count|pluralize:"this,these" }} account{{ endorsed_count|pluralize }}.
+We are in the process of provisioning access for {{ endorsees|length|pluralize:"this,these" }} account{{ endorsees|length|pluralize }}.
 </p>
 
-{% if o365_endorsed %}
+{% for s, v in endorsed.items %}
 <p>
-  <a href="https://itconnect.uw.edu/connect/productivity-platforms/uw-office-365/" target="_blank">Get started using UW Office 365.</a>
+  <a href="{{v.service_link}}" target="_blank">Get started using {{ s }}.</a>
 </p>
-{% endif %}
-{% if google_endorsed %}
-<p>
-  <a href="https://itconnect.uw.edu/connect/email/google-apps/getting-started/#activate" target="_blank">Get started using UW G Suite.</a>
-</p>
-{% endif %}
+{% endfor %}
+
 <p>
   <span style="font-weight: 700;">Shared UW NetID use of these services is bound by UW-IT&apos;s Appropriate Use policy, as well as being subject to state and federal law, and to other UW policies and procedures.</span> For more information, visit UW-IT&apos;s Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">http://itconnect.uw.edu/work/appropriate-use/</a>.
 </p>

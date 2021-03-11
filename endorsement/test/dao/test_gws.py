@@ -10,3 +10,6 @@ class TestGwsDao(TestDao):
 
         self.assertFalse(is_valid_endorser("notareal_uwnetid"))
         self.assertFalse(is_valid_endorser("nomockid"))
+
+        # test exception
+        self.assertFalse(is_valid_endorser(None))

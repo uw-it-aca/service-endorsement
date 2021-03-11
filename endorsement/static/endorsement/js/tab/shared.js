@@ -9,6 +9,7 @@ import { Reasons } from "../reasons.js";
 var ManageSharedNetids = (function () {
     var content_id = 'shared',
         location_hash = '#' + content_id,
+        table_css,
 
     _loadContent = function () {
         var content_template = Handlebars.compile($("#shared-netids").html());
@@ -116,7 +117,8 @@ var ManageSharedNetids = (function () {
 
             $.each(context.shared.shared, function () {
                 var endorsements = this.endorsements,
-                    svc;
+                    svc,
+                    endorsement_count = 0;
 
                 if (endorsements) {
                     for (svc in endorsements) {
@@ -124,6 +126,7 @@ var ManageSharedNetids = (function () {
                             if (endorsements[svc]) {
                                 Endorse.updateEndorsementForRowContext(endorsements[svc]);
                             }
+                            endorsement_count += 1;
                         }
                     }
                 }
@@ -287,34 +290,34 @@ var ManageSharedNetids = (function () {
             $modal = $('#shared_netid_modal'),
             context = {
                 unique: [],
-                endorse_o365: [],
-                endorse_google: [],
-                endorse_netid_count: 0,
-                endorse_o365_netid_count: 0,
-                endorse_google_netid_count: 0
+                services: {}
             };
 
-        $.each(endorsements, function (netid, services) {
-            if (context.unique.indexOf(netid) < 0) {
-                context.unique.push(netid);
-            }
+        $.each(window.endorsed_services, function(k, v) {
+            context.services[k] = {
+                'name': v.category_name,
+                'service_link': v.service_link,
+                'endorsed': []
+            };
 
-            if (services.endorsements.hasOwnProperty('o365')) {
-                context.endorse_o365.push({
-                    netid: netid
-                });
-            }
+            $.each(endorsements, function (netid, endorsements) {
+                if (context.unique.indexOf(netid) < 0) {
+                    context.unique.push(netid);
+                }
 
-            if (services.endorsements.hasOwnProperty('google')) {
-                context.endorse_google.push({
-                    netid: netid
-                });
-            }
+                if (endorsements.hasOwnProperty(k)) {
+                    context.services[k].endorsed.push({
+                        netid: netid
+                    });
+                }
+            });
         });
 
-        context.endorse_o365_netid_count = context.endorse_o365.length;
-        context.endorse_google_netid_count = context.endorse_google.length;
-        context.endorse_netid_count = context.endorse_google_netid_count + context.endorse_o365_netid_count;
+        context.netid_count = context.unique.length;
+
+        $.each(context.services, function(k) {
+            context.services[k].count = context.services[k].endorsed.length;
+        });
 
         $('.modal-content', $modal).html(template(context));
         $modal.modal('show');

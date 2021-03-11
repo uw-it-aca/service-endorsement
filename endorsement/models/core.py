@@ -187,10 +187,12 @@ class EndorsementRecord(
         ExportModelOperationsMixin('endorsement_record'), models.Model):
     GOOGLE_SUITE_ENDORSEE = Category.GOOGLE_SUITE_ENDORSEE
     OFFICE_365_ENDORSEE = Category.OFFICE_365_ENDORSEE
+    CANVAS_PROVISIONEE = Category.CANVAS_PROVISIONEE
 
     CATEGORY_CODE_CHOICES = (
         (OFFICE_365_ENDORSEE, "UW Office 365"),
         (GOOGLE_SUITE_ENDORSEE, "UW G Suite"),
+        (CANVAS_PROVISIONEE, "UW Canvas LMS"),
     )
 
     endorser = models.ForeignKey(Endorser,
@@ -275,7 +277,7 @@ class EndorsementRecord(
     def accept_url(self):
         return None if (self.datetime_endorsed) else "{0}{1}".format(
             getattr(settings, "APP_SERVER_BASE",
-                    "http://provision-test.uw.edu"),
+                    "http://test.provision.uw.edu"),
             reverse('accept_view',
                     kwargs={'accept_id': self.accept_id}))
 

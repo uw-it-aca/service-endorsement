@@ -1,0 +1,94 @@
+{% extends wrapper_template %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<style>
+.current_message { background-color: #fbfbe3; }
+h4 {font-weight: 900;}
+.info { padding: 6px 16px; background-color: #f0f0f0; font-size: larger; }
+.info .snippet { display: none; }
+span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; font-weight: bold; }
+.notification { padding: 10px; border: 1px solid #ccc; background-color: #f5f5f5; }
+.notification.notification-subject { font-family: courier; }
+.notification.notification-html p { margin: 12px 0; }
+.notification.notification-text pre { margin: 0; border: 0; padding: 0; }
+</style>
+<div class="container" style="max-width: 100%;">
+
+  <h2>Lifecycle Notifications</h2>
+  <p>
+    Choose a notification type and select services to see the email contents that will be sent.  Notification email is sent as multipart messages containing a text and html representation.
+  </p>
+
+  <form>
+    {% csrf_token %}
+    <div class="form-group">
+      <h4>Notification Message Type</h4>
+      <div class="form-group">
+        <select class="form-control" id="notification">
+          <option value="endorsee">Provisionee Welcome</option>
+          <!--        <option value="endorser">Provisioner Shared NetId</option> -->
+          <option value="new_shared">New Shared Netid Owner</option>
+          <option value="warning_1" selected="selected">Initial Renewal Notice</option>
+          <option value="warning_2">Penultimate Renewal Notice</option>
+          <option value="warning_3">Final Renewal Notice</option>
+          <option value="warning_4">Provision Expiration</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group info" id="info_endorsee">
+      The message sent to a new provisionee containing the link to accept service terms.
+    </div>
+    <div class="form-group info" id="info_endorser">
+      Sent to the owner of a newly provisioned shared netid.
+    </div>
+    <div class="form-group info" id="info_new_shared">
+      Sent to the new owner of a shared netid after it changes ownership.
+    </div>
+    <div class="form-group info" id="info_warning_1">
+      First renewal notice sent to provisioner {{ warning_1 }} days prior to service expiration.
+    </div>
+    <div class="form-group info" id="info_warning_2">
+      Second renewal notice sent to provisioner {{ warning_2 }} days prior to service expiration.
+    </div>
+    <div class="form-group info" id="info_warning_3">
+      Third and final renewal notice sent to provisioner {{ warning_3 }} days before expiration.
+    </div>
+    <div class="form-group info" id="info_warning_4">
+      Notice that provisioned services have expired sent to the provisioner on expiration day.
+    </div>
+    
+    <div class="form-group">
+      <h4>Provisioned Services</h4>
+      <div class="row">
+        {% for i in "123" %}
+        <div class="col-md-4 endorsee" id="endorsee{{ i }}">
+          <span class="endorsee">Endorsee {{ i }}</span>
+          {% for k, v in services.items %}
+          <div>
+            <label><input class="styled service" type="checkbox" value="{{ k }}"> {{ v.name }}</label>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!--    <div class="form-group button">
+            <button type="button" name="GenerateNotification" id="generate_notification" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Generating">Show Notification</button>
+    </div> -->
+  </form>
+
+  <div id="notification_result">
+  </div>
+</div>
+
+{% include "handlebars/admin/notifications.html" %}
+{% endblock %}
+
+{% block extra_js%}
+{% render_bundle 'notifications' 'js' %}
+
+{% endblock %}
+

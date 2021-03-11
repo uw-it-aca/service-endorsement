@@ -38,6 +38,7 @@
       window.user = {
         "netid": "{{ user.netid }}"
       };
+      window.endorsed_services = {{ services | default:'{}' | safe }};
     </script>
     <div class="page-wrap"> <!-- another wrap to make a sticky footer -->
         <div id="top_banner" class='no-padding'> <!-- username and logout goes here, handlebars/page-top.html -->

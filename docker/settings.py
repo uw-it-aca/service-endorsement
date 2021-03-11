@@ -1,5 +1,8 @@
 from .base_settings import *
 
+ENDORSEMENT_SERVICES = [s.strip() for s in os.getenv(
+    'ENDORSEMENT_SERVICES', '*').split(',')]
+
 ALLOWED_HOSTS = ['*']
 
 CACHES = {
@@ -29,8 +32,7 @@ REST_FRAMEWORK = {
 }
 
 if not os.getenv("ENV") == "localdev":
-    INSTALLED_APPS += ['rc_django',]
-    RESTCLIENTS_DAO_CACHE_CLASS = 'endorsement.cache.ProvisionCache'
+    RESTCLIENTS_DAO_CACHE_CLASS = 'endorsement.cache.RestClientsCache'
     if os.getenv("ENV") == "prod":
         APP_SERVER_BASE = 'https://provision.uw.edu'
 
@@ -64,6 +66,9 @@ STATICFILES_FINDERS = (
 
 if os.getenv("ENV") == "localdev":
     DEBUG = True
+else:
+    RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
+    RESTCLIENTS_PRT_DAO_CLASS = 'Live'
 
 PROVISION_ADMIN_GROUP = 'u_acadev_provision_support'
 
@@ -74,9 +79,6 @@ RESTCLIENTS_ADMIN_GROUP='u_acadev_provision_support'
 AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.uw_group_service.UWGroupService'
 
 RESTCLIENTS_DEFAULT_TIMEOUT = 3
-
-RESTCLIENTS_PRT_DAO_CLASS = 'Live'
-RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
 
 SUPPORTTOOLS_PARENT_APP = "PRT"
 SUPPORTTOOLS_PARENT_APP_URL = "/"

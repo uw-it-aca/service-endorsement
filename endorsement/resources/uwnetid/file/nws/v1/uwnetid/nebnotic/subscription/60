@@ -1,0 +1,27 @@
+{
+    "uwNetID": "nebnotic",
+    "subscriptionList": [
+        {
+            "actions": [
+                "Show"
+            ],
+            "dataField": "KPW",
+            "permits": [
+                {
+                    "categoryCode": 46,
+                    "categoryName": "System Administrator",
+                    "mode": "implicit",
+                    "statusCode": 1,
+                    "statusName": "current",
+                    "type": "permit"
+                }
+            ],
+            "permitted": true,
+            "statusCode": 20,
+            "statusName": "Active",
+            "subscriptionCode": 60,
+            "subscriptionName": "A Kerberos Principal"
+        }
+    ],
+    "timeStamp": "Tue, 07 Jun 2016 14:47:07 -0700"
+}

@@ -18,7 +18,7 @@
                  {{/if}}
                {{/if}}
              {{/if}}
-           {{/if}}{{#if new_netid}} new_netid{{/if}}" data-netid="{{ netid }}"
+           {{/if}}{{#if new_netid}} new_netid{{/if}} endorsement_row_{{#equals endorsement_index 0}}first{{else}}following{{/equals}} endorsee_row_{{#even endorsee_index}}even{{else}}odd{{/even}}" data-netid="{{ netid }}"
     data-netid-name="{{ name }}"
     data-netid-initial-email="{{ email }}"
     data-service="{{ svc }}"
@@ -81,7 +81,11 @@
         <br />The provisionee will be receiving email soon instructing them to confirm the terms and conditions of use.
         {{/if}}
       {{else}}
+        {{#if endorsement.active }}
+        <span class="significant">Has Access</span>
+        {{else}}
         <span class="significant">Not Provisioned</span>
+        {{/if}}
       {{/if}}
       {{/if}}
   {{/if}}

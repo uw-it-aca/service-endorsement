@@ -13,7 +13,7 @@ ingress:
   hosts:
     prt-prod:
       host: provision.uw.edu
-      paths: 
+      paths:
         - "/"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
@@ -48,6 +48,9 @@ metrics:
   enabled: true
   serviceMonitor:
     enabled: true
+memcached:
+  enabled: true
+  replicaCount: 1
 cronjob:
   enabled: true
   jobs:
@@ -95,8 +98,6 @@ certs:
 environmentVariables:
   - name: ENV
     value: prod
-  - name: WEBSERVER
-    value: nginx
   - name: GWS_ENV
     value: PROD
   - name: PWS_ENV

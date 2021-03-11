@@ -4,83 +4,56 @@ name: Build, Test and Deploy
 env:
   RELEASE_NAME: prt
   DJANGO_APP: endorsement
-  GCR_TAG_BASE: gcr.io/uwit-mci-axdd
 
 on:
   push:
-    branches:
-      - master
-      - develop
-      - feature/github-actions
+    branches: [master, develop]
   pull_request:
-    branches:
-      - master
-      - develop
-      - feature/github-actions
+    branches: [master, develop]
     types: [opened, reopened, synchronize]
 
 jobs:
-  environment:
-    runs-on: ubuntu-18.04
-
-    steps:
-      - name: Global Environment
-        id: global-env
-        run: |
-          export FULL_COMMIT_HASH="${{ github.sha }}"
-          export COMMIT_HASH="${FULL_COMMIT_HASH:0:7}"
-          echo "::set-output name=commit_hash::${COMMIT_HASH}"
-    outputs:
-      commit_hash: ${{ steps.global-env.outputs.commit_hash }}
-
   build:
-    needs: environment
-
     runs-on: ubuntu-18.04
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Setup Environment
-        run: |
-          export COMMIT_HASH="${{ needs.environment.outputs.commit_hash }}"
-          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
+      - name: Set up Context
+        id: cicd
+        uses: uw-it-aca/actions/cicd-context@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
 
-      - name: Prep Image Cache
-        run: >-
-          echo "${{ secrets.GITHUB_TOKEN }}" |
-          docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin &&
-          docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true &&
-          docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-      - name: Build Intermediate Image
-        run: >-
-          docker build --target wpack -t wpack
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
-
-      - name: Cache Intermediate Image
-        run: >-
-          docker tag wpack docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache &&
-          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache || true
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-$(echo ${{ hashFiles('Dockerfile') }} | head -c 16)
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
       - name: Build App Image
-        run: >-
-          docker build --target app-container -t "$IMAGE_TAG"
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
-
-      - name: Cache App Image
-        run: >-
-          docker tag "$IMAGE_TAG" docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache &&
-          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache || true
+        uses: docker/build-push-action@v2
+        with:
+          target: app-container
+          tags: ${{ steps.cicd.outputs.image_tag }}
+          push: false
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build Test Image
-        run: >-
-          docker build --target app-test-container -t app-test-container
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache
-          --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/webpack-cache .
+        uses: docker/build-push-action@v2
+        with:
+          target: app-test-container
+          tags: app-test-container
+          push: false
+          load: true
 
       - name: Run Tests in Image
         id: tests
@@ -109,51 +82,35 @@ jobs:
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
-        env:
-          GCR_TAG: ${{ env.GCR_TAG_BASE }}/${{ env.IMAGE_TAG }}
-        run: >-
-          echo "${{ secrets.GCP_JSON_KEY }}" | base64 -d |
-          docker login --username=_json_key --password-stdin https://gcr.io &&
-          docker tag "$IMAGE_TAG" "$GCR_TAG" &&
-          docker push "$GCR_TAG"
+        uses: uw-it-aca/actions/gcr-push@main
+        with:
+          image_tag: ${{ steps.cicd.outputs.image_tag }}
+          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
   deploy:
     if: github.event_name == 'push'
 
-    needs: [environment, build]
+    needs: build
 
     runs-on: ubuntu-18.04
 
-    env:
-      GH_AUTH_TOKEN: ${{ secrets.GH_AUTH_TOKEN }}
-      GIT_REPO_SLUG: ${{ github.repository }}
-      BUILD_NUMBER: ${{ github.run_id }}
-      BUILD_WEB_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-      DEPLOY_APP_BASE: https://raw.githubusercontent.com/uw-it-aca/gcp-app-deploy
-      DEPLOY_APP_BRANCH: master
-
     steps:
-      - name: Setup Environment
-        run: |
-          export COMMIT_HASH="${{ needs.environment.outputs.commit_hash }}"
-          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ env.RELEASE_NAME }}:$COMMIT_HASH" >> $GITHUB_ENV
-          echo "GIT_REPO_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Deploy Production
-        if: env.GIT_REPO_BRANCH == 'main' || env.GIT_REPO_BRANCH == 'master'
-        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/deploy.sh | bash
+      - name: Set up Context
+        id: cicd
+        uses: uw-it-aca/actions/cicd-context@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
 
-      - name: Deploy Test Branch
-        if: env.GIT_REPO_BRANCH == 'develop'
-        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/deploy.sh | bash
-
-      - name: Deploy Special Evaluation Branch
-        if: env.GIT_REPO_BRANCH == 'feature/github-actions'
-        env:
-          APP_INSTANCE: eval
-          DRY_RUN: true
-        run: curl -Ls ${DEPLOY_APP_BASE}/${DEPLOY_APP_BRANCH}/deploy.sh | bash
+      - name: Deployment Pipeline
+        if: >-
+          contains(fromJSON('["main", "master", "develop", "qa"]'),
+            steps.cicd.outputs.git_repo_branch)
+        uses: uw-it-aca/actions/cicd-deploy@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+          commit_hash: ${{ steps.cicd.outputs.commit_hash }}
+          git_repo_branch: ${{ steps.cicd.outputs.git_repo_branch }}
+          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}

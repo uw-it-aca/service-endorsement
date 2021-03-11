@@ -44,11 +44,15 @@ var Endorse = (function () {
     _endorseModalContext = function ($rows) {
         var context = {
             unique: [],
-            endorse_o365: [],
-            endorse_google: [],
-            endorse_o365_netid_count: 0,
-            endorse_google_netid_count: 0
+            services: {}
         };
+
+        $.each(window.endorsed_services, function(k, v) {
+            context.services[k] = {
+                'name': v.category_name,
+                'endorsed': []
+            };
+        });
 
         $rows.each(function (i, row) {
             var $row = $(row),
@@ -62,23 +66,18 @@ var Endorse = (function () {
                 context.unique.push(netid);
             }
 
-            if (service === 'o365') {
-                context.endorse_o365.push({
-                    netid: netid,
-                    email: email
-                });
-            }
-
-            if (service === 'google') {
-                context.endorse_google.push({
-                    netid: netid,
-                    email: email
-                });
-            }
+            context.services[service].endorsed.push({
+                netid: netid,
+                email: email
+            });
         });
 
-        context.endorse_o365_netid_count = context.endorse_o365.length;
-        context.endorse_google_netid_count = context.endorse_google.length;
+        context.netid_count = context.unique.length;
+
+        $.each(context.services, function(k) {
+            context.services[k].count = context.services[k].endorsed.length;
+        });
+
         return context;
     },
 
@@ -209,9 +208,12 @@ var Endorse = (function () {
 
         updateEndorsementRows = function (endorsements) {
             var row_source = $('#endorsee-row').html(),
-                row_template = Handlebars.compile(row_source);
+                row_template = Handlebars.compile(row_source),
+                endorsee_index = 0;
 
             $.each(endorsements, function (netid, data) {
+                var endorsement_index = 0;
+
                 if (data.error) {
                     Notify.error('Error provisioning netid "' + netid + '"');
                     $('button.endorse_service', $('tr[data-netid="' + netid + '"]')).button('reset');
@@ -220,12 +222,17 @@ var Endorse = (function () {
 
                 $.each(data.endorsements, function (service, endorsement) {
                     var $row = $('tr[data-netid="' + netid + '"][data-service="' + service + '"]'),
+                        is_first,
+                        is_even,
                         type,
                         context;
 
                     if ($row.length === 0) {
                         return true;
                     }
+
+                    is_first = $row.hasClass('endorsement_row_first');
+                    is_even = $row.hasClass('endorsee_row_even');
 
                     updateEndorsementForRowContext(endorsement);
 
@@ -234,7 +241,9 @@ var Endorse = (function () {
                         name: data.name ? data.name : $row.attr('data-netid-name'),
                         email: data.email ? data.email : $row.attr('data-netid-initial-email'),
                         service: service,
-                        endorsement: endorsement
+                        endorsement: endorsement,
+                        endorsee_index: endorsee_index,
+                        endorsement_index: endorsement_index
                     };
 
                     type = $row.attr('data-netid-type');
@@ -243,7 +252,19 @@ var Endorse = (function () {
                     }
 
                     $row.replaceWith(row_template(context));
+
+                    // restore relative placement
+                    $('tr[data-netid="' + netid + '"][data-service="' + service + '"]')
+                        .removeClass('endorsee_row_even endorsee_row_odd' + 
+                                     'endorsement_row_first endorsement_row_first')
+                        .addClass('endorsement_row_' + (is_first ? 'first' : 'following'))
+                        .addClass('endorsee_row_' + (is_even ? 'even' : 'odd'));
+
+                    endorsement_index += 1;
                 });
+
+                endorsee_index += 1;
+                endorsement_index = 0;
             });
 
             updateExpireWarning();

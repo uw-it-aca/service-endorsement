@@ -10,6 +10,7 @@ import { Notify } from "../notify.js";
 var ManageProvisionedServices = (function () {
     var content_id = 'provisioned',
         location_hash = '#' + content_id,
+        table_css = null,
 
     _getEndorsedUWNetIDs = function() {
         var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
@@ -45,13 +46,16 @@ var ManageProvisionedServices = (function () {
                 has_endorsed: (endorsed && Object.keys(endorsed.endorsed).length > 0),
                 endorsed: endorsed
             },
-            $panel = $(location_hash);
+            $panel = $(location_hash),
+            endorsement_count;
 
         // figure out renewal dates and expirations
         $.each(endorsed ? endorsed.endorsed : [], function (netid, data) {
             $.each(data.endorsements, function (service, endorsement) {
                 Endorse.updateEndorsementForRowContext(endorsement);
             });
+
+            endorsement_count = Object.keys(data.endorsements).length;
         });
 
         $panel.html(template(context));
@@ -240,12 +244,13 @@ var ManageProvisionedServices = (function () {
             $no_endorsements.addClass('visually-hidden');
         }
 
-        $.each(validated.validated, function () {
+        $.each(validated.validated, function (endorsee_index) {
             var netid = this.netid,
                 name = this.name,
                 email = this.email,
                 present = ($('.endorsed-netids-table tr[data-netid="' + netid + '"]', $panel).length > 0),
-                $row;
+                $row,
+                endorsement_count;
 
             if (present) {
                 context.netids_present[netid] = this;
@@ -262,13 +267,16 @@ var ManageProvisionedServices = (function () {
                     }
                 });
 
+                endorsement_count = 0;
                 $.each(this.endorsements, function (svc, endorsement) {
                     var row_html = row_template({
                         netid: netid,
                         name: name,
                         email: email,
                         service: svc,
-                        endorsement: endorsement
+                        endorsement: endorsement,
+                        endorsee_index: endorsee_index,
+                        endorsement_index: endorsement_count
                     });
 
                     Endorse.updateEndorsementForRowContext(endorsement);
@@ -278,6 +286,8 @@ var ManageProvisionedServices = (function () {
                     } else {
                         $('.endorsed-netids-table tbody').append(row_html);
                     }
+
+                    endorsement_count += 1;
                 });
             } else {
                 context.netid_errors[this.netid] = this;
@@ -289,6 +299,15 @@ var ManageProvisionedServices = (function () {
             .html(template(context))
             .removeClass('visually-hidden');
         $('#uwnetids-input', $panel).addClass('visually-hidden');
+
+        // restripe table
+        $('.endorsement_row_first', $table).each(function(index) {
+            var netid = $(this).attr('data-netid');
+
+            $('[data-netid='+ netid +']', $table)
+                .removeClass('endorsee_row_even endorsee_row_odd')
+                .addClass('endorsee_row_' + ((index % 2 === 0) ? 'even' : 'odd'));
+        });
     },
 
     _validateUWNetids = function(netids) {

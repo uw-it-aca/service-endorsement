@@ -4,86 +4,69 @@ from endorsement.test.api import EndorsementApiTest
 
 
 class TestEndorsementEndorseAPI(EndorsementApiTest):
-    def test_endorse_google(self):
+    def test_invalid_endorser(self):
+        self.set_user('javerage')
+        url = reverse('endorse_api')
+
+        endorse_data = {
+            "endorsees": {
+                "endorsee2": {
+                    "name": "JERRY ENDORSEE2",
+                    "email": "endorsee2@uw.edu",
+                    "service": {
+                        "state": True,
+                        "reason": "testing"
+                    }
+                }
+            }
+        }
+
+        response = self.client.post(
+            url, json.dumps(endorse_data), content_type='application/json')
+        self.assertEquals(response.status_code, 401)
+
+    def test_invalid_endorsee(self):
         self.set_user('jstaff')
         url = reverse('endorse_api')
 
-        data = json.dumps({
+        endorse_data = {
             "endorsees": {
-                "endorsee7": {
-                    "name": "JERRY ENDORSEE7",
-                    "email": "endorsee7@uw.edu",
-                    "google": {
+                "endorsee99": {
+                    "name": "Unknown Endorsee99",
+                    "email": "uendorsee99@uw.edu",
+                    "service": {
                         "state": True,
-                        "reason": "Student mentoring"
-                    },
-                    "o365": {
-                        "state": False
+                        "reason": "testing"
                     }
                 }
             }
-        })
+        }
 
-        response = self.client.post(url, data, content_type='application/json')
+        response = self.client.post(
+            url, json.dumps(endorse_data), content_type='application/json')
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEqual(data['endorser']['netid'], 'jstaff')
-        self.assertTrue('endorsee7' in data['endorsed'])
-        self.assertTrue('google' in data['endorsed']['endorsee7'][
-            'endorsements'])
-        self.assertEqual(
-            data['endorsed']['endorsee7'][
-                'endorsements']['google']['category_code'], 234)
-        self.assertEqual(
-            data['endorsed']['endorsee7'][
-                'endorsements']['google']['endorsee']['netid'], 'endorsee7')
-        self.assertEqual(
-            data['endorsed']['endorsee7'][
-                'endorsements']['google']['endorser']['netid'], 'jstaff')
-        self.assertTrue('o365' in data['endorsed']['endorsee7'][
-            'endorsements'])
-        self.assertFalse(data['endorsed']['endorsee7'][
-            'endorsements']['o365']['endorsed'])
+        self.assertTrue('error' in data['endorsed']['endorsee99'])
 
-    def test_endorse_o365(self):
-        self.set_user('jfaculty')
+    def test_invalid_service(self):
+        self.set_user('jstaff')
         url = reverse('endorse_api')
 
-        data = json.dumps({
-            "endorsees":
-            {
-                "endorsee7": {
-                    "name": "JERRY ENDORSEE7",
-                    "email": "endorsee7@uw.edu",
-                    "o365": {
+        endorse_data = {
+            "endorsees": {
+                "endorsee2": {
+                    "name": "JERRY ENDORSEE2",
+                    "email": "endorsee2@uw.edu",
+                    "mumble": {
                         "state": True,
-                        "reason": "Student mentoring"
-                    },
-                    "google": {
-                        "state": False
+                        "reason": "testing"
                     }
                 }
             }
-        })
+        }
 
-        response = self.client.post(url, data, content_type='application/json')
+        response = self.client.post(
+            url, json.dumps(endorse_data), content_type='application/json')
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEqual(data['endorser']['netid'], 'jfaculty')
-        self.assertTrue('endorsee7' in data['endorsed'])
-        self.assertTrue('o365' in data['endorsed']['endorsee7'][
-            'endorsements'])
-        self.assertEqual(
-            data['endorsed']['endorsee7'][
-                'endorsements']['o365']['category_code'], 235)
-        self.assertEqual(
-            data['endorsed']['endorsee7'][
-                'endorsements']['o365']['endorsee']['netid'], 'endorsee7')
-        self.assertEqual(
-            data['endorsed']['endorsee7'][
-                'endorsements']['o365']['endorser']['netid'],
-            'jfaculty')
-        self.assertTrue('google' in data['endorsed']['endorsee7'][
-            'endorsements'])
-        self.assertFalse(data['endorsed']['endorsee7'][
-            'endorsements']['google']['endorsed'])
+        self.assertFalse('mumble' in data['endorsed']['endorsee2'])

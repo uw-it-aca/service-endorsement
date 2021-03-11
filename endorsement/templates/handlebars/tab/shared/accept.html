@@ -20,8 +20,9 @@
     <div class="row">
       The use of 
       <ul class="comma-list">
-        {{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}
-        {{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}
+        {{#each services}}
+        {{#if this.count}}<li>{{this.name}}</li>{{/if}}
+        {{/each}}
       </ul>
       <span style="font-weight: bold">by any individual acting as the UW NetID</span> is bound by UW-IT's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures. For more information, visit UW-IT's Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">http://itconnect.uw.edu/work/appropriate-use/</a>.
     </div>
@@ -32,7 +33,7 @@
       </div>
       <div class="col-md-11">
         <label for="shared_accept_responsibility_A" class="accept_responsibility">
-          I agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to my use of UW computing resources, including the use of <ul class="comma-list">{{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}{{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}</ul>.
+          I agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to my use of UW computing resources, including the use of <ul class="comma-list">{{#each services}}{{#if this.count}}<li>{{this.name}}</li>{{/if}}{{/each}}</ul>.
         </label>
       </div>
     </div>

@@ -2,10 +2,12 @@ from django.urls import reverse
 from django.test import TransactionTestCase, Client
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
+from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from userservice.user import UserServiceMiddleware
 from endorsement.test import (
     get_user, get_user_pass,
     fdao_gws_override, fdao_pws_override, fdao_uwnetid_override)
+import json
 
 
 VALIDATE = "endorsement.userservice_validation.validate"
@@ -50,6 +52,10 @@ class EndorsementApiTest(TransactionTestCase):
         self.client = Client()
         self.request = RequestFactory().get("/")
         self.middleware = UserServiceMiddleware()
+
+    @property
+    def service(self):
+        return None
 
     def set_user(self, username):
         self.request.user = get_user(username)

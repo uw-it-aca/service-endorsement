@@ -2,14 +2,13 @@ import logging
 from django.conf import settings
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
+from endorsement.services import endorsement_services
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model,
     get_endorsee_email_model, is_shared_netid)
 from endorsement.dao.endorse import (
-    is_office365_permitted, is_google_permitted,
     get_endorsements_for_endorsee, get_endorsements_by_endorser)
 from endorsement.dao.gws import is_valid_endorser
-from endorsement.util.time_helper import Timer
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
@@ -24,14 +23,12 @@ class Validate(RESTDispatch):
     Validate provided endorsement list
     """
     def post(self, request, *args, **kwargs):
-        timer = Timer()
-
         netid = UserService().get_user()
         if not netid:
-            return invalid_session(logger, timer)
+            return invalid_session(logger)
 
         if not is_valid_endorser(netid):
-            return invalid_endorser(logger, timer)
+            return invalid_endorser(logger)
 
         endorser = get_endorser_model(netid)
         netids = request.data.get('netids', [])
@@ -61,7 +58,6 @@ class Validate(RESTDispatch):
                     raise TooManyUWNetids()
 
                 endorsements = get_endorsements_for_endorsee(endorsee)
-                active = False
                 valid = {
                     'netid': endorse_netid,
                     'name': endorsee.display_name,
@@ -75,51 +71,11 @@ class Validate(RESTDispatch):
                         valid['reason'] = e.reason
                         break
 
-                try:
-                    active, endorsed = is_office365_permitted(
-                        endorser, endorsee)
-                    valid['endorsements']['o365'] = {
-                        'category_name': dict(
-                            EndorsementRecord.CATEGORY_CODE_CHOICES)[
-                                EndorsementRecord.OFFICE_365_ENDORSEE],
-                        'active': active,
-                        'endorsers': [],
-                        'self_endorsed': endorsed
-                    }
-
-                    for e in endorsements:
-                        if (e.category_code ==
-                                EndorsementRecord.OFFICE_365_ENDORSEE):
-                            valid['endorsements']['o365']['endorsers'].append(
-                                e.endorser.json_data())
-
-                except Exception as ex:
-                    valid['endorsements']['o365'] = {
-                        'error': "{0}".format(ex)
-                    }
-
-                try:
-                    active, endorsed = is_google_permitted(
-                        endorser, endorsee)
-                    valid['endorsements']['google'] = {
-                        'category_name': dict(
-                            EndorsementRecord.CATEGORY_CODE_CHOICES)[
-                                EndorsementRecord.GOOGLE_SUITE_ENDORSEE],
-                        'active': active,
-                        'endorsers': [],
-                        'self_endorsed': endorsed
-                    }
-
-                    for e in endorsements:
-                        if (e.category_code ==
-                                EndorsementRecord.GOOGLE_SUITE_ENDORSEE):
-                            valid['endorsements']['google'][
-                                'endorsers'].append(e.endorser.json_data())
-
-                except Exception as ex:
-                    valid['endorsements']['google'] = {
-                        'error': "{0}".format(ex)
-                    }
+                for s in endorsement_services():
+                    valid['endorsements'][
+                        s.service_name] = self._endorsement(
+                            endorser, endorsee, s.is_permitted,
+                            endorsements, s.category_code)
 
             except UnrecognizedUWNetid as ex:
                 valid = {
@@ -155,3 +111,27 @@ class Validate(RESTDispatch):
             validated['validated'].append(valid)
 
         return self.json_response(validated)
+
+    def _endorsement(self, endorser, endorsee, is_permitted,
+                     endorsements, endorsement_category):
+        try:
+            active, endorsed = is_permitted(endorser, endorsee)
+            endorsement = {
+                'category_name': dict(
+                    EndorsementRecord.CATEGORY_CODE_CHOICES)[
+                        endorsement_category],
+                'active': active,
+                'endorsers': [],
+                'self_endorsed': endorsed
+            }
+
+            for e in endorsements:
+                if (e.category_code == endorsement_category):
+                    endorsement['endorsers'].append(e.endorser.json_data())
+
+        except Exception as ex:
+            endorsement = {
+                'error': "{0}".format(ex)
+            }
+
+        return endorsement

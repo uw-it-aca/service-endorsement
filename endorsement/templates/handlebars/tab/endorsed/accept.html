@@ -10,15 +10,25 @@
   <div class="endorsed-acceptance container col-md-12">
     <div class="row">
       You are about to provision
-      {{> enumerate_partial netid_count=endorse_netid_count google=endorse_google o365=endorse_o365 google_count=endorse_google_netid_count o365_count=endorse_o365_netid_count shared=''}}
-      By selecting {{ plural endorse_netid_count 'this' 'these' }} UW NetID{{ plural endorse_netid_count '' 's' }}, you confirm that:
+      {{#gt netid_count 10}}
+        <ul class="comma-list">{{#each services}}{{#if this.count}}<li>{{ shared }}UW NetIDs to {{this.name}}</li>{{/if}}{{/each}}</ul>.
+      {{else}}
+        {{#each services}}
+          {{#if this.count}}
+          {{#unless @first}}{{#unless @last}}and {{/unless}}{{/unless}}the {{ shared }} UW NetID{{plural this.count '' 's'}}
+          <ul class="comma-list">
+            {{#each endorsed}}<li style="font-weight: bold;">{{this.netid}}</li>{{/each}}
+          </ul> to the {{this.name}} service{{#if @last}}{{/if}}{{/if}}{{/each}}.
+      {{/gt}}
+      By selecting {{ plural netid_count 'this' 'these' }} UW NetID{{ plural netid_count '' 's' }}, you confirm that:
     </div>
     <div class="row">
       <ol>
-        <li>The provisioning recipient{{ plural endorse_netid_count '' 's' }} associated with {{ plural endorse_netid_count 'this' 'each' }} UW NetID requires use of
+        <li>The provisioning recipient{{ plural netid_count '' 's' }} associated with {{ plural netid_count 'this' 'each' }} UW NetID requires use of
           <ul class="comma-list">
-            {{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}
-            {{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}
+            {{#each services}}
+            {{#if this.count}}<li>{{this.name}}</li>{{/if}}
+            {{/each}}
           </ul>
           to carry out official UW operations, and</li>
         <li>You have authority to make this request in accord with the UW-IT guidelines for providing computing services to UW
@@ -29,16 +39,18 @@
       <h4>Provisionee Email</h4>
       A valid provisionee email address is required.  The provisionee will receive email with terms and conditions that they must accept in order to access the
         <ul class="comma-list">
-          {{#if endorse_google_netid_count}}<li>UW G Suite</li>{{/if}}
-          {{#if endorse_o365_netid_count}}<li>UW Office 365</li>{{/if}}
+            {{# each services}}
+            {{#if this.count}}<li>{{this.name}}</li>{{/if}}
+            {{/each}}
         </ul> service.
         <br /><br />
         <ul class="email-list">
-        {{#each endorse_google}}
-        <li>Email for <span class="significant">{{ netid }}</span> will be sent to: {{> email_editor_partial . }}</li>
-        {{/each}}
-        {{#each endorse_o365}}
-        <li>Email for <span class="significant">{{ netid }}</span> will be sent to: {{> email_editor_partial . }}</li>
+        {{#each services}}
+          {{#if this.count}}
+            {{#each this.endorsed}}
+          <li>Email for <span class="significant">{{ netid }}</span> will be sent to: {{> email_editor_partial . }}</li>
+            {{/each}}
+          {{/if}}
         {{/each}}
         </ul>
       </p>
@@ -57,7 +69,7 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
-  <button type="button" id="confirm_endorsement_responsibility" class="btn btn-primary" disabled="disabled">Provision services for {{plural endorse_netid_count 'this' 'these'}} UW NetID{{plural endorse_netid_count '' 's'}}</button>
+  <button type="button" id="confirm_endorsement_responsibility" class="btn btn-primary" disabled="disabled">Provision services for {{plural netid_count 'this' 'these'}} UW NetID{{plural netid_count '' 's'}}</button>
 </div>
 </script>
 {% endverbatim %}
