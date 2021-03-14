@@ -6,6 +6,9 @@ import urllib3
 class Command(BaseCommand):
     help = 'alert endorsers to expiring endorsements'
 
+    def add_arguments(self, parser):
+        parser.add_argument('notice_level', type=int)
+
     def handle(self, *args, **options):
         urllib3.disable_warnings()
         warn_endorsers(options.get('notice_level'))
