@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.core.mail import mail_managers
 from django.template import loader
-from endorsement.policy import (
-    endorsements_to_expire, DEFAULT_ENDORSEMENT_GRACETIME)
+from endorsement.policy import endorsements_to_expire
+from endorsement.services import DEFAULT_ENDORSEMENT_GRACETIME
 from endorsement.dao.endorse import clear_endorsement
 import logging
 import urllib3
