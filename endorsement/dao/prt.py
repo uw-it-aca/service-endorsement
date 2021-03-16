@@ -23,11 +23,9 @@ def get_kerberos_inactive_netids():
 
     inactive_netids = []
     for category in endorsement_categories():
-        inactive_netids += list(
-            set(get_kerberos_inactive_netids_for_category(category))
-            - set(inactive_netids))
+        inactive_netids += get_kerberos_inactive_netids_for_category(category)
 
-    return inactive_netids
+    return [netid for netid in set(inactive_netids) if len(netid) > 0]
 
 
 def get_kerberos_inactive_netids_for_category(category):
