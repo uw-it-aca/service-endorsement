@@ -23,8 +23,7 @@ def get_kerberos_inactive_netids():
 
     inactive_netids = []
     for category in endorsement_categories():
-        inactive_netids.append(
-            get_kerberos_inactive_netids_for_category(category))
+        inactive_netids += get_kerberos_inactive_netids_for_category(category)
 
     return [netid for netid in set(inactive_netids) if len(netid) > 0]
 
