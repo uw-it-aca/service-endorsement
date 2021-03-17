@@ -28,6 +28,7 @@ def get_entity(uwnetid):
         log_exception(logger,
                       '{0} get_entity '.format(uwnetid),
                       traceback.format_exc())
+
         raise
 
 
@@ -50,8 +51,12 @@ def get_endorsee_data(uwnetid):
                     len(person.email_addresses) > 0) else None, True)
     except DataFailureException as ex:
         if int(ex.status) == 404:
-            entity = get_entity(uwnetid)
-            return entity.uwregid, entity.display_name, None, False
+            try:
+                entity = get_entity(uwnetid)
+                return entity.uwregid, entity.display_name, None, False
+            except DataFailureException:
+                # stack logged by get_entity
+                pass
 
         raise UnrecognizedUWNetid(uwnetid)
 
