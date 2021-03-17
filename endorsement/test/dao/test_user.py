@@ -1,5 +1,5 @@
 from django.test import TransactionTestCase
-from restclients_core.exceptions import DataFailureException
+from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.models.core import Endorser, Endorsee
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model,
@@ -31,7 +31,7 @@ class TestUserDao(TransactionTestCase):
 
         self.assertIsNotNone(Endorsee.objects.get(netid='endorsee2'))
 
-        self.assertRaises(DataFailureException,
+        self.assertRaises(UnrecognizedUWNetid,
                           get_endorsee_model,
                           'endorsee5')
         qset = Endorsee.objects.filter(netid='endorsee5')
