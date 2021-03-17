@@ -22,13 +22,12 @@ def get_entity(uwnetid):
     try:
         return pws.get_entity_by_netid(uwnetid)
     except DataFailureException as ex:
-        if ex.status == 404:
-            raise UnrecognizedUWNetid(uwnetid)
+        if ex.status != 404:
+            log_exception(logger,
+                          '{0} get_entity '.format(uwnetid),
+                          traceback.format_exc())
 
-        log_exception(logger,
-                      '{0} get_entity '.format(uwnetid),
-                      traceback.format_exc())
-        raise
+    raise UnrecognizedUWNetid(uwnetid)
 
 
 def get_person(uwnetid):
