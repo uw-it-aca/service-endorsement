@@ -49,4 +49,3 @@ def is_group_member(uwnetid, group):
                           uwnetid, ENDORSER_GROUP),
                       traceback.format_exc())
         raise
-
