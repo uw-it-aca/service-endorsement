@@ -25,13 +25,13 @@ def is_valid_endorser(uwnetid):
     Return True if the user is in the valid endorsers GWS group
     """
     try:
-        return is_group_member(uwnetid, ENDORSER_GROUP)
+        return endorser_group_member(uwnetid)
     except Exception:
-        log_exception(logger,
-                      '{0} is_effective_member of {1} group'.format(
-                          uwnetid, ENDORSER_GROUP),
-                      traceback.format_exc())
         return False
+
+
+def endorser_group_member(uwnetid):
+    return is_group_member(uwnetid, ENDORSER_GROUP)
 
 
 def is_group_member(uwnetid, group):
@@ -41,7 +41,12 @@ def is_group_member(uwnetid, group):
     try:
         return gws.is_effective_member(group, uwnetid)
     except DataFailureException as ex:
-        if ex.status != 404:
-            raise
+        if ex.status == 404:
+            return False
 
-    return False
+        log_exception(logger,
+                      '{0} is_effective_member of {1} group'.format(
+                          uwnetid, ENDORSER_GROUP),
+                      traceback.format_exc())
+        raise
+
