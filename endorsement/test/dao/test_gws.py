@@ -1,4 +1,4 @@
-from endorsement.dao.gws import is_valid_endorser
+from endorsement.dao.gws import is_valid_endorser, endorser_group_member
 from endorsement.test.dao import TestDao
 
 
@@ -13,3 +13,6 @@ class TestGwsDao(TestDao):
 
         # test exception
         self.assertFalse(is_valid_endorser(None))
+        self.assertRaises(Exception,
+                          endorser_group_member,
+                          None)
