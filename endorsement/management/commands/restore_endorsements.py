@@ -63,7 +63,7 @@ class Command(BaseCommand):
                     if response != 'y':
                         continue
 
-                    self._restore(er, service)
+                self._restore(er, service)
 
     def _restore(self, er, service):
         print("Activate category {} for {}".format(
