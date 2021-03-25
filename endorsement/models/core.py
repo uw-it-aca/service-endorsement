@@ -188,11 +188,13 @@ class EndorsementRecord(
     GOOGLE_SUITE_ENDORSEE = Category.GOOGLE_SUITE_ENDORSEE
     OFFICE_365_ENDORSEE = Category.OFFICE_365_ENDORSEE
     CANVAS_PROVISIONEE = Category.CANVAS_PROVISIONEE
+    ZOOM_PROVISIONEE = Category.ZOOM_PROVISIONEE
 
     CATEGORY_CODE_CHOICES = (
         (OFFICE_365_ENDORSEE, "UW Office 365"),
         (GOOGLE_SUITE_ENDORSEE, "UW G Suite"),
         (CANVAS_PROVISIONEE, "UW Canvas LMS"),
+        (ZOOM_PROVISIONEE, "UW Zoom"),
     )
 
     endorser = models.ForeignKey(Endorser,
