@@ -1,8 +1,8 @@
 """
-Defines UW Zoom service endorsement steps
+Defines UW Zoom Basic service endorsement steps
 
 Valid Zoom endorsees are members of the UW group defined by
-ZOOM_ACCESS_GROUP, default: "u_acadev_zoom_login-users"
+ZOOM_BASIC_ACCESS_GROUP, default: "u_acadev_zoom_basic_login-users"
 
 The expected Zooom endorsement lifecycle is:
    *  Add category xxx, status 1 record for given endorsee
@@ -18,31 +18,35 @@ from endorsement.dao.gws import is_group_member
 from endorsement.exceptions import NoEndorsementException
 from uw_uwnetid.models import Subscription
 
-ZOOM_ACCESS_GROUP = getattr(settings, "ZOOM_ACCESS_GROUP",
-                            "u_acadev_zoom_login-users")
+ZOOM_ACCESS_GROUP = getattr(settings, "ZOOM_BASIC_ACCESS_GROUP",
+                            "u_acadev_zoom_basic_login-users")
 
 
 class EndorsementService(EndorsementServiceBase):
     @property
     def service_name(self):
-        return 'zoom'
+        return 'zoom-basic'
 
     @property
     def category_code(self):
-        return EndorsementRecord.ZOOM_PROVISIONEE
+        return EndorsementRecord.ZOOM_BASIC_PROVISIONEE
 
     @property
     def subscription_codes(self):
-        return [Subscription.SUBS_CODE_ZOOM_SPONSORED]
+        return [Subscription.SUBS_CODE_ZOOM_BASIC_SPONSORED]
 
     @property
     def shared_params(self):
         return {
             'roles': ['owner', 'owner-admin'],
-            'types': ['administrator'],
+            'types': ['shared', 'support'],
             'excluded_categories': [],
             'allow_existing_endorsement': False
         }
+
+    def valid_person_endorsee(self, endorsee):
+        # personal netids ineligible
+        return False
 
     @property
     def service_renewal_statement(self):
@@ -58,4 +62,5 @@ class EndorsementService(EndorsementServiceBase):
             self.get_endorsement(endorser, endorsee)
             return True, True
         except NoEndorsementException:
-            return is_group_member(endorsee.netid, ZOOM_ACCESS_GROUP), False
+            return is_group_member(
+                endorsee.netid, ZOOM_BASIC_ACCESS_GROUP), False

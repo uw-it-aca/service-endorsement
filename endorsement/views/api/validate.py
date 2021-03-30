@@ -72,10 +72,11 @@ class Validate(RESTDispatch):
                         break
 
                 for s in endorsement_services():
-                    valid['endorsements'][
-                        s.service_name] = self._endorsement(
-                            endorser, endorsee, s.is_permitted,
-                            endorsements, s.category_code)
+                    if s.valid_person_endorsee(endorsee):
+                        valid['endorsements'][
+                            s.service_name] = self._endorsement(
+                                endorser, endorsee, s.is_permitted,
+                                endorsements, s.category_code)
 
             except UnrecognizedUWNetid as ex:
                 valid = {
