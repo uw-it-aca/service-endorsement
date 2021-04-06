@@ -1,9 +1,15 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 from restclients_core.dao import DAO
 from restclients_core.exceptions import DataFailureException
 from endorsement.services import endorsement_categories
 from os.path import abspath, dirname
 import urllib3
 import os
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class PRT_DAO(DAO):
@@ -23,7 +29,12 @@ def get_kerberos_inactive_netids():
 
     inactive_netids = []
     for category in endorsement_categories():
-        inactive_netids += get_kerberos_inactive_netids_for_category(category)
+        try:
+            netids = get_kerberos_inactive_netids_for_category(category)
+            inactive_netids += netids
+        except DataFailureException as ex:
+            logger.error("Kerberos inactive fetch failed {}: {}".format(
+                ex.status, ex))
 
     return [netid for netid in set(inactive_netids) if len(netid) > 0]
 

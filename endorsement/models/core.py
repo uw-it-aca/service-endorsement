@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
@@ -188,11 +190,15 @@ class EndorsementRecord(
     GOOGLE_SUITE_ENDORSEE = Category.GOOGLE_SUITE_ENDORSEE
     OFFICE_365_ENDORSEE = Category.OFFICE_365_ENDORSEE
     CANVAS_PROVISIONEE = Category.CANVAS_PROVISIONEE
+    ZOOM_LICENSED_PROVISIONEE = Category.ZOOM_LICENSED_PROVISIONEE
+    ZOOM_BASIC_PROVISIONEE = Category.ZOOM_BASIC_PROVISIONEE
 
     CATEGORY_CODE_CHOICES = (
         (OFFICE_365_ENDORSEE, "UW Office 365"),
         (GOOGLE_SUITE_ENDORSEE, "UW G Suite"),
         (CANVAS_PROVISIONEE, "UW Canvas LMS"),
+        (ZOOM_LICENSED_PROVISIONEE, "UW Zoom Licensed"),
+        (ZOOM_BASIC_PROVISIONEE, "UW Zoom Basic"),
     )
 
     endorser = models.ForeignKey(Endorser,

@@ -3,22 +3,22 @@
 import json
 from django.urls import reverse
 from endorsement.models import EndorsementRecord
+from endorsement.services import get_endorsement_service
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.test.services import ServicesApiTest
-from endorsement.services import get_endorsement_service
 
 
-class TestOffice365Service(ServicesApiTest):
+class TestZoomBasicService(ServicesApiTest):
     @property
     def service(self):
-        return get_endorsement_service('o365')
+        return get_endorsement_service('zoom-basic')
 
     def test_endorsed(self):
         self._test_endorsed()
 
     def test_shared(self):
         endorser = get_endorser_model('jstaff')
-        endorsee = get_endorsee_model('wadm_jstaff')
+        endorsee = get_endorsee_model('cpnebeng')
 
         self.assertEqual(len(
             EndorsementRecord.objects.get_endorsements_for_endorser(
@@ -35,13 +35,10 @@ class TestOffice365Service(ServicesApiTest):
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 12)
+        self.assertEquals(len(endorsible), 10)
         self.assertEquals(len(endorsed), 1)
         self.assertTrue('cpnebeng' in endorsible)
-        self.assertTrue('wadm_jstaff' in endorsed)
-
-        # exlude category 22
-        self.assertTrue('nebionotic' not in endorsible)
+        self.assertFalse('wadm_jstaff' in endorsed)
 
     def test_endorse_netid(self):
         self._test_endorse_netid()
@@ -53,17 +50,18 @@ class TestOffice365Service(ServicesApiTest):
                 "wadm_jstaff": {
                     "name": "ADMIN NETID JSTAFF",
                     "email": "wadm_jstaff@uw.edu",
-                    "store": True,
+                    'store': True,
                     self.service.service_name: {
                         "state": True,
+                        "store": True,
                         "reason": "testing"
                     }
                 },
-                # endorse valid shared
+                # endorse invalid shared
                 "cpnebeng": {
                     "name": "cpneb eng",
                     "email": "cpnebeng@uw.edu",
-                    "store": True,
+                    'store': True,
                     self.service.service_name: {
                         "state": True,
                         "reason": "testing"
@@ -72,9 +70,8 @@ class TestOffice365Service(ServicesApiTest):
             }
         })
 
-        self.assertEqual(len(endorsible), 2)
+        self.assertEqual(len(endorsible), 1)
         self.assertEqual(len(endorsing), 0)
-        self.assertEqual(len(endorsed), 2)
-        self.assertEqual(len(errored), 0)
-        self.assertTrue('wadm_jstaff' in endorsed)
+        self.assertEqual(len(endorsed), 1)
+        self.assertEqual(len(errored), 1)
         self.assertTrue('cpnebeng' in endorsed)

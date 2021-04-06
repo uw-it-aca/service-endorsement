@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 import logging
 from django.conf import settings
 from userservice.user import UserService
@@ -72,10 +74,11 @@ class Validate(RESTDispatch):
                         break
 
                 for s in endorsement_services():
-                    valid['endorsements'][
-                        s.service_name] = self._endorsement(
-                            endorser, endorsee, s.is_permitted,
-                            endorsements, s.category_code)
+                    if s.valid_person_endorsee(endorsee):
+                        valid['endorsements'][
+                            s.service_name] = self._endorsement(
+                                endorser, endorsee, s.is_permitted,
+                                endorsements, s.category_code)
 
             except UnrecognizedUWNetid as ex:
                 valid = {

@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 from endorsement.dao import display_datetime
 from endorsement.test.dao import TestDao
 from datetime import datetime

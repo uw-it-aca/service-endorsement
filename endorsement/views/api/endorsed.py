@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 import logging
 from userservice.user import UserService
 from endorsement.services import (get_endorsement_service,
