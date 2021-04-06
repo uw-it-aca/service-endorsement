@@ -11,11 +11,11 @@ class TestNetidSupported(TestDao):
         supported = get_supported_resources_for_netid(endorser.netid)
         self.assertEqual(len(supported), 23)
 
-        netids = []
+        netids = set()
         for s in supported:
             for service in endorsement_services():
                 if service.valid_supported_netid(s, endorser):
-                    netids.append(s.name)
+                    netids.add(s.name)
                     break
 
-        self.assertEqual(len(netids), 15)
+        self.assertEqual(len(netids), 16)

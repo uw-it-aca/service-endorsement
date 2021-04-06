@@ -4,7 +4,7 @@ Defines UW Zoom service endorsement steps
 Valid Zoom endorsees are members of the UW group defined by
 ZOOM_ACCESS_GROUP, default: "u_acadev_zoom_login-users"
 
-The expected Zooom endorsement lifecycle is:
+The expected Zoom endorsement lifecycle is:
    *  Add category xxx, status 1 record for given endorsee
    *  Activate subscription xxx for endorsee
 
@@ -29,11 +29,11 @@ class EndorsementService(EndorsementServiceBase):
 
     @property
     def category_code(self):
-        return EndorsementRecord.ZOOM_PROVISIONEE
+        return EndorsementRecord.ZOOM_LICENSED_PROVISIONEE
 
     @property
     def subscription_codes(self):
-        return [Subscription.SUBS_CODE_ZOOM_SPONSORED]
+        return [Subscription.SUBS_CODE_ZOOM_LICENSE_ACCESS]
 
     @property
     def shared_params(self):
@@ -43,6 +43,10 @@ class EndorsementService(EndorsementServiceBase):
             'excluded_categories': [],
             'allow_existing_endorsement': False
         }
+
+    def valid_person_endorsee(self, endorsee):
+        # personal netids ineligible
+        return False
 
     @property
     def service_renewal_statement(self):
