@@ -249,15 +249,15 @@ def service_context(service):
     }
 
 
-def service_contexts_for_person_endorsee(endorsee):
-    return {service.service_name: service_context(service)
-            for service in endorsement_services() if (
-                    service.valid_person_endorsee(endorsee))}
-
-
 def service_contexts():
     return {service.service_name: service_context(service)
             for service in endorsement_services()}
+
+
+def person_service_contexts(endorsee):
+    return {service.service_name: service_context(service)
+            for service in endorsement_services() if (
+                    service.valid_person_endorsee(endorsee))}
 
 
 def service_names(service_list=None):
