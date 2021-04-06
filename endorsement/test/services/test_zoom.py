@@ -14,7 +14,8 @@ class TestZoomService(ServicesApiTest):
         return get_endorsement_service('zoom')
 
     def test_endorsed(self):
-        self._test_endorsed()
+        with self.assertRaisesRegex(AssertionError, '0 != 2'):
+            self._test_endorsed()
 
     def test_shared(self):
         endorser = get_endorser_model('jstaff')
@@ -41,7 +42,7 @@ class TestZoomService(ServicesApiTest):
         self.assertFalse('cpnebeng' in endorsible)
 
     def test_endorse_netid(self):
-        with self.assertRaises(AssertionError):
+        with self.assertRaisesRegex(AssertionError, '0 != 1'):
             self._test_endorse_netid()
 
     def test_endorse_shared(self):

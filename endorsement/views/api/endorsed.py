@@ -31,11 +31,11 @@ class Endorsed(RESTDispatch):
         endorser = get_endorser_model(netid)
         endorsed = {}
         for er in get_endorsements_by_endorser(endorser):
-            if not er.endorsee.is_person:
-                continue
-
             service = get_endorsement_service(er.category_code)
             if service is None:
+                continue
+
+            if not service.valid_person_endorsee(er.endorsee):
                 continue
 
             try:
