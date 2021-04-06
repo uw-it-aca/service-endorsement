@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 """
 Base class for endorsed services encapsulating common support functions
 and lifecycle values

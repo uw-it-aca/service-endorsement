@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 from django.utils import timezone
 from django.conf import settings
 from endorsement.dao.uwnetid_categories import (
