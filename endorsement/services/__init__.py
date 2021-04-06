@@ -241,12 +241,23 @@ def endorsement_categories():
     return categories
 
 
-def endorsement_services_context():
-    return {service.service_name: {
+def service_context(service):
+    return {
         'category_code': service.category_code,
         'category_name': service.category_name,
         'service_link': service.service_link
-    } for service in endorsement_services()}
+    }
+
+
+def service_contexts_for_person_endorsee(endorsee):
+    return {service.service_name: service_context(service)
+            for service in endorsement_services() if (
+                    service.valid_person_endorsee(endorsee))}
+
+
+def service_contexts():
+    return {service.service_name: service_context(service)
+            for service in endorsement_services()}
 
 
 def service_names(service_list=None):
