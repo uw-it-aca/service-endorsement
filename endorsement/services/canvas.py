@@ -1,7 +1,10 @@
 # Copyright 2021 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 """
-Defines UW Canvas service endorsement steps
+Defines UW Canvas and Panopto service endorsement steps
+
+Note, Panopto access is tied to Canvas access, so the two
+are labelled together here
 
 Valid Canvas endorsees are members of the UW group defined by
 CANVAS_ACCESS_GROUP, default: "u_acadev_canvas_login-users"
