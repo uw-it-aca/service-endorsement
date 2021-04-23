@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 """
 Base class for endorsed services encapsulating common support functions
 and lifecycle values
@@ -239,12 +241,23 @@ def endorsement_categories():
     return categories
 
 
-def endorsement_services_context():
-    return {service.service_name: {
+def service_context(service):
+    return {
         'category_code': service.category_code,
         'category_name': service.category_name,
         'service_link': service.service_link
-    } for service in endorsement_services()}
+    }
+
+
+def service_contexts():
+    return {service.service_name: service_context(service)
+            for service in endorsement_services()}
+
+
+def person_service_contexts(endorsee):
+    return {service.service_name: service_context(service)
+            for service in endorsement_services() if (
+                    service.valid_person_endorsee(endorsee))}
 
 
 def service_names(service_list=None):

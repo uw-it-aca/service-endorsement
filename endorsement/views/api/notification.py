@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 import logging
 from endorsement.views.rest_dispatch import RESTDispatch
 from endorsement.models import Endorser, Endorsee, EndorsementRecord

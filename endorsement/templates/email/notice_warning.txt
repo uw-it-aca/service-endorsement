@@ -10,9 +10,9 @@ UW-IT services for the following UW NetID{{expiring_count|pluralize}} will be re
 {%for impact in impacts %}
 {{ impact }}{% endfor %}
 
-UW NetID       UW-IT Service  Date Provisioned   Reason
--------------  -------------  ----------------   --------------------------------{%for e in expiring %}
-{{e.endorsee.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"15"}}{{e.datetime_endorsed|date:"M d, Y"|ljust:"19"}}{{e.reason|ljust:"40"}}{% endfor %}
+UW NetID       UW-IT Service       Date Provisioned   Reason
+-------------  ------------------  ----------------   ---------------------------{%for e in expiring %}
+{{e.endorsee.netid|ljust:"15"}}{{e.get_category_code_display|ljust:"20"}}{{e.datetime_endorsed|date:"M d, Y"|ljust:"19"}}{{e.reason|ljust:"40"}}{% endfor %}
 
 To read more about the annual review process and access the PRT to complete the
 annual review process vist:

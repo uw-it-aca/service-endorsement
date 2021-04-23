@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from userservice.user import UserService

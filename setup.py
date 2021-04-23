@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 import os
 from setuptools import setup
 
@@ -23,7 +25,7 @@ setup(
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires=[
-        'Django>=2.2,<2.3',
+        'Django~=2.2',
         'ordereddict',
         'simplejson',
         'django-webpack-loader',
@@ -33,18 +35,18 @@ setup(
         'pytz',
         'psycopg2',
         'lxml==4.2.5,<4.3',
-        'uw-memcached-clients>=1.0.5,<2.0',
-        'UW-RestClients-Core>=1.3.3,<2.0',
+        'uw-memcached-clients~=1.0.5',
+        'UW-RestClients-Core~=1.3.3',
         'UW-Restclients-PWS==2.0.2',
-        'UW-RestClients-GWS>=2.0.1,<3.0',
-        'UW-RestClients-UWNetID>=1.0.6,<2.0',
-        'UW-RestClients-Django-Utils>=2.1.5,<3.0',
-        'Django-Safe-EmailBackend>=1.1.1,<2.0',
+        'UW-RestClients-GWS~=2.0.1',
+        'UW-RestClients-UWNetID~=1.0.7',
+        'UW-RestClients-Django-Utils~=2.1.5',
+        'Django-Safe-EmailBackend~=1.1.1',
         'UW-Django-SAML2>=1.3.8,<2.0',
         'djangorestframework>=3.6.4',
         'django-pyscss',
-        'Django-SupportTools>=3.4,<4.0',
-        'django_client_logger>=2.0,<3.0',
+        'Django-SupportTools~=3.4',
+        'django_client_logger~=2.0',
     ],
     license='Apache License, Version 2.0',
     description=('App mangaging University of Washington Endorsed Services'),

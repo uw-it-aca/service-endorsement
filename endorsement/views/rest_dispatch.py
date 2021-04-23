@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 from rest_framework.views import APIView
 from django.http import HttpResponse
 import json

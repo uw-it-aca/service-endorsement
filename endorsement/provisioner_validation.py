@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 from endorsement.models import EndorsementRecord as ER
 from endorsement.dao.user import get_endorser_model
 from endorsement.dao.gws import endorser_group_member

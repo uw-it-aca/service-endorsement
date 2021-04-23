@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 from django.test import TransactionTestCase
 from endorsement.models.core import EndorsementRecord
 from endorsement.services import endorsement_services, get_endorsement_service

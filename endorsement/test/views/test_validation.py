@@ -1,3 +1,5 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 from endorsement.test.views import TestViewApi
 from endorsement.userservice_validation import validate, can_override_user
 
