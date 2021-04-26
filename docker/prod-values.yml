@@ -96,6 +96,8 @@ certs:
   keyPath: /certs/provision.uw.edu-uwca.key
   secretName: provision.uw.edu-uwca-certs
 environmentVariables:
+  - name: ENDORSEMENT_SERVICES
+    value: "google, office365, canvas"
   - name: ENV
     value: prod
   - name: GWS_ENV
