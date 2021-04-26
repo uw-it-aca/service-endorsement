@@ -114,3 +114,16 @@ jobs:
           commit_hash: ${{ steps.cicd.outputs.commit_hash }}
           git_repo_branch: ${{ steps.cicd.outputs.git_repo_branch }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+
+  housekeeping:
+    if: github.event_name == 'push'
+
+    needs: [build, deploy]
+
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: House Keeping
+        uses: uw-it-aca/actions/cicd-housekeeping@feature/registry-pruning
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
