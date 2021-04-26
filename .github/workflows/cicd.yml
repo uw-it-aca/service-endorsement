@@ -108,7 +108,7 @@ jobs:
         if: >-
           contains(fromJSON('["main", "master", "develop", "qa"]'),
             steps.cicd.outputs.git_repo_branch)
-        uses: uw-it-aca/actions/cicd-deploy@main
+        uses: uw-it-aca/actions/cicd-deploy@feature/registry-pruning
         with:
           release_name: ${{ env.RELEASE_NAME }}
           commit_hash: ${{ steps.cicd.outputs.commit_hash }}
