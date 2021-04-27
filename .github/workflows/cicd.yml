@@ -17,11 +17,13 @@ jobs:
     runs-on: ubuntu-18.04
 
     outputs:
-      context: ${{ steps.cicd.outputs.json_context }}
+      commit_hash: ${{ steps.context.outputs.commit_hash }}
+      git_repo_branch: ${{ steps.context.outputs.git_repo_branch }}
+      image_tag: ${{ steps.context.outputs.image_tag }}
 
     steps:
-      - name: Generate Context
-        id: cicd
+      - name: Set up Context
+        id: context
         uses: uw-it-aca/actions/cicd-context@feature/registry-pruning
         with:
           release_name: ${{ env.RELEASE_NAME }}
@@ -34,14 +36,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-
-      - name: Set up Context
-        id: context
-        run: |
-          while read -r -a kv; do
-            echo "::set-output name=${kv[0]}::${kv[1]}"
-          done <<< "$(echo ${{ needs.context.outputs.context }} \
-                    | jq -r 'keys[] as $k | "\($k) \(.[$k])"')"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -58,7 +52,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           target: app-container
-          tags: ${{ steps.context.outputs.image_tag }}
+          tags: ${{ needs.context.outputs.image_tag }}
           push: false
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -101,7 +95,7 @@ jobs:
         if: github.event_name == 'push'
         uses: uw-it-aca/actions/gcr-push@main
         with:
-          image_tag: ${{ steps.context.outputs.image_tag }}
+          image_tag: ${{ needs.context.outputs.image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
   deploy:
@@ -118,24 +112,17 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Set up Context
-        id: context
-        run: |
-          while read -r -a kv; do
-            echo "::set-output name=${kv[0]}::${kv[1]}"
-          done <<< "$(echo ${{ needs.context.outputs.context }} \
-                    | jq -r 'keys[] as $k | "\($k) \(.[$k])"')"
-
       - name: Deployment Pipeline
         id: deploy
         if: >-
           contains(fromJSON('["main", "master", "develop", "qa"]'),
-            steps.context.outputs.git_repo_branch)
+            needs.context.outputs.git_repo_branch)
         uses: uw-it-aca/actions/cicd-deploy@feature/registry-pruning
         with:
           release_name: ${{ env.RELEASE_NAME }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
-          context: ${{ needs.context.outputs.context }}
+          commit_hash: ${{ needs.context.outputs.commit_hash }}
+          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
 
   housekeeping:
     if: github.event_name == 'push'
