@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Set up Context
         id: context
-        uses: uw-it-aca/actions/cicd-context@feature/registry-pruning
+        uses: uw-it-aca/actions/cicd-context@main
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
@@ -117,7 +117,7 @@ jobs:
         if: >-
           contains(fromJSON('["main", "master", "develop", "qa"]'),
             needs.context.outputs.git_repo_branch)
-        uses: uw-it-aca/actions/cicd-deploy@feature/registry-pruning
+        uses: uw-it-aca/actions/cicd-deploy@main
         with:
           release_name: ${{ env.RELEASE_NAME }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
@@ -133,7 +133,7 @@ jobs:
 
     steps:
       - name: House Keeping
-        uses: uw-it-aca/actions/cicd-housekeeping@feature/registry-pruning
+        uses: uw-it-aca/actions/cicd-housekeeping@main
         with:
           release_name: ${{ env.RELEASE_NAME }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
