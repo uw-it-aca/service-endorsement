@@ -20,6 +20,7 @@ jobs:
       commit_hash: ${{ steps.context.outputs.commit_hash }}
       git_repo_branch: ${{ steps.context.outputs.git_repo_branch }}
       image_tag: ${{ steps.context.outputs.image_tag }}
+      deploy-context-filename: deploy-context-${{ github.run_id }}.json
 
     steps:
       - name: Set up Context
@@ -123,13 +124,13 @@ jobs:
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
           commit_hash: ${{ needs.context.outputs.commit_hash }}
           git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
-          context_filename: deploy-context-${{ github.run_id }}.json
+          context_filename: ${{ needs.context.outputs.deploy-context-filename }}
 
       - name: 'Provide subsequent jobs build context via json file'
         uses: actions/upload-artifact@v2
         with:
           name: deploy-context
-          path: deploy-context-${{ github.run_id }}.json
+          path: ${{ needs.context.outputs.deploy-context-filename }}
           retention-days: 1
 
   housekeeping:
@@ -145,7 +146,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: deploy-context
-        run: echo "::set-output name=context::$(< deploy-context-${{ github.run_id }}.json)"
+        run: echo "::set-output name=context::$(< ${{ needs.context.outputs.deploy-context-filename }})"
 
       - name: House Keeping
         uses: uw-it-aca/actions/cicd-housekeeping@main
