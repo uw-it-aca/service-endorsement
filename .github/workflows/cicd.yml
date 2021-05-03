@@ -141,11 +141,13 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-      - name: 'Download Context from build job'
-        id: context
+      - name: Download context from build job
         uses: actions/download-artifact@v2
         with:
           name: deploy-context
+
+      - name: Set downloaded context as output
+        id: context
         run: echo "::set-output name=context::$(< ${{ needs.context.outputs.deploy-context-filename }})"
 
       - name: House Keeping
