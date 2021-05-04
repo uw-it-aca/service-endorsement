@@ -20,7 +20,6 @@ jobs:
       commit_hash: ${{ steps.context.outputs.commit_hash }}
       git_repo_branch: ${{ steps.context.outputs.git_repo_branch }}
       image_tag: ${{ steps.context.outputs.image_tag }}
-      deploy_context_filename: '/tmp/deploy-context-${{ github.run_id }}.json'
 
     steps:
       - name: Set up Context
@@ -107,7 +106,7 @@ jobs:
     runs-on: ubuntu-18.04
 
     outputs:
-      context: ${{ steps.deploy.outputs.context }}
+      context: ${{ steps.context.outputs.context }}
 
     steps:
       - name: Checkout Repo
@@ -124,14 +123,11 @@ jobs:
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
           commit_hash: ${{ needs.context.outputs.commit_hash }}
           git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
-          context_filename: ${{ needs.context.outputs.deploy_context_filename }}
 
-      - name: 'Provide subsequent jobs build context via json file'
-        uses: actions/upload-artifact@v2
-        with:
-          name: deploy-context
-          path: ${{ needs.context.outputs.deploy_context_filename }}
-          retention-days: 1
+      - name: 'Surface context from executed build step'
+        id: context
+        shell: bash
+        run: echo "::set-output name=context::$(< ${CONTEXT_FILENAME})"
 
   housekeeping:
     if: github.event_name == 'push'
@@ -141,15 +137,6 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-      - name: Download context from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: deploy-context
-
-      - name: Set downloaded context as output
-        id: context
-        run: echo "${{ needs.context.outputs.deploy_context_filename }}" ; echo "::set-output name=context::$(< ${{ needs.context.outputs.deploy_context_filename }})"
-
       - name: House Keeping
         uses: uw-it-aca/actions/cicd-housekeeping@main
         with:
