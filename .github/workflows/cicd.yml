@@ -20,7 +20,7 @@ jobs:
       commit_hash: ${{ steps.context.outputs.commit_hash }}
       git_repo_branch: ${{ steps.context.outputs.git_repo_branch }}
       image_tag: ${{ steps.context.outputs.image_tag }}
-      deploy-context-filename: '~/deploy-context-${{ github.run_id }}.json'
+      deploy-context-filename: '/tmp/deploy-context-${{ github.run_id }}.json'
 
     steps:
       - name: Set up Context
