@@ -1,6 +1,7 @@
 The UW employee {{ endorser_name }} ({{ endorser_netid }}) has requested that you be given access through the University of Washington to{% for svc, v in services.items %}{% if forloop.first %} {% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ v.name }}{% endfor %}.
 
-YOUR ACTIVATION IS REQUIRED to access the service{{ services|length|pluralize:",s" }} per the process documented here: https://itconnect.uw.edu/connect/email/resources/affiliate-access/.
+YOUR ACTIVATION IS REQUIRED to access the service{{ services|length|pluralize:",s" }} per the process documented
+here: https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/.
 
 {% for svc, v in services.items %}
 Activate {{ v.name }} here: {{ v.accept_url }}

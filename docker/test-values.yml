@@ -1,7 +1,7 @@
 autoscaling:
   enabled: true
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 2
 ingress:
   enabled: true
   type: nginx
@@ -90,8 +90,6 @@ certs:
   keyPath: /certs/provision-test.uw.edu-uwca.key
   secretName: test.provision.uw.edu-uwca-certs
 environmentVariables:
-  - name: ENDORSEMENT_SERVICES
-    value: "google, office365, canvas"
   - name: ENV
     value: dev
   - name: GWS_ENV
