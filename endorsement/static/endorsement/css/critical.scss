@@ -282,10 +282,10 @@ a {
   tr.new_netid { background: #efffef !important; }
   .endorsed-netid { border-top: none; }
   tr.endorsee_row_odd { background: #f8f8f8;  }
-  tr.endorsement_row_first {
+  tr.top-border {
     .endorsed-netid, .endorsed-name { border-top: 1px solid #ddd; }
   }
-  tr.endorsement_row_following {
+  tr.hidden-names {
     .endorsed-netid, .endorsed-name { color: transparent; }
   }
   .endorsed-name { min-width: 200px; border-top: none; border-right: 1px solid #ddd; }

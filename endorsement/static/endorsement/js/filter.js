@@ -11,9 +11,26 @@ var DisplayFilterPanel = (function () {
 
             if (display === 'all') {
                 $rows.removeClass('visually-hidden');
+                // hide all names on following rows
+                $('tr.endorsement_row_following', $panel)
+                    .removeClass('top-border')
+                    .addClass('hidden-names');
             } else {
                 $rows.addClass('visually-hidden');
                 $('table tbody tr.' + display + '_service', $panel).removeClass('visually-hidden');
+                // expose hidden names in first non tr.endorsement_row_first row
+                $('tr.endorsement_row_first.visually-hidden').each(function () {
+                    var $tr = $(this).next('tr');
+
+                    while ($tr.hasClass('endorsement_row_following')) {
+                        if (! $tr.hasClass('visually-hidden')) {
+                            $tr.removeClass('hidden-names').addClass('top-border');
+                            return true;
+                        }
+
+                        $tr = $tr.next('tr');
+                    }
+                });
             }
 
             $panel.trigger('endorse:DisplayFilterChange');

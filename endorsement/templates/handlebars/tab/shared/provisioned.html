@@ -12,7 +12,7 @@
     You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. Access to
     <ul class="comma-list">
     {{#each service}}
-    {{#if this.count}}<li>{{this.name}}</li>
+  {{#if this.count}}<li>{{this.name}}</li>{{/if}}
     {{/each}}</ul>
     for the{{#gt netid_count 1}} {{ netid_count }} {{/gt}}UW NetID{{plural netid_count '' 's'}} {{#gt this.count 1}}{{else}} <ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/gt}} has been provisioned.
   </div>
