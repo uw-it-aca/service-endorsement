@@ -300,12 +300,12 @@ var ManageSharedNetids = (function () {
                 'endorsed': []
             };
 
-            $.each(endorsements, function (netid, endorsements) {
+            $.each(endorsements, function (netid, e) {
                 if (context.unique.indexOf(netid) < 0) {
                     context.unique.push(netid);
                 }
 
-                if (endorsements.hasOwnProperty(k)) {
+                if (e.endorsements.hasOwnProperty(k)) {
                     context.services[k].endorsed.push({
                         netid: netid
                     });
