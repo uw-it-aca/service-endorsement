@@ -44,8 +44,8 @@ def index(request):
             return render(request, "index.html", context)
         except Exception as ex:
             logger.error("{0}".format(ex))
-    except Exception:
-        handle_exception(logger, traceback)
+    except Exception as ex:
+        handle_exception(logger, "{}".format(ex), traceback)
 
 
 def logout(request):

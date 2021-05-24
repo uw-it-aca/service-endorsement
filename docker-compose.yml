@@ -19,7 +19,7 @@ services:
   devtools:
     restart: always
     container_name: devtools
-    image: node:8.15.1-jessie
+    image: node:14.6.0-stretch
     volumes:
       - ./package.json:/devtools/service-endorsement/package.json
       - ./webpack.config.js:/devtools/service-endorsement/webpack.config.js

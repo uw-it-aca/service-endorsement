@@ -1,10 +1,10 @@
 const path = require("path")
 const webpack = require('webpack')
 const BundleTracker = require('webpack-bundle-tracker')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 
 module.exports = {
 
@@ -20,7 +20,7 @@ module.exports = {
     },
 
     optimization: {
-        minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+        minimizer: [new TerserJSPlugin({})],
         splitChunks: {
             cacheGroups: {
                 vendor: {
@@ -36,7 +36,7 @@ module.exports = {
 
     output: {
         path: path.resolve('./endorsement/static/endorsement/bundles/'),
-        filename: "[name]-[hash].js",
+        filename: "[name]-[fullhash].js",
     },
 
     plugins: [
@@ -45,7 +45,7 @@ module.exports = {
             filename: './endorsement/static/webpack-stats.json'
         }),
         new MiniCssExtractPlugin({
-            filename: "[name]-[hash].css",
+            filename: "[name]-[fullhash].css",
         })
     ],
 
@@ -62,7 +62,7 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.js']
+        extensions: ['\.js']
     }
 
 }

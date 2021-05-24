@@ -26,8 +26,8 @@ class RESTDispatch(APIView):
                             content_type='application/json')
 
 
-def handle_exception(logger, stack_trace):
-    log_exception(logger, stack_trace.format_exc())
+def handle_exception(logger, message, stack_trace):
+    log_exception(logger, message, stack_trace.format_exc())
     exc_type, exc_value, exc_traceback = sys.exc_info()
     if (isinstance(exc_value, InvalidNetID) or
             isinstance(exc_value, InvalidRegID)):

@@ -15,7 +15,7 @@ ADD --chown=acait:acait docker/ project/
 RUN . /app/bin/activate && pip install django-webpack-loader
 RUN . /app/bin/activate && python manage.py collectstatic
 
-FROM node:8.15.1-jessie AS wpack
+FROM node:14.6.0-stretch AS node-bundler
 ADD . /app/
 WORKDIR /app/
 RUN npm install .
@@ -23,9 +23,9 @@ RUN npx webpack --mode=production
 
 FROM app-prewebpack-container as app-container
 
-COPY --chown=acait:acait --from=wpack /app/endorsement/static/endorsement/bundles/* /app/endorsement/static/endorsement/bundles/
-COPY --chown=acait:acait --from=wpack /app/endorsement/static/ /static/
-COPY --chown=acait:acait --from=wpack /app/endorsement/static/webpack-stats.json /app/endorsement/static/webpack-stats.json
+COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/endorsement/bundles/* /app/endorsement/static/endorsement/bundles/
+COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/ /static/
+COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/webpack-stats.json /app/endorsement/static/webpack-stats.json
 
 FROM gcr.io/uwit-mci-axdd/django-test-container:1.3.1 as app-test-container
 

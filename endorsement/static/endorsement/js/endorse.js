@@ -255,10 +255,12 @@ var Endorse = (function () {
 
                     // restore relative placement
                     $('tr[data-netid="' + netid + '"][data-service="' + service + '"]')
-                        .removeClass('endorsee_row_even endorsee_row_odd' + 
-                                     'endorsement_row_first endorsement_row_first')
-                        .addClass('endorsement_row_' + (is_first ? 'first' : 'following'))
-                        .addClass('endorsee_row_' + (is_even ? 'even' : 'odd'));
+                        .removeClass('endorsement_row_first endorsement_row_following' +
+                                     ' endorsee_row_even endorsee_row_odd' +
+                                     ' top-border hidden-names')
+                        .addClass('endorsement_row_' +
+                                  (is_first ? 'first top-border' : 'following hidden-names') +
+                                  ' endorsee_row_' + (is_even ? 'even' : 'odd'));
 
                     endorsement_index += 1;
                 });
