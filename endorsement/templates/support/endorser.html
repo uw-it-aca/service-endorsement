@@ -8,8 +8,8 @@ h4 {font-weight: 900;}
 </style>
 <div class="container" style="max-width: 100%;">
 <h2>Provisioner Search</h2>
-<h5>
-Provision records associated with the provisioner netid.
+<h5 style="margin-bottom: 28px;">
+Use this page to look up provisioned netids for a specific provisioner.
 </h5>
 
 <form>
@@ -28,7 +28,7 @@ Provision records associated with the provisioner netid.
 
 <div id="endorsers">
 <div id="show-revoked" class="checkbox" style="display: none; padding-right: 20px;">
-  Revoked <input type="checkbox"{% if netid is False %}checked{% endif %} data-toggle="toggle" data-width="80" data-on="<span style='margin-left: -8px;'>Hidden</span>" data-off="<span>Shown</span>">
+  Revoked <input type="checkbox"{% if netid == '' %}checked{% endif %} data-toggle="toggle" data-width="80" data-on="<span style='margin-left: -8px;'>Hidden</span>" data-off="<span>Shown</span>">
 </div>
 <table id="endorser-table" class="endorser-table table table-striped">
   <thead>

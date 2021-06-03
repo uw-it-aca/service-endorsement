@@ -8,6 +8,9 @@ h4 {font-weight: 900;}
 </style>
 <div class="container" style="max-width: 100%;">
 <h2>Provisioned User Search</h2>
+<h5 style="margin-bottom: 28px;">
+Use this page to look up provisioned netids.
+</h5>
 
 <form>
   {% csrf_token %}
@@ -25,7 +28,7 @@ h4 {font-weight: 900;}
 
 <div id="endorsees">
 <div id="show-revoked" class="checkbox" style="display: none; padding-right: 20px;">
-  Revoked <input type="checkbox"{% if netid is False %}checked{% endif %} data-toggle="toggle" data-width="80" data-on="<span style='margin-left: -8px;'>Hidden</span>" data-off="<span>Shown</span>">
+  Revoked <input type="checkbox"{% if netid == '' %}checked{% endif %} data-toggle="toggle" data-width="80" data-on="<span style='margin-left: -8px;'>Hidden</span>" data-off="<span>Shown</span>">
 </div>
 <table id="endorsee-table" class="endorsee-table table table-striped">
   <thead>

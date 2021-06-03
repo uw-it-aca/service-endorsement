@@ -14,7 +14,7 @@ from string import ascii_uppercase
                   name='dispatch')
 class EndorserSearch(TemplateView):
 
-    template_name = 'admin/endorser.html'
+    template_name = 'support/endorser.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
