@@ -4,7 +4,7 @@ import logging
 from endorsement.views.rest_dispatch import RESTDispatch
 from endorsement.models import Endorser, Endorsee, EndorsementRecord
 from endorsement.services import endorsement_services, get_endorsement_service
-from endorsement.util.auth import AdminGroupAuthentication
+from endorsement.util.auth import SupportGroupAuthentication
 from endorsement.dao.notification import (
     _get_endorsed_unnotified,
     _create_expire_notice_message,
@@ -24,7 +24,7 @@ class Notification(RESTDispatch):
     """
     Return Notification message based on data
     """
-    authentication_classes = [AdminGroupAuthentication]
+    authentication_classes = [SupportGroupAuthentication]
 
     def post(self, request, *args, **kwargs):
         notification = request.data.get('notification', None)
