@@ -6,7 +6,7 @@ from endorsement.models import EndorsementRecord
 from endorsement.util.log import log_data_error_response
 from endorsement.views.rest_dispatch import RESTDispatch
 from datetime import date, time, datetime, timedelta
-from endorsement.util.auth import AdminGroupAuthentication
+from endorsement.util.auth import SupportGroupAuthentication
 import re
 
 
@@ -17,7 +17,7 @@ class Statistics(RESTDispatch):
     """
     Show endorsements for endorsee
     """
-    authentication_classes = [AdminGroupAuthentication]
+    authentication_classes = [SupportGroupAuthentication]
 
     def get(self, request, *args, **kwargs):
         stats = {}
@@ -166,8 +166,8 @@ class Statistics(RESTDispatch):
                     'data': data
                 }
 
-        except Exception:
-            log_data_error_response(logger)
+        except Exception as ex:
+            log_data_error_response(logger, "{}".format(ex))
             return RESTDispatch().error_response(
                 543, "Data not available due to an error.")
 

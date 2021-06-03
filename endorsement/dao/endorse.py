@@ -134,6 +134,11 @@ def get_endorsements_by_endorser(endorser):
     return EndorsementRecord.objects.get_endorsements_for_endorser(endorser)
 
 
+def get_all_endorsements_by_endorser(endorser):
+    return EndorsementRecord.objects.get_all_endorsements_for_endorser(
+        endorser)
+
+
 def get_endorsements_for_endorsee(endorsee, category_code=None):
     return EndorsementRecord.objects.get_endorsements_for_endorsee(
         endorsee, category_code)

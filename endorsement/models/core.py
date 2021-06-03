@@ -134,6 +134,10 @@ class EndorsementRecordManager(models.Manager):
     def get_endorsements_for_endorser(self, endorser, category_code=None):
         return self.get_endorsement(endorser, None, category_code)
 
+    def get_all_endorsements_for_endorser(self, endorser, category_code=None):
+        return super(EndorsementRecordManager, self).get_queryset().filter(
+            endorser=endorser)
+
     def get_endorsements_for_endorsee(self, endorsee, category_code=None):
         return self.get_endorsement(None, endorsee, category_code)
 
