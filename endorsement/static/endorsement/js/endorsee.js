@@ -103,6 +103,7 @@ var displayEndorsedUWNetIDs = function(endorsements) {
         }
 
         $('div.dt-buttons button').removeAttr('disabled');
+        window.history.pushState({}, '', window.location.pathname + '?netid=' + $('input#endorsee').val());
     } else {
         source = $("#admin-endorsee-empty-search-result").html();
         template = Handlebars.compile(source);
