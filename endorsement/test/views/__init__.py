@@ -4,10 +4,12 @@ from unittest2 import skipIf
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import Client
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
+from userservice.user import UserServiceMiddleware
 
 
 def _missing_url(name, kwargs=None):
@@ -60,7 +62,7 @@ view_test_override = override_settings(
         'django_mobileesp.middleware.UserAgentDetectionMiddleware',
         'userservice.user.UserServiceMiddleware',
         ),
-    )
+)
 
 
 @view_test_override
@@ -78,7 +80,16 @@ class TestViewApi(TestCase):
         self._set_user(netid)
         request = RequestFactory().get(url)
         request.user = get_user(netid)
+        SessionMiddleware().process_request(request)
         request.session = self.client.session
+        request.session['samlUserdata'] = settings.MOCK_SAML_ATTRIBUTES if (
+            netid == 'jstaff') else {
+                'uwnetid': netid,
+                'affiliations': ['student', 'staff', 'employee'],
+                'isMemberOf': ['u_test_group', 'u_test_another_group']}
+        UserServiceMiddleware().process_request(request)
+        request.session.save()
+
         return request
 
     def get_response(self, url_name, **kwargs):

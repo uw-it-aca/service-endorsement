@@ -7,14 +7,17 @@
 h4 {font-weight: 900;}
 </style>
 <div class="container" style="max-width: 100%;">
-<h2>Provisioned User Search</h2>
+<h2>Provisioner Search</h2>
+<h5>
+Provision records associated with the provisioner netid.
+</h5>
 
 <form>
   {% csrf_token %}
   <div class="form-inline">
-    <label for="endorsee">Provisionee:</label>
-    <input type="text" class="form-control" id="endorsee" size="20" value="{{ netid }}">
-    <button type="button" name="SearchEndorsee" id="search_endorsee" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search</button>
+    <label for="endorser">Provisioner:</label>
+    <input type="text" class="form-control" id="endorser" size="20" value="{{ netid }}">
+    <button type="button" name="SearchEndorser" id="search_endorser" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search</button>
 <!--
     <div class="alpha-search-list">
       Or list provisioned NetIDs alphabetically: {% for letter in alphabet_string %}<a class="alpha-search" href="javascript: void(0);">{{letter}}</a> {% endfor %}
@@ -23,16 +26,16 @@ h4 {font-weight: 900;}
   </div>
 </form>
 
-<div id="endorsees">
+<div id="endorsers">
 <div id="show-revoked" class="checkbox" style="display: none; padding-right: 20px;">
   Revoked <input type="checkbox"{% if netid is False %}checked{% endif %} data-toggle="toggle" data-width="80" data-on="<span style='margin-left: -8px;'>Hidden</span>" data-off="<span>Shown</span>">
 </div>
-<table id="endorsee-table" class="endorsee-table table table-striped">
+<table id="endorser-table" class="endorser-table table table-striped">
   <thead>
     <tr>
-      <th>Provisionee</th>
-      <th>Shared NetID</th>
       <th>Provisioner</th>
+      <th>Shared NetID</th>
+      <th>Provisionee</th>
       <th>Service</th>
       <th>Reason</th>
       <th>Email Date</th>
@@ -50,11 +53,11 @@ h4 {font-weight: 900;}
 </table>
 </div>
 
-{% include "handlebars/admin/endorsees.html" %}
+{% include "handlebars/admin/endorser.html" %}
 {% endblock %}
 
 {% block extra_js%}
-{% render_bundle 'endorsee' 'js' %}
+{% render_bundle 'endorser' 'js' %}
 
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
