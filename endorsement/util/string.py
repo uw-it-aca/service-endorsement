@@ -2,11 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-String routines
+String utilities
 """
 
 
-def listed_list(l):
+def listed_list(list_list):
     """Return presentable string from given list
     """
-    return '{} and {}'.format(', '.join(l[:-1]), l[-1]) if len(l) > 1 else l[0]
+    return '{} and {}'.format(', '.join(list_list[:-1]), list_list[-1]) if (
+        len(list_list) > 1) else list_list[0]
