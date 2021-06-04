@@ -19,6 +19,7 @@ from endorsement.dao.user import get_endorsee_model
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.uwnetid_categories import shared_netid_has_category
 from endorsement.exceptions import NoEndorsementException, UnrecognizedUWNetid
+from endorsement.util.string import listed_list
 
 from abc import ABC, abstractmethod
 from importlib import import_module
@@ -110,6 +111,7 @@ class EndorsementServiceBase(ABC):
         if self.valid_person_endorsee(endorsee):
             return True
 
+        # grandfathered non-person endorsees
         for supported in get_supported_resources_for_netid(endorser.netid):
             if endorsee.netid == supported.name:
                 return self.valid_supported_netid(supported, endorser)
@@ -249,21 +251,15 @@ def service_context(service):
     }
 
 
-def service_contexts():
-    return {service.service_name: service_context(service)
-            for service in endorsement_services()}
-
-
-def person_service_contexts(endorsee):
+def service_contexts(endorsee=None):
     return {service.service_name: service_context(service)
             for service in endorsement_services() if (
-                    service.valid_person_endorsee(endorsee))}
+                    endorsee is None
+                    or service.valid_person_endorsee(endorsee))}
 
 
 def service_names(service_list=None):
-    names = service_list if service_list else service_name_list()
-    return '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
-        len(names) > 1) else names[0]
+    return listed_list(service_list if service_list else service_name_list())
 
 
 def service_name_list():

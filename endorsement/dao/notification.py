@@ -12,6 +12,7 @@ from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.exceptions import EmailFailureException
 from endorsement.policy import endorsements_to_warn
+from endorsement.util.string import listed_list
 import re
 import logging
 
@@ -67,8 +68,7 @@ def _create_endorsee_message(endorser):
                 v['service_link'] = service.service_link
 
     subject = "Action Required: Your new access to {0}".format(
-        '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
-            len(names) > 1) else names[0])
+        listed_list(names))
 
     text_template = "email/endorsee.txt"
     html_template = "email/endorsee.html"
@@ -163,10 +163,7 @@ def _create_endorser_message(endorsed):
             if v['svc'] == service.service_name:
                 v['service_link'] = service.service_link
 
-    subject = "Shared NetID access to {}".format(
-        '{} and {}'.format(', '.join(services[:-1]), services[-1]) if (
-            len(services) > 1) else services[0])
-
+    subject = "Shared NetID access to {}".format(listed_list(services))
     text_template = "email/endorser.txt"
     html_template = "email/endorser.html"
 
