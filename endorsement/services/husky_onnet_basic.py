@@ -29,15 +29,6 @@ class EndorsementService(EndorsementServiceBase):
         return [Subscription.SUBS_CODE_HUSKY_ONNET_EXTENSION]
 
     @property
-    def shared_params(self):
-        return {
-            'roles': [],
-            'types': [],
-            'excluded_categories': [],
-            'allow_existing_endorsement': False
-        }
-
-    @property
     def service_renewal_statement(self):
         return ""
 

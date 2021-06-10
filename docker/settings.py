@@ -39,6 +39,7 @@ if not os.getenv("ENV") == "localdev":
         APP_SERVER_BASE = 'https://provision.uw.edu'
 
 INSTALLED_APPS += [
+    'django.contrib.humanize',
     'webpack_loader',
     'endorsement',
     'userservice',
