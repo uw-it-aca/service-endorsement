@@ -4,13 +4,12 @@ import logging
 from django.conf import settings
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
-from endorsement.services import endorsement_services
+from endorsement.services import endorsement_services, is_valid_endorser
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model,
     get_endorsee_email_model, is_shared_netid)
 from endorsement.dao.endorse import (
     get_endorsements_for_endorsee, get_endorsements_by_endorser)
-from endorsement.dao.gws import is_valid_endorser
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
@@ -118,23 +117,23 @@ class Validate(RESTDispatch):
     def _endorsement(self, endorser, endorsee, is_permitted,
                      endorsements, endorsement_category):
         try:
-            active, endorsed = is_permitted(endorser, endorsee)
             endorsement = {
-                'category_name': dict(
-                    EndorsementRecord.CATEGORY_CODE_CHOICES)[
-                        endorsement_category],
-                'active': active,
-                'endorsers': [],
-                'self_endorsed': endorsed
+                'category_name': self.category_name(endorsement_category),
+                'endorsers': []
             }
+
+            active, endorsed = is_permitted(endorser, endorsee)
+            endorsement['active'] = active
+            endorsement['self_endorsed'] = endorsed
 
             for e in endorsements:
                 if (e.category_code == endorsement_category):
                     endorsement['endorsers'].append(e.endorser.json_data())
 
         except Exception as ex:
-            endorsement = {
-                'error': "{0}".format(ex)
-            }
+            endorsement['error'] = '{0}'.format(ex)
 
         return endorsement
+
+    def category_name(self, category_code):
+        return dict(EndorsementRecord.CATEGORY_CODE_CHOICES)[category_code]

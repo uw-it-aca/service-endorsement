@@ -3,15 +3,15 @@
 import json
 from django.urls import reverse
 from endorsement.models import EndorsementRecord
-from endorsement.services import get_endorsement_service
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.test.services import ServicesApiTest
+from endorsement.services import get_endorsement_service
 
 
-class TestZoomBasicService(ServicesApiTest):
+class TestHuskyOnNetBasicService(ServicesApiTest):
     @property
     def service(self):
-        return get_endorsement_service('zoom-basic')
+        return get_endorsement_service('husky-onnet-basic')
 
     def test_valid_endorser(self):
         self.assertTrue(self.service.valid_endorser('jstaff'))
@@ -28,7 +28,7 @@ class TestZoomBasicService(ServicesApiTest):
 
     def test_shared(self):
         endorser = get_endorser_model('jstaff')
-        endorsee = get_endorsee_model('cpnebeng')
+        endorsee = get_endorsee_model('wadm_jstaff')
 
         self.assertEqual(len(
             EndorsementRecord.objects.get_endorsements_for_endorser(
@@ -45,9 +45,9 @@ class TestZoomBasicService(ServicesApiTest):
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 10)
-        self.assertEquals(len(endorsed), 1)
-        self.assertTrue('cpnebeng' in endorsible)
+        self.assertEquals(len(endorsible), 0)
+        self.assertEquals(len(endorsed), 0)
+        self.assertFalse('cpnebeng' in endorsible)
         self.assertFalse('wadm_jstaff' in endorsed)
 
     def test_endorse_netid(self):
@@ -60,18 +60,17 @@ class TestZoomBasicService(ServicesApiTest):
                 "wadm_jstaff": {
                     "name": "ADMIN NETID JSTAFF",
                     "email": "wadm_jstaff@uw.edu",
-                    'store': True,
+                    "store": True,
                     self.service.service_name: {
                         "state": True,
-                        "store": True,
                         "reason": "testing"
                     }
                 },
-                # endorse invalid shared
+                # endorse valid shared
                 "cpnebeng": {
                     "name": "cpneb eng",
                     "email": "cpnebeng@uw.edu",
-                    'store': True,
+                    "store": True,
                     self.service.service_name: {
                         "state": True,
                         "reason": "testing"
@@ -80,8 +79,7 @@ class TestZoomBasicService(ServicesApiTest):
             }
         })
 
-        self.assertEqual(len(endorsible), 1)
+        self.assertEqual(len(endorsible), 0)
         self.assertEqual(len(endorsing), 0)
-        self.assertEqual(len(endorsed), 1)
-        self.assertEqual(len(errored), 1)
-        self.assertTrue('cpnebeng' in endorsed)
+        self.assertEqual(len(endorsed), 0)
+        self.assertEqual(len(errored), 2)

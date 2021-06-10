@@ -3,8 +3,7 @@
 import logging
 from endorsement.models import EndorsementRecord
 from userservice.user import UserService
-from endorsement.services import endorsement_services
-from endorsement.dao.gws import is_valid_endorser
+from endorsement.services import endorsement_services, is_valid_endorser
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.endorse import get_endorsements_for_endorsee

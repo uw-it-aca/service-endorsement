@@ -5,8 +5,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
 from userservice.user import UserService
-from endorsement.services import service_contexts
-from endorsement.dao.gws import is_valid_endorser
+from endorsement.services import service_contexts, is_valid_endorser
 from endorsement.views.session import log_session_key
 from endorsement.views.rest_dispatch import invalid_session, handle_exception
 import logging

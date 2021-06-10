@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 import logging
 from userservice.user import UserService
-from endorsement.services import get_endorsement_service, service_contexts
+from endorsement.services import (
+    get_endorsement_service, service_contexts, is_valid_endorser)
 from endorsement.exceptions import UnrecognizedUWNetid
-from endorsement.dao.gws import is_valid_endorser
 from endorsement.dao.user import get_endorser_model, get_endorsee_email_model
 from endorsement.dao.endorse import (
     get_endorsements_by_endorser, get_endorsements_for_endorsee)

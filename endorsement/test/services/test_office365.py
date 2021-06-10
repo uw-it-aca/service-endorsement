@@ -13,6 +13,16 @@ class TestOffice365Service(ServicesApiTest):
     def service(self):
         return get_endorsement_service('o365')
 
+    def test_valid_endorser(self):
+        self.assertTrue(self.service.valid_endorser('jstaff'))
+        self.assertTrue(self.service.valid_endorser('jfaculty'))
+
+        self.assertFalse(self.service.valid_endorser("notareal_uwnetid"))
+        self.assertFalse(self.service.valid_endorser("nomockid"))
+
+        # test exception
+        self.assertRaises(Exception, self.service.valid_endorser, None)
+
     def test_endorsed(self):
         self._test_endorsed()
 

@@ -35,23 +35,34 @@
 
   <td class="endorsed-status-icon">
   {{#unless endorsement.is_revoked}}
-    {{#if endorsement.datetime_endorsed}}
-      {{#if this.expired}}
+    {{#if endorsement.error }}
         <span class="fa fa-exclamation-triangle text-warning"></span>
-      {{else}}
-        {{#if this.expiring}}
-        <span class="fa fa-exclamation-triangle text-warning"></span>
-        {{else}}
-          <span class="fa fa-check text-success"></span>
-        {{/if}}
-      {{/if}}
     {{else}}
-      {{#if endorsement.accept_id}}
-        <span class="fa fa-exclamation-triangle text-warning"></span>
+      {{#if endorsement.datetime_endorsed}}
+        {{#if this.expired}}
+          <span class="fa fa-exclamation-triangle text-warning"></span>
+        {{else}}
+          {{#if this.expiring}}
+          <span class="fa fa-exclamation-triangle text-warning"></span>
+          {{else}}
+            <span class="fa fa-check text-success"></span>
+          {{/if}}
+        {{/if}}
+      {{else}}
+        {{#if endorsement.accept_id}}
+          <span class="fa fa-exclamation-triangle text-warning"></span>
+        {{/if}}
       {{/if}}
     {{/if}}
   {{/unless}}
   </td>
+
+  {{#if endorsement.error }}
+    <td class="endorsed-error" colspan="3">
+      <span>Problem Determining Provision Status</span>
+      Error: {{endorsement.error}}
+    </td>
+  {{else}}
 
   <td class="endorsed-status" data-csv-status>
   {{#if  endorsement.is_revoked}}
@@ -117,6 +128,9 @@
       <button type="button" name="Provision service" class="btn btn-default endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
   {{/unless}}
   </td>
+
+  {{/if}}
+
 </tr>
 
 </script>
