@@ -78,20 +78,18 @@ class EndorsementServiceBase(ABC):
         pass
 
     @property
-    @abstractmethod
     def shared_params(self):
-        return {
-            'roles': [],
-            'types': [],
-            'excluded_categories': [],
-            'allow_existing_endorsement': False
-        }
+        return None
 
     @property
     def supports_shared_netids(self):
-        return ((len(self.shared_params['roles']) > 0) or
-                (self.shared_params['types'] is not None and
-                 len(self.shared_params['types']) > 0))
+        return (self.shared_params is not None
+                and (('roles' in self.shared_params
+                      and self.shared_params['roles'] is not None
+                      and len(self.shared_params['roles']) > 0)
+                     or ('types' in self.shared_params
+                         and self.shared_params['types'] is not None
+                         and len(self.shared_params['types']) > 0)))
 
     @property
     def category_name(self):
