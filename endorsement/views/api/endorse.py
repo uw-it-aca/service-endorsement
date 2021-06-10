@@ -4,8 +4,7 @@ import logging
 from userservice.user import UserService
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model, get_endorsee_email_model)
-from endorsement.services import endorsement_services
-from endorsement.dao.gws import is_valid_endorser
+from endorsement.services import endorsement_services, is_valid_endorser
 from endorsement.dao.pws import get_person
 from endorsement.dao.endorse import get_endorsements_for_endorsee
 from endorsement.views.rest_dispatch import (
@@ -63,7 +62,9 @@ class Endorse(RESTDispatch):
 
                 for service in endorsement_services():
                     if service.service_name in to_endorse:
-                        if service.valid_endorsee(endorsee, endorser):
+                        if (service.valid_endorser(endorser.netid)
+                                and service.valid_endorsee(
+                                    endorsee, endorser)):
                             self._endorse(to_endorse, service,
                                           endorser, endorser_json,
                                           endorsee, acted_as,

@@ -11,11 +11,11 @@ listed individually or all grouped together by "['*']".
 """
 
 from django.conf import settings
-from endorsement.models import EndorsementRecord
+from endorsement.models import Endorsee, EndorsementRecord
+from endorsement.dao.gws import is_group_member
 from endorsement.dao.endorse import (
     is_permitted, get_endorsement, initiate_endorsement,
     store_endorsement, clear_endorsement)
-from endorsement.dao.user import get_endorsee_model
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.uwnetid_categories import shared_netid_has_category
 from endorsement.exceptions import NoEndorsementException, UnrecognizedUWNetid
@@ -25,6 +25,9 @@ from abc import ABC, abstractmethod
 from importlib import import_module
 from os import listdir
 import re
+
+# default group containing valid endorsers
+ENDORSER_GROUP = getattr(settings, "VALID_ENDORSER_GROUP", "uw_employee")
 
 # Services available for endorsement
 ENDORSEMENT_SERVICES = None
@@ -107,6 +110,9 @@ class EndorsementServiceBase(ABC):
     def get_endorsement(self, endorser, endorsee):
         return get_endorsement(endorser, endorsee, self.category_code)
 
+    def valid_endorser(self, uwnetid):
+        return is_group_member(uwnetid, ENDORSER_GROUP)
+
     def valid_endorsee(self, endorsee, endorser):
         if self.valid_person_endorsee(endorsee):
             return True
@@ -154,9 +160,11 @@ class EndorsementServiceBase(ABC):
         if self.shared_params['allow_existing_endorsement']:
             try:
                 self.get_endorsement(
-                    endorser, get_endorsee_model(resource.name))
+                    endorser, Endorsee.objects.get(netid=resource.name))
                 return True
-            except (NoEndorsementException, UnrecognizedUWNetid):
+            except (NoEndorsementException,
+                    UnrecognizedUWNetid,
+                    Endorsee.DoesNotExist):
                 pass
 
         return False
@@ -198,6 +206,20 @@ class EndorsementServiceBase(ABC):
             ][level - 1]
         except IndexError:
             return None
+
+
+def is_valid_endorser(uwnetid):
+    """
+    Return True if any service accepts netid as an endorser
+    """
+    for service in endorsement_services():
+        try:
+            if service.valid_endorser(uwnetid):
+                return True
+        except Exception:
+            pass
+
+    return False
 
 
 def endorsement_services():

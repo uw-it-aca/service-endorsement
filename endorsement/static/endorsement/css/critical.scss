@@ -294,6 +294,9 @@ a {
   .endorsed-reason { min-width: 120px; }
   .endorsed-action { white-space: nowrap; }
   .aggregate_action { margin-right: 10px; }
+  .endorsed-error {
+      span { display: block; color: red; }
+  }
 }
 
 label.accept_responsibility {
