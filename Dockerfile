@@ -1,4 +1,4 @@
-FROM gcr.io/uwit-mci-axdd/django-container:1.3.1 as app-prewebpack-container
+FROM gcr.io/uwit-mci-axdd/django-container:1.3.3 as app-prewebpack-container
 
 USER root
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
@@ -27,7 +27,7 @@ COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/endorsement
 COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/ /static/
 COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/webpack-stats.json /app/endorsement/static/webpack-stats.json
 
-FROM gcr.io/uwit-mci-axdd/django-test-container:1.3.1 as app-test-container
+FROM gcr.io/uwit-mci-axdd/django-test-container:1.3.3 as app-test-container
 
 COPY --from=app-container /app/ /app/
 COPY --from=app-container /static/ /static/
