@@ -33,7 +33,7 @@ setup(
         'urllib3>=1.25.3,<1.26',
         'unittest2',
         'pytz',
-        'psycopg2',
+        'psycopg2>=2.8,<2.9',
         'lxml==4.2.5,<4.3',
         'uw-memcached-clients~=1.0.5',
         'UW-RestClients-Core~=1.3.3',
