@@ -22,9 +22,18 @@ class PersistentMessages(TemplateView):
         tag_group, created = TagGroup.objects.update_or_create(
             name=tag_group_name)
 
+        tags = list(Tag.objects.all().values_list('name', flat=True))
+
         for service in endorsement_services():
             tag, created = Tag.objects.update_or_create(
                 name=service.service_name, group=tag_group)
+            try:
+                tags.remove(tag.name)
+            except ValueError:
+                pass
+
+        for tag in tags:
+            Tag.objects.get(name=tag).delete()
 
         return redirect(reverse('manage_persistent_messages'))
 
