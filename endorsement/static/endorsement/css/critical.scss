@@ -289,12 +289,14 @@ a {
     .endorsed-netid, .endorsed-name { color: transparent; }
   }
   .endorsed-netid { width: 12rem; white-space: nowrap; }
-  .endorsed-name { min-width: 200px; border-top: none; border-right: 1px solid #ddd; }
-  .endorsed-service-name { xwidth: 150px; }
+  .endorsed-name { border-top: none; border-right: 1px solid #ddd; }
   .endorsed-status-icon { width: 20px; }
-  .endorsed-status { width: 9em; }
-  .endorsed-reason { width: 12em; }
-  .endorsed-action { width: 12em; white-space: nowrap; }
+  .endorsed-status {
+      width: 15rem;
+      p { font-size: smaller; }
+  }
+  .endorsed-reason { width: 17rem; }
+  .endorsed-action { width: 19rem; white-space: nowrap; }
   .aggregate_action { margin-right: 10px; }
   .endorsed-error {
       span { display: block; color: red; }
