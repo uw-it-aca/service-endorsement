@@ -36,4 +36,3 @@ class PersistentMessages(TemplateView):
             Tag.objects.get(name=tag).delete()
 
         return redirect(reverse('manage_persistent_messages'))
-
