@@ -8,10 +8,10 @@ from endorsement.test.services import ServicesApiTest
 from endorsement.services import get_endorsement_service
 
 
-class TestHuskyOnNetBasicService(ServicesApiTest):
+class TestHuskyOnNetAffiliateService(ServicesApiTest):
     @property
     def service(self):
-        return get_endorsement_service('husky-onnet-basic')
+        return get_endorsement_service('husky-onnet-affiliate')
 
     def test_valid_endorser(self):
         self.assertTrue(self.service.valid_endorser('jstaff'))
