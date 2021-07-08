@@ -204,7 +204,7 @@ class EndorsementRecord(
         (CANVAS_PROVISIONEE, "Canvas and Panopto"),
         (ZOOM_LICENSED_PROVISIONEE, "UW Zoom Licensed"),
         (ZOOM_BASIC_PROVISIONEE, "UW Zoom Basic"),
-        (HUSKY_ONNET_EXT_PROVISIONEE, "Husky OnNet Basic"),
+        (HUSKY_ONNET_EXT_PROVISIONEE, "Husky OnNet for Affiliates"),
     )
 
     endorser = models.ForeignKey(Endorser,
