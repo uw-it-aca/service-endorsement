@@ -288,11 +288,15 @@ a {
   tr.hidden-names {
     .endorsed-netid, .endorsed-name { color: transparent; }
   }
-  .endorsed-name { min-width: 200px; border-top: none; border-right: 1px solid #ddd; }
-  .endorsed-service-name { width: 150px;  white-space: nowrap; }
+  .endorsed-netid { width: 12rem; white-space: nowrap; }
+  .endorsed-name { border-top: none; border-right: 1px solid #ddd; }
   .endorsed-status-icon { width: 20px; }
-  .endorsed-reason { min-width: 120px; }
-  .endorsed-action { white-space: nowrap; }
+  .endorsed-status {
+      width: 15rem;
+      p { font-size: smaller; }
+  }
+  .endorsed-reason { width: 17rem; }
+  .endorsed-action { width: 19rem; white-space: nowrap; }
   .aggregate_action { margin-right: 10px; }
   .endorsed-error {
       span { display: block; color: red; }
