@@ -73,6 +73,8 @@ var ManageSharedNetids = (function () {
                     _sharedEndorseSuccessModal(data.endorsed.endorsed);
                 }, 500);
             }
+
+            Banner.renderMessages(data.endorsed.messages);
         }).on('endorse:UWNetIDsEndorseError', function (e, error) {
             console.log('error: ' + error);
         }).on('endorse:UWNetIDsRevokeSuccess', function (e, data) {

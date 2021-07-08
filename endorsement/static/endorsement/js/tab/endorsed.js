@@ -187,6 +187,7 @@ var ManageProvisionedServices = (function () {
             Notify.error('Validation error: ' + error);
         }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.endorsed.endorsed);
+            Banner.renderMessages(data.endorsed.messages);
         }).on('endorse:UWNetIDsRenewSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.renewed.endorsed);
         }).on('endorse:UWNetIDsEndorseError', function (e, error) {

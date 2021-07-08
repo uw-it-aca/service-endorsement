@@ -7,6 +7,7 @@ from endorsement.dao.user import (
 from endorsement.services import endorsement_services, is_valid_endorser
 from endorsement.dao.pws import get_person
 from endorsement.dao.endorse import get_endorsements_for_endorsee
+from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
@@ -38,6 +39,7 @@ class Endorse(RESTDispatch):
         endorser = get_endorser_model(netid)
         endorser_json = endorser.json_data()
         endorser_pws = get_person(netid)
+        active_services = set()
 
         endorsed = {
             'endorser': endorser_json,
@@ -69,6 +71,8 @@ class Endorse(RESTDispatch):
                                           endorser, endorser_json,
                                           endorsee, acted_as,
                                           endorsements['endorsements'])
+
+                            active_services.add(service.service_name)
                         else:
                             err = 'Shared netid {} not allowed for {}'.format(
                                 endorsee.netid, service.category_name)
@@ -100,6 +104,11 @@ class Endorse(RESTDispatch):
                     endorsements['name'] = ""
 
             endorsed['endorsed'][endorsee_netid] = endorsements
+
+            messages = get_persistent_messages()
+            messages.update(get_persistent_messages(
+                tags=list(active_services)))
+            endorsed['messages'] = messages
 
         return self.json_response(endorsed)
 

@@ -10,7 +10,7 @@ from endorsement.dao.endorse import (
     get_endorsements_by_endorser, get_endorsements_for_endorsee)
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
-from endorsement.util.persistent_messages import get_persistent_messages
+from endorsement.dao.persistent_messages import get_persistent_messages
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +30,7 @@ class Endorsed(RESTDispatch):
 
         endorser = get_endorser_model(netid)
         endorsed = {}
+        active_services = set()
         for er in get_endorsements_by_endorser(endorser):
             service = get_endorsement_service(er.category_code)
             if service is None:
@@ -53,6 +54,8 @@ class Endorsed(RESTDispatch):
             endorsed[er.endorsee.netid]['endorsements'][
                 service.service_name] = er.json_data()
 
+            active_services.add(service.service_name)
+
             endorsers = []
             for ee in get_endorsements_for_endorsee(
                     er.endorsee, category_code=er.category_code):
@@ -61,8 +64,11 @@ class Endorsed(RESTDispatch):
             endorsed[er.endorsee.netid]['endorsements'][
                 service.service_name]['endorsers'] = endorsers
 
+        messages = get_persistent_messages()
+        messages.update(get_persistent_messages(tags=list(active_services)))
+
         return self.json_response({
             'endorser': endorser.json_data(),
             'endorsed': endorsed,
-            'messages': get_persistent_messages([], {})
+            'messages': messages
         })

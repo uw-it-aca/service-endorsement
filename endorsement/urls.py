@@ -7,6 +7,7 @@ from endorsement.views.accept import accept
 from endorsement.views.support.endorser_search import EndorserSearch
 from endorsement.views.support.endorsee_search import EndorseeSearch
 from endorsement.views.support.notifications import EndorseeNotifications
+from endorsement.views.support.persistent_messages import PersistentMessages
 from endorsement.views.support.endorsement_statistics import (
     EndorsementStatistics)
 from endorsement.views.api.validate import Validate
@@ -34,6 +35,8 @@ urlpatterns = [
             name='endorsee_notifications'),
     re_path(r'^support/override/?', userservice_override,
             name='userservice_override'),
+    re_path(r'^support/persistent_messages/?', PersistentMessages.as_view(),
+            name='manage_persistent_messages_init'),
     re_path(r'^api/v1/validate', Validate.as_view(), name='validate_api'),
     re_path(r'^api/v1/endorsee/(?P<endorsee>.+)$',
             Endorsee.as_view(), name='endorsee_api'),
