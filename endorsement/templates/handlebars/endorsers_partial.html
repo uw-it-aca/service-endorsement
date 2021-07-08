@@ -71,16 +71,16 @@
     {{#if  endorsement.datetime_endorsed}}
       {{#if this.expired}}
         <span class="significant text-danger">Expired</span>
-        <br />Expired on {{endorsement.expires}} ({{endorsement.expires_relative}})
+        <p>Expired on {{endorsement.expires}} ({{endorsement.expires_relative}})</p>
       {{else}}
         {{#if this.expiring}}
           <span class="significant text-danger expiring-service">Expiring</span>
-          <br />Expires {{endorsement.expires}} ({{endorsement.expires_relative}})
+          <p>Expires {{endorsement.expires}} ({{endorsement.expires_relative}})
           <br /><span class="significant">Renewal may be required.</span>
-          <br />User may lose access and their files may be deleted.
+          <br />User may lose access and their files may be deleted.</p>
         {{else}}
           <span class="significant">Provisioned</span>
-          <br />Renew by {{endorsement.expires}} ({{endorsement.expires_relative}})
+          <p>Renew by {{endorsement.expires}}<br />({{endorsement.expires_relative}})</p>
         {{/if}}
       {{/if}}
     {{else}}
