@@ -87,9 +87,9 @@
       {{#if endorsement.accept_id}}
         <span class="significant">Pending Acceptance</span>
         {{#if endorsement.datetime_emailed}}
-        <br />The provisionee has yet to accept the terms and conditions of use. You can resend the acceptance link to the provisionee to complete the provisioning process.
+        <p>The provisionee has yet to accept the terms and conditions of use. You can resend the acceptance link to the provisionee to complete the provisioning process.</p>
         {{else}}
-        <br />The provisionee will be receiving email soon instructing them to confirm the terms and conditions of use.
+        <p>The provisionee will be receiving email soon instructing them to confirm the terms and conditions of use.</p>
         {{/if}}
       {{else}}
         {{#if endorsement.active }}
