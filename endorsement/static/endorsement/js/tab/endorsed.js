@@ -5,6 +5,7 @@ import { Endorse } from "../endorse.js";
 import { Revoke } from "../revoke.js";
 import { Renew } from "../renew.js";
 import { Reasons } from "../reasons.js";
+import { Banner } from "../banner.js";
 import { Notify } from "../notify.js";
 
 var ManageProvisionedServices = (function () {
@@ -66,6 +67,8 @@ var ManageProvisionedServices = (function () {
                 pending.appendTo($(this));
             }
         });
+
+        Banner.renderMessages(endorsed.messages);
     },
 
     _exportProvisionedToCSV = function() {

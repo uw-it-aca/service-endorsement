@@ -5,6 +5,7 @@ import { Endorse } from "../endorse.js";
 import { Revoke } from "../revoke.js";
 import { Renew } from "../renew.js";
 import { Reasons } from "../reasons.js";
+import { Banner } from "../banner.js";
 
 var ManageSharedNetids = (function () {
     var content_id = 'shared',
@@ -131,6 +132,8 @@ var ManageSharedNetids = (function () {
                     }
                 }
             });
+
+            Banner.renderMessages(shared.messages);
         } else {
             source = $("#no-shared-netids-content").html();
             template = Handlebars.compile(source);

@@ -1,0 +1,23 @@
+{% verbatim %}
+<script id="persistent-messages" type="text/x-handlebars-template">
+    {{#if messages}}
+    <div class="alert endorsement-persistent-message-alert alert-{{ message_level }} hidden-print" role="alert">
+      {{#each messages }}
+    <div class="endorsement-persistent-message" {{#unless @last}}xstyle="margin-bottom:10px;{{/unless}}" data-message-hash="{{hash}}">
+          <div class="message-icon"><i class="fa fa-{{#equals ../message_level 'success'}}check-circle{{/equals}}{{#equals ../message_level 'info'}}exclamation-circle{{/equals}}{{#equals ../message_level 'warning'}}exclamation-triangle{{/equals}}{{#equals ../message_level 'danger'}}minus-circle{{/equals}} fa-lg"></i></div>
+          <div class="message-text">{{{message}}}</div>
+        </div>
+      {{/each}}
+    </div>
+    {{/if}}
+</script>
+{% endverbatim %}
+
+{% verbatim %}
+<script id="persistent-message" type="text/x-handlebars-template">
+    <div class="endorsement-persistent-message" data-message-hash="{{hash}}" xstyle="margin-bottom:10px;">
+      <div class="message-icon"><i class="fa fa-exclamation-circle fa-lg"></i></div>
+      <div class="message-text">{{{message}}}</div>
+    </div>
+</script>
+{% endverbatim %}

@@ -10,6 +10,7 @@ from endorsement.dao.endorse import (
     get_endorsements_by_endorser, get_endorsements_for_endorsee)
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
+from endorsement.util.persistent_messages import get_persistent_messages
 
 
 logger = logging.getLogger(__name__)
@@ -62,5 +63,6 @@ class Endorsed(RESTDispatch):
 
         return self.json_response({
             'endorser': endorser.json_data(),
-            'endorsed': endorsed
+            'endorsed': endorsed,
+            'messages': get_persistent_messages([], {})
         })

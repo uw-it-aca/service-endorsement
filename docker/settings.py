@@ -45,6 +45,7 @@ INSTALLED_APPS += [
     'userservice',
     'django_client_logger',
     'supporttools',
+    'persistent_message',
     'rest_framework.authtoken',
 ]
 
@@ -79,6 +80,7 @@ PROVISION_SUPPORT_GROUP = 'u_acadev_provision_support'
 
 USERSERVICE_VALIDATION_MODULE = "endorsement.userservice_validation.validate"
 USERSERVICE_OVERRIDE_AUTH_MODULE = "endorsement.userservice_validation.can_override_user"
+PERSISTENT_MESSAGE_AUTH_MODULE = 'endorsement.views.support.can_manage_persistent_messages'
 USERSERVICE_ADMIN_GROUP='u_acadev_provision_admin'
 RESTCLIENTS_ADMIN_GROUP='u_acadev_provision_admin'
 AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.uw_group_service.UWGroupService'

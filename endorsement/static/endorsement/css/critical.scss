@@ -550,6 +550,16 @@ input[type=checkbox][id^=revoke_]:checked + label:before { content: "\f00d"; col
     }
 }
 
+.endorsement-persistent-message-alert {
+    .endorsement-persistent-message:last-child { margin-bottom: 0; }
+}
+
+.endorsement-persistent-message {
+    display: flex;
+    margin-bottom: 10px;
+    .message-icon { flex: 0 0 30px; }
+}
+
 td.error, tr.error {
     select {
         border: 1px solid red;

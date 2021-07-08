@@ -1,6 +1,8 @@
 # Copyright 2021 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 from django import template
+from django.conf import settings
+from uw_saml.utils import is_member_of_group
 
 
 def set_admin_wrapper_template(context):
@@ -22,3 +24,7 @@ def set_admin_wrapper_template(context):
         # This is a fine exception - there doesn't need to be an extra info
         # template
         pass
+
+
+def can_manage_persistent_messages(request):
+    return is_member_of_group(request, settings.PROVISION_ADMIN_GROUP)

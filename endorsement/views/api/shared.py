@@ -7,6 +7,7 @@ from endorsement.services import endorsement_services, is_valid_endorser
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.endorse import get_endorsements_for_endorsee
+from endorsement.util.persistent_messages import get_persistent_messages
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
@@ -81,5 +82,6 @@ class Shared(RESTDispatch):
 
         return self.json_response({
             'endorser': endorser.json_data(),
-            'shared': owned
+            'shared': owned,
+            'messages': get_persistent_messages([], {})
         })
