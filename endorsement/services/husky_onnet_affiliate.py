@@ -18,7 +18,7 @@ from uw_uwnetid.models import Subscription
 class EndorsementService(EndorsementServiceBase):
     @property
     def service_name(self):
-        return 'husky-onnet-basic'
+        return 'husky-onnet-affiliate'
 
     @property
     def category_code(self):

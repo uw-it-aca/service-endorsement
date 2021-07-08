@@ -4,6 +4,7 @@
 import { Reasons } from "./reasons.js";
 import { EmailEdit } from "./emailedit.js";
 import { Notify } from "./notify.js";
+import { Banner } from "./banner.js";
 
 var Endorse = (function () {
     var _loadContainer = function () {
@@ -274,10 +275,14 @@ var Endorse = (function () {
 
         updateExpireWarning = function () {
             if ($('.expiring-service').length > 0) {
-                $('.expiring_netids').removeClass('visually-hidden');
-
+                Banner.renderMessages({
+                    'info': [{
+                        'hash': 'xxxx',
+                        'message': $('#expiring_message').html()
+                    }]
+                });
             } else {
-                $('.expiring_netids').addClass('visually-hidden');
+                Banner.removeMessage('warning', 'xxxx');
             }
         };
 

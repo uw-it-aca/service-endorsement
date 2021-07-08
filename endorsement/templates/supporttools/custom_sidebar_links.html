@@ -12,6 +12,10 @@
 {% if is_support_admin|default_if_none:False %}
 <h3>General Tools</h3>
 <ul>
-    <li><a href="{% url 'userservice_override' %}">User Override</a></li>
+  <li><a href="{% url 'userservice_override' %}">User Override</a></li>
+  {% url 'manage_persistent_messages_init' as manage_messages_url %}
+  {% if manage_messages_url %}
+  <li><a href="{{ manage_messages_url }}">{{ persistent_message_link|default:"Persistent Messages" }}</a></li>
+  {% endif %}
 </ul>
 {% endif %}
