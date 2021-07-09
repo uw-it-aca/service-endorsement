@@ -28,6 +28,8 @@ class EndorsementStatistics(TemplateView):
         context = super().get_context_data(**kwargs)
         context['alphabet_string'] = ascii_uppercase
         context['endorsement_count'] = ER.objects.all().count()
+        context['endorser_count'] = ER.objects.values(
+            'endorser').distinct().count()
         context['active_endorsement_count'] = ER.objects.filter(
             is_deleted__isnull=True).count()
         context['new_endorsement_count'] = ER.objects.filter(
