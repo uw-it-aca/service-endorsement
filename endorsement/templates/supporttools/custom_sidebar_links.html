@@ -4,18 +4,18 @@
     <li><a href="{% url 'endorsee_search' %}">Provisionee Search</a></li>
     <li><a href="{% url 'endorser_search' %}">Provisioner Search</a></li>
     <li><a href="{% url 'endorsee_notifications' %}">Notifications</a></li>
-{% if is_support_admin|default_if_none:False %}
-    <li><a href="https://groups.uw.edu/group/{{ support_group }}" title="Add and remove people who can use these tools" target="_blank">Manage Support Admins</a></li>
-{% endif %}
 </ul>
 
 {% if is_support_admin|default_if_none:False %}
-<h3>General Tools</h3>
+<h3>Admin Tools</h3>
 <ul>
   <li><a href="{% url 'userservice_override' %}">User Override</a></li>
   {% url 'manage_persistent_messages_init' as manage_messages_url %}
   {% if manage_messages_url %}
   <li><a href="{{ manage_messages_url }}">{{ persistent_message_link|default:"Persistent Messages" }}</a></li>
   {% endif %}
+{% if is_support_admin|default_if_none:False %}
+    <li><a href="https://groups.uw.edu/group/{{ support_group }}" title="Add and remove people who can use these tools" target="_blank">Manage Support Admins</a></li>
+{% endif %}
 </ul>
 {% endif %}
