@@ -16,7 +16,10 @@ var Scroll = (function () {
         var $container = $(container);
 
         $container.mouseenter(function (e) {
-            _setNetidHash($container);
+            if (!$('#shared div.content > div').hasClass('loading') &&
+                !$('#provisioned > div').hasClass('loading')) {
+                _setNetidHash($container);
+            }
         });
     },
 
