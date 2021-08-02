@@ -57,7 +57,7 @@ def data_not_found(logger):
     return RESTDispatch().error_response(404, "Data not found")
 
 
-def data_error(logger):
-    log_data_error_response(logger)
+def data_error(logger, msg):
+    log_data_error_response(logger, msg)
     return RESTDispatch().error_response(
         543, "Data not available due to an error")

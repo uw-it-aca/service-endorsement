@@ -30,6 +30,8 @@ def initiate_endorsement(endorser, endorsee, reason, category_code):
         en.datetime_renewed = now if en.is_deleted else None
         en.datetime_expired = None
         en.is_deleted = None
+        en.accept_id = None
+        en.accept_salt = None
         en.save()
     except EndorsementRecord.DoesNotExist:
         en = EndorsementRecord.objects.create(
@@ -132,6 +134,11 @@ def get_endorsement(endorser, endorsee, category_code):
 
 def get_endorsements_by_endorser(endorser):
     return EndorsementRecord.objects.get_endorsements_for_endorser(endorser)
+
+
+def get_all_endorsements_by_endorser(endorser):
+    return EndorsementRecord.objects.get_all_endorsements_for_endorser(
+        endorser)
 
 
 def get_endorsements_for_endorsee(endorsee, category_code=None):

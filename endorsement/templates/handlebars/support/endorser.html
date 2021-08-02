@@ -1,0 +1,40 @@
+{% verbatim %}
+
+<script id="admin-endorser-search-result-endorser" type="text/x-handlebars-template">
+{{endorser.netid}}{{#if acted_as}} (by {{ acted_as }}){{/if}}
+</script>
+
+<script id="admin-endorser-search-result-endorser-shared" type="text/x-handlebars-template">
+{{#unless endorser.is_person}}shared{{/unless}}
+</script>
+
+<script id="admin-endorser-search-result-endorser-datetime-endorsed" type="text/x-handlebars-template">
+        {{#if datetime_endorsed}}
+        {{datetime_endorsed}}
+        {{else}}
+        {{#if accept_url}}
+        Pending <a fclass="copy_clipboard" data-toggle="tooltip" data-clipboard="{{accept_url}}" data-clipboard-msg="Link copied to clipboard" title="Copy acceptance link to clipboard" href="javascript:void(0);"><i class="fa fa-copy"></i></a>
+        {{/if}}
+        {{/if}}
+</script>
+
+<script id="admin-endorser-search-result-endorser-is-revoked" type="text/x-handlebars-template">
+{{#if is_revoked }}<span class="fa fa-check"></span><span style="display: none;">true</span>{{else}}<span style="display: none;">false</span>{{/if}}
+</script>
+
+<script id="admin-endorser-search-error" type="text/x-handlebars-template">
+<tr class="odd">
+  <td valign="top" colspan="13" class="dataTables_empty">
+    Error searching for Provision Requests<br />{{error}}
+  </td>
+</tr>
+</script>
+
+<script id="admin-endorser-empty-search-result" type="text/x-handlebars-template">
+<tr class="odd">
+  <td valign="top" colspan="13" class="dataTables_empty">
+    No Provisioned netids found for {{endorser}}
+  </td>
+</tr>
+</script>
+{% endverbatim %}

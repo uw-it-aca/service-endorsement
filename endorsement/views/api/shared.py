@@ -3,11 +3,11 @@
 import logging
 from endorsement.models import EndorsementRecord
 from userservice.user import UserService
-from endorsement.services import endorsement_services
-from endorsement.dao.gws import is_valid_endorser
+from endorsement.services import endorsement_services, is_valid_endorser
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.endorse import get_endorsements_for_endorsee
+from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
@@ -31,6 +31,7 @@ class Shared(RESTDispatch):
 
         endorser = get_endorser_model(netid)
         owned = []
+        active_services = set()
 
         for supported in get_supported_resources_for_netid(netid):
             # make sure endorsee is base-line valid (i.e.,
@@ -61,13 +62,17 @@ class Shared(RESTDispatch):
                     continue
 
                 try:
-                    endorsement = service.get_endorsement(
-                        endorser, endorsee).json_data()
+                    endorsement_record = service.get_endorsement(
+                        endorser, endorsee)
+                    endorsement = endorsement_record.json_data()
                     endorsement['endorser'] = endorser.json_data()
                     endorsement['endorsers'] = [
                         ee.endorser.json_data()
                         for ee in get_endorsements_for_endorsee(endorsee)
                         if ee.category_code == service.category_code]
+
+                    active_services.add(service.service_name)
+
                 except (EndorsementRecord.DoesNotExist,
                         NoEndorsementException):
                     endorsement = {
@@ -80,7 +85,11 @@ class Shared(RESTDispatch):
             if data['endorsements']:
                 owned.append(data)
 
+        messages = get_persistent_messages()
+        messages.update(get_persistent_messages(tags=list(active_services)))
+
         return self.json_response({
             'endorser': endorser.json_data(),
-            'shared': owned
+            'shared': owned,
+            'messages': messages
         })

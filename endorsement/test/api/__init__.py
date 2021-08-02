@@ -30,7 +30,7 @@ MockSAMLAttributes = {
     'eppn': ['jstaff@washington.edu'],
     'scopedAffiliations': ['employee@washington.edu', 'member@washington.edu'],
     'isMemberOf': ['u_test_group', 'u_test_another_group',
-                   'u_acadev_provision_support'],
+                   'u_acadev_provision_support', 'u_acadev_provision_admin'],
 }
 standard_test_override = override_settings(
     MIDDLEWARE_CLASSES=(Session,

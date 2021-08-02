@@ -4,7 +4,7 @@ import logging
 from endorsement.dao.endorse import get_endorsement_records_for_endorsee_re
 from endorsement.util.log import log_data_error_response
 from endorsement.views.rest_dispatch import RESTDispatch
-from endorsement.util.auth import AdminGroupAuthentication
+from endorsement.util.auth import SupportGroupAuthentication
 from rest_framework.authentication import TokenAuthentication
 
 
@@ -15,7 +15,7 @@ class Endorsee(RESTDispatch):
     """
     Show endorsements for endorsee
     """
-    authentication_classes = [TokenAuthentication, AdminGroupAuthentication]
+    authentication_classes = [TokenAuthentication, SupportGroupAuthentication]
 
     def get(self, request, *args, **kwargs):
         endorsee_regex = self.kwargs['endorsee']
@@ -26,8 +26,8 @@ class Endorsee(RESTDispatch):
         try:
             for er in get_endorsement_records_for_endorsee_re(endorsee_regex):
                 endorsees['endorsements'].append(er.json_data())
-        except Exception:
-            log_data_error_response(logger)
+        except Exception as ex:
+            log_data_error_response(logger, "{}".format(ex))
             return RESTDispatch().error_response(
                 543, """
 Data not available due to an error.  Check your regular expression.

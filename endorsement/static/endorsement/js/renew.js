@@ -42,7 +42,8 @@ var Renew = (function () {
             $modal = $('#renew_success_modal'),
             context = {
                 renewal_date: moment().add(1, 'Y').format('MM/DD/YYYY'),
-                unique: []
+                unique: [],
+                services: {}
             };
 
         $.each(window.endorsed_services, function(k, v) {

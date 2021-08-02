@@ -21,7 +21,7 @@ if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
         'eppn': ['jstaff@washington.edu'],
         'scopedAffiliations': ['employee@washington.edu', 'member@washington.edu'],
         'isMemberOf': ['u_test_group', 'u_test_another_group',
-                       'u_acadev_provision_support'],
+                       'u_acadev_provision_support', 'u_acadev_provision_admin'],
     }
 
 REST_FRAMEWORK = {
@@ -39,11 +39,13 @@ if not os.getenv("ENV") == "localdev":
         APP_SERVER_BASE = 'https://provision.uw.edu'
 
 INSTALLED_APPS += [
+    'django.contrib.humanize',
     'webpack_loader',
     'endorsement',
     'userservice',
     'django_client_logger',
     'supporttools',
+    'persistent_message',
     'rest_framework.authtoken',
 ]
 
@@ -51,6 +53,7 @@ MIDDLEWARE += ['userservice.user.UserServiceMiddleware']
 
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'supporttools.context_processors.supportools_globals',
+    'endorsement.context_processors.supporttools_globals',
     'endorsement.context_processors.is_desktop'
 ]
 
@@ -72,12 +75,14 @@ else:
     RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
     RESTCLIENTS_PRT_DAO_CLASS = 'Live'
 
-PROVISION_ADMIN_GROUP = 'u_acadev_provision_support'
+PROVISION_ADMIN_GROUP = 'u_acadev_provision_admin'
+PROVISION_SUPPORT_GROUP = 'u_acadev_provision_support'
 
 USERSERVICE_VALIDATION_MODULE = "endorsement.userservice_validation.validate"
 USERSERVICE_OVERRIDE_AUTH_MODULE = "endorsement.userservice_validation.can_override_user"
-USERSERVICE_ADMIN_GROUP='u_acadev_provision_support'
-RESTCLIENTS_ADMIN_GROUP='u_acadev_provision_support'
+PERSISTENT_MESSAGE_AUTH_MODULE = 'endorsement.views.support.can_manage_persistent_messages'
+USERSERVICE_ADMIN_GROUP='u_acadev_provision_admin'
+RESTCLIENTS_ADMIN_GROUP='u_acadev_provision_admin'
 AUTHZ_GROUP_BACKEND = 'authz_group.authz_implementation.uw_group_service.UWGroupService'
 
 RESTCLIENTS_DEFAULT_TIMEOUT = 3

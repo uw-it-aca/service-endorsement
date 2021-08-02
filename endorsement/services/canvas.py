@@ -43,7 +43,8 @@ class EndorsementService(EndorsementServiceBase):
 
     @property
     def service_renewal_statement(self):
-        return "Data in Canvas and Panopto accounts will not be deleted."
+        return ("Data in {{ service_names_canvas }} "
+                "accounts will not be deleted.")
 
     @property
     def service_link(self):

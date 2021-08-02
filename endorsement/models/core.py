@@ -134,6 +134,10 @@ class EndorsementRecordManager(models.Manager):
     def get_endorsements_for_endorser(self, endorser, category_code=None):
         return self.get_endorsement(endorser, None, category_code)
 
+    def get_all_endorsements_for_endorser(self, endorser, category_code=None):
+        return super(EndorsementRecordManager, self).get_queryset().filter(
+            endorser=endorser)
+
     def get_endorsements_for_endorsee(self, endorsee, category_code=None):
         return self.get_endorsement(None, endorsee, category_code)
 
@@ -192,6 +196,7 @@ class EndorsementRecord(
     CANVAS_PROVISIONEE = Category.CANVAS_PROVISIONEE
     ZOOM_LICENSED_PROVISIONEE = Category.ZOOM_LICENSED_PROVISIONEE
     ZOOM_BASIC_PROVISIONEE = Category.ZOOM_BASIC_PROVISIONEE
+    HUSKY_ONNET_EXT_PROVISIONEE = Category.HUSKY_ONNET_EXT_PROVISIONEE
 
     CATEGORY_CODE_CHOICES = (
         (OFFICE_365_ENDORSEE, "UW Office 365"),
@@ -199,6 +204,7 @@ class EndorsementRecord(
         (CANVAS_PROVISIONEE, "Canvas and Panopto"),
         (ZOOM_LICENSED_PROVISIONEE, "UW Zoom Licensed"),
         (ZOOM_BASIC_PROVISIONEE, "UW Zoom Basic"),
+        (HUSKY_ONNET_EXT_PROVISIONEE, "Husky OnNet for Affiliates"),
     )
 
     endorser = models.ForeignKey(Endorser,

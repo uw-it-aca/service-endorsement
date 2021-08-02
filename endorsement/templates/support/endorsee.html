@@ -8,12 +8,15 @@ h4 {font-weight: 900;}
 </style>
 <div class="container" style="max-width: 100%;">
 <h2>Provisioned User Search</h2>
+<h5 style="margin-bottom: 28px;">
+Use this page to look up provisioned netids.
+</h5>
 
 <form>
   {% csrf_token %}
   <div class="form-inline">
     <label for="endorsee">Provisionee:</label>
-    <input type="text" class="form-control" id="endorsee" size="20">
+    <input type="text" class="form-control" id="endorsee" size="20" value="{{ netid }}">
     <button type="button" name="SearchEndorsee" id="search_endorsee" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search</button>
 <!--
     <div class="alpha-search-list">
@@ -25,7 +28,7 @@ h4 {font-weight: 900;}
 
 <div id="endorsees">
 <div id="show-revoked" class="checkbox" style="display: none; padding-right: 20px;">
-  Revoked <input type="checkbox" checked data-toggle="toggle" data-width="80" data-on="<span style='margin-left: -8px;'>Hidden</span>" data-off="<span>Shown</span>">
+  Revoked <input type="checkbox"{% if netid == '' %}checked{% endif %} data-toggle="toggle" data-width="80" data-on="<span style='margin-left: -8px;'>Hidden</span>" data-off="<span>Shown</span>">
 </div>
 <table id="endorsee-table" class="endorsee-table table table-striped">
   <thead>
@@ -50,7 +53,7 @@ h4 {font-weight: 900;}
 </table>
 </div>
 
-{% include "handlebars/admin/endorsees.html" %}
+{% include "handlebars/support/endorsees.html" %}
 {% endblock %}
 
 {% block extra_js%}

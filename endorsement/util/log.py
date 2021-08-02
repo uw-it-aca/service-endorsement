@@ -46,9 +46,10 @@ def log_invalid_endorser_response(logger):
     log_err_with_netid(logger, 'Invalid endorser, abort')
 
 
-def log_data_error_response(logger):
+def log_data_error_response(logger, ex):
     log_err_with_netid(logger,
-                       'Data not available due to a backend error, abort')
+                       ('Data not available due to'
+                        ' a backend error "{}", abort').format(ex))
 
 
 def log_data_not_found_response(logger):

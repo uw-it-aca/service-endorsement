@@ -8,6 +8,9 @@ $(window.document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip();
     initDataTable();
     ClipboardCopy.load.apply(ClipboardCopy);
+    if ($('input#endorsee').val().length) {
+        $('button#search_endorsee').click();
+    }
 });
 
 var registerEvents = function() {
@@ -79,7 +82,7 @@ var displayEndorsedUWNetIDs = function(endorsements) {
             api.row.add([
                 endorsee_template(this).trim(),
                 endorsee_shared_template(this).trim(),
-                this.endorser.netid,
+                '<a href="/support/provisioner?netid=' + this.endorser.netid + '">' + this.endorser.netid + '</a>',
                 this.category_name,
                 this.reason,
                 this.datetime_emailed,
@@ -100,6 +103,7 @@ var displayEndorsedUWNetIDs = function(endorsements) {
         }
 
         $('div.dt-buttons button').removeAttr('disabled');
+        window.history.pushState({}, '', window.location.pathname + '?netid=' + $('input#endorsee').val());
     } else {
         source = $("#admin-endorsee-empty-search-result").html();
         template = Handlebars.compile(source);

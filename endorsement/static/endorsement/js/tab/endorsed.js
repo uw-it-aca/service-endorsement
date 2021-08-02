@@ -5,6 +5,8 @@ import { Endorse } from "../endorse.js";
 import { Revoke } from "../revoke.js";
 import { Renew } from "../renew.js";
 import { Reasons } from "../reasons.js";
+import { Banner } from "../banner.js";
+import { Scroll } from "../scroll.js";
 import { Notify } from "../notify.js";
 
 var ManageProvisionedServices = (function () {
@@ -66,6 +68,9 @@ var ManageProvisionedServices = (function () {
                 pending.appendTo($(this));
             }
         });
+
+        Banner.renderMessages(endorsed.messages);
+        Scroll.init('.endorsed-netids-table');
     },
 
     _exportProvisionedToCSV = function() {
@@ -176,6 +181,8 @@ var ManageProvisionedServices = (function () {
         }).on('click', 'button#netid_input', function(e) {
             $('#uwnetids-validated', $panel).addClass('visually-hidden');
             $('#uwnetids-input', $panel).removeClass('visually-hidden').focus();
+        }).on('focus', '.endorsed-netids-table table tbody', function(e) {
+            console.log("focus endorsed");
         }).on('endorse:UWNetIDsValidated', function (e, validated) {
             $('button#validate').button('reset');
             _displayValidationResult(validated);
@@ -184,6 +191,7 @@ var ManageProvisionedServices = (function () {
             Notify.error('Validation error: ' + error);
         }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.endorsed.endorsed);
+            Banner.renderMessages(data.endorsed.messages);
         }).on('endorse:UWNetIDsRenewSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.renewed.endorsed);
         }).on('endorse:UWNetIDsEndorseError', function (e, error) {

@@ -11,19 +11,23 @@ listed individually or all grouped together by "['*']".
 """
 
 from django.conf import settings
-from endorsement.models import EndorsementRecord
+from endorsement.models import Endorsee, EndorsementRecord
+from endorsement.dao.gws import is_group_member
 from endorsement.dao.endorse import (
     is_permitted, get_endorsement, initiate_endorsement,
     store_endorsement, clear_endorsement)
-from endorsement.dao.user import get_endorsee_model
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.uwnetid_categories import shared_netid_has_category
 from endorsement.exceptions import NoEndorsementException, UnrecognizedUWNetid
+from endorsement.util.string import listed_list
 
 from abc import ABC, abstractmethod
 from importlib import import_module
 from os import listdir
 import re
+
+# default group containing valid endorsers
+ENDORSER_GROUP = getattr(settings, "VALID_ENDORSER_GROUP", "uw_employee")
 
 # Services available for endorsement
 ENDORSEMENT_SERVICES = None
@@ -74,20 +78,18 @@ class EndorsementServiceBase(ABC):
         pass
 
     @property
-    @abstractmethod
     def shared_params(self):
-        return {
-            'roles': [],
-            'types': [],
-            'excluded_categories': [],
-            'allow_existing_endorsement': False
-        }
+        return None
 
     @property
     def supports_shared_netids(self):
-        return ((len(self.shared_params['roles']) > 0) or
-                (self.shared_params['types'] is not None and
-                 len(self.shared_params['types']) > 0))
+        return (self.shared_params is not None
+                and (('roles' in self.shared_params
+                      and self.shared_params['roles'] is not None
+                      and len(self.shared_params['roles']) > 0)
+                     or ('types' in self.shared_params
+                         and self.shared_params['types'] is not None
+                         and len(self.shared_params['types']) > 0)))
 
     @property
     def category_name(self):
@@ -106,10 +108,14 @@ class EndorsementServiceBase(ABC):
     def get_endorsement(self, endorser, endorsee):
         return get_endorsement(endorser, endorsee, self.category_code)
 
+    def valid_endorser(self, uwnetid):
+        return is_group_member(uwnetid, ENDORSER_GROUP)
+
     def valid_endorsee(self, endorsee, endorser):
         if self.valid_person_endorsee(endorsee):
             return True
 
+        # grandfathered non-person endorsees
         for supported in get_supported_resources_for_netid(endorser.netid):
             if endorsee.netid == supported.name:
                 return self.valid_supported_netid(supported, endorser)
@@ -152,9 +158,11 @@ class EndorsementServiceBase(ABC):
         if self.shared_params['allow_existing_endorsement']:
             try:
                 self.get_endorsement(
-                    endorser, get_endorsee_model(resource.name))
+                    endorser, Endorsee.objects.get(netid=resource.name))
                 return True
-            except (NoEndorsementException, UnrecognizedUWNetid):
+            except (NoEndorsementException,
+                    UnrecognizedUWNetid,
+                    Endorsee.DoesNotExist):
                 pass
 
         return False
@@ -196,6 +204,20 @@ class EndorsementServiceBase(ABC):
             ][level - 1]
         except IndexError:
             return None
+
+
+def is_valid_endorser(uwnetid):
+    """
+    Return True if any service accepts netid as an endorser
+    """
+    for service in endorsement_services():
+        try:
+            if service.valid_endorser(uwnetid):
+                return True
+        except Exception:
+            pass
+
+    return False
 
 
 def endorsement_services():
@@ -249,21 +271,15 @@ def service_context(service):
     }
 
 
-def service_contexts():
-    return {service.service_name: service_context(service)
-            for service in endorsement_services()}
-
-
-def person_service_contexts(endorsee):
+def service_contexts(endorsee=None):
     return {service.service_name: service_context(service)
             for service in endorsement_services() if (
-                    service.valid_person_endorsee(endorsee))}
+                    endorsee is None
+                    or service.valid_person_endorsee(endorsee))}
 
 
 def service_names(service_list=None):
-    names = service_list if service_list else service_name_list()
-    return '{} and {}'.format(', '.join(names[:-1]), names[-1]) if (
-        len(names) > 1) else names[0]
+    return listed_list(service_list if service_list else service_name_list())
 
 
 def service_name_list():

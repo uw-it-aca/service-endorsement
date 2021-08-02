@@ -2,6 +2,16 @@
 # SPDX-License-Identifier: Apache-2.0
 """
 """
+from django.conf import settings
+from endorsement.userservice_validation import can_override_user
+
+
+def supporttools_globals(request):
+    return {
+        'is_support_admin': can_override_user(request),
+        'support_group': getattr(
+            settings, "PROVISION_SUPPORT_GROUP", "")
+    }
 
 
 def is_desktop(request):
