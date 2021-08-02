@@ -93,7 +93,7 @@ environmentVariables:
   - name: ENV
     value: dev
   - name: ENDORSEMENT_SERVICES
-    value: "canvas, google, office365, zoom-basic"
+    value: "canvas, google, office365, zoom_basic"
   - name: GWS_ENV
     value: PROD
   - name: PWS_ENV
