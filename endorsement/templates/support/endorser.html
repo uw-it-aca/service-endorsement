@@ -7,17 +7,17 @@
 h4 {font-weight: 900;}
 </style>
 <div class="container" style="max-width: 100%;">
-<h2>Provisioner Search</h2>
+<h2>Shared Netid Proxy</h2>
 <h5 style="margin-bottom: 28px;">
-Use this page to look up provisioned netids for a specific provisioner.
+For services that otherwise have them disabled, use this page to provision shared netids.
 </h5>
 
 <form>
   {% csrf_token %}
   <div class="form-inline">
-    <label for="endorser">Provisioner:</label>
-    <input type="text" class="form-control" id="endorser" size="20" value="{{ netid }}">
-    <button type="button" name="SearchEndorser" id="search_endorser" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search</button>
+    <label for="shared_netid">Shared Netid:</label>
+    <input type="text" class="form-control" id="shared_netid" size="60" value="{{ netid }}">
+    <button type="button" name="SearchShared" id="search_shared" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search</button>
 <!--
     <div class="alpha-search-list">
       Or list provisioned NetIDs alphabetically: {% for letter in alphabet_string %}<a class="alpha-search" href="javascript: void(0);">{{letter}}</a> {% endfor %}
