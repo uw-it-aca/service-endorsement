@@ -36,8 +36,7 @@ class EndorsementService(EndorsementServiceBase):
         return {
             'roles': ['owner', 'owner-admin'],
             'types': ['shared', 'administrator', 'support'],
-            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1],
-            'allow_existing_endorsement': False
+            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1]
         }
 
     @property
