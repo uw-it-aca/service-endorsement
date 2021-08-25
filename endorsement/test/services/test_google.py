@@ -49,9 +49,7 @@ class TestGoogleService(ServicesApiTest):
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 4 if (
-            len(self.service.shared_params['types']) == 1) else 12)
-        self.assertEquals(len(endorsed), 2)
+        self.assertEquals(len(endorsible), 2)
 
         self.assertTrue('cpnebeng' in endorsible)
         self.assertTrue('wadm_jstaff' in endorsible)
@@ -69,7 +67,7 @@ class TestGoogleService(ServicesApiTest):
 
             endorsible, endorsed = self.get_shared(data)
 
-            self.assertEquals(len(endorsible), 3)
+            self.assertEquals(len(endorsible), 1)
             self.assertEquals(len(endorsed), 1)
             self.assertTrue(endorsee_pre.netid not in endorsible)
 
@@ -103,17 +101,11 @@ class TestGoogleService(ServicesApiTest):
         })
 
         self.assertEqual(len(endorsing), 0)
-        self.assertTrue('wadm_jstaff' in endorsed)
-        if len(self.service.shared_params['types']) == 1:
-            self.assertEqual(len(endorsible), 1)
-            self.assertEqual(len(endorsed), 1)
-            self.assertEqual(len(errored), 1)
-            self.assertTrue('cpnebeng' in errored)
-        else:
-            self.assertEqual(len(endorsible), 2)
-            self.assertEqual(len(endorsed), 2)
-            self.assertEqual(len(errored), 0)
-            self.assertTrue('cpnebeng' in endorsed)
+        self.assertFalse('wadm_jstaff' in endorsed)
+        self.assertEqual(len(endorsible), 0)
+        self.assertEqual(len(endorsed), 0)
+        self.assertEqual(len(errored), 2)
+        self.assertFalse('cpnebeng' in endorsed)
 
     def test_preexisting_endorse(self):
         endorser = get_endorser_model('jstaff')

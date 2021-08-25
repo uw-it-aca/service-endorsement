@@ -7,6 +7,7 @@ from endorsement.views.accept import accept
 from endorsement.views.support.endorser_search import EndorserSearch
 from endorsement.views.support.endorsee_search import EndorseeSearch
 from endorsement.views.support.notifications import EndorseeNotifications
+from endorsement.views.support.shared_proxy import SharedProxy
 from endorsement.views.support.persistent_messages import PersistentMessages
 from endorsement.views.support.endorsement_statistics import (
     EndorsementStatistics)
@@ -17,6 +18,8 @@ from endorsement.views.api.endorsee import Endorsee
 from endorsement.views.api.endorser import Endorser
 from endorsement.views.api.endorsed import Endorsed
 from endorsement.views.api.shared import Shared
+from endorsement.views.api.shared_owner import SharedOwner
+from endorsement.views.api.shared_proxy import SharedProxyEndorse
 from endorsement.views.api.statistics import Statistics
 from endorsement.views.api.notification import Notification
 
@@ -37,6 +40,8 @@ urlpatterns = [
             name='userservice_override'),
     re_path(r'^support/persistent_messages/?', PersistentMessages.as_view(),
             name='manage_persistent_messages_init'),
+    re_path(r'^support/shared_proxy/?', SharedProxy.as_view(),
+            name='manage_shared_proxy'),
     re_path(r'^api/v1/validate', Validate.as_view(), name='validate_api'),
     re_path(r'^api/v1/endorsee/(?P<endorsee>.+)$',
             Endorsee.as_view(), name='endorsee_api'),
@@ -46,6 +51,10 @@ urlpatterns = [
             Statistics.as_view(), name='statistics_api'),
     re_path(r'^api/v1/endorsed', Endorsed.as_view(), name='endorsed_api'),
     re_path(r'^api/v1/endorse', Endorse.as_view(), name='endorse_api'),
+    re_path(r'^api/v1/shared_owner/(?P<shared_netid>.*)$',
+            SharedOwner.as_view(), name='shared_owner_api'),
+    re_path(r'^api/v1/shared_proxy/?$',
+            SharedProxyEndorse.as_view(), name='shared_proxy_endorse_api'),
     re_path(r'^api/v1/shared', Shared.as_view(), name='shared_api'),
     re_path(r'^api/v1/accept', Accept.as_view(), name='accept_api'),
     re_path(r'^api/v1/notification', Notification.as_view(),

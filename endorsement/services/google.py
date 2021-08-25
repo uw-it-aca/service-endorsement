@@ -34,10 +34,7 @@ class EndorsementService(EndorsementServiceBase):
     @property
     def shared_params(self):
         return {
-            'roles': ['owner', 'owner-admin'],
-            'types': ['shared', 'administrator', 'support'],
-            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1],
-            'allow_existing_endorsement': False
+            'allow_existing_endorsement': True,
         }
 
     @property

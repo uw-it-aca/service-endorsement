@@ -1,0 +1,115 @@
+{% verbatim %}
+<script id="shared-netid-provision-template" type="text/x-handlebars-template">
+<div class="shared-netid-preamble">
+{{#if endorser.is_valid}}
+    You are about to provision the shared netid <span>{{endorsee.netid}}</span> on behalf of its owner <span>{{endorser.name}} ({{endorser.netid}})</span>.
+</div>
+
+<div id="shared_netid_provision">
+  <form>
+      <div class="form-group">
+        <label for="proxy-shared-netid-service">Service</label>
+        <!-- service name and status selector -->
+        <select class="form-control" id="proxy-shared-netid-service">
+        <option selected disabled value="">-- Select --</option>
+        {{#each endorsements}}
+        <option value="{{@key}}">{{this.category_name}}
+          {{#if  this.is_revoked}}
+          {{else}}
+            {{#if  this.datetime_endorsed}}
+              {{#if this.expired}}
+                <span class="significant text-danger">(Expired)</span>
+              {{else}}
+                {{#if this.expiring}}
+                  <span class="significant text-danger expiring-service">(Expiring)</span>
+                {{else}}
+                  <span class="significant">(Provisioned)</span>
+                {{/if}}
+              {{/if}}
+            {{else}}
+              {{#if this.accept_id}}
+                <span class="significant">(Pending Acceptance)</span>
+              {{else}}
+                {{#if this.active }}
+                  <span class="significant">(Has Access)</span>
+                {{else}}
+                <!-- <span class="significant">Not Provisioned</span> -->
+                {{/if}}
+              {{/if}}
+            {{/if}}
+          {{/if}}
+        </option>
+        {{/each}}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="proxy-shared-netid-reason">Reason</label>
+        <!-- service name and status selector -->
+        <select class="form-control" id="proxy-shared-netid-reason">
+        <option selected disabled value="">-- Select --</option>
+        <option value="administration">Administration</option>
+        <option value="clinical">Clinical work</option>
+        <option value="instructional">Instructional activities</option>
+        <option value="research">Research</option>
+        <option value="mentoring">Student mentoring</option>
+        <option value="consulting">Third-party consulting</option>
+        <option value="advancement">University Advancement support</option>
+        <option value="volunteer">Volunteer work</option>
+        <option value="other">Other...</option>
+        </select>
+      </div>
+      <div class="form-group proxy-shared-specific-reason" style="display: none;">
+        <input type=input class="form-control" placeholder="Reason for provisioning" value="" maxlength="64">
+      </div>
+      <div class="form-group proxy-provision-button">
+      </div>
+  </form>
+</div>
+
+{{else}}
+  The owner of this shared netid, {{endorser.name}} ({{endorser.netid}}), is not a valid endorser.
+{{/if}}
+</script>
+
+<script id="shared-netid-provision-button-template" type="text/x-handlebars-template">
+  {{#unless is_revoked}}  
+    {{#if  datetime_endorsed}}
+      <button type="button" name="Renew {{ category_name }}" class="btn btn-primary renew_service renew_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button>&nbsp;<button type="button" name="Revoke {{ category_name }}" class="btn btn-default revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ category_name }}">Revoke</button>
+    {{else}}
+      {{#if accept_id}}
+        <button type="button" class="btn btn-default button_url" data-url="mailto:{{ email }}?subject=UW-IT%20Computing%20Services%20-%20Provision%20Request%20Confirmation&body=Greetings,%0D%0A%0D%0AI%20provisioned%20you%20access%20to%20UW-IT%20computing%20services.%20To%20accept%20the%20terms%20of%20service%20and%20begin%20using%20the%20UW-IT%20computing%20services,%20click%20here:%20{{ accept_url }}" name="Resend {{ category_name }} confirmation to {{ email }}">Resend Link</button>&nbsp;<button type="button" name="Revoke {{ category_name }}" class="btn btn-default revoke_service revoke_{{ svc }}_{{ netid }}" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking {{ category_name }}">Revoke</button>
+      {{else}}
+        <button type="button" name="Provision service" class="btn btn-default endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
+      {{/if}}
+    {{/if}}
+  {{else}}
+      <button type="button" name="Provision service" class="btn btn-default endorse_service endorse_{{ svc }}_{{ netid }}" disabled="disabled" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision service</button>
+  {{/unless}}
+</script>
+
+<script id="shared-netid-provision-error-template" type="text/x-handlebars-template">
+<div class="shared-netid-error">
+    <h4>Problem validating shared netid {{shared_netid}}</h4>
+    <p>
+    PRT says: {{message}}
+    </p>
+</div>
+</script>
+
+
+<script id="shared-netid-provision-proxy-success-template" type="text/x-handlebars-template">
+<div class="shared-netid-proxy-success">
+<h4>BAM!!</h4>
+<p>
+You have successfully {{#if is_revoked}}<b>De</b>{{/if}}provisioned the shared netid {{endorsee.name}} ({{endorsee.netid}}) {{#if is_revoked}}from{{else}}to{{/if}} the {{category_name}} service.
+</p>
+<p>
+{{#if is_revoked}}
+The shared netid's owner, {{endorser.name}} ({{endorser.netid}}), may no longer see the deprovisioned netid on their PRT page in the list of shared netids.
+{{else}}
+The shared netid's owner, {{endorser.name}} ({{endorser.netid}}), should be able to see the newly provisioned netid on their PRT page in the list of shared netids.
+{{/if}}
+</p>
+</div>
+</script>
+{% endverbatim %}

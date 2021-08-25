@@ -1,0 +1,36 @@
+{% extends wrapper_template %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<style>
+.current_message { background-color: #fbfbe3; }
+h4 {font-weight: 900;}
+</style>
+<div class="container" style="max-width: 100%;">
+<h2>Shared Netid Proxy</h2>
+<h5 style="margin-bottom: 28px;">
+  For services that otherwise have shared netid provisioning disabled, use this page to provision them on the owner's behalf.
+</h5>
+<div class="shared-netid-note-well">
+  <b>NOTE WELL:</b> It is your responsibility as PRT Administrator to ensure the shared netid you are about to provision is suitable for and meets the requirements for shared netids acceptable within the particular service (e.g., not a clinical shared netid added to G Suite).
+</div>
+<br />
+
+<form>
+  {% csrf_token %}
+  <div class="form-inline">
+    <label for="shared_netid">Shared Netid:</label>
+    <input type="text" class="form-control" id="shared_netid" size="20" value="{{ shared_netid }}">
+    <button type="button" name="SearchShared" id="search_shared" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search for Shared Netid</button>
+  </div>
+</form>
+
+<div id="provision_shared_netid"></div>
+
+{% include "handlebars/support/shared_proxy.html" %}
+{% endblock %}
+
+{% block extra_js%}
+{% render_bundle 'shared_proxy' 'js' %}
+{% render_bundle 'handlebars' 'js' %}
+{% endblock %}
