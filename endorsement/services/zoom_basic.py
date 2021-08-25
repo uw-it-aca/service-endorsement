@@ -41,9 +41,7 @@ class EndorsementService(EndorsementServiceBase):
     def shared_params(self):
         return {
             'roles': ['owner', 'owner-admin'],
-            'types': ['shared', 'support'],
-            'excluded_categories': [],
-            'allow_existing_endorsement': False
+            'types': ['shared', 'support']
         }
 
     @property

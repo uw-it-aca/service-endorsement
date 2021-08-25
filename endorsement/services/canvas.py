@@ -55,8 +55,7 @@ class EndorsementService(EndorsementServiceBase):
         return {
             'roles': ['owner', 'owner-admin'],
             'types': ['administrator'],
-            'excluded_categories': [],
-            'allow_existing_endorsement': False
+            'excluded_categories': []
         }
 
     def is_permitted(self, endorser, endorsee):

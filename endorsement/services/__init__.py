@@ -79,17 +79,25 @@ class EndorsementServiceBase(ABC):
 
     @property
     def shared_params(self):
+        """
+        By default, no shared netids are supported
+        If shared support is desired, provide a dict with one or more
+        of the following keys:
+           - roles: list of supported roles, or '*' to indicate any
+           - types: list of supported types, or '*' to indicate any
+           - excluded_categories: list of excluded category numbers
+           - allow_existing_endorsement: boolean to grandfather existing
+        """
         return None
 
     @property
     def supports_shared_netids(self):
-        return (self.shared_params is not None
-                and (('roles' in self.shared_params
-                      and self.shared_params['roles'] is not None
-                      and len(self.shared_params['roles']) > 0)
-                     or ('types' in self.shared_params
-                         and self.shared_params['types'] is not None
-                         and len(self.shared_params['types']) > 0)))
+        return (self.shared_params
+                and ((self.shared_params.get('roles', None)
+                      or self.shared_params.get('types', None)
+                      or self.shared_params.get('excluded_categories', None))
+                     or self.shared_params.get(
+                         'allow_existing_endorsement', None)))
 
     @property
     def category_name(self):
@@ -129,44 +137,63 @@ class EndorsementServiceBase(ABC):
         """
 
         Based on roles and types associated with shared netids that are
-        elible for endorsement as well as associated categories that
+        eligible for endorsement as well as associated categories that
         exclude otherwise eligible netids.
         """
-        return ((self.supports_shared_netids and
-                 (self.valid_supported_role(resource)
-                  and self.valid_supported_type(resource)
-                  and not self.invalid_supported_category(resource))) or
-                self.valid_existing_endorsement(resource, endorser))
+        return (self.supports_shared_netids
+                and ((self.valid_supported_role(resource)
+                      and self.valid_supported_type(resource)
+                      and not self.invalid_supported_category(resource))
+                     or self.valid_existing_endorsement(resource, endorser)))
 
     def valid_supported_role(self, resource):
-        roles = self.shared_params.get('roles', '*')
-        return (roles == '*' or resource.role in roles)
+        """
+        acceptable roles are listed, or '*' to accept any role
+        """
+        try:
+            roles = self.shared_params['roles']
+            return (roles == '*' or (
+                type(roles) == list and resource.role in roles))
+        except KeyError:
+            return False
 
     def valid_supported_type(self, resource):
-        # length based on https://wiki.cac.washington.edu/x/YYkW
+        """
+        acceptable types are listed, or '*' to accept any type
+
+        max acceptable length is based on
+        https://wiki.cac.washington.edu/x/YYkW
+        """
         max_length = 29
 
-        types = self.shared_params.get('types', '*')
-        return ((types == '*' or resource.netid_type in types) and
-                len(resource.netid_type) <= max_length)
+        try:
+            types = self.shared_params['types']
+            return (types == '*' or (
+                type(types) == list
+                and resource.netid_type
+                and resource.netid_type in types
+                and len(resource.netid_type) <= max_length))
+        except KeyError:
+            return False
 
     def invalid_supported_category(self, supported):
-        return shared_netid_has_category(
-            supported.name, self.shared_params['excluded_categories'])
+        try:
+            return shared_netid_has_category(
+                supported.name, self.shared_params['excluded_categories'])
+        except KeyError:
+            return False
 
     def valid_existing_endorsement(self, resource, endorser):
-        if (self.shared_params and
-                self.shared_params['allow_existing_endorsement']):
-            try:
-                self.get_endorsement(
-                    endorser, Endorsee.objects.get(netid=resource.name))
-                return True
-            except (NoEndorsementException,
-                    UnrecognizedUWNetid,
-                    Endorsee.DoesNotExist):
-                pass
-
-        return False
+        try:
+            return (self.shared_params['allow_existing_endorsement']
+                    and self.get_endorsement(
+                        endorser, Endorsee.objects.get(
+                            netid=resource.name)) is not None)
+        except (KeyError,
+                NoEndorsementException,
+                UnrecognizedUWNetid,
+                Endorsee.DoesNotExist):
+            return False
 
     def is_permitted(self, endorser, endorsee):
         try:
