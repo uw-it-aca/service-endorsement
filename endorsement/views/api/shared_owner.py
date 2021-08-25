@@ -68,7 +68,8 @@ class SharedOwner(RESTDispatch):
                             endorsement['endorser'] = endorser.json_data()
                             endorsement['endorsers'] = [
                                 ee.endorser.json_data()
-                                for ee in get_endorsements_for_endorsee(endorsee)
+                                for ee in get_endorsements_for_endorsee(
+                                        endorsee)
                                 if ee.category_code == service.category_code]
 
                             active_services.add(service.service_name)
@@ -79,7 +80,8 @@ class SharedOwner(RESTDispatch):
                                 'valid_shared': True
                             }
 
-                        data['endorsements'][service.service_name] = endorsement
+                        data['endorsements'][
+                            service.service_name] = endorsement
 
                     return self.json_response(data)
         except Exception as ex:

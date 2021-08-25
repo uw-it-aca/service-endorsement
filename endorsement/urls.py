@@ -51,10 +51,10 @@ urlpatterns = [
             Statistics.as_view(), name='statistics_api'),
     re_path(r'^api/v1/endorsed', Endorsed.as_view(), name='endorsed_api'),
     re_path(r'^api/v1/endorse', Endorse.as_view(), name='endorse_api'),
-    re_path(r'^api/v1/shared_owner/(?P<shared_netid>.*)$'
-            , SharedOwner.as_view(), name='shared_owner_api'),
-    re_path(r'^api/v1/shared_proxy/?$'
-            , SharedProxyEndorse.as_view(), name='shared_proxy_endorse_api'),
+    re_path(r'^api/v1/shared_owner/(?P<shared_netid>.*)$',
+            SharedOwner.as_view(), name='shared_owner_api'),
+    re_path(r'^api/v1/shared_proxy/?$',
+            SharedProxyEndorse.as_view(), name='shared_proxy_endorse_api'),
     re_path(r'^api/v1/shared', Shared.as_view(), name='shared_api'),
     re_path(r'^api/v1/accept', Accept.as_view(), name='accept_api'),
     re_path(r'^api/v1/notification', Notification.as_view(),

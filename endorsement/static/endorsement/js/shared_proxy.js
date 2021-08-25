@@ -7,14 +7,14 @@ $(window.document).ready(function() {
 });
 
 var insertCSS = function () {
-    $('head').append('<style> \
-     .shared-netid-preamble { margin-top: 3rem; margin-bottom: 3rem; font-size: 1.6rem;} \
-     .shared-netid-note-well { border: 1px solid black; background-color: cornsilk; padding: 1rem; } \
-     .shared-netid-preamble span { font-weight: bold; } \
-     .shared-netid-error { margin: 3rem; padding: 3rem; border: 1px solid blue; background-color: lightblue; } \
-     .shared-netid-error p { padding-top: 2rem; padding-left: 1rem; font-size: 1.7rem; } \
-     .proxy-shared-specific-reason { margin-left: 8rem; } \
-     </style>')
+    $('head').append('<style> ' +
+     '.shared-netid-preamble { margin-top: 3rem; margin-bottom: 3rem; font-size: 1.6rem;} ' +
+     '.shared-netid-note-well { border: 1px solid black; background-color: cornsilk; padding: 1rem; } ' +
+     '.shared-netid-preamble span { font-weight: bold; } ' +
+     '.shared-netid-error { margin: 3rem; padding: 3rem; border: 1px solid blue; background-color: lightblue; } ' +
+     '.shared-netid-error p { padding-top: 2rem; padding-left: 1rem; font-size: 1.7rem; } ' +
+     '.proxy-shared-specific-reason { margin-left: 8rem; } ' +
+     '</style>');
 };
 
 var registerEvents = function() {
@@ -24,7 +24,7 @@ var registerEvents = function() {
     }).on('endorse:EndorsementSharedOwnerError', function (e, error) {
         displaySharedProxyError(error);
     }).on('click', 'button#search_shared', function (e) {
-        getEndorsementSharedOwner($('#shared_netid').val())
+        getEndorsementSharedOwner($('#shared_netid').val());
     }).on('change', '#proxy-shared-netid-service', function () {
         var service = $(this).val();
 
@@ -68,7 +68,7 @@ var getEndorsementSharedOwner = function (shared_netid) {
             $(document).trigger('endorse:EndorsementSharedOwnerError', [{
                 shared_netid: shared_netid,
                 message: xhr.responseJSON.error
-            }])
+            }]);
         }
     });
 };
@@ -92,8 +92,8 @@ var setEndorsementSharedOwnerButton = function (service, values) {
         template = Handlebars.compile(source),
         context = values;
 
-    context['svc'] = service;
-    context['netid'] = window.shared_proxy.endorsee.netid;
+    context.svc = service;
+    context.netid = window.shared_proxy.endorsee.netid;
     $('.proxy-provision-button').html(template(context));
     if ($('#proxy-shared-netid-reason option:selected').val().length) {
         proxyProvisionButtonEnabled(true);
@@ -120,7 +120,7 @@ var proxySpecificReasonEnabled = function (state) {
 var proxyProvisionSharedNetid = function (endorse) {
     var service = $('#proxy-shared-netid-service option:selected').val(),
         reason_choice = $('#proxy-shared-netid-reason option:selected').val(),
-        reason;;
+        reason;
 
     if (service.length <= 0) {
         alert('You need to pick a service!');
@@ -146,7 +146,7 @@ var proxyProvisionSharedNetid = function (endorse) {
     }
 
     provisionSharedNetidByProxy(service, reason, endorse);
-}
+};
 
 var provisionSharedNetidByProxy = function (service, reason, endorse) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
@@ -172,7 +172,7 @@ var provisionSharedNetidByProxy = function (service, reason, endorse) {
         error: function(xhr, status, error) {
             $(document).trigger('endorse:EndorsementSharedProxyError', [{
                 message: xhr.responseJSON
-            }])
+            }]);
         }
     });
 };
