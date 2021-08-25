@@ -34,7 +34,7 @@ class SharedProxyEndorse(RESTDispatch):
         if not is_valid_endorser(endorser_netid):
             return invalid_endorser(logger)
 
-        admin_netid = UserService().get_user()
+        admin_netid = UserService().get_original_user()
 
         try:
             endorser = get_endorser_model(endorser_netid)
