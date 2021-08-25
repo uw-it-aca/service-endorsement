@@ -132,11 +132,11 @@ class EndorsementServiceBase(ABC):
         elible for endorsement as well as associated categories that
         exclude otherwise eligible netids.
         """
-        return (self.supports_shared_netids
-                and ((self.valid_supported_role(resource)
-                      and self.valid_supported_type(resource)
-                      and not self.invalid_supported_category(resource))
-                     or self.valid_existing_endorsement(resource, endorser)))
+        return ((self.supports_shared_netids and
+                 (self.valid_supported_role(resource)
+                  and self.valid_supported_type(resource)
+                  and not self.invalid_supported_category(resource))) or
+                self.valid_existing_endorsement(resource, endorser))
 
     def valid_supported_role(self, resource):
         roles = self.shared_params.get('roles', '*')
@@ -155,7 +155,8 @@ class EndorsementServiceBase(ABC):
             supported.name, self.shared_params['excluded_categories'])
 
     def valid_existing_endorsement(self, resource, endorser):
-        if self.shared_params['allow_existing_endorsement']:
+        if (self.shared_params and
+                self.shared_params['allow_existing_endorsement']):
             try:
                 self.get_endorsement(
                     endorser, Endorsee.objects.get(netid=resource.name))
