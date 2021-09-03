@@ -34,56 +34,11 @@ class Shared(RESTDispatch):
         active_services = set()
 
         for supported in get_supported_resources_for_netid(netid):
-            # make sure endorsee is base-line valid (i.e.,
-            # has pws entry, kerberos principle and such)
-            try:
-                endorsee = get_endorsee_model(supported.name)
-                if not endorsee.kerberos_active_permitted:
-                    logger.info(("Skip shared netid {}: "
-                                 "inactive kerberos permit").format(
-                                     supported.name))
-                    continue
-            except (UnrecognizedUWNetid, InvalidNetID):
-                logger.info(("Skip shared netid {}: "
-                             "Unrecognized or invalid netid").format(
-                                 supported.name))
-                continue
+            endorsements = self._load_shared_endorsements(
+                supported, endorser, active_services)
 
-            data = {
-                'netid': endorsee.netid,
-                'name': endorsee.display_name,
-                'type': supported.netid_type,
-                'endorsements': {}
-            }
-
-            # list and record eligible services and their endorsements
-            for service in endorsement_services():
-                if not service.valid_supported_netid(supported, endorser):
-                    continue
-
-                try:
-                    endorsement_record = service.get_endorsement(
-                        endorser, endorsee)
-                    endorsement = endorsement_record.json_data()
-                    endorsement['endorser'] = endorser.json_data()
-                    endorsement['endorsers'] = [
-                        ee.endorser.json_data()
-                        for ee in get_endorsements_for_endorsee(endorsee)
-                        if ee.category_code == service.category_code]
-
-                    active_services.add(service.service_name)
-
-                except (EndorsementRecord.DoesNotExist,
-                        NoEndorsementException):
-                    endorsement = {
-                        'category_name': service.category_name,
-                        'valid_shared': True
-                    }
-
-                data['endorsements'][service.service_name] = endorsement
-
-            if data['endorsements']:
-                owned.append(data)
+            if endorsements:
+                owned.append(endorsements)
 
         messages = get_persistent_messages()
         messages.update(get_persistent_messages(tags=list(active_services)))
@@ -93,3 +48,57 @@ class Shared(RESTDispatch):
             'shared': owned,
             'messages': messages
         })
+
+    def _load_shared_endorsements(self, supported, endorser, active_services):
+        endorsements = None
+
+        # list and record eligible services and their endorsements
+        for service in endorsement_services():
+            if not service.valid_supported_netid(supported, endorser):
+                continue
+
+            if endorsements is None:
+                # make sure endorsee is base-line valid (i.e.,
+                # has pws entry, kerberos principle and such)
+                try:
+                    endorsee = get_endorsee_model(supported.name)
+                    if not endorsee.kerberos_active_permitted:
+                        logger.info(("Skip shared netid {}: "
+                                     "inactive kerberos permit").format(
+                                         supported.name))
+                        continue
+                except (UnrecognizedUWNetid, InvalidNetID):
+                    logger.info(("Skip shared netid {}: "
+                                 "Unrecognized or invalid netid").format(
+                                     supported.name))
+                    return None
+
+                endorsements = {
+                    'netid': endorsee.netid,
+                    'name': endorsee.display_name,
+                    'type': supported.netid_type,
+                    'endorsements': {}
+                }
+
+            try:
+                endorsement_record = service.get_endorsement(
+                    endorser, endorsee)
+                endorsement = endorsement_record.json_data()
+                endorsement['endorser'] = endorser.json_data()
+                endorsement['endorsers'] = [
+                    ee.endorser.json_data()
+                    for ee in get_endorsements_for_endorsee(endorsee)
+                    if ee.category_code == service.category_code]
+
+                active_services.add(service.service_name)
+
+            except (EndorsementRecord.DoesNotExist,
+                    NoEndorsementException):
+                endorsement = {
+                    'category_name': service.category_name,
+                    'valid_shared': True
+                }
+
+            endorsements['endorsements'][service.service_name] = endorsement
+
+        return endorsements
