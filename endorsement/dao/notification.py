@@ -253,23 +253,23 @@ def _create_invalid_endorser_message(endorsements):
             loader.render_to_string(html_template, params))
 
 
-def notify_invalid_endorser(endorser, endorsements):
-    if not (endorsements and len(endorsements) > 0):
+def notify_invalid_endorser(invalid_endorsements):
+    if not (invalid_endorsements and len(invalid_endorsements) > 0):
         return
 
     sent_date = timezone.now()
-    email = "{0}@uw.edu".format(endorser.netid)
+    email = "{0}@uw.edu".format(invalid_endorsements[0].endorser.netid)
     sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
                      "provision-noreply@uw.edu")
     (subject, text_body, html_body) = _create_invalid_endorser_message(
-        endorsements)
+        invalid_endorsements)
 
     try:
         send_email(
             sender, [email], subject, text_body, html_body, "Invalid endorser")
-        endorsements[0].endorser.datetime_emailed = sent_date
-        endorsements[0].endorser.save()
-        for endorsement in endorsements:
+        invalid_endorsements[0].endorser.datetime_emailed = sent_date
+        invalid_endorsements[0].endorser.save()
+        for endorsement in invalid_endorsements:
             clear_endorsement(endorsement)
     except EmailFailureException as ex:
         pass
