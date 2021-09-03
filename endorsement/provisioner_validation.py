@@ -28,6 +28,5 @@ def validate_endorsers():
                 logger.error('Validation of {} failed: {}'.format(
                     endorsement.endorser.netid, ex))
 
-        if len(invalid_endorsements):
-            notify_invalid_endorser(endorsements[0].endorser,
-                                    invalid_endorsements)
+        if len(invalid_endorsements) > 0:
+            notify_invalid_endorser(invalid_endorsements)
