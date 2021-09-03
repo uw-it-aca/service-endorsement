@@ -111,7 +111,7 @@ class TestNotificationDao(TransactionTestCase):
 
         self.assertEqual(len(endorsements), 1)
 
-        notify_invalid_endorser(endorser, endorsements)
+        notify_invalid_endorser(endorsements)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject[:46],
