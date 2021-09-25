@@ -72,3 +72,55 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('mumble' in data['endorsed']['endorsee2'])
+
+
+class TestEndorsementAdminEndorseAPI(EndorsementApiTest):
+    def test_valid_override(self):
+        self.set_user('faculty')
+        self.set_userservice_override('jstaff')
+        url = reverse('endorse_api')
+
+        endorse_data = {
+            "endorsees": {
+                "endorsee6": {
+                    "name": "JERRY ENDORSEE6",
+                    "email": "endorsee6@uw.edu",
+                    "mumble": {
+                        "state": True,
+                        "reason": "testing"
+                    }
+                }
+            }
+        }
+
+        response = self.client.post(
+            url, json.dumps(endorse_data), content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+
+
+class TestEndorsementSupportEndorseAPI(EndorsementApiTest):
+    def test_valid_override(self):
+        self.set_user('faculty')
+        self.request.session['samlUserdata']['isMemberOf'] = [
+            'u_test_group', 'u_test_another_group',
+            'u_acadev_provision_support']
+        self.request.session.save()
+        self.set_userservice_override('jstaff')
+        url = reverse('endorse_api')
+
+        endorse_data = {
+            "endorsees": {
+                "endorsee6": {
+                    "name": "JERRY ENDORSEE6",
+                    "email": "endorsee6@uw.edu",
+                    "mumble": {
+                        "state": True,
+                        "reason": "testing"
+                    }
+                }
+            }
+        }
+
+        response = self.client.post(
+            url, json.dumps(endorse_data), content_type='application/json')
+        self.assertEquals(response.status_code, 401)
