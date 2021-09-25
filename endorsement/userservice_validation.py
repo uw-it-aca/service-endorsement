@@ -20,5 +20,5 @@ def can_override_user(request):
     Return True if the original user has support access
     """
     return is_member_of_group(request,
-                              getattr(settings, "PROVISION_ADMIN_GROUP",
-                                      'u_acadev_provision_admin'))
+                              getattr(settings, "PROVISION_SUPPORT_GROUP",
+                                      'u_acadev_provision_support'))

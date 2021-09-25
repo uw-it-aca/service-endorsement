@@ -4,6 +4,7 @@ import logging
 from userservice.user import UserService
 from endorsement.models import EndorsementRecord
 from endorsement.services import endorsement_services
+from endorsement.util.auth import is_only_support_user
 from endorsement.views.rest_dispatch import RESTDispatch, invalid_session
 
 
@@ -28,6 +29,8 @@ class Accept(RESTDispatch):
 
         original_user = user_service.get_original_user()
         acted_as = None if (netid == original_user) else original_user
+        if acted_as and is_only_support_user(request):
+            return invalid_session(logger)
 
         records = EndorsementRecord.objects.get_accept_endorsement(accept_id)
         if len(records) != 1:

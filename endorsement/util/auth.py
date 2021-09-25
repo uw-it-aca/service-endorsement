@@ -32,3 +32,9 @@ class SupportGroupAuthentication(GroupAuthentication):
     @property
     def auth_group(self):
         return settings.PROVISION_SUPPORT_GROUP
+
+
+def is_only_support_user(request):
+    return (
+        is_member_of_group(request, settings.PROVISION_SUPPORT_GROUP)
+        and not is_member_of_group(request, settings.PROVISION_ADMIN_GROUP))

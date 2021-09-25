@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
 from userservice.user import UserService
+from endorsement.util.auth import is_only_support_user
 from endorsement.services import service_contexts, is_valid_endorser
 from endorsement.views.session import log_session_key
 from endorsement.views.rest_dispatch import invalid_session, handle_exception
@@ -20,7 +21,8 @@ LOGOUT_URL = "/user_logout"
 @login_required
 def index(request):
     try:
-        netid = UserService().get_user()
+        user_service = UserService()
+        netid = user_service.get_user()
         if not netid:
             return invalid_session(logger)
 
@@ -32,7 +34,9 @@ def index(request):
                 "netid": netid,
                 "session_key": session_key,
             },
-            'services': json.dumps(service_contexts())
+            'services': json.dumps(service_contexts()),
+            'override_user': user_service.get_override_user(),
+            'support_override_user': is_only_support_user(request)
         }
 
         if not is_valid_endorser(netid):

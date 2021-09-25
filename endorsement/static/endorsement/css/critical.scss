@@ -429,6 +429,14 @@ ul.email-list { list-style: none; padding: 0; }
 .success { color: green; }
 .failure { color: #c00f0f; }
 
+.override-warning {
+    line-height: 2em;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #ffbc24;
+    span { font-weight: 700; }
+}
+
 .page-wrap {
 	content: "";
 	display: block;

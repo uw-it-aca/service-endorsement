@@ -4,12 +4,12 @@
     <li><a href="{% url 'endorsee_search' %}">Provisionee Search</a></li>
     <li><a href="{% url 'endorser_search' %}">Provisioner Search</a></li>
     <li><a href="{% url 'endorsee_notifications' %}">Notifications</a></li>
+    <li><a href="{% url 'userservice_override' %}">User Override</a></li>
 </ul>
 
 {% if is_support_admin|default_if_none:False %}
 <h3>Admin Tools</h3>
 <ul>
-  <li><a href="{% url 'userservice_override' %}">User Override</a></li>
   <li><a href="{% url 'manage_shared_proxy' %}">Shared Proxy</a></li>
   {% url 'manage_persistent_messages_init' as manage_messages_url %}
   {% if manage_messages_url %}
