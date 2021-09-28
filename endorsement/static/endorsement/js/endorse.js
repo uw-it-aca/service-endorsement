@@ -101,9 +101,7 @@ var Endorse = (function () {
                 }]);
             },
             error: function(xhr, status, error) {
-                var error_event_id = event_id + 'Error';
-
-                $panel.trigger('endorse:UWNetIDsEndorseError', [error]);
+                $panel.trigger('endorse:UWNetIDsEndorseError', [endorsees, error]);
             }
         });
     };
@@ -284,15 +282,28 @@ var Endorse = (function () {
             } else {
                 Banner.removeMessage('warning', 'xxxx');
             }
-        };
+        },
 
+        resetActionButton = function (action, endorsees) {
+            $.each(endorsees, function (endorsee, v) {
+                $.each(v, function (service, v) {
+                    $('.' + action + '_' + service + '_' + endorsee).button('reset');
+                });
+            });
+        },
+
+        resetEndorseButton = function (endorsees) {
+            resetActionButton('endorse', endorsees);
+        };
     return {
         load: load,
         endorse: endorse,
         gatherEndorsementsByRow: gatherEndorsementsByRow,
         updateEndorsementForRowContext: updateEndorsementForRowContext,
         updateEndorsementRows: updateEndorsementRows,
-        updateExpireWarning: updateExpireWarning
+        updateExpireWarning: updateExpireWarning,
+        resetActionButton: resetActionButton,
+        resetEndorseButton: resetEndorseButton
     };
 }());
 
