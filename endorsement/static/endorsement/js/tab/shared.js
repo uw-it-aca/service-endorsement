@@ -7,6 +7,7 @@ import { Renew } from "../renew.js";
 import { Reasons } from "../reasons.js";
 import { Banner } from "../banner.js";
 import { Scroll } from "../scroll.js";
+import { Notify } from "../notify.js";
 
 var ManageSharedNetids = (function () {
     var content_id = 'shared',
@@ -78,16 +79,21 @@ var ManageSharedNetids = (function () {
             }
 
             Banner.renderMessages(data.endorsed.messages);
-        }).on('endorse:UWNetIDsEndorseError', function (e, error) {
-            console.log('error: ' + error);
+        }).on('endorse:UWNetIDsEndorseError', function (e, endorsees, error) {
+            Notify.error('Unable to Endorse at this time: ' + error);
+            Endorse.resetEndorseButton(endorsees);
         }).on('endorse:UWNetIDsRevokeSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.revoked.endorsed);
             _enableSharedEndorsability();
-        }).on('endorse:UWNetIDsRevokeError', function (e, error) {
-            console.log('error: ' + error);
+        }).on('endorse:UWNetIDsRevokeError', function (e, revokees, error) {
+            Notify.error('Unable to Revoke at this time: ' + error);
+            Revoke.resetRevokeButton(revokees);
         }).on('endorse:UWNetIDsRenewSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.renewed.endorsed);
             _enableSharedEndorsability();
+        }).on('endorse:UWNetIDsRenewError', function (e, renewees, error) {
+            Notify.error('Unable to Renew at this time: ' + error);
+            Renew.resetRenewButton(renewees);
         });
 
         $(document).on('endorse:UWNetIDRevoking', function (e, $row) {

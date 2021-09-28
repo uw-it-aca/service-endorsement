@@ -194,12 +194,17 @@ var ManageProvisionedServices = (function () {
             Banner.renderMessages(data.endorsed.messages);
         }).on('endorse:UWNetIDsRenewSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.renewed.endorsed);
-        }).on('endorse:UWNetIDsEndorseError', function (e, error) {
+        }).on('endorse:UWNetIDsRenewError', function (e, renewees, error) {
+            Notify.error('Unable to Renew at this time: ' + error);
+            Renew.resetRenewButton(renewees);
+        }).on('endorse:UWNetIDsEndorseError', function (e, endorsees, error) {
             Notify.error('Unable to Endorse at this time: ' + error);
+            Endorse.resetEndorseButton(endorsees);
         }).on('endorse:UWNetIDsRevokeSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.revoked.endorsed);
-        }).on('endorse:UWNetIDsRevokeError', function (e, error) {
+        }).on('endorse:UWNetIDsRevokeError', function (e, revokees, error) {
             Notify.error('Unable to Revoke at this time: ' + error);
+            Revoke.resetRevokeButton(revokees);
         });
     },
 

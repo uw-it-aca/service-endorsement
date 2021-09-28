@@ -96,9 +96,7 @@ var Revoke = (function () {
                 }]);
             },
             error: function(xhr, status, error) {
-                var error_event_id = event_id + 'Error';
-
-                $panel.trigger('endorse:UWNetIDsRevokeError', [error]);
+                $panel.trigger('endorse:UWNetIDsRevokeError', [revokees, error]);
             }
         });
     };
@@ -118,6 +116,9 @@ var Revoke = (function () {
             $modal.find('button#confirm_revoke')
                 .data('$rows', $rows)
                 .data('$panel', $rows.closest('div.netid-panel'));
+        },
+        resetRevokeButton: function (revokees) {
+            Endorse.resetActionButton('revoke', revokees);
         }
     };
 }());
