@@ -150,7 +150,7 @@ var Renew = (function () {
                 }]);
             },
             error: function(xhr, status, error) {
-                $panel.trigger('endorse:UWNetIDsRenewError', [error]);
+                $panel.trigger('endorse:UWNetIDsRenewError', [renewees, error]);
             }
         });
     };
@@ -170,6 +170,9 @@ var Renew = (function () {
             $modal.find('button#confirm_renew_responsibility')
                 .data('$rows', $rows)
                 .data('$panel', $rows.closest('div.netid-panel'));
+        },
+        resetRenewButton: function (renewees) {
+            Endorse.resetActionButton('renew', renewees);
         }
     };
 }());

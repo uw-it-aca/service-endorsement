@@ -8,6 +8,7 @@ from endorsement.services import endorsement_services, is_valid_endorser
 from endorsement.dao.pws import get_person
 from endorsement.dao.endorse import get_endorsements_for_endorsee
 from endorsement.dao.persistent_messages import get_persistent_messages
+from endorsement.util.auth import is_only_support_user
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
@@ -35,6 +36,8 @@ class Endorse(RESTDispatch):
 
         original_user = user_service.get_original_user()
         acted_as = None if (netid == original_user) else original_user
+        if acted_as and is_only_support_user(request):
+            return invalid_endorser(logger)
 
         endorser = get_endorser_model(netid)
         endorser_json = endorser.json_data()

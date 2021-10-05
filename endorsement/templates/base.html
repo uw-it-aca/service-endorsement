@@ -40,6 +40,11 @@
       };
       window.endorsed_services = {{ services | default:'{}' | safe }};
     </script>
+    {% if override_user %}
+    <div class="override-warning">
+      <strong>YOU ARE CURRENTLY OVERRIDING AS ANOTHER USER.</strong>{% if support_override_user %} Overriding in support role is read-only.{% endif %} &nbsp;<a href="/support">Back to PRT Support pages.</a>
+    </div>
+    {% endif %}
     <div class="page-wrap"> <!-- another wrap to make a sticky footer -->
         <div id="top_banner" class='no-padding'> <!-- username and logout goes here, handlebars/page-top.html -->
         </div>
