@@ -70,29 +70,29 @@ class Command(BaseCommand):
                 self._verify_restore(er, service)
 
     def _verify_restore(self, er, service):
-            # deleted and previously endorsed with lifespan remaining
-            if (er.is_deleted
-                and er.datetime_endorsed
-                and er.datetime_endorsed > (self.now - timedelta(
-                    days=service.endorsement_lifetime))
-                and not (
-                    er.datetime_notice_1_emailed
-                    and er.datetime_notice_2_emailed
-                    and er.datetime_notice_3_emailed
-                    and er.datetime_notice_4_emailed)):
+        # deleted and previously endorsed with lifespan remaining
+        if (er.is_deleted
+            and er.datetime_endorsed
+            and er.datetime_endorsed > (self.now - timedelta(
+                days=service.endorsement_lifetime))
+            and not (
+                er.datetime_notice_1_emailed
+                and er.datetime_notice_2_emailed
+                and er.datetime_notice_3_emailed
+                and er.datetime_notice_4_emailed)):
 
-                if self.list_endorsements:
-                    print("{} {}".format(er.category_code, er.endorsee.netid))
+            if self.list_endorsements:
+                print("{} {}".format(er.category_code, er.endorsee.netid))
+                return
+
+            if not self.restore_all:
+                prompt = "Restore {} for {} by {}? (y/N): ".format(
+                    er.category_code, er.endorsee.netid, er.endorser.netid)
+                response = input(prompt).strip().lower()
+                if response != 'y':
                     return
 
-                if not self.restore_all:
-                    prompt = "Restore {} for {} by {}? (y/N): ".format(
-                        er.category_code, er.endorsee.netid, er.endorser.netid)
-                    response = input(prompt).strip().lower()
-                    if response != 'y':
-                        return
-
-                self._restore(er, service)
+            self._restore(er, service)
 
     def _restore(self, er, service):
         print("Activate category {} for {}".format(
