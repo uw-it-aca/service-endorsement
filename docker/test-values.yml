@@ -40,7 +40,7 @@ resources:
     cpu: 500m
     memory: 512Mi
   requests:
-    cpu: 25m
+    cpu: 10m
     memory: 128Mi
 image:
   repository: gcr.io/uwit-mci-axdd/prt

@@ -4,8 +4,9 @@ autoscaling:
   maxReplicas: 6
 targetAverageUtilization: 100
 resources:
-  limits:
-    cpu: 1.0
+  requests:
+    cpu: 15m
+    memory: 256Mi
 ingress:
   enabled: true
   type: nginx
