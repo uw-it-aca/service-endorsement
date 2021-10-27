@@ -1,7 +1,11 @@
 autoscaling:
   enabled: true
   minReplicas: 2
-  maxReplicas: 5
+  maxReplicas: 6
+targetAverageUtilization: 100
+resources:
+  limits:
+    cpu: 1.0
 ingress:
   enabled: true
   type: nginx
@@ -32,15 +36,6 @@ externalService:
   servicePort: 5432
 repo: prt
 instance: prod
-replicaCount: 2
-minReplicas: 2
-maxReplicas: 6
-targetAverageUtilization: 90
-resources:
-  limits:
-    cpu: 600m
-  requests:
-    cpu: 200m
 image:
   repository: gcr.io/uwit-mci-axdd/prt
   tag: IMAGE_TAG
