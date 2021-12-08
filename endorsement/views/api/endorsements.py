@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 CHUNKING_LINES = 250
 
 
-
 class Endorsements(RESTDispatch):
     """
     Return CSV of all endorsers and their endorsements (for reporting)
