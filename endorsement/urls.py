@@ -17,6 +17,7 @@ from endorsement.views.api.accept import Accept
 from endorsement.views.api.endorsee import Endorsee
 from endorsement.views.api.endorser import Endorser
 from endorsement.views.api.endorsed import Endorsed
+from endorsement.views.api.endorsements import Endorsements
 from endorsement.views.api.shared import Shared
 from endorsement.views.api.shared_owner import SharedOwner
 from endorsement.views.api.shared_proxy import SharedProxyEndorse
@@ -47,6 +48,8 @@ urlpatterns = [
             Endorsee.as_view(), name='endorsee_api'),
     re_path(r'^api/v1/endorser/(?P<endorser>.+)$',
             Endorser.as_view(), name='endorser_api'),
+    re_path(r'^api/v1/endorsements/?$',
+            Endorsements.as_view(), name='endorsements_api'),
     re_path(r'^api/v1/stats/(?P<type>.+)$',
             Statistics.as_view(), name='statistics_api'),
     re_path(r'^api/v1/endorsed', Endorsed.as_view(), name='endorsed_api'),
