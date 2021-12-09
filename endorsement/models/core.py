@@ -200,7 +200,7 @@ class EndorsementRecord(
 
     CATEGORY_CODE_CHOICES = (
         (OFFICE_365_ENDORSEE, "UW Office 365"),
-        (GOOGLE_SUITE_ENDORSEE, "UW G Suite"),
+        (GOOGLE_SUITE_ENDORSEE, "UW Google"),
         (CANVAS_PROVISIONEE, "Canvas and Panopto"),
         (ZOOM_LICENSED_PROVISIONEE, "UW Zoom Licensed"),
         (ZOOM_BASIC_PROVISIONEE, "UW Zoom Basic"),
