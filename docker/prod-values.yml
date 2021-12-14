@@ -5,7 +5,7 @@ autoscaling:
 targetAverageUtilization: 100
 resources:
   limits:
-    cpu: 1.0
+    cpu: "1"
 ingress:
   enabled: true
   type: nginx
