@@ -12,10 +12,9 @@ UW-IT services for the following UW NetID{{expiring_count|pluralize}} will be re
 
 {% include "email/services.txt" %}
 
-To read more about the annual review process and access the PRT to complete the
-annual review process vist:
+To log in to the Provisioning Request Tool (PRT) and renew expiring services visit:
 
-https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/
+https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/#prt
 
 If you have any questions, please contact help@uw.edu or 206-221-5000.
 
