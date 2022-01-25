@@ -1,0 +1,92 @@
+{% verbatim %}
+<script id="office-access-panel" type="text/x-handlebars-template">
+  <div class="input-group mb-3">
+    <select class="custom-select inbox_netids">
+      <option>Select...</option>
+      <option>a</option>
+      <option>b</option>
+    </select>
+    <div class="input-group-append">
+      <button type="button" class="btn btn-primary btn-outline-secondary" id="add_access" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Adding NetID">Add NetID</button>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="office-access-table">
+    <table class="table ">
+      <thead class="thead-light">
+        <tr>
+          <th class="endorsed-netid">UW NetID</th>
+          <th>Name</th>
+          <th class="access-delegate"><span><label class="significant">Person/Group</span></th>
+          <th class="access-status"><span>Status</span></th>
+          <th class="access-type"><span>Access Type</span></th>
+          <th class="access-action"><span>Action</span></th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#each access}}
+        <tr class="
+endorsement_row_{{#equals access_index 0}}first top-border{{else}}following hidden-names{{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}" data-netid="{{ netid }}">
+          <td class="endorsed-netid">{{ netid }}</td>
+          <td class="endorsed-name">{{ name }}</td>
+          <td class="access-delegate-id">{{ delegate }}</td>
+          <td class="access-status">{{ status }}</span></td>
+          <td class="access-type">{{ type }}</span></td>
+          <td class="access-action"><span>Action button</span></td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+    </div>
+  </div>
+<!-- <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
+-->
+</script>
+
+<script id="no-access-netids-content" type="text/x-handlebars-template">
+  <div class="no-access-netids">
+      <p>You do appear to have any Office365 Inboxes.</br>
+      Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view Office365 service status.</p>
+  </div>
+</script>
+
+<script id="access_accept_single_modal_content" type="text/x-handlebars-template">
+      <div class="modal-header">
+        <span>Confirm UW Shared NetID Provision Request</span>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>By selecting {{plural netid_count 'this' 'these'}} UW
+            NetID{{plural netid_count '' 's'}} to receive the services you have identified, you confirm that:</p>
+          <ol>
+              <li>The provisioning recipient associated with each UW NetID requires use of the service(s) to carry out official UW operations, and</li>
+              <li>You have authority to make this request in accord with the UW-IT guidelines for providing computing services to UW
+affiliates. For more information, visit: <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">https://itconnect.uw.edu/connect/email/resources/affiliate-access/</a>.</li>
+          </ol>
+
+        <p>
+            <label>
+                <input type="checkbox" class="accept_responsibility" />
+                I understand and accept these terms.
+            </label>
+        </p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
+        <button type="button" id="confirm_access_responsibility" class="btn btn-primary" disabled="disabled">Provision services for {{plural netid_count 'this' 'these'}} UW NetID{{plural netid_count '' 's'}}</button>
+      </div>
+
+</script>
+
+<script id="access-loading" type="text/x-handlebars-template">
+<div class="loading"><div></div></div>
+</script>
+
+<script id="access-failure" type="text/x-handlebars-template">
+<div class="no-access">We are unable to determine if you own any Shared UW NetIDs at this time.  Please try again later.</dev>
+</script>
+{% endverbatim %}

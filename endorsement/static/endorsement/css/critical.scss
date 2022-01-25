@@ -30,6 +30,7 @@ a.dummy {
 
 html, body {
     font-family: 'Open Sans', Helvetica, arial, san-serif;
+    font-size: 10pt;
     padding:0;
     margin:0;
     height: 100%;
@@ -82,8 +83,21 @@ img {
 
 h1, h2, h3, h4 { font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif; font-weight: bold; /*color: $uwpurple;*/ }
 
+.container h2 {
+    margin-top: 16px;
+}
+
 h3 {
     font-size: 1.8rem;
+}
+
+.tabs h3 {
+    margin-top: 2rem;
+    font-size: 12pt;
+}
+
+.modal-body h3 {
+    font-size: 12pt;
 }
 
 h4 {
@@ -267,7 +281,7 @@ a {
   }
 }
 
-.endorsed-netids-table, .shared-netids-table { border: 1px solid #ddd; 
+.endorsed-netids-table, .shared-netids-table, .office-access-table { border: 1px solid #ddd; 
 
   table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }
   thead { flex: 0 0 auto; }
@@ -295,8 +309,8 @@ a {
       width: 15rem;
       p { font-size: smaller; }
   }
-  .endorsed-reason { width: 17rem; }
-  .endorsed-action { width: 19rem; white-space: nowrap; }
+  .endorsed-reason { width: 13rem; }
+  .endorsed-action { width: 12rem; white-space: nowrap; }
   .aggregate_action { margin-right: 10px; }
   .endorsed-error {
       span { display: block; color: red; }
@@ -325,7 +339,7 @@ label.accept_responsibility {
 
 #provision { margin-bottom: 38px; }
 
-#provisioned, #shared {
+#provisioned, #shared, #office_access {
   .loading {
     min-height: 180px;
     > div {
@@ -389,6 +403,8 @@ label.accept_responsibility {
     pointer-events: none;
   }
 }
+
+button.btn[disabled=disabled]:hover { cursor: not-allowed !important; }
 
 ul.comma-list { display: inline; list-style: none; padding: 0;
   li { display: inline; }
@@ -583,6 +599,50 @@ td.error, tr.error {
     }
     .displaying-email {
         display: none;
+    }
+}
+
+.tabs {
+    margin-top: 2em;
+    .tabs-list {
+        position: relative;
+        z-index: 100;
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+        li {
+            width: 100px;
+            float: left;
+            text-align: center;
+            span {
+                text-transform: uppercase;
+                font-weight: bold;
+            }
+            span:hover {
+                cursor: pointer;
+            }
+        }
+        li.active {
+            border-bottom: 3px solid black;
+        }
+    }
+    .tab {
+        position: relative;
+        clear: both;
+        top: -2px;
+        border-top: 3px solid lightgray;
+        display: none;
+    }
+    .tab.active {
+        display: block;
+    }
+}
+
+.add-accessee {
+    position: relative;
+    float: right;
+    top: -3.5em;
+    select {
     }
 }
 
