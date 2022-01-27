@@ -12,9 +12,8 @@ deleted.
 
 {% include "email/services.txt" %}
 
-To log in to the Provisioning Request Tool (PRT) and complete the annual review
-process for Shared or Admin UW NetIDs, visit
-https://itconnect.uw.edu/connect/email/resources/endorse-uw-netids/#annual_renewal.
+Log in to the Provisioning Request Tool (PRT) to renew expiring services by visiting
+https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/#prt.
 
 If you have any questions, please contact help@uw.edu or 206-221-5000.
 
