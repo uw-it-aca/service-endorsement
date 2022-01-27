@@ -1,15 +1,20 @@
 {% verbatim %}
 <script id="office-access-panel" type="text/x-handlebars-template">
+<div class="row justify-content-end">
+ <div class="col-sm-3 col-sm-offset-4">
   <div class="input-group mb-3">
     <select class="custom-select inbox_netids">
-      <option>Select...</option>
-      <option>a</option>
-      <option>b</option>
+      <option value="">Select...</option>
+      {{#each netids}}
+      <option value="{{this}}">{{this}}</option>
+      {{/each}}
     </select>
     <div class="input-group-append">
-      <button type="button" class="btn btn-primary btn-outline-secondary" id="add_access" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Adding NetID">Add NetID</button>
+      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Adding NetID">Add NetID</button>
     </div>
   </div>
+ </div>
+</div>
 
   <div class="form-group">
     <div class="office-access-table">
@@ -42,6 +47,13 @@ endorsement_row_{{#equals access_index 0}}first top-border{{else}}following hidd
   </div>
 <!-- <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
 -->
+
+<div class="modal fade" id="validate_netids_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
 </script>
 
 <script id="no-access-netids-content" type="text/x-handlebars-template">
@@ -51,35 +63,22 @@ endorsement_row_{{#equals access_index 0}}first top-border{{else}}following hidd
   </div>
 </script>
 
-<script id="access_accept_single_modal_content" type="text/x-handlebars-template">
-      <div class="modal-header">
-        <span>Confirm UW Shared NetID Provision Request</span>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>By selecting {{plural netid_count 'this' 'these'}} UW
-            NetID{{plural netid_count '' 's'}} to receive the services you have identified, you confirm that:</p>
-          <ol>
-              <li>The provisioning recipient associated with each UW NetID requires use of the service(s) to carry out official UW operations, and</li>
-              <li>You have authority to make this request in accord with the UW-IT guidelines for providing computing services to UW
-affiliates. For more information, visit: <a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">https://itconnect.uw.edu/connect/email/resources/affiliate-access/</a>.</li>
-          </ol>
-
-        <p>
-            <label>
-                <input type="checkbox" class="accept_responsibility" />
-                I understand and accept these terms.
-            </label>
-        </p>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
-        <button type="button" id="confirm_access_responsibility" class="btn btn-primary" disabled="disabled">Provision services for {{plural netid_count 'this' 'these'}} UW NetID{{plural netid_count '' 's'}}</button>
-      </div>
-
+<script id="access_validate_netids_modal_content" type="text/x-handlebars-template">
+<div class="modal-header">
+  <span>Add NetIDs to {{ netid }}</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body validate_netid_list">
+  <p>Text about adding UWNetIDs or UW Groups that they want to give access to {{ netid }} mailbox.
+  </p>
+  <textarea class="form-control" placeholder="Enter the UW Netid(s) for which you want to provision access to the {{ netid }} mailbox. Ex: harrythe husky, dubsthedawg"></textarea>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
+  <button type="button" id="validate_netids_access" class="btn btn-primary" disabled="disabled">Add UW NetID(s) to list</button>
+</div>
 </script>
 
 <script id="access-loading" type="text/x-handlebars-template">

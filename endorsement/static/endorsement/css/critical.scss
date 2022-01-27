@@ -339,6 +339,11 @@ label.accept_responsibility {
 
 #provision { margin-bottom: 38px; }
 
+#office_access {
+    position: relative;
+    top: -3rem;
+}
+
 #provisioned, #shared, #office_access {
   .loading {
     min-height: 180px;
