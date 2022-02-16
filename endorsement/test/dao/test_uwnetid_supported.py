@@ -20,4 +20,4 @@ class TestNetidSupported(TestDao):
                     netids.add(s.name)
                     break
 
-        self.assertEqual(len(netids), 16)
+        self.assertEqual(len(netids), 15)

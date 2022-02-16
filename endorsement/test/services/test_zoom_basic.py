@@ -45,7 +45,7 @@ class TestZoomBasicService(ServicesApiTest):
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 10)
+        self.assertEquals(len(endorsible), 9)
         self.assertEquals(len(endorsed), 1)
         self.assertTrue('cpnebeng' in endorsible)
         self.assertFalse('wadm_jstaff' in endorsed)
