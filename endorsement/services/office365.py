@@ -1,8 +1,6 @@
 # Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-# Copyright 2021 UW-IT, University of Washington
-# SPDX-License-Identifier: Apache-2.0
 """
 Defines UW Office 365 service endorsement steps
 

@@ -1,8 +1,6 @@
 # Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-# Copyright 2021 UW-IT, University of Washington
-# SPDX-License-Identifier: Apache-2.0
 from uw_uwnetid.category import get_netid_categories
 from endorsement.models import EndorsementRecord as ER
 from endorsement.dao.endorse import clear_endorsement

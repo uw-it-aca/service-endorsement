@@ -1,8 +1,6 @@
 # Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-# Copyright 2021 UW-IT, University of Washington
-# SPDX-License-Identifier: Apache-2.0
 from restclients_core.dao import DAO
 from restclients_core.exceptions import DataFailureException
 from endorsement.services import endorsement_categories
