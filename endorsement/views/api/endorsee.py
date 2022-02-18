@@ -1,5 +1,6 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
+
 import logging
 from endorsement.dao.endorse import get_endorsement_records_for_endorsee_re
 from endorsement.util.log import log_data_error_response
