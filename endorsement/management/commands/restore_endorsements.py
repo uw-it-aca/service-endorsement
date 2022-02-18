@@ -1,8 +1,21 @@
 # Copyright 2021 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
+
+#
+# Management Command restore_endorsements - Given an endorser
+# netid or endorsement-defining tuple, restore revoked endorsement while
+# preserving original endorsement date.
+#
+# Arguments: (<endorser> | <endorser>,<endorsee>,<category>) [-l] [-c]
+#
+#     -l: list, but do not change, revoked endorsement[s]
+#     -c: commit change of revoked endorsement to active without
+#         any confirmation prompt
+#
+
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from endorsement.models import Endorser, EndorsementRecord
+from endorsement.models import Endorser, Endorsee, EndorsementRecord
 from endorsement.dao.endorse import set_active_category, activate_subscriptions
 from endorsement.services import get_endorsement_service
 from datetime import timedelta
@@ -36,36 +49,50 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         endorser_netid = options['endorser']
-        list_endorsements = options['list_endorsements']
-        restore_all = options['restore_all']
+        self.list_endorsements = options['list_endorsements']
+        self.restore_all = options['restore_all']
 
-        now = timezone.now()
-        endorser = Endorser.objects.get(netid=endorser_netid)
-        for er in EndorsementRecord.objects.filter(endorser=endorser):
-            service = get_endorsement_service(er.category_code)
-            # deleted and previously endorsed with lifespan remaining
-            if (er.is_deleted
-                and er.datetime_endorsed
-                and er.datetime_endorsed > (now - timedelta(
-                    days=service.endorsement_lifetime))
-                and not (
-                    er.datetime_notice_1_emailed
-                    and er.datetime_notice_2_emailed
-                    and er.datetime_notice_3_emailed
-                    and er.datetime_notice_4_emailed)):
+        self.now = timezone.now()
+        if ',' in endorser_netid:
+            ern, een, cat_code = tuple(endorser_netid.split(','))
+            endorser = Endorser.objects.get(netid=ern)
+            endorsee = Endorsee.objects.get(netid=een)
+            category_code = int(cat_code)
+            er = EndorsementRecord.objects.get(
+                endorser=endorser, endorsee=endorsee,
+                category_code=category_code)
+            service = get_endorsement_service(category_code)
+            self._verify_restore(er, service)
+        else:
+            endorser = Endorser.objects.get(netid=endorser_netid)
+            for er in EndorsementRecord.objects.filter(endorser=endorser):
+                service = get_endorsement_service(er.category_code)
+                self._verify_restore(er, service)
 
-                if list_endorsements:
-                    print("{} {}".format(er.category_code, er.endorsee.netid))
-                    continue
+    def _verify_restore(self, er, service):
+        # deleted and previously endorsed with lifespan remaining
+        if (er.is_deleted
+            and er.datetime_endorsed
+            and er.datetime_endorsed > (self.now - timedelta(
+                days=service.endorsement_lifetime))
+            and not (
+                er.datetime_notice_1_emailed
+                and er.datetime_notice_2_emailed
+                and er.datetime_notice_3_emailed
+                and er.datetime_notice_4_emailed)):
 
-                if not restore_all:
-                    prompt = "Restore {} for {} by {}? (y/N): ".format(
-                        er.category_code, er.endorsee.netid, er.endorser.netid)
-                    response = input(prompt).strip().lower()
-                    if response != 'y':
-                        continue
+            if self.list_endorsements:
+                print("{} {}".format(er.category_code, er.endorsee.netid))
+                return
 
-                self._restore(er, service)
+            if not self.restore_all:
+                prompt = "Restore {} for {} by {}? (y/N): ".format(
+                    er.category_code, er.endorsee.netid, er.endorser.netid)
+                response = input(prompt).strip().lower()
+                if response != 'y':
+                    return
+
+            self._restore(er, service)
 
     def _restore(self, er, service):
         print("Activate category {} for {}".format(
