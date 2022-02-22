@@ -1,5 +1,6 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
+
 from django.conf import settings
 from uw_pws import PWS
 from uw_saml.utils import is_member_of_group

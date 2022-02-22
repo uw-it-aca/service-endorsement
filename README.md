@@ -1,8 +1,9 @@
-# service-endorsement
+# Service Endorsement
+
 A web application enabling UW employees to provision non-employees to selected UW-IT services.
 
-![Build, Test and Deploy](https://github.com/uw-it-aca/service-endorsement/workflows/Build,%20Test%20and%20Deploy/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/uw-it-aca/service-endorsement/badge.png?branch=master)](https://coveralls.io/r/uw-it-aca/service-endorsement?branch=master)
+[![Build Status](https://github.com/uw-it-aca/service-endorsement/workflows/Build%2C%20Test%20and%20Deploy/badge.svg?branch=main)](https://github.com/uw-it-aca/service-endorsement/actions)
+[![Coverage Status](https://coveralls.io/repos/github/uw-it-aca/service-endorsement/badge.svg?branch=main)](https://coveralls.io/github/uw-it-aca/service-endorsement?branch=main)
 
 # Installation and Evaluation
 
