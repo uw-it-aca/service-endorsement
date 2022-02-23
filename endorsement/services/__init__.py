@@ -179,13 +179,24 @@ class EndorsementServiceBase(ABC):
             return False
 
     def invalid_supported_category(self, supported):
-        categories = [Category.ALTID_SHARED_CLINICAL_1]
+        categories = []
+
+        # shared clinical netids are uniformly disallowed by policy
+        try:
+            types = self.shared_params['types']
+            if ((types == '*' or (type(types) == list and 'shared' in types))
+                    and supported.netid_type == 'shared'):
+                categories += [Category.ALTID_SHARED_CLINICAL_1]
+        except KeyError:
+            pass
+
         try:
             categories += self.shared_params['excluded_categories']
         except KeyError:
             pass
 
-        return shared_netid_has_category(supported.name, categories)
+        return shared_netid_has_category(
+            supported.name, categories) if len(categories) else False
 
     def valid_existing_endorsement(self, resource, endorser):
         try:
