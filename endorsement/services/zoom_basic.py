@@ -19,7 +19,7 @@ from endorsement.services import EndorsementServiceBase
 from endorsement.models import EndorsementRecord
 from endorsement.dao.gws import is_group_member
 from endorsement.exceptions import NoEndorsementException
-from uw_uwnetid.models import Subscription, Category
+from uw_uwnetid.models import Subscription
 
 ZOOM_BASIC_ACCESS_GROUP = getattr(settings, "ZOOM_BASIC_ACCESS_GROUP",
                                   "u_acadev_zoom_basic_login-users")
@@ -42,8 +42,7 @@ class EndorsementService(EndorsementServiceBase):
     def shared_params(self):
         return {
             'roles': ['owner', 'owner-admin'],
-            'types': ['shared', 'support'],
-            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1]
+            'types': ['shared', 'support']
         }
 
     @property
