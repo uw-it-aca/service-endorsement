@@ -1,5 +1,6 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
+
 import json
 from django.urls import reverse
 from endorsement.models import EndorsementRecord
@@ -45,7 +46,7 @@ class TestZoomBasicService(ServicesApiTest):
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 10)
+        self.assertEquals(len(endorsible), 9)
         self.assertEquals(len(endorsed), 1)
         self.assertTrue('cpnebeng' in endorsible)
         self.assertFalse('wadm_jstaff' in endorsed)

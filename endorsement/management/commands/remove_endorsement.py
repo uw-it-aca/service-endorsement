@@ -1,5 +1,6 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
+
 from django.core.management.base import BaseCommand
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.models import EndorsementRecord

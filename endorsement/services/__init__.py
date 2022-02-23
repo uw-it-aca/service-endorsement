@@ -1,5 +1,6 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
+
 """
 Base class for endorsed services encapsulating common support functions
 and lifecycle values
@@ -20,6 +21,7 @@ from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.uwnetid_categories import shared_netid_has_category
 from endorsement.exceptions import NoEndorsementException, UnrecognizedUWNetid
 from endorsement.util.string import listed_list
+from uw_uwnetid.models import Category
 
 from abc import ABC, abstractmethod
 from importlib import import_module
@@ -177,11 +179,24 @@ class EndorsementServiceBase(ABC):
             return False
 
     def invalid_supported_category(self, supported):
+        categories = []
+
+        # shared clinical netids are uniformly disallowed by policy
         try:
-            return shared_netid_has_category(
-                supported.name, self.shared_params['excluded_categories'])
+            types = self.shared_params['types']
+            if ((types == '*' or (type(types) == list and 'shared' in types))
+                    and supported.netid_type == 'shared'):
+                categories += [Category.ALTID_SHARED_CLINICAL_1]
         except KeyError:
-            return False
+            pass
+
+        try:
+            categories += self.shared_params['excluded_categories']
+        except KeyError:
+            pass
+
+        return shared_netid_has_category(
+            supported.name, categories) if len(categories) else False
 
     def valid_existing_endorsement(self, resource, endorser):
         try:
