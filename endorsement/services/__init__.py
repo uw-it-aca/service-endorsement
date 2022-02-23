@@ -21,6 +21,7 @@ from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.uwnetid_categories import shared_netid_has_category
 from endorsement.exceptions import NoEndorsementException, UnrecognizedUWNetid
 from endorsement.util.string import listed_list
+from uw_uwnetid.models import Category
 
 from abc import ABC, abstractmethod
 from importlib import import_module
@@ -178,11 +179,13 @@ class EndorsementServiceBase(ABC):
             return False
 
     def invalid_supported_category(self, supported):
+        categories = [Category.ALTID_SHARED_CLINICAL_1]
         try:
-            return shared_netid_has_category(
-                supported.name, self.shared_params['excluded_categories'])
+            categories += self.shared_params['excluded_categories']
         except KeyError:
-            return False
+            pass
+
+        return shared_netid_has_category(supported.name, categories)
 
     def valid_existing_endorsement(self, resource, endorser):
         try:
