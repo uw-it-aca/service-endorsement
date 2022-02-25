@@ -10,7 +10,7 @@
       {{/each}}
     </select>
     <div class="input-group-append">
-      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Adding NetID">Add NetID</button>
+      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Adding NetID">Add Access</button>
     </div>
   </div>
  </div>
@@ -33,12 +33,16 @@
       {{#each access}}
         <tr class="
 endorsement_row_{{#equals access_index 0}}first top-border{{else}}following hidden-names{{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}" data-netid="{{ netid }}">
-          <td class="endorsed-netid">{{ netid }}</td>
+          <td class="endorsed-netid" data-delegate="{{ netid }}">{{ netid }}</td>
           <td class="endorsed-name">{{ name }}</td>
+          {{#if delegate}}
           <td class="access-delegate-id">{{ delegate }}</td>
-          <td class="access-status">{{ status }}</span></td>
-          <td class="access-type">{{ type }}</span></td>
-          <td class="access-action"><span>Action button</span></td>
+          <td class="access-status">{{status}}</td>
+          <td class="access-type"><select class="office-access-types" data-access-right-id="{{ right_id }}"></select></td>
+        <td class="access-action">{{#if status}}<button type="button" class="btn btn-primary" id="renew_access" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="revoke_access" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="provision_access" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision Service</button>{{/if}}</td>
+          {{else}}
+          <td class="text-center" colspan="4"><span class="fw-lighter">This NetID has not provided access to other NetIDs yet.</span></td>
+          {{/if}}
         </tr>
       {{/each}}
       </tbody>
@@ -65,7 +69,7 @@ endorsement_row_{{#equals access_index 0}}first top-border{{else}}following hidd
 
 <script id="access_validate_netids_modal_content" type="text/x-handlebars-template">
 <div class="modal-header">
-  <span>Add NetIDs to {{ netid }}</span>
+  <span>Add Access to {{ netid }}</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
@@ -73,7 +77,7 @@ endorsement_row_{{#equals access_index 0}}first top-border{{else}}following hidd
 <div class="modal-body validate_netid_list">
   <p>Text about adding UWNetIDs or UW Groups that they want to give access to {{ netid }} mailbox.
   </p>
-  <textarea class="form-control" placeholder="Enter the UW Netid(s) for which you want to provision access to the {{ netid }} mailbox. Ex: harrythe husky, dubsthedawg"></textarea>
+  <textarea class="form-control" placeholder="Enter UW Netid or Group name(s) for which you want to provision access to the {{ netid }} mailbox. Ex: harrythe husky, dubsthedawg"></textarea>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>

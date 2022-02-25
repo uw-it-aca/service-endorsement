@@ -23,6 +23,9 @@ from endorsement.views.api.shared import Shared
 from endorsement.views.api.shared_owner import SharedOwner
 from endorsement.views.api.shared_proxy import SharedProxyEndorse
 from endorsement.views.api.statistics import Statistics
+from endorsement.views.api.office.access import (
+    Access as OfficeAccess, AccessRights as OfficeAccessRights)
+from endorsement.views.api.office.validate import Validate as OfficeValidate
 from endorsement.views.api.notification import Notification
 
 
@@ -63,5 +66,10 @@ urlpatterns = [
     re_path(r'^api/v1/accept', Accept.as_view(), name='accept_api'),
     re_path(r'^api/v1/notification', Notification.as_view(),
             name='notification_api'),
+    re_path(r'^office/v1/access/rights',
+            OfficeAccessRights.as_view(), name='access_rights_api'),
+    re_path(r'^office/v1/access', OfficeAccess.as_view(), name='access_api'),
+    re_path(r'^office/v1/validate', OfficeValidate.as_view(),
+            name='office_validate_api'),
     re_path(r'.*', page.index, name='home'),
 ]

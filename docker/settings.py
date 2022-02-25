@@ -75,6 +75,9 @@ if os.getenv("ENV") == "localdev":
 else:
     RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
     RESTCLIENTS_PRT_DAO_CLASS = 'Live'
+    RESTCLIENTS_MSCA_HOST = 'https://test-msca-apimgmt.azure-api.net'
+    RESTCLIENTS_MSCA_DAO_CLASS = 'Live'
+    RESTCLIENTS_MSCA_SUBSCRIPTION_KEY = os.getenv('MSCA_SUBSCRIPTION_KEY', '')
 
 PROVISION_ADMIN_GROUP = 'u_acadev_provision_admin'
 PROVISION_SUPPORT_GROUP = 'u_acadev_provision_support'

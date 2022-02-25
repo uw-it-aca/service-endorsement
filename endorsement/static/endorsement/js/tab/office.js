@@ -50,6 +50,7 @@ var ManageOfficeAccess = (function () {
                 _validateOfficeAccessUWNetIDs(netids);
             }).on('endorse:OfficeDelegatableSuccess', function (e, data) {
                 _displayOfficeAccessUWNetIDs(data.netids);
+                _getOfficeAccessTypes();
             }).on('endorse:OfficeDelegatableFailure', function (e, data) {
                 _displayOfficeAccessUWNetIDFailure(data);
             }).on('endorse:OfficeValidateNetIDsSuccess', function (e, data) {
@@ -58,6 +59,10 @@ var ManageOfficeAccess = (function () {
             }).on('endorse:OfficeValidateNetIDsFailure', function (e, data) {
                 $('#validate_netids_modal', _contentDiv()).modal('hide');
                 _displayValidateNetIDsFailure(data);
+            }).on('endorse:OfficeAccessTypesSuccess', function (e) {
+                _displayOfficeAccessTypes();
+            }).on('endorse:OfficeAccessTypesFailure', function (e, data) {
+                alert('Cannot determine Access Types: ' + data);
             });
         },
         _showLoading = function () {
@@ -85,19 +90,26 @@ var ManageOfficeAccess = (function () {
                     unique_netids.push(netid);
                 }
 
-                $.each(this.delgates, function(index) {
-                    var row = {
+                if (this.access.length > 0) {
+                    $.each(this.access, function(i, d) {
+                        context.access.push({
+                            netid: netid,
+                            name: name,
+                            delegate: d.delegate,
+                            status: d.status,
+                            right_id: d.right_id,
+                            accessee_index: accessee_index,
+                            access_index: i
+                        });
+                    });
+                } else {
+                    context.access.push({
                         netid: netid,
                         name: name,
-                        delegate: this.delegate,
-                        status: this.status,
-                        type: this.type,
                         accessee_index: accessee_index,
-                        access_index: index
-                    };
-
-                    context.access.push(row);
-                });
+                        access_index: 0
+                    });
+                }
 
                 accessee_index += 1;
             });
@@ -112,39 +124,8 @@ var ManageOfficeAccess = (function () {
 
             _showLoading();
 
-            setTimeout(function(){
-
-
-            $panel.trigger('endorse:OfficeDelegatableSuccess', {
-                netids: {
-                    javerage: {
-                        name: 'John Average',
-                        delgates: [{
-                            delegate: 'delegate1',
-                            status: 'renew by whenever',
-                            type: 'full access and send as'
-                        },{
-                            delegate: 'delegate2',
-                            status: 'renew at your leasure',
-                            type: 'full access and send as'
-                        }]
-                    },
-                    uxrecruitment: {
-                        name: 'AXDD UX',
-                        delgates: [{
-                            delegate: 'delegate3',
-                            status: 'renew now',
-                            type: 'full access and send as'
-                        }]
-                    }
-                }
-            });
-
-            }, 500);
-            return;
-
             $.ajax({
-                url: "/api/v1/delegate/",
+                url: "/office/v1/access",
                 dataType: "JSON",
                 type: "GET",
                 accepts: {html: "application/json"},
@@ -179,22 +160,11 @@ var ManageOfficeAccess = (function () {
 
             //show loading on button
 
-            setTimeout(function(){
-
-            var netids_list = netids;
-
-            $panel.trigger('endorse:OfficeValidateNetIDsSuccess', {
-                netids: netid_list
-            });
-
-            }, 500);
-
-            return;
-
             $.ajax({
-                url: "/api/v1/validate/",
-                dataType: "JSON",
-                type: "GET",
+                url: "/office/v1/validate",
+                type: "POST",
+                data: JSON.stringify({ "netids": netid_list }),
+                contentType: "application/json",
                 accepts: {html: "application/json"},
                 headers: {
                     "X-CSRFToken": csrf_token
@@ -222,6 +192,49 @@ var ManageOfficeAccess = (function () {
                     .replace(/([a-z0-9]+)(@(uw|washington|u\.washington)\.edu)?/g, '$1')
                     .split(/[ ,]+/))
                 : [];
+        },
+        _displayOfficeAccessTypes = function () {
+            $(".office-access-types").each(function (){
+                var $select = $(this),
+                    right_id = $select.attr('data-access-right-id');
+
+                _loadOfficeAccessTypeOptions(right_id, $select);
+            });
+        },
+        _loadOfficeAccessTypeOptions = function (right_id, $select) {
+            $('<option/>').text('Choose...').appendTo($select);
+            $.each(window.access.office.types, function (i, right) {
+                var $option = $('<option/>')
+                    .text(right.displayname)
+                    .val(right.id);
+
+                if (right_id == right.id) {
+                    $option.attr({'selected': 'selected'});
+                }
+
+                $option.appendTo($select);
+            });
+        },
+        _getOfficeAccessTypes = function() {
+            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
+                $panel = $(location_hash);
+
+            $.ajax({
+                url: "/office/v1/access/rights",
+                dataType: "JSON",
+                type: "GET",
+                accepts: {html: "application/json"},
+                headers: {
+                    "X-CSRFToken": csrf_token
+                },
+                success: function(results) {
+                    window.access.office.types = results
+                    $panel.trigger('endorse:OfficeAccessTypesSuccess');
+                },
+                error: function(xhr, status, error) {
+                    $panel.trigger('endorse:OfficeAccessTypesFailure', [error]);
+                }
+            });
         },
         _unique = function(array) {
             return $.grep(array, function(el, i) {

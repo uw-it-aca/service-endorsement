@@ -39,6 +39,11 @@
         "netid": "{{ user.netid }}"
       };
       window.endorsed_services = {{ services | default:'{}' | safe }};
+      window.access = {
+          "office": {
+              "types": []
+          }
+      };
     </script>
     {% if override_user %}
     <div class="override-warning">
