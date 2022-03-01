@@ -2,12 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from userservice.user import UserService
+from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser, data_error)
 from endorsement.exceptions import (
     NoEndorsementException, UnrecognizedUWNetid, InvalidNetID)
+from endorsement.services import get_endorsement_service
 from uw_msca.access_rights import get_access_rights
 import logging
 import random
@@ -25,22 +27,25 @@ class Access(RESTDispatch):
         if not netid:
             return invalid_session(logger)
 
-        # if not has_office_inbox(netid):
-        #     return invalid_endorser(logger)
+        o365 = get_endorsement_service('o365')
+        netids = {}
 
-        netids = {
-            netid: {
-                'name': 'foo bar',
+        endorser = get_endorser_model(netid)
+        endorsee = get_endorsee_model(netid)
+        if o365.is_permitted(endorser, endorsee):
+            netids[netid] = {
+                'name': endorser.display_name,
                 'access': self._load_access_for_netid(netid)
             }
-        }
 
         for supported in get_supported_resources_for_netid(netid):
             if supported.is_owner() and supported.is_shared_netid():
-                netids[supported.name] = {
-                    'name': 'space holder',
-                    'access': self._load_access_for_netid(supported.name)
-                }
+                endorsee = get_endorsee_model(supported.name)
+                if o365.is_permitted(endorser, endorsee):
+                    netids[supported.name] = {
+                        'name': endorsee.display_name,
+                        'access': self._load_access_for_netid(supported.name)
+                    }
 
         return self.json_response({
             'netids': netids,

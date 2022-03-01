@@ -23,7 +23,8 @@ class Validate(RESTDispatch):
         #     return invalid_endorser(logger)
 
         valid = []
-        names = request.data.get('names', [])
+        mailbox = request.data.get('mailbox', None);
+        names = request.data.get('delegates', [])
         for name in names:
 
             #
@@ -32,8 +33,9 @@ class Validate(RESTDispatch):
 
             valid.append({
                 'name': name,
+                'mailbox': mailbox,
                 'can_access': True,
                 'message': 'Access valid'
             })
 
-        return self.json_response(names)
+        return self.json_response(valid)

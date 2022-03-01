@@ -160,15 +160,20 @@ def get_endorsement_records_for_endorsee_re(endorsee_regex):
 def is_permitted(endorser, endorsee, subscription_codes):
     active = False
     try:
+
+        print("* * * * * ACTIVE SUB {} for {}".format(
+            subscription_codes, endorsee.netid))
+
         active = active_subscriptions_for_netid(
             endorsee.netid, subscription_codes)
     except DataFailureException as ex:
-        if ex.status == 404:
+        if getattr(settings, "DEBUG", False) and ex.status == 404:
             active = False
+            print("* ** * ** * * * NOPE")
             # weirdness for testing with mock data
             if getattr(settings, "RESTCLIENTS_DAO_CLASS", 'File') == 'File':
-                e = EndorsementRecord.objects.filter(endorsee=endorsee,
-                                                     is_deleted__isnull=True)
+                e = EndorsementRecord.objects.filter(
+                    endorsee=endorsee, is_deleted__isnull=True)
                 active = len(e) < 0
         else:
             raise

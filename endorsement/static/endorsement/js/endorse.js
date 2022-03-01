@@ -117,9 +117,7 @@ var Endorse = (function () {
                 template = Handlebars.compile($('#' + modal_content_id).html()),
                 context = _endorseModalContext($rows);
 
-            var x = template(context);
-            debugger
-            $('.modal-content', $modal).html(x);
+            $('.modal-content', $modal).html(template(context));
             $modal.modal('show');
             $modal.find('button#confirm_endorsement_responsibility')
                 .data('$rows', $rows)
