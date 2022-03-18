@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from endorsement.models import Endorser, EndorsementRecord
+from endorsement.dao.endorse import clear_endorsement
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.user import get_endorser_model
 from endorsement.dao.uwnetid_admin import get_owner_for_shared_netid
@@ -52,7 +53,7 @@ def validate_shared_endorsers():
                 "shared: old owner {} of {} ({}) revoked for {}".format(
                     orphan.endorser.netid, orphan.endorsee.netid,
                     orphan.category_code, noe.endorser.netid))
-            orphan.revoke()
+            clear_endorsement(orphan)
             continue
         except EndorsementRecord.DoesNotExist:
             pass
@@ -69,7 +70,7 @@ def validate_shared_endorsers():
             # mail sent, clone endorsment record with new owner
             for er in new_owners[owner]:
                 # no longer endorsed by previous owner
-                er.revoke()
+                clear_endorsement(er)
                 logger.info(
                     "shared: new record for {} of {} ({}) from {}".format(
                         new_owner.netid, er.endorsee.netid,
