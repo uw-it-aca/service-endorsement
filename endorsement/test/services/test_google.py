@@ -57,27 +57,40 @@ class TestGoogleService(ServicesApiTest):
         # exclude category 22
         self.assertFalse('nebionotic' in endorsible)
 
-        if self.service.shared_params['allow_any_previous_endorsement']:
-            # remove pre-existing non-admin
-            self.service.clear_endorsement(endorser, endorsee_pre)
+    def test_legacy_shared_netid(self):
+        endorser = get_endorser_model('jstaff')
+        endorsee = get_endorsee_model('wadm_jstaff')
+        cpnebeng = get_endorsee_model('cpnebeng')
+        pppmsrv = get_endorsee_model('pppmsrv')
 
-            # create revoked cat22 endorsment
-            pppmsrv = get_endorsee_model('pppmsrv')
-            self.service.store_endorsement(
-                endorser, pppmsrv, None, "testing")
-            self.service.clear_endorsement(endorser, pppmsrv)
+        self.assertEqual(len(
+            EndorsementRecord.objects.get_endorsements_for_endorser(
+                endorser)), 0)
 
-            url = reverse('shared_api')
-            response = self.client.get(url)
-            self.assertEquals(response.status_code, 200)
-            data = json.loads(response.content)
+        self.service.store_endorsement(
+            endorser, endorsee, None, "testing")
+        self.service.store_endorsement(
+            endorser, cpnebeng, None, "pre-existing")
+        self.service.store_endorsement(
+            endorser, pppmsrv, None, "cat excluded pre-existing")
 
-            endorsible, endorsed = self.get_shared(data)
+        # remove pre-existing non-admin
+        self.service.clear_endorsement(endorser, cpnebeng)
+        # remove pre-existing cat22 non-admin
+        self.service.clear_endorsement(endorser, pppmsrv)
 
-            self.assertEquals(len(endorsible), 4)
-            self.assertEquals(len(endorsed), 1)
-            self.assertTrue(endorsee_pre.netid in endorsible)
-            self.assertTrue(pppmsrv.netid not in endorsible)
+        self.set_user('jstaff')
+        url = reverse('shared_api')
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+
+        endorsible, endorsed = self.get_shared(data)
+
+        self.assertEquals(len(endorsible), 4)
+        self.assertEquals(len(endorsed), 1)
+        self.assertTrue(cpnebeng.netid in endorsible)
+        self.assertTrue(pppmsrv.netid not in endorsible)
 
     def test_endorse_netid(self):
         self._test_endorse_netid()
@@ -115,7 +128,7 @@ class TestGoogleService(ServicesApiTest):
         self.assertEqual(len(errored), 1)
         self.assertFalse('cpnebeng' in endorsed)
 
-    def test_preexisting_endorse(self):
+    def test_legacy_netid_endorse(self):
         endorser = get_endorser_model('jstaff')
         endorsee_pre = get_endorsee_model('cpnebeng')
         self.service.store_endorsement(

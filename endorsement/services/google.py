@@ -15,7 +15,7 @@ permitted to the appropriate collaboration service
 """
 
 from endorsement.services import EndorsementServiceBase
-from endorsement.models import EndorsementRecord
+from endorsement.models import EndorsementRecord, Endorsee
 from uw_uwnetid.models import Subscription, Category
 
 
@@ -37,9 +37,20 @@ class EndorsementService(EndorsementServiceBase):
         return {
             'roles': ['owner', 'owner-admin'],
             'types': ['administrator'],
-            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1],
-            'allow_any_previous_endorsement': True
+            'excluded_categories': [Category.ALTID_SHARED_CLINICAL_1]
         }
+
+    def valid_legacy_shared_netid(self, resource, endorser):
+        """Reach around the curtain to find revoked shared netids"""
+        try:
+            endorsee = Endorsee.objects.get(netid=resource.name)
+            endorsements = EndorsementRecord.objects.filter(
+                category_code=self.category_code, endorsee=endorsee)
+            return (endorsements.count() > 0
+                    and self.valid_supported_role(resource)
+                    and not self.invalid_supported_category(resource))
+        except Endorsee.DoesNotExist:
+            return False
 
     @property
     def service_renewal_statement(self):
