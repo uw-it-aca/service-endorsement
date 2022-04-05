@@ -10,7 +10,7 @@
       {{/each}}
     </select>
     <div class="input-group-append">
-      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Adding NetID">Add Access</button>
+      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="Adding NetID">Add Access</button>
     </div>
   </div>
  </div>
@@ -37,7 +37,7 @@
     </table>
     </div>
   </div>
-<!-- <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
+<!-- <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="Provisioning">Provision services to selected<br />Shared UW NetIDs</button>
 -->
 
 <div class="modal fade" id="validate_netids_modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -57,7 +57,7 @@ endorsement_row_{{#equals access_index 0}}first top-border{{else}}following hidd
       <td class="access-delegate-id">{{ delegate }}</td>
       <td class="access-status">{{#if status}}{{status}}{{else}}Not Provisioned{{/if}}</td>
       <td class="access-type"><select class="office-access-types" data-access-right-id="{{ right_id }}"></select></td>
-      <td class="access-action">{{#if status}}<button type="button" class="btn btn-primary" id="access_action" data-action="renew" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="provision_access" disabled="disabled" data-action="provision" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Provisioning">Provision Service</button>{{/if}}</td>
+      <td class="access-action">{{#if status}}<button type="button" class="btn btn-primary" id="access_action" data-action="renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="provision_access" disabled="disabled" data-action="provision" data-loading-text="Provisioning">Provision Service</button>{{/if}}</td>
 {{else}}
       <td class="text-center" colspan="4"><span class="fw-lighter">This NetID has not provided access to other NetIDs yet.</span></td>
 {{/if}}
@@ -86,7 +86,7 @@ endorsement_row_{{#equals access_index 0}}first top-border{{else}}following hidd
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
-  <button type="button" id="validate_netids_access" class="btn btn-primary" disabled="disabled" data-loading-text='<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validating NetID(s)'>Add UW NetID(s) to list</button>
+  <button type="button" id="validate_netids_access" class="btn btn-primary" disabled="disabled" data-loading-text="Validating UW NetID(s)">Add UW NetID(s) to list</button>
 </div>
 </script>
 

@@ -52,6 +52,30 @@ class Access(RESTDispatch):
             'messages': get_persistent_messages()
         })
 
+    def post(self, request, *args, **kwargs):
+        user_netid = UserService().get_user()
+        if not user_netid:
+            return invalid_session(logger)
+
+        # if not has_office_inbox(netid):
+        #     return invalid_endorser(logger)
+
+        netid = request.data.get('netid', None)
+        delegate = request.data.get('delegate', None)
+        access_type = request.data.get('access_type', None)
+
+
+        # Do stuff here
+
+
+        access = {
+            'netid': netid,
+            'delegate': delegate,
+            'right_id': access_type
+        }
+
+        return self.json_response(access)
+
     def _load_access_for_netid(self, netid):
         if (random.random() * 100) < 60.0:
             return []
@@ -60,7 +84,6 @@ class Access(RESTDispatch):
             for n in range(random.choice([0, 1, 2, 3])):
                 l.append({
                     'delegate': 'delegate{}'.format(n),
-                    'status': 'renew now',
                     'right_id': random.choice([1, 2, 3, 4])
                 })
 
