@@ -150,7 +150,8 @@ class EndorsementServiceBase(ABC):
                       and self.valid_supported_type(resource)
                       and not self.invalid_supported_category(resource))
                      or self.valid_existing_endorsement(resource, endorser)
-                     or self.valid_ever_endorsed(resource, endorser)))
+                     or (self.valid_ever_endorsed(resource)
+                         and not self.invalid_supported_category(resource))))
 
     def valid_supported_role(self, resource):
         """
@@ -214,7 +215,7 @@ class EndorsementServiceBase(ABC):
                 Endorsee.DoesNotExist):
             return False
 
-    def valid_ever_endorsed(self, resource, endorser):
+    def valid_ever_endorsed(self, resource):
         try:
             endorsee = Endorsee.objects.get(netid=resource.name)
             # reach around the curtain to include revoked records
