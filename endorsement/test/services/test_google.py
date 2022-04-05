@@ -57,7 +57,7 @@ class TestGoogleService(ServicesApiTest):
         # exclude category 22
         self.assertFalse('nebionotic' in endorsible)
 
-        if self.service.shared_params['allow_existing_endorsement']:
+        if self.service.shared_params['allow_any_previous_endorsement']:
             # remove pre-existing non-admin
             self.service.clear_endorsement(endorser, endorsee_pre)
 
@@ -68,9 +68,9 @@ class TestGoogleService(ServicesApiTest):
 
             endorsible, endorsed = self.get_shared(data)
 
-            self.assertEquals(len(endorsible), 3)
+            self.assertEquals(len(endorsible), 4)
             self.assertEquals(len(endorsed), 1)
-            self.assertTrue(endorsee_pre.netid not in endorsible)
+            self.assertTrue(endorsee_pre.netid in endorsible)
 
     def test_endorse_netid(self):
         self._test_endorse_netid()
