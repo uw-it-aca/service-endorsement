@@ -61,6 +61,12 @@ class TestGoogleService(ServicesApiTest):
             # remove pre-existing non-admin
             self.service.clear_endorsement(endorser, endorsee_pre)
 
+            # create revoked cat22 endorsment
+            pppmsrv = get_endorsee_model('pppmsrv')
+            self.service.store_endorsement(
+                endorser, pppmsrv, None, "testing")
+            self.service.clear_endorsement(endorser, pppmsrv)
+
             url = reverse('shared_api')
             response = self.client.get(url)
             self.assertEquals(response.status_code, 200)
@@ -71,6 +77,7 @@ class TestGoogleService(ServicesApiTest):
             self.assertEquals(len(endorsible), 4)
             self.assertEquals(len(endorsed), 1)
             self.assertTrue(endorsee_pre.netid in endorsible)
+            self.assertTrue(pppmsrv.netid not in endorsible)
 
     def test_endorse_netid(self):
         self._test_endorse_netid()
