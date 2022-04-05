@@ -89,6 +89,7 @@ class EndorsementServiceBase(ABC):
            - types: list of supported types, or '*' to indicate any
            - excluded_categories: list of excluded category numbers
            - allow_existing_endorsement: boolean to grandfather existing
+           - allow_any_previous_endorsement: boolean to grandfather existing
         """
         return None
 
@@ -99,7 +100,9 @@ class EndorsementServiceBase(ABC):
                       or self.shared_params.get('types', None)
                       or self.shared_params.get('excluded_categories', None))
                      or self.shared_params.get(
-                         'allow_existing_endorsement', None)))
+                         'allow_existing_endorsement', False)
+                     or self.shared_params.get(
+                         'allow_any_previous_endorsement', False)))
 
     @property
     def category_name(self):
@@ -146,7 +149,9 @@ class EndorsementServiceBase(ABC):
                 and ((self.valid_supported_role(resource)
                       and self.valid_supported_type(resource)
                       and not self.invalid_supported_category(resource))
-                     or self.valid_existing_endorsement(resource, endorser)))
+                     or self.valid_existing_endorsement(resource, endorser)
+                     or (self.valid_ever_endorsed(resource)
+                         and not self.invalid_supported_category(resource))))
 
     def valid_supported_role(self, resource):
         """
@@ -204,6 +209,20 @@ class EndorsementServiceBase(ABC):
                     and self.get_endorsement(
                         endorser, Endorsee.objects.get(
                             netid=resource.name)) is not None)
+        except (KeyError,
+                NoEndorsementException,
+                UnrecognizedUWNetid,
+                Endorsee.DoesNotExist):
+            return False
+
+    def valid_ever_endorsed(self, resource):
+        try:
+            endorsee = Endorsee.objects.get(netid=resource.name)
+            # reach around the curtain to include revoked records
+            return (self.shared_params['allow_any_previous_endorsement']
+                    and EndorsementRecord.objects.filter(
+                            category_code=self.category_code,
+                            endorsee=endorsee).count() > 0)
         except (KeyError,
                 NoEndorsementException,
                 UnrecognizedUWNetid,
