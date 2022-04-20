@@ -86,9 +86,9 @@ daemon:
       args: ['--cron', '*/5 * * * *', 'notify_endorsees']
 certs:
   mounted: true
-  certPath: /certs/provision-test.uw.edu-uwca.cert
-  keyPath: /certs/provision-test.uw.edu-uwca.key
-  secretName: test.provision.uw.edu-uwca-certs
+  certPath: /certs/provision-test.uw.edu.cert
+  keyPath: /certs/provision-test.uw.edu.key
+  secretName: test.provision.uw.edu-ic-certs
 environmentVariables:
   - name: ENV
     value: dev
@@ -123,18 +123,13 @@ externalSecrets:
           property: sql_user
         - name: password
           property: sql_pass
-    - name: test.provision.uw.edu-uwca-certs
-      externalKey: axdd/kv/data/provision/test/uwca-certs
-      data:
-        - name: provision-test.uw.edu-uwca.key
-          property: key
-        - name: provision-test.uw.edu-uwca.cert
-          property: cert
     - name: test.provision.uw.edu-ic-certs
       externalKey: axdd/kv/data/provision/test/ic-certs
       data:
         - name: provision-test.uw.edu.cert
           property: cert
+        - name: provision-test.uw.edu.key
+          property: key
     - name: idp.uw-cert
       externalKey: axdd/kv/data/idp-cert
       data:
