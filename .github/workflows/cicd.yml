@@ -97,9 +97,9 @@ jobs:
           coverage combine
           coveralls
 
-      - name: Push Image to GCR
+      - name: Push Image to GAR
         if: github.event_name == 'push'
-        uses: uw-it-aca/actions/gcr-push@main
+        uses: uw-it-aca/actions/gar-push@feature/google-artifact-registry
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}

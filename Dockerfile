@@ -1,4 +1,6 @@
-FROM gcr.io/uwit-mci-axdd/django-container:1.3.8 as app-prewebpack-container
+ARG DJANGO_CONTAINER_VERSION=1.4.0
+
+FROM gcr.io/uwit-mci-axdd/django-container:${DJANGO_CONTAINER_VERSION} as app-prewebpack-container
 
 USER root
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
@@ -15,8 +17,8 @@ ADD --chown=acait:acait docker/ project/
 RUN . /app/bin/activate && pip install django-webpack-loader
 RUN . /app/bin/activate && python manage.py collectstatic
 
-FROM node:14.6.0-stretch AS node-bundler
-ADD . /app/
+FROM node:14.18.1-stretch AS node-bundler
+ADD ./package.json /app/
 WORKDIR /app/
 RUN npm install .
 RUN npx webpack --mode=production
@@ -27,7 +29,7 @@ COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/endorsement
 COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/ /static/
 COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/webpack-stats.json /app/endorsement/static/webpack-stats.json
 
-FROM gcr.io/uwit-mci-axdd/django-test-container:1.3.8 as app-test-container
+FROM gcr.io/uwit-mci-axdd/django-test-container:${DJANGO_CONTAINER_VERSION} as app-test-container
 
 COPY --from=app-container /app/ /app/
 COPY --from=app-container /static/ /static/
