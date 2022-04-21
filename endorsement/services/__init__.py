@@ -122,8 +122,12 @@ class EndorsementServiceBase(ABC):
         if self.valid_person_endorsee(endorsee):
             return True
 
-        # grandfathered non-person endorsees
-        for supported in get_supported_resources_for_netid(endorser.netid):
+        # legacy non-person endorsees
+        netid_supported = get_supported_resources_for_netid(endorser.netid)
+        if netid_supported is None:
+            netid_supported = []
+
+        for supported in netid_supported:
             if endorsee.netid == supported.name:
                 return self.valid_supported_netid(supported, endorser)
 

@@ -34,7 +34,11 @@ class Shared(RESTDispatch):
         owned = []
         active_services = set()
 
-        for supported in get_supported_resources_for_netid(netid):
+        netid_supported = get_supported_resources_for_netid(netid)
+        if netid_supported is None:
+            netid_supported = []
+
+        for supported in netid_supported:
             endorsements = self._load_shared_endorsements(
                 supported, endorser, active_services)
 
