@@ -18,7 +18,7 @@ RUN . /app/bin/activate && pip install django-webpack-loader
 RUN . /app/bin/activate && python manage.py collectstatic
 
 FROM node:14.18.1-stretch AS node-bundler
-ADD ./package.json /app/
+ADD . /app/
 WORKDIR /app/
 RUN npm install .
 RUN npx webpack --mode=production
