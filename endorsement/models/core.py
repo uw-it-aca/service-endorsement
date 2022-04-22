@@ -60,8 +60,8 @@ class Endorsee(ExportModelOperationsMixin('endorsee'), models.Model):
                              unique=True)
     display_name = models.CharField(max_length=256,
                                     null=True)
-    is_person = models.BooleanField(null=True,default=True)
-    kerberos_active_permitted = models.BooleanField(null=True,default=False)
+    is_person = models.BooleanField(null=True, default=True)
+    kerberos_active_permitted = models.BooleanField(null=True, default=False)
 
     def __eq__(self, other):
         return other is not None and\
