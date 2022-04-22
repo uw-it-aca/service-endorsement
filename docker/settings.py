@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 from .base_settings import *
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 ENDORSEMENT_SERVICES = [s.strip() for s in os.getenv(
     'ENDORSEMENT_SERVICES', '*').split(',')]
 
