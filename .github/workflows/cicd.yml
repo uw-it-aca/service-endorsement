@@ -120,7 +120,7 @@ jobs:
 
       - name: Deployment Pipeline
         if: >-
-          contains(fromJSON('["main", "master", "develop", "qa"]'),
+          contains(fromJSON('["main", "master", "develop", "qa", "feature/cicd-and-django-container"]'),
             needs.context.outputs.git_repo_branch)
         uses: uw-it-aca/actions/cicd-deploy@feature/google-artifact-registry
         with:
