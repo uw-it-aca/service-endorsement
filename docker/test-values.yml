@@ -147,7 +147,7 @@ environmentVariablesSecrets:
   SAMLServiceProviderCert:
     name: SP_CERT
     secretName: test.provision.uw.edu-ic-certs
-    secretKey: provision-test.uw.edu.cert
+    secretKey: test.provision.uw.edu.cert
   SAMLIDPCert:
     name: IDP_CERT
     secretName: idp.uw-cert
