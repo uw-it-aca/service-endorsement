@@ -86,8 +86,8 @@ daemon:
       args: ['--cron', '*/5 * * * *', 'notify_endorsees']
 certs:
   mounted: true
-  certPath: /certs/provision-test.uw.edu.cert
-  keyPath: /certs/provision-test.uw.edu.key
+  certPath: /certs/test.provision.uw.edu.cert
+  keyPath: /certs/test.provision.uw.edu.key
   secretName: test.provision.uw.edu-ic-certs
 environmentVariables:
   - name: ENV
