@@ -97,12 +97,13 @@ jobs:
           coverage combine
           coveralls
 
-      - name: Push Image to GAR
+      - name: Push Image to Registry
         if: github.event_name == 'push'
         uses: uw-it-aca/actions/gar-push@feature/google-artifact-registry
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+          registry_hostname: us-docker.pkg.dev
 
   deploy:
     if: github.event_name == 'push'
@@ -149,3 +150,4 @@ jobs:
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
           registry_password: ${{ secrets.GCP_JSON_KEY }}
           context: ${{ needs.deploy.outputs.context }}
+          registry_hostname: us-docker.pkg.dev
