@@ -129,7 +129,7 @@ jobs:
         with:
           release_name: ${{ env.RELEASE_NAME }}
           commit_hash: ${{ needs.context.outputs.commit_hash }}
-          image_registry: ${{ needs.build.push.image_registry }}
+          registry_name: ${{ needs.build.push.image_registry }}
           git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
 
@@ -152,7 +152,6 @@ jobs:
           release_name: ${{ env.RELEASE_NAME }}
           registry_host: ${{ needs.build.push.image_registry_host }}
           registry_name: ${{ needs.build.push.image_registry_path }}
-          image_registry: ${{ needs.build.push.image_registry }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
           registry_password: ${{ secrets.GCP_JSON_KEY }}
           context: ${{ needs.deploy.outputs.context }}
