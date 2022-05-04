@@ -37,7 +37,7 @@ externalService:
 repo: prt
 instance: prod
 image:
-  repository: us-docker.pkg.dev/uwit-mci-axdd/containers/prt
+  repository: IMAGE_REGISTRY
   tag: IMAGE_TAG
 metrics:
   enabled: true
