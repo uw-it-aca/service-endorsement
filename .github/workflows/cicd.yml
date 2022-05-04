@@ -33,6 +33,12 @@ jobs:
 
     needs: context
 
+    outputs:
+      image_registry: ${{ steps.push.outputs.image_registry }}
+      image_registry_host: ${{ steps.push.outputs.image_registry_host }}
+      image_registry_path: ${{ steps.push.outputs.image_registry_path }}
+      image_registry_tagged: ${{ steps.push.outputs.image_registry_tagged }}
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -129,7 +135,7 @@ jobs:
         with:
           release_name: ${{ env.RELEASE_NAME }}
           commit_hash: ${{ needs.context.outputs.commit_hash }}
-          registry_name: ${{ needs.build.steps.push.image_registry }}
+          registry_name: ${{ needs.build.outputs.image_registry }}
           git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
 
@@ -150,8 +156,8 @@ jobs:
         uses: uw-it-aca/actions/cicd-housekeeping@feature/google-artifact-registry
         with:
           release_name: ${{ env.RELEASE_NAME }}
-          registry_host: ${{ needs.build.steps.push.image_registry_host }}
-          registry_name: ${{ needs.build.steps.push.image_registry_path }}
+          registry_host: ${{ needs.build.outputs.image_registry_host }}
+          registry_name: ${{ needs.build.outputs.image_registry_path }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
           registry_password: ${{ secrets.GCP_JSON_KEY }}
           context: ${{ needs.deploy.outputs.context }}
