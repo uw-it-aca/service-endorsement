@@ -98,12 +98,14 @@ jobs:
           coveralls
 
       - name: Push Image to Registry
+        id: push
         if: github.event_name == 'push'
         uses: uw-it-aca/actions/gcr-push@feature/google-artifact-registry
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
           registry_hostname: us-docker.pkg.dev
+          registry_path: containers
 
   deploy:
     if: github.event_name == 'push'
@@ -126,9 +128,10 @@ jobs:
         uses: uw-it-aca/actions/cicd-deploy@feature/google-artifact-registry
         with:
           release_name: ${{ env.RELEASE_NAME }}
-          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
           commit_hash: ${{ needs.context.outputs.commit_hash }}
+          image_registry: ${{ needs.build.push.image_registry }}
           git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
+          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
 
       - name: 'Surface context from executed build step'
         id: context
@@ -147,7 +150,9 @@ jobs:
         uses: uw-it-aca/actions/cicd-housekeeping@feature/google-artifact-registry
         with:
           release_name: ${{ env.RELEASE_NAME }}
+          registry_host: ${{ needs.build.push.image_registry_host }}
+          registry_name: ${{ needs.build.push.image_registry_path }}
+          image_registry: ${{ needs.build.push.image_registry }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
           registry_password: ${{ secrets.GCP_JSON_KEY }}
           context: ${{ needs.deploy.outputs.context }}
-          registry_hostname: us-docker.pkg.dev
