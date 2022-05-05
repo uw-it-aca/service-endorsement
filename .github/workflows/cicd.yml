@@ -14,7 +14,7 @@ on:
 
 jobs:
   context:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
 
     outputs:
       commit_hash: ${{ steps.context.outputs.commit_hash }}
@@ -29,15 +29,9 @@ jobs:
           release_name: ${{ env.RELEASE_NAME }}
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
 
     needs: context
-
-    outputs:
-      image_registry: ${{ steps.push.outputs.image_registry }}
-      image_registry_host: ${{ steps.push.outputs.image_registry_host }}
-      image_registry_path: ${{ steps.push.outputs.image_registry_path }}
-      image_registry_tagged: ${{ steps.push.outputs.image_registry_tagged }}
 
     steps:
       - name: Checkout Repo
@@ -103,8 +97,7 @@ jobs:
           coverage combine
           coveralls
 
-      - name: Push Image to Registry
-        id: push
+      - name: Push Image to GCR
         if: github.event_name == 'push'
         uses: uw-it-aca/actions/gcr-push@feature/google-artifact-registry
         with:
@@ -118,7 +111,7 @@ jobs:
 
     needs: [context, build]
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
 
     outputs:
       context: ${{ steps.context.outputs.context }}
@@ -129,15 +122,16 @@ jobs:
 
       - name: Deployment Pipeline
         if: >-
-          contains(fromJSON('["main", "master", "develop", "qa", "feature/cicd-and-django-container"]'),
+          contains(fromJSON('["main", "master", "develop", "qa"]'),
             needs.context.outputs.git_repo_branch)
         uses: uw-it-aca/actions/cicd-deploy@feature/google-artifact-registry
         with:
           release_name: ${{ env.RELEASE_NAME }}
-          commit_hash: ${{ needs.context.outputs.commit_hash }}
-          registry_name: ${{ needs.build.outputs.image_registry }}
-          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+          commit_hash: ${{ needs.context.outputs.commit_hash }}
+          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
+          registry_hostname: us-docker.pkg.dev
+          registry_path: containers
 
       - name: 'Surface context from executed build step'
         id: context
@@ -149,15 +143,15 @@ jobs:
 
     needs: [context, build, deploy]
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
 
     steps:
       - name: House Keeping
-        uses: uw-it-aca/actions/cicd-housekeeping@feature/google-artifact-registry
+        uses: uw-it-aca/actions/cicd-housekeeping@main
         with:
           release_name: ${{ env.RELEASE_NAME }}
-          registry_host: ${{ needs.build.outputs.image_registry_host }}
-          registry_name: ${{ needs.build.outputs.image_registry_path }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
           registry_password: ${{ secrets.GCP_JSON_KEY }}
           context: ${{ needs.deploy.outputs.context }}
+          registry_hostname: us-docker.pkg.dev
+          registry_path: containers
