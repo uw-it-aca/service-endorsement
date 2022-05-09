@@ -30,6 +30,7 @@ def get_supported_resources_for_netid(netid):
         logger.error(
             'uw_uwnetid get_supported_resources({}) returned {}'.format(
                 netid, ex.status))
+        return None
     except Exception:
         handel_err(logger,
                    '{0} supported resources '.format(netid),

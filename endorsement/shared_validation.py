@@ -24,9 +24,11 @@ def validate_shared_endorsers():
             endorsee__is_person=False)
 
         if len(endorsements):
-            owned = [
-                n.name for n in get_supported_resources_for_netid(
-                    endorser.netid) if n.is_owner()]
+            netid_supported = get_supported_resources_for_netid(endorser.netid)
+            if netid_supported is None:
+                continue
+
+            owned = [n.name for n in netid_supported if n.is_owner()]
 
             for e in endorsements:
                 if e.endorsee.netid not in owned:
