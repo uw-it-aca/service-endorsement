@@ -27,7 +27,7 @@ class Endorser(ExportModelOperationsMixin('endorser'), models.Model):
                              unique=True)
     display_name = models.CharField(max_length=256,
                                     null=True)
-    is_valid = models.NullBooleanField()
+    is_valid = models.BooleanField()
     datetime_emailed = models.DateTimeField(null=True)
     last_visit = models.DateTimeField(null=True)
 
@@ -60,8 +60,8 @@ class Endorsee(ExportModelOperationsMixin('endorsee'), models.Model):
                              unique=True)
     display_name = models.CharField(max_length=256,
                                     null=True)
-    is_person = models.NullBooleanField(default=True)
-    kerberos_active_permitted = models.NullBooleanField(default=False)
+    is_person = models.BooleanField(default=True)
+    kerberos_active_permitted = models.BooleanField(default=False)
 
     def __eq__(self, other):
         return other is not None and\
@@ -228,7 +228,7 @@ class EndorsementRecord(
     datetime_endorsed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
-    is_deleted = models.NullBooleanField()
+    is_deleted = models.BooleanField(null=True)
 
     objects = EndorsementRecordManager()
 

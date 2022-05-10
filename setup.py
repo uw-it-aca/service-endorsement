@@ -26,7 +26,7 @@ setup(
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires=[
-        'Django~=2.2',
+        'Django~=3.2',
         'ordereddict',
         'simplejson',
         'django-webpack-loader>=1.0,<2.0',

@@ -254,7 +254,7 @@ var ManageOfficeAccess = (function () {
                     'delegate': delegate,
                     'accessee_index': $row.hasClass('endorsee_row_even') ? 0 : 1,
                     'access_index': i});
-        }
+        },
         _setAccessForDelegate = function (netid, delegate, access_type) {
             var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
                 $panel = $(location_hash),
