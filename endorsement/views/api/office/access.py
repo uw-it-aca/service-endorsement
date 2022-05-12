@@ -10,6 +10,7 @@ from endorsement.views.rest_dispatch import (
 from endorsement.exceptions import (
     NoEndorsementException, UnrecognizedUWNetid, InvalidNetID)
 from endorsement.services import get_endorsement_service
+from endorsement.util.auth import is_only_support_user
 from uw_msca.access_rights import get_access_rights
 import logging
 import random
@@ -23,9 +24,12 @@ class Access(RESTDispatch):
     Return maiboxes and access associated with netid
     """
     def get(self, request, *args, **kwargs):
-        netid = UserService().get_user()
-        if not netid:
+        try:
+            netid = self._validate_user(request)
+        except UnrecognizedUWNetid:
             return invalid_session(logger)
+        except InvalidNetID:
+            return invalid_endorser(logger)
 
         o365 = get_endorsement_service('o365')
         netids = {}
@@ -52,15 +56,34 @@ class Access(RESTDispatch):
             'messages': get_persistent_messages()
         })
 
-    def post(self, request, *args, **kwargs):
-        user_netid = UserService().get_user()
-        if not user_netid:
+    def delete(self, request, *args, **kwargs):
+        try:
+            netid = self._validate_user(request)
+        except UnrecognizedUWNetid:
             return invalid_session(logger)
+        except InvalidNetID:
+            return invalid_endorser(logger)
+
+
+
+        ## do stuff here
+
+
+        return self.json_response({'response': 'OK'})
+
+    def post(self, request, *args, **kwargs):
+        try:
+            netid = self._validate_user(request)
+        except UnrecognizedUWNetid:
+            return invalid_session(logger)
+        except InvalidNetID:
+            return invalid_endorser(logger)
 
         # if not has_office_inbox(netid):
         #     return invalid_endorser(logger)
 
-        netid = request.data.get('netid', None)
+
+        mailbox = request.data.get('mailbox', None)
         delegate = request.data.get('delegate', None)
         access_type = request.data.get('access_type', None)
 
@@ -69,25 +92,40 @@ class Access(RESTDispatch):
 
 
         access = {
-            'netid': netid,
+            'mailbox': mailbox,
             'delegate': delegate,
             'right_id': access_type
         }
 
         return self.json_response(access)
 
-    def _load_access_for_netid(self, netid):
+    def _load_access_for_netid(self, mailbox):
         if (random.random() * 100) < 60.0:
             return []
         else:
             l = []
             for n in range(random.choice([0, 1, 2, 3])):
                 l.append({
+                    'mailbox': mailbox,
                     'delegate': 'delegate{}'.format(n),
-                    'right_id': random.choice([1, 2, 3, 4])
+                    'right_id': random.choice([1, 2, 3, 4]),
+                    'status': 'Provisioned'
                 })
 
             return l
+
+    def _validate_user(self, request):
+        user_service = UserService()
+        netid = user_service.get_user()
+        if not netid:
+            raise UnrecognizedUWNetid()
+
+        original_user = user_service.get_original_user()
+        acted_as = None if (netid == original_user) else original_user
+        if acted_as and is_only_support_user(request):
+            raise InvalidNetID()
+
+        return netid
 
 
 class AccessRights(RESTDispatch):

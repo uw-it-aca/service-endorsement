@@ -8,16 +8,12 @@ import { Notify } from "../notify.js";
 var ManageOfficeAccess = (function () {
     var content_id = 'office_access',
         location_hash = '#' + content_id,
+        $panel = $(location_hash),
+        $content = $('#office_access'),
         table_css = null,
 
-        _contentDiv = function () {
-            var $panel = $(location_hash);
-
-            return $('#office_access')
-        },
         _registerEvents = function () {
-            var $tab = $('.tabs div#access'),
-                $panel = $(location_hash);
+            var $tab = $('.tabs div#access');
 
             // delegated events within our content
             $tab.on('endorse:MainTabExposed', function (e) {
@@ -42,26 +38,27 @@ var ManageOfficeAccess = (function () {
                 var mailbox = $('.validate-netid-list textarea').attr('data-mailbox'),
                     delegates = _getNetidList();
 
-                Button.loading($(this));
+                _modalButtonLoading('#' + this.id);
                 _validateOfficeAccessUWNetIDs(mailbox, delegates);
             }).on('click', '#provision_access', function (e) {
                 var $button = $(this),
-                    $row = $button.closest('tr'),
-                    netid = $row.attr('data-netid'),
-                    delegate = $row.attr('data-delegate'),
-                    access_type = $('.access-type select option:selected', $row).val();
+                    $row = $button.closest('tr');
 
-                _setAccessForDelegate(netid, delegate, access_type);
+                _confirmNetidAccessModal($row);
+            }).on('endorse:OfficeDelegateConfirmation', function (e, context) {
+                _hideModal();
+                _modalButtonLoading('#provision_access', context.mailbox, context.delegate)
+                _setAccessForDelegate(context);
             }).on('endorse:OfficeDelegatableSuccess', function (e, data) {
                 _displayOfficeAccessUWNetIDs(data.netids);
                 _getOfficeAccessTypes();
             }).on('endorse:OfficeDelegatableFailure', function (e, data) {
                 _displayOfficeAccessUWNetIDFailure(data);
             }).on('endorse:OfficeValidateNetIDsSuccess', function (e, data) {
-                $('#validate_netids_modal', _contentDiv()).modal('hide');
+                _hideModal();
                 _displayValidatedUWNetIDs(data);
             }).on('endorse:OfficeValidateNetIDsFailure', function (e, data) {
-                $('#validate_netids_modal', _contentDiv()).modal('hide');
+                _hideModal();
                 _displayValidateNetIDsFailure(data);
             }).on('endorse:OfficeDelegateAccessSuccess', function (e, accessee) {
                 _updateOfficeAccessDisplay(accessee);
@@ -69,25 +66,21 @@ var ManageOfficeAccess = (function () {
                 var $row = _accessTableRow(accessee.mailbox, accessee.name);
 
                 Notify.error('Access error: ' + error);
-                Button.reset($('button#provision_access', $row));
+                _modalButtonReset('#provision_access', accessee.mailbox, accessee.delegate);
             }).on('endorse:OfficeAccessTypesSuccess', function (e) {
                 _displayOfficeAccessTypes();
             }).on('endorse:OfficeAccessTypesFailure', function (e, data) {
                 alert('Cannot determine Access Types: ' + data);
-            }).on('shown.bs.modal', '#validate_netids_modal', function() {
-                $('textarea', $(this)).focus();
             });
         },
         _showLoading = function () {
-            var $content = _contentDiv(),
-                source = $("#access-loading").html(),
+            var source = $("#access-loading").html(),
                 template = Handlebars.compile(source);
 
             $content.html(template());
         },
         _displayOfficeAccessUWNetIDs = function (netids) {
-            var $content = _contentDiv(),
-                source = $("#office_access_panel").html(),
+            var source = $("#office_access_panel").html(),
                 template = Handlebars.compile(source),
                 context = {
                     access: []
@@ -106,7 +99,7 @@ var ManageOfficeAccess = (function () {
                 if (this.access.length > 0) {
                     $.each(this.access, function(i, d) {
                         context.access.push({
-                            netid: netid,
+                            mailbox: netid,
                             name: name,
                             delegate: d.delegate,
                             status: d.status,
@@ -117,7 +110,7 @@ var ManageOfficeAccess = (function () {
                     });
                 } else {
                     context.access.push({
-                        netid: netid,
+                        mailbox: netid,
                         name: name,
                         accessee_index: accessee_index,
                         access_index: 0
@@ -133,8 +126,7 @@ var ManageOfficeAccess = (function () {
             Scroll.init('.office-access-table');
         },
         _getOfficeAccessUWNetIDs = function() {
-            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-                $panel = $(location_hash);
+            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
             _showLoading();
 
@@ -158,19 +150,17 @@ var ManageOfficeAccess = (function () {
             alert('Sorry, but we cannot retrieve mailbox netids at the moment: ' + data);
         },
         _validateNetidAccessModal = function (netid) {
-            var source = $("#access_validate_netids_modal_content").html(),
-                template = Handlebars.compile(source),
-                $modal = $('#validate_netids_modal', _contentDiv()),
-                context = {
-                    netid: netid
+            var context = {
+                    mailbox: netid
                 };
 
-            $('.modal-content', $modal).html(template(context));
-            $modal.modal('show');
+            _displayModal("#access_validate_netids_modal_content", context);
+            $panel.one('shown.bs.modal', '#access_netids_modal', function() {
+                $('textarea', $(this)).focus();
+            });
         },
         _validateOfficeAccessUWNetIDs = function(mailbox, delegates) {
-            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-                $panel = $(location_hash);
+            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
             $.ajax({
                 url: "/office/v1/validate",
@@ -195,7 +185,7 @@ var ManageOfficeAccess = (function () {
                 html;
 
             $.each(validated, function () {
-                var netid = this.mailbox,
+                var mailbox = this.mailbox,
                     delegate = this.name,
                     $rows;
 
@@ -204,7 +194,7 @@ var ManageOfficeAccess = (function () {
                     return true;
                 }
 
-                $rows = $('.office-access-table tr[data-netid="' + netid + '"]'),
+                $rows = $('.office-access-table tr[data-mailbox="' + mailbox + '"]'),
                 $rows.each(function (i) {
                     var $this_row = $(this),
                         row_delegate = $this_row.attr('data-delegate');
@@ -214,11 +204,11 @@ var ManageOfficeAccess = (function () {
                         return false;
                     } else if (delegate < row_delegate || i === $rows.length - 1) {
                         html = template({
-                            'netid': netid,
-                            'name': $('td.endorsed-name', $this_row).text(),
-                            'delegate': delegate,
-                            'accessee_index': $this_row.hasClass('endorsee_row_even') ? 0 : 1,
-                            'access_index': i});
+                            mailbox: mailbox,
+                            name: $('td.access-mailbox-name', $this_row).text(),
+                            delegate: delegate,
+                            accessee_index: $this_row.hasClass('endorsee_row_even') ? 0 : 1,
+                            access_index: i});
 
                         if (delegate < row_delegate) {
                             $this_row.before(html);
@@ -233,9 +223,8 @@ var ManageOfficeAccess = (function () {
                             $this_row.after(html);
                         }
 
-                        _loadOfficeAccessTypeOptions(0, $('tr[data-netid="' + netid + '"]'
-                                                          + '[data-delegate="' + delegate + '"]'
-                                                          + ' td.access-type select'));
+                        _loadOfficeAccessTypeOptions(0, $('.access-type select',
+                                                          _accessTableRow(mailbox, delegate)));
                         return false;
                     }
                 });
@@ -244,30 +233,69 @@ var ManageOfficeAccess = (function () {
         _displayValidateNetIDsFailure = function (data) {
             alert('Cannot validate at this time: ' + data);
         },
+        _confirmNetidAccessModal = function ($row) {
+            var context = {
+                mailbox: $row.attr('data-mailbox'),
+                delegate: $row.attr('data-delegate'),
+                access_type: $('.access-type select option:selected', $row).val(),
+                access_type_name: $('.access-type select option:selected', $row).text()
+            };
+
+            _displayModal("#confirm_netids_modal_content", context);
+            $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
+                $('button#confirm_netid_access').one('click', function(e) {
+                    $panel.trigger('endorse:OfficeDelegateConfirmation', [context]);
+                });
+            })
+        },
+        _displayModal = function (template_id, context) {
+            var source = $(template_id).html(),
+                template = Handlebars.compile(source);
+
+            $('#access_netids_modal .modal-content', $content).html(template(context));
+            _showModal();
+        },
+        _showModal = function () {
+            $('#access_netids_modal', $content).modal('show');
+        },
+        _hideModal = function () {
+            $('#access_netids_modal', $content).modal('hide');
+        },
+        _modalButtonLoading = function (id, netid, delegate) {
+            Button.loading($(id, netid ? _accessTableRow(netid, delegate) : $content));
+        },
+        _modalButtonReset = function (id, netid, delegate) {
+            Button.reset($(id, netid ? _accessTableRow(netid, delegate) : $content));
+        },
         _updateOfficeAccessDisplay = function (accessee) {
-            var $row = _accessTableRow(accessee.mailbox, accessee.name),
+            var $row = _accessTableRow(accessee.mailbox, accessee.delegate),
                 source = $("#office_access_row_partial").html(),
                 template = Handlebars.compile(source),
-                html = template({
-                    'netid': accessee.mailbox,
-                    'name': $('td.endorsed-name', $row).text(),
-                    'delegate': delegate,
-                    'accessee_index': $row.hasClass('endorsee_row_even') ? 0 : 1,
-                    'access_index': i});
+                html;
+
+            if (!$row.length) {
+                return;
+            }
+
+            html = template({
+                mailbox: accessee.mailbox,
+                name: $('td.access-mailbox-name', $row).text(),
+                delegate: accessee.delegate,
+                status: 'Provisioned',
+                accessee_index: $row.hasClass('endorsee_row_even') ? 0 : 1,
+                access_index: $row.parent().children().index($row)});
+            $row.replaceWith(html);
+            $row = _accessTableRow(accessee.mailbox, accessee.delegate);
+            _loadOfficeAccessTypeOptions(accessee.right_id,
+                                         $('.office-access-types', $row));
         },
-        _setAccessForDelegate = function (netid, delegate, access_type) {
-            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-                $panel = $(location_hash),
-                accessee = {
-                    "netid": netid,
-                    "delegate": delegate,
-                    "access_type": type
-                };
+        _setAccessForDelegate = function (context) {
+            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
             $.ajax({
                 url: "/office/v1/access",
                 type: "POST",
-                data: JSON.stringify(accessee),
+                data: JSON.stringify(context),
                 contentType: "application/json",
                 accepts: {html: "application/json"},
                 headers: {
@@ -281,6 +309,31 @@ var ManageOfficeAccess = (function () {
                 }
             });
         },
+        _revokeAccessForDelegate = function (netid, delegate, access_type) {
+            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+
+                accessee = {
+                    "delegate": delegate,
+                    "access_type": access_type
+                };
+
+            $.ajax({
+                url: "/office/v1/access",
+                type: "DELETE",
+                data: JSON.stringify(accessee),
+                contentType: "application/json",
+                accepts: {html: "application/json"},
+                headers: {
+                    "X-CSRFToken": csrf_token
+                },
+                success: function(results) {
+                    $panel.trigger('endorse:OfficeDelegateDeleteSuccess', [results]);
+                },
+                error: function(xhr, status, error) {
+                    $panel.trigger('endorse:OfficeDelegateDeleteFailure', [accessee, error]);
+                }
+            });
+        },
         _getNetidList = function ($textarea) {
             var netids = $('.validate-netid-list textarea').val(),
                 netid_list = (netids) ? _unique(
@@ -291,8 +344,8 @@ var ManageOfficeAccess = (function () {
                         : [];
 
             if (netid_list.length) {
-                $('.office-access-table td[data-netid]', _contentDiv()).each(function () {
-                    var mailbox = $(this).attr('data-netid'),
+                $('.office-access-table td[data-mailbox]', $content).each(function () {
+                    var mailbox = $(this).attr('data-mailbox'),
                         i;
 
                     i = netid_list.indexOf(mailbox);
@@ -326,15 +379,16 @@ var ManageOfficeAccess = (function () {
                     .val(right.id);
 
                 if (right_id == right.id) {
-                    $option.attr({'selected': 'selected'});
+                    $option
+                        .attr({'selected': 'selected'})
+                        .css('font-weight: bold');
                 }
 
                 $option.appendTo($select);
             });
         },
         _getOfficeAccessTypes = function() {
-            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
-                $panel = $(location_hash);
+            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
             $.ajax({
                 url: "/office/v1/access/rights",
@@ -381,7 +435,13 @@ var ManageOfficeAccess = (function () {
             }
         },
         _accessTableRow = function (netid, delegate) {
-            return $('tr[data-netid="' + netid + '"][data-delegate="' + delegate + '"]');
+            var id = '.office-access-table tr[data-mailbox="' +
+                netid + 
+                '"][data-delegate="' + 
+                delegate +
+                '"]',
+                $x = $(id, $content);
+            return $x;
         },
         _unique = function(array) {
             return $.grep(array, function(el, i) {
@@ -398,7 +458,6 @@ var ManageOfficeAccess = (function () {
                 $button.prop('disabled', true);
             }
         };
-;
 
     return {
         load: function () {
