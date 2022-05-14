@@ -100,6 +100,7 @@ var ManageOfficeAccess = (function () {
                 _displayOfficeAccessUWNetIDFailure(data);
             }).on('endorse:OfficeValidateNetIDsSuccess', function (e, data) {
                 _modalHide();
+                $('select.inbox-netids', $content).val('');
                 _displayValidatedUWNetIDs(data);
             }).on('endorse:OfficeValidateNetIDsFailure', function (e, data) {
                 _modalHide();
@@ -266,6 +267,7 @@ var ManageOfficeAccess = (function () {
                         return false;
                     } else if (delegate < row_delegate || i === $rows.length - 1) {
                         html = template({
+                            new_delegate: true,
                             mailbox: mailbox,
                             name: $('td.access-mailbox-name', $this_row).text(),
                             delegate: delegate,
@@ -345,10 +347,10 @@ var ManageOfficeAccess = (function () {
                 context = {
                     mailbox: $row.attr('data-mailbox'),
                     delegate: $row.attr('data-delegate'),
-                    access_type: current_access_type,
-                    access_type_name: $('.access-type select option[value="' + current_access_type + '"]', $row).text(),
-                    new_access_type: $('.access-type select option:selected', $row).val(),
-                    new_access_type_name: $('.access-type select option:selected', $row).text()
+                    previous_access_type: current_access_type,
+                    previous_access_type_name: $('.access-type select option[value="' + current_access_type + '"]', $row).text(),
+                    access_type: $('.access-type select option:selected', $row).val(),
+                    access_type_name: $('.access-type select option:selected', $row).text()
             };
 
             _displayModal("#confirm_update_modal_content", context);
@@ -393,7 +395,7 @@ var ManageOfficeAccess = (function () {
                 delegate: context.delegate,
                 status: 'Provisioned',
                 accessee_index: $row.hasClass('endorsee_row_even') ? 0 : 1,
-                access_index: $row.parent().children().index($row)});
+                access_index: $row.hasClass('endorsement_row_first') ? 0 : 1});
             $row.replaceWith(html);
             $row = _accessTableRow(context.mailbox, context.delegate);
             _loadOfficeAccessTypeOptions(context.right_id,
