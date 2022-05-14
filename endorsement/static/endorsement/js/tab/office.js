@@ -564,12 +564,19 @@ var ManageOfficeAccess = (function () {
             var $row = $select.closest('tr'),
                 $buttons = $select.closest('td').next('td'),
                 right_id = $select.attr('data-access-right-id'),
+                $provision_button = $('button#access_provision', $buttons),
                 $renew_button = $('button#access_renew', $buttons),
                 $revoke_button = $('button#access_revoke', $buttons),
                 $update_button = $('button#access_update', $buttons),
                 right_id = $select.attr('data-access-right-id');
 
-            if (new_right_id === right_id) {
+            if ($('option:first', $select).val().length === 0) {
+                if ($('option:selected', $select).val() != 0) {
+                    Button.enable($provision_button);
+                } else {
+                    Button.disable($provision_button);
+                }
+            } else if (new_right_id === right_id) {
                 Button.show($renew_button);
                 Button.show($revoke_button);
                 Button.hide($update_button);

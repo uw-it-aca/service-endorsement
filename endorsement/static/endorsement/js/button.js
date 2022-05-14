@@ -25,7 +25,7 @@ var Button = (function () {
         $button.prop('disabled', true);
     },
     _enableButton = function ($button) {
-        $button.prop('disabled', true);
+        $button.prop('disabled', false);
     },
     _hideButton = function ($button) {
         $button.hide();
