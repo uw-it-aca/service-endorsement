@@ -78,7 +78,7 @@ var ManageOfficeAccess = (function () {
                 _modalHide();
             }).on('endorse:OfficeDelegateRevoke', function (e, context) {
                 $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
-                    $row = _accessTableRow(context.mailbox, context.delegate);
+                    var $row = _accessTableRow(context.mailbox, context.delegate);
 
                     Button.loading($('#access_revoke', $row));
                     Button.disable($('#access_renew', $row));
@@ -346,7 +346,7 @@ var ManageOfficeAccess = (function () {
                     mailbox: $row.attr('data-mailbox'),
                     delegate: $row.attr('data-delegate'),
                     access_type: current_access_type,
-                    access_type_name: $('.access-type select option[value=' + current_access_type + ']', $row).text(),
+                    access_type_name: $('.access-type select option[value="' + current_access_type + '"]', $row).text(),
                     new_access_type: $('.access-type select option:selected', $row).val(),
                     new_access_type_name: $('.access-type select option:selected', $row).text()
             };
