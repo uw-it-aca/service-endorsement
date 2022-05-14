@@ -64,12 +64,18 @@ class Access(RESTDispatch):
         except InvalidNetID:
             return invalid_endorser(logger)
 
+        mailbox = request.GET.get('mailbox')
+        delegate = request.GET.get('delegate')
 
 
         ## do stuff here
 
 
-        return self.json_response({'response': 'OK'})
+        return self.json_response({
+            'status': 'deleted',
+            'mailbox': mailbox,
+            'delegate': delegate
+        })
 
     def post(self, request, *args, **kwargs):
         try:
@@ -87,8 +93,13 @@ class Access(RESTDispatch):
         delegate = request.data.get('delegate', None)
         access_type = request.data.get('access_type', None)
 
-
-        # Do stuff here
+        # get current access record for mailbox and delegate
+        # if successful
+        #     - does existing and new access_type match?
+        #           then just a renewal
+        #           else update to access type
+        # else
+        #     - a fresh new access record to create
 
 
         access = {

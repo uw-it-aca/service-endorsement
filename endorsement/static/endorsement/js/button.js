@@ -20,6 +20,18 @@ var Button = (function () {
             $button.html(original_text);
             $button.prop('disabled', false);
         }
+    },
+    _disableButton = function ($button) {
+        $button.prop('disabled', true);
+    },
+    _enableButton = function ($button) {
+        $button.prop('disabled', true);
+    },
+    _hideButton = function ($button) {
+        $button.hide();
+    },
+    _showButton = function ($button) {
+        $button.show();
     };
 
     return {
@@ -31,6 +43,26 @@ var Button = (function () {
         reset: function ($button) {
             if ($button) {
                 _resetButtonLoading($button);
+            }
+        },
+        disable: function ($button) {
+            if ($button) {
+                _disableButton($button);
+            }
+        },
+        enable: function ($button) {
+            if ($button) {
+                _enableButton($button);
+            }
+        },
+        hide: function ($button) {
+            if ($button) {
+                _hideButton($button);
+            }
+        },
+        show: function ($button) {
+            if ($button) {
+                _showButton($button);
             }
         }
     };

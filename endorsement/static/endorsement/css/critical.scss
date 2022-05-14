@@ -296,10 +296,10 @@ a {
   tr.new_netid { background: #efffef !important; }
   .endorsed-netid, .access-mailbox { border-top: none; }
   tr.endorsee_row_odd { background: #f8f8f8;  }
-  tr.top-border {
+  tr.endorsement_row_first {
     .endorsed-netid, .endorsed-name, .access-mailbox, .access-mailbox-name { border-top: 1px solid #ddd; }
   }
-  tr.hidden-names {
+  tr.endorsement_row_following {
     .endorsed-netid, .endorsed-name, .access-mailbox, .access-mailbox-name { color: transparent; }
   }
   .endorsed-netid, .access-mailbox { width: 12rem; white-space: nowrap; }

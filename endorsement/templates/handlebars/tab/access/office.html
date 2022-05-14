@@ -50,14 +50,14 @@
 
 <script id="office_access_row_partial" type="text/x-handlebars-template">
     <tr class="
-endorsement_row_{{#equals access_index 0}}first top-border{{else}}following hidden-names{{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}{{#unless delegate}} no-delegates{{/unless}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
+endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}{{#unless delegate}} no-delegates{{/unless}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
       <td class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</td>
       <td class="access-mailbox-name">{{ name }}</td>
 {{#if delegate}}
       <td class="access-delegate-id">{{ delegate }}</td>
       <td class="access-status">{{#if status}}<i class="fa fa-check" style="color: green;"></i> {{status}}{{else}}Not Provisioned{{/if}}</td>
       <td class="access-type"><select class="office-access-types" data-access-right-id="{{ right_id }}"></select></td>
-      <td class="access-action">{{#if status}}<button type="button" class="btn btn-primary" id="access_action" data-action="renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="provision_access" disabled="disabled" data-action="provision" data-loading-text="Provisioning">Provision Access</button>{{/if}}</td>
+      <td class="access-action">{{#if status}}<button type="button" class="btn btn-primary" id="access_update" data-loading-text="Updating" style="display: none;">Update</button><button type="button" class="btn btn-primary" id="access_renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="access_provision" disabled="disabled" data-loading-text="Provisioning">Provision Access</button>{{/if}}</td>
 {{else}}
       <td class="text-center" colspan="4"><span class="fw-lighter">This NetID has not provided access to other NetIDs yet.</span></td>
 {{/if}}
