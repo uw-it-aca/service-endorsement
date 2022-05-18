@@ -5,13 +5,12 @@ from userservice.user import UserService
 from endorsement.models import AccessRecord
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.persistent_messages import get_persistent_messages
-from endorsement.dao.office import (
-    is_office_permitted, get_accessee_model, get_accessor_model,
-    store_access, revoke_access)
+from endorsement.dao.access import (
+    get_accessee_model, store_access, revoke_access)
+from endorsement.dao.office import is_office_permitted, get_office_accessor
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser, data_error)
-from endorsement.exceptions import (
-    NoEndorsementException, UnrecognizedUWNetid, InvalidNetID)
+from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
 from endorsement.util.auth import is_only_support_user
 from uw_msca.access_rights import get_access_rights
 import logging
@@ -71,7 +70,7 @@ class Access(RESTDispatch):
             return invalid_endorser(logger)
 
         accessee = get_accessee_model(mailbox)
-        accessor = get_accessor_model(delegate)
+        accessor = get_office_accessor(delegate)
         access = store_access(accessee, accessor, int(access_type), acted_as)
 
         return self.json_response(access.json_data())
@@ -88,7 +87,7 @@ class Access(RESTDispatch):
         delegate = request.GET.get('delegate')
 
         accessee = get_accessee_model(mailbox)
-        accessor = get_accessor_model(delegate)
+        accessor = get_office_accessor(delegate)
         access = revoke_access(accessee, accessor, acted_as)
         return self.json_response(access.json_data())
 

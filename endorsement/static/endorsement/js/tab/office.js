@@ -158,6 +158,7 @@ var ManageOfficeAccess = (function () {
                 if (this.access.length > 0) {
                     $.each(this.access, function(i, d) {
                         context.access.push({
+                            is_valid: true,
                             mailbox: d.accessee.netid,
                             name: d.accessee.display_name,
                             delegate: d.accessor.name,
@@ -170,6 +171,7 @@ var ManageOfficeAccess = (function () {
                     });
                 } else {
                     context.access.push({
+                        is_valid: true,
                         mailbox: netid,
                         name: name,
                         accessee_index: accessee_index,
@@ -245,33 +247,30 @@ var ManageOfficeAccess = (function () {
                 html;
 
             $.each(validated, function () {
-                var mailbox = this.mailbox,
+                var v = this,
+                    mailbox = this.mailbox,
                     delegate = this.name,
                     $rows;
 
-                if (!this.can_access) {
-                    alert('Access by ' + delegate + ' is not available at this time.');
-                    return true;
-                }
-
-                $rows = $('.office-access-table tr[data-mailbox="' + mailbox + '"]'),
+                $rows = $('.office-access-table tr[data-mailbox="' + v.mailbox + '"]'),
                 $rows.each(function (i) {
                     var $this_row = $(this),
                         row_delegate = $this_row.attr('data-delegate');
-
-                    if (delegate == row_delegate) {
+                    if (v.name == row_delegate) {
                         Notify.warning('Access for ' + row_delegate + ' already provided.');
                         return false;
-                    } else if (delegate < row_delegate || i === $rows.length - 1) {
+                    } else if (v.name < row_delegate || i === $rows.length - 1) {
                         html = template({
                             new_delegate: true,
-                            mailbox: mailbox,
+                            is_valid: v.is_valid,
+                            message: v.message,
+                            mailbox: v.mailbox,
                             name: $('td.access-mailbox-name', $this_row).text(),
-                            delegate: delegate,
+                            delegate: v.name,
                             accessee_index: $this_row.hasClass('endorsee_row_even') ? 0 : 1,
                             access_index: i});
 
-                        if (delegate < row_delegate) {
+                        if (v.name < row_delegate) {
                             $this_row.before(html);
                             if (i === 0) {
                                 $this_row
@@ -282,7 +281,7 @@ var ManageOfficeAccess = (function () {
                             $this_row.replaceWith(html);
                         } else {
                             $this_row.after(html);
-                            if (mailbox == $this_row.attr('data-mailbox')) {
+                            if (v.mailbox == $this_row.attr('data-mailbox')) {
                                 $this_row.next('tr')
                                     .removeClass('endorsement_row_first top-border')
                                     .addClass('endorsement_row_following hidden-names');
@@ -290,7 +289,7 @@ var ManageOfficeAccess = (function () {
                         }
 
                         _loadOfficeAccessTypeOptions(0, $('.access-type select',
-                                                          _accessTableRow(mailbox, delegate)));
+                                                          _accessTableRow(v.mailbox, v.name)));
                         return false;
                     }
                 });
@@ -392,6 +391,7 @@ var ManageOfficeAccess = (function () {
                 html;
 
             html = template({
+                is_valid: true,
                 mailbox: context.accessee.netid,
                 name: context.accessee.display_name,
                 delegate: (!context.is_revoke) ? context.accessor.name : null,
@@ -447,6 +447,7 @@ var ManageOfficeAccess = (function () {
                     var source = $("#office_access_row_partial").html(),
                         template = Handlebars.compile(source),
                         html = template({
+                            is_valid: true,
                             mailbox: context.accessee.netid,
                             name: context.accessee.display_name,
                             delegate: null,

@@ -11,6 +11,10 @@ class UnrecognizedUWNetid(Exception):
     pass
 
 
+class UnrecognizedGroupID(Exception):
+    pass
+
+
 class SharedUWNetid(Exception):
     pass
 
