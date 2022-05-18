@@ -7,15 +7,10 @@ from django.urls import reverse
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 from uw_uwnetid.models import Category
+from endorsement.util.date import datetime_to_str
 import hashlib
 import random
 import json
-
-
-def datetime_to_str(d_obj):
-    if d_obj is not None:
-        return d_obj.strftime("%Y-%m-%d %H:%M:%S")
-    return None
 
 
 class Endorser(ExportModelOperationsMixin('endorser'), models.Model):
@@ -27,7 +22,7 @@ class Endorser(ExportModelOperationsMixin('endorser'), models.Model):
                              unique=True)
     display_name = models.CharField(max_length=256,
                                     null=True)
-    is_valid = models.BooleanField()
+    is_valid = models.BooleanField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
     last_visit = models.DateTimeField(null=True)
 

@@ -4,22 +4,26 @@
 import { Scroll } from "../scroll.js";
 import { Button } from "../button.js";
 import { Notify } from "../notify.js";
+import { DateTime } from "../datetime.js";
 
 var ManageOfficeAccess = (function () {
     var content_id = 'office_access',
         location_hash = '#' + content_id,
         $panel = $(location_hash),
         $content = $('#office_access'),
-        table_css = null,
 
         _registerEvents = function () {
             var $tab = $('.tabs div#access');
 
             // delegated events within our content
             $tab.on('endorse:MainTabExposed', function (e) {
-                if (! $('.office-access-table', $panel).length) {
-                    _getOfficeAccessUWNetIDs();
+                var $access_table = $('.office-access-table', $panel);
+
+                if ($access_table.length) {
+                    $access_table.remove();
                 }
+
+                _getOfficeAccessUWNetIDs();
             });
 
             $panel.on('click', '#add_access', function () {
@@ -94,7 +98,7 @@ var ManageOfficeAccess = (function () {
                 });
                 _modalHide();
             }).on('endorse:OfficeDelegatableSuccess', function (e, data) {
-                _displayOfficeAccessUWNetIDs(data.netids);
+                _displayOfficeAccessDelegatable(data.netids);
                 _getOfficeAccessTypes();
             }).on('endorse:OfficeDelegatableFailure', function (e, data) {
                 _displayOfficeAccessUWNetIDFailure(data);
@@ -105,19 +109,11 @@ var ManageOfficeAccess = (function () {
             }).on('endorse:OfficeValidateNetIDsFailure', function (e, data) {
                 _modalHide();
                 _displayValidateNetIDsFailure(data);
-            }).on('endorse:OfficeDelegateAccessSuccess', function (e, accessee) {
-                _updateOfficeAccessDisplay(accessee);
-                _grantedNetidAccessModal(accessee);
+            }).on('endorse:OfficeDelegateAccessSuccess', function (e, context) {
+                _updateOfficeAccessDisplay(context);
+                _grantedNetidAccessModal(context);
             }).on('endorse:OfficeDelegateAccessFailure', function (e, accessee, error) {
-                var $row = _accessTableRow(accessee.mailbox, accessee.name);
-
-                Notify.error('Access error: ' + error);
-                Button.reset($('#access_provision', $row));
-            }).on('endorse:OfficeDelegateAccessSuccess', function (e, accessee) {
-                _updateOfficeAccessDisplay(accessee);
-                _grantedNetidAccessModal(accessee);
-            }).on('endorse:OfficeDelegateAccessFailure', function (e, accessee, error) {
-                var $row = _accessTableRow(accessee.mailbox, accessee.name);
+                var $row = _accessTableRow(accessee.mailbox, accessee.delegate);
 
                 Notify.error('Access error: ' + error);
                 Button.reset($('#access_provision', $row));
@@ -142,7 +138,7 @@ var ManageOfficeAccess = (function () {
 
             $content.html(template());
         },
-        _displayOfficeAccessUWNetIDs = function (netids) {
+        _displayOfficeAccessDelegatable = function (netids) {
             var source = $("#office_access_panel").html(),
                 template = Handlebars.compile(source),
                 context = {
@@ -162,10 +158,11 @@ var ManageOfficeAccess = (function () {
                 if (this.access.length > 0) {
                     $.each(this.access, function(i, d) {
                         context.access.push({
-                            mailbox: netid,
-                            name: name,
-                            delegate: d.delegate,
-                            status: d.status,
+                            mailbox: d.accessee.netid,
+                            name: d.accessee.display_name,
+                            delegate: d.accessor.name,
+                            date_granted: DateTime.utc2localdate(d.datetime_granted),
+                            date_granted_relative: _datetimeRelative(d.datetime_granted, 365),
                             right_id: d.right_id,
                             accessee_index: accessee_index,
                             access_index: i
@@ -285,6 +282,11 @@ var ManageOfficeAccess = (function () {
                             $this_row.replaceWith(html);
                         } else {
                             $this_row.after(html);
+                            if (mailbox == $this_row.attr('data-mailbox')) {
+                                $this_row.next('tr')
+                                    .removeClass('endorsement_row_first top-border')
+                                    .addClass('endorsement_row_following hidden-names');
+                            }
                         }
 
                         _loadOfficeAccessTypeOptions(0, $('.access-type select',
@@ -343,15 +345,16 @@ var ManageOfficeAccess = (function () {
             })
         },
         _confirmNetidUpdateModal = function ($row) {
-            var current_access_type = $('.access-type select', $row).attr('data-access-right-id'),
+            var new_access_type = $('select.office-access-types option:selected', $row).val(),
+                current_access_type = $('.access-type select').attr('data-access-right-id'),
                 context = {
                     mailbox: $row.attr('data-mailbox'),
                     delegate: $row.attr('data-delegate'),
                     previous_access_type: current_access_type,
-                    previous_access_type_name: $('.access-type select option[value="' + current_access_type + '"]', $row).text(),
-                    access_type: $('.access-type select option:selected', $row).val(),
-                    access_type_name: $('.access-type select option:selected', $row).text()
-            };
+                    previous_access_type_name: _accessTypeName(current_access_type),
+                    access_type: new_access_type,
+                    access_type_name: _accessTypeName(new_access_type)
+                };
 
             _displayModal("#confirm_update_modal_content", context);
             $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
@@ -359,6 +362,9 @@ var ManageOfficeAccess = (function () {
                     $panel.trigger('endorse:OfficeDelegateUpdate', [context]);
                 });
             })
+        },
+        _accessTypeName = function (type_id) {
+            return $('.access-type select option[value="' + type_id + '"]', $content).first().text()
         },
         _grantedNetidAccessModal = function (context) {
             _displayModal("#granted_netid_modal_content", context);
@@ -380,29 +386,32 @@ var ManageOfficeAccess = (function () {
             $('#access_netids_modal', $content).modal('hide');
         },
         _updateOfficeAccessDisplay = function (context) {
-            var $row = _accessTableRow(context.mailbox, context.delegate);
-
-            _updateOfficeAccessRow($row, context);
-        },
-        _updateOfficeAccessRow = function ($row, context) {
-            var source = $("#office_access_row_partial").html(),
+            var $row = _accessTableRow(context.accessee.netid, context.accessor.name),
+                source = $("#office_access_row_partial").html(),
                 template = Handlebars.compile(source),
                 html;
 
             html = template({
-                mailbox: context.mailbox,
-                name: $('td.access-mailbox-name', $row).text(),
-                delegate: context.delegate,
-                status: 'Provisioned',
+                mailbox: context.accessee.netid,
+                name: context.accessee.display_name,
+                delegate: (!context.is_revoke) ? context.accessor.name : null,
+                date_granted: DateTime.utc2localdate(context.datetime_granted),
+                date_granted_relative: _datetimeRelative(context.datetime_granted, 365),
+                right_id: context.right_id,
                 accessee_index: $row.hasClass('endorsee_row_even') ? 0 : 1,
                 access_index: $row.hasClass('endorsement_row_first') ? 0 : 1});
             $row.replaceWith(html);
-            $row = _accessTableRow(context.mailbox, context.delegate);
+            $row = _accessTableRow(context.accessee.netid, context.accessor.name);
             _loadOfficeAccessTypeOptions(context.right_id,
                                          $('.office-access-types', $row));
         },
+        _datetimeRelative = function (datetime, from_now) {
+            if (datetime) {
+                return moment(datetime).add(from_now, 'days').fromNow()
+            }
+        },
         _deleteOfficeAccessDisplay = function (context) {
-            var selector = '.office-access-table tbody tr[data-mailbox="' + context.mailbox + '"]',
+            var selector = '.office-access-table tbody tr[data-mailbox="' + context.accessee.netid + '"]',
                 mailbox_rows = -1,
                 delete_row = -1,
                 $delete_row;
@@ -411,7 +420,7 @@ var ManageOfficeAccess = (function () {
                 var $row = $(this);
 
                 mailbox_rows += 1;
-                if ($row.attr('data-delegate') == context.delegate) {
+                if ($row.attr('data-delegate') == context.accessor.name) {
                     delete_row = mailbox_rows;
                     $delete_row = $row;
                 } else if ($delete_row) {
@@ -438,8 +447,9 @@ var ManageOfficeAccess = (function () {
                     var source = $("#office_access_row_partial").html(),
                         template = Handlebars.compile(source),
                         html = template({
-                            mailbox: context.mailbox,
-                            name: $('td.access-mailbox-name', $delete_row).text(),
+                            mailbox: context.accessee.netid,
+                            name: context.accessee.display_name,
+                            delegate: null,
                             accessee_index: $delete_row.hasClass('endorsee_row_even') ? 0 : 1,
                             access_index: 0});
                     $delete_row.replaceWith(html);

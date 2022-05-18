@@ -3,7 +3,7 @@
 
 import logging
 from django.utils import timezone
-from endorsement.models.core import Endorser, Endorsee, EndorseeEmail
+from endorsement.models import Endorser, Endorsee, EndorseeEmail
 from uw_uwnetid.models import Category
 from endorsement.services import is_valid_endorser
 from endorsement.dao.pws import get_endorser_data, get_endorsee_data

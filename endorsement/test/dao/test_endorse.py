@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TransactionTestCase
-from endorsement.models.core import EndorsementRecord
+from endorsement.models import EndorsementRecord
 from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 import random

@@ -2,18 +2,19 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from userservice.user import UserService
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
+from endorsement.models import AccessRecord
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.persistent_messages import get_persistent_messages
+from endorsement.dao.office import (
+    is_office_permitted, get_accessee_model, get_accessor_model,
+    store_access, revoke_access)
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser, data_error)
 from endorsement.exceptions import (
     NoEndorsementException, UnrecognizedUWNetid, InvalidNetID)
-from endorsement.services import get_endorsement_service
 from endorsement.util.auth import is_only_support_user
 from uw_msca.access_rights import get_access_rights
 import logging
-import random
 
 
 logger = logging.getLogger(__name__)
@@ -25,30 +26,28 @@ class Access(RESTDispatch):
     """
     def get(self, request, *args, **kwargs):
         try:
-            netid = self._validate_user(request)
+            netid, acted_as = self._validate_user(request)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
             return invalid_endorser(logger)
 
-        o365 = get_endorsement_service('o365')
         netids = {}
 
-        endorser = get_endorser_model(netid)
-        endorsee = get_endorsee_model(netid)
-        if o365.is_permitted(endorser, endorsee):
+        if is_office_permitted(netid):
+            accessee = get_accessee_model(netid)
             netids[netid] = {
-                'name': endorser.display_name,
-                'access': self._load_access_for_netid(netid)
+                'name': accessee.display_name,
+                'access': self._load_access_for_accessee(accessee)
             }
 
         for supported in get_supported_resources_for_netid(netid):
             if supported.is_owner() and supported.is_shared_netid():
-                endorsee = get_endorsee_model(supported.name)
-                if o365.is_permitted(endorser, endorsee):
+                if is_office_permitted(supported.name):
+                    accessee = get_accessee_model(supported.name)
                     netids[supported.name] = {
-                        'name': endorsee.display_name,
-                        'access': self._load_access_for_netid(supported.name)
+                        'name': accessee.display_name,
+                        'access': self._load_access_for_accessee(accessee)
                     }
 
         return self.json_response({
@@ -56,9 +55,30 @@ class Access(RESTDispatch):
             'messages': get_persistent_messages()
         })
 
+    def post(self, request, *args, **kwargs):
+        try:
+            netid, acted_as = self._validate_user(request)
+        except UnrecognizedUWNetid:
+            return invalid_session(logger)
+        except InvalidNetID:
+            return invalid_endorser(logger)
+
+        mailbox = request.data.get('mailbox', None)
+        delegate = request.data.get('delegate', None)
+        access_type = request.data.get('access_type', None)
+
+        if not is_office_permitted(mailbox):
+            return invalid_endorser(logger)
+
+        accessee = get_accessee_model(mailbox)
+        accessor = get_accessor_model(delegate)
+        access = store_access(accessee, accessor, int(access_type), acted_as)
+
+        return self.json_response(access.json_data())
+
     def delete(self, request, *args, **kwargs):
         try:
-            netid = self._validate_user(request)
+            netid, acted_as = self._validate_user(request)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -67,63 +87,17 @@ class Access(RESTDispatch):
         mailbox = request.GET.get('mailbox')
         delegate = request.GET.get('delegate')
 
+        accessee = get_accessee_model(mailbox)
+        accessor = get_accessor_model(delegate)
+        access = revoke_access(accessee, accessor, acted_as)
+        return self.json_response(access.json_data())
 
-        ## do stuff here
+    def _load_access_for_accessee(self, accessee):
+        accessors = []
+        for ar in AccessRecord.objects.get_access_for_accessee(accessee):
+            accessors.append(ar.json_data())
 
-
-        return self.json_response({
-            'status': 'deleted',
-            'mailbox': mailbox,
-            'delegate': delegate
-        })
-
-    def post(self, request, *args, **kwargs):
-        try:
-            netid = self._validate_user(request)
-        except UnrecognizedUWNetid:
-            return invalid_session(logger)
-        except InvalidNetID:
-            return invalid_endorser(logger)
-
-        # if not has_office_inbox(netid):
-        #     return invalid_endorser(logger)
-
-
-        mailbox = request.data.get('mailbox', None)
-        delegate = request.data.get('delegate', None)
-        access_type = request.data.get('access_type', None)
-
-        # get current access record for mailbox and delegate
-        # if successful
-        #     - does existing and new access_type match?
-        #           then just a renewal
-        #           else update to access type
-        # else
-        #     - a fresh new access record to create
-
-
-        access = {
-            'mailbox': mailbox,
-            'delegate': delegate,
-            'right_id': access_type
-        }
-
-        return self.json_response(access)
-
-    def _load_access_for_netid(self, mailbox):
-        if (random.random() * 100) < 60.0:
-            return []
-        else:
-            l = []
-            for n in range(random.choice([0, 1, 2, 3])):
-                l.append({
-                    'mailbox': mailbox,
-                    'delegate': 'delegate{}'.format(n),
-                    'right_id': random.choice([1, 2, 3, 4]),
-                    'status': 'Provisioned'
-                })
-
-            return l
+        return accessors
 
     def _validate_user(self, request):
         user_service = UserService()
@@ -136,7 +110,7 @@ class Access(RESTDispatch):
         if acted_as and is_only_support_user(request):
             raise InvalidNetID()
 
-        return netid
+        return netid, acted_as
 
 
 class AccessRights(RESTDispatch):

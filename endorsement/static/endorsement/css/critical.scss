@@ -293,7 +293,11 @@ a {
      label { margin-bottom: 0; }
      span { font-weight: 200; font-size: .9em; }
   }
-  tr.new_netid { background: #efffef !important; }
+  tr.new_netid,
+  tr.new_access .access-delegate-id,
+  tr.new_access .access-status,
+  tr.new_access .access-type,
+  tr.new_access .access-action  { background: #efffef !important; }
   .endorsed-netid, .access-mailbox { border-top: none; }
   tr.endorsee_row_odd { background: #f8f8f8;  }
   tr.endorsement_row_first {
