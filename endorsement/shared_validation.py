@@ -72,7 +72,7 @@ def validate_shared_endorsers():
             # mail sent, clone endorsment record with new owner
             for er in new_owners[owner]:
                 # no longer endorsed by previous owner
-                clear_endorsement(er)
+                er.revoke()
                 logger.info(
                     "shared: new record for {} of {} ({}) from {}".format(
                         new_owner.netid, er.endorsee.netid,
