@@ -7,7 +7,7 @@ env:
 
 on:
   push:
-    branches: [main, develop, feature/cicd-and-django-container]
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
     types: [opened, reopened, synchronize]
@@ -103,8 +103,6 @@ jobs:
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
-          registry_hostname: us-docker.pkg.dev
-          registry_path: containers
 
   deploy:
     if: github.event_name == 'push'
@@ -122,7 +120,7 @@ jobs:
 
       - name: Deployment Pipeline
         if: >-
-          contains(fromJSON('["main", "develop", "feature/cicd-and-django-container"]'),
+          contains(fromJSON('["main", "develop"]'),
             needs.context.outputs.git_repo_branch)
         uses: uw-it-aca/actions/cicd-deploy@main
         with:
