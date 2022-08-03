@@ -17,7 +17,7 @@ ADD --chown=acait:acait docker/ project/
 RUN . /app/bin/activate && pip install django-webpack-loader
 RUN . /app/bin/activate && python manage.py collectstatic
 
-FROM node:14.6.0-stretch AS node-bundler
+FROM node:14.18.1-stretch AS node-bundler
 ADD . /app/
 WORKDIR /app/
 RUN npm install .

@@ -43,7 +43,7 @@ resources:
     cpu: 25m
     memory: 128Mi
 image:
-  repository: gcr.io/uwit-mci-axdd/prt
+  repository: IMAGE_REGISTRY
   tag: IMAGE_TAG
 metrics:
   enabled: true
@@ -86,9 +86,9 @@ daemon:
       args: ['--cron', '*/5 * * * *', 'notify_endorsees']
 certs:
   mounted: true
-  certPath: /certs/provision-test.uw.edu-uwca.cert
-  keyPath: /certs/provision-test.uw.edu-uwca.key
-  secretName: test.provision.uw.edu-uwca-certs
+  certPath: /certs/test.provision.uw.edu.cert
+  keyPath: /certs/test.provision.uw.edu.key
+  secretName: test.provision.uw.edu-ic-certs
 environmentVariables:
   - name: ENV
     value: dev
@@ -123,18 +123,13 @@ externalSecrets:
           property: sql_user
         - name: password
           property: sql_pass
-    - name: test.provision.uw.edu-uwca-certs
-      externalKey: provision/test/uwca-certs
-      data:
-        - name: provision-test.uw.edu-uwca.key
-          property: key
-        - name: provision-test.uw.edu-uwca.cert
-          property: cert
     - name: test.provision.uw.edu-ic-certs
       externalKey: provision/test/ic-certs
       data:
-        - name: provision-test.uw.edu.cert
+        - name: test.provision.uw.edu.cert
           property: cert
+        - name: test.provision.uw.edu.key
+          property: key
     - name: idp.uw-cert
       externalKey: idp-cert
       data:
@@ -152,7 +147,7 @@ environmentVariablesSecrets:
   SAMLServiceProviderCert:
     name: SP_CERT
     secretName: test.provision.uw.edu-ic-certs
-    secretKey: provision-test.uw.edu.cert
+    secretKey: test.provision.uw.edu.cert
   SAMLIDPCert:
     name: IDP_CERT
     secretName: idp.uw-cert
