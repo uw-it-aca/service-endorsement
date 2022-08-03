@@ -37,7 +37,7 @@ externalService:
 repo: prt
 instance: prod
 image:
-  repository: gcr.io/uwit-mci-axdd/prt
+  repository: IMAGE_REGISTRY
   tag: IMAGE_TAG
 metrics:
   enabled: true
