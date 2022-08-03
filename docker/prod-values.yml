@@ -5,7 +5,7 @@ autoscaling:
 targetAverageUtilization: 100
 resources:
   limits:
-    cpu: 1.0
+    cpu: "1"
 ingress:
   enabled: true
   type: nginx
@@ -37,7 +37,7 @@ externalService:
 repo: prt
 instance: prod
 image:
-  repository: gcr.io/uwit-mci-axdd/prt
+  repository: IMAGE_REGISTRY
   tag: IMAGE_TAG
 metrics:
   enabled: true

@@ -25,7 +25,7 @@ setup(
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires=[
-        'Django~=2.2',
+        'Django~=3.2',
         'ordereddict',
         'simplejson',
         'django-webpack-loader>=1.0,<2.0',
@@ -34,7 +34,7 @@ setup(
         'unittest2',
         'pytz',
         'psycopg2>=2.8,<2.9',
-        'lxml==4.2.5,<4.3',
+        'lxml~=4.9.1',
         'uw-memcached-clients~=1.0.5',
         'UW-RestClients-Core~=1.3.3',
         'UW-Restclients-PWS==2.0.2',
@@ -60,6 +60,5 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.6',
     ],
 )
