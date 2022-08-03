@@ -87,9 +87,9 @@ cronjob:
       args: ["validate_shared_endorsers"]
 certs:
   mounted: true
-  certPath: /certs/provision.uw.edu-uwca.cert
-  keyPath: /certs/provision.uw.edu-uwca.key
-  secretName: provision.uw.edu-uwca-certs
+  certPath: /certs/provision.uw.edu.cert
+  keyPath: /certs/provision.uw.edu.key
+  secretName: provision.uw.edu-ic-certs
 environmentVariables:
   - name: ENV
     value: prod
@@ -124,16 +124,11 @@ externalSecrets:
           property: sql_user
         - name: password
           property: sql_pass
-    - name: provision.uw.edu-uwca-certs
-      externalKey: axdd/kv/data/provision/prod/uwca-certs
-      data:
-        - name: provision.uw.edu-uwca.key
-          property: key
-        - name: provision.uw.edu-uwca.cert
-          property: cert
     - name: provision.uw.edu-ic-certs
       externalKey: axdd/kv/data/provision/prod/ic-certs
       data:
+        - name: provision.uw.edu.key
+          property: key
         - name: provision.uw.edu.cert
           property: cert
     - name: idp.uw-cert
