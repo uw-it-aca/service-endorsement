@@ -233,6 +233,10 @@ var Endorse = (function () {
                     is_first = $row.hasClass('endorsement_row_first');
                     is_even = $row.hasClass('endorsee_row_even');
 
+                    if (endorsement.hasOwnProperty('error')) {
+                        Notify.error('Error provisioning <b>' + netid + '</b> for <b>' + endorsement.category_name + '</b>');
+                    }
+
                     updateEndorsementForRowContext(endorsement);
 
                     context = {

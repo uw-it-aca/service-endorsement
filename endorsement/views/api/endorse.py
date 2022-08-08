@@ -159,5 +159,6 @@ class Endorse(RESTDispatch):
             endorsements[service.service_name] = {
                 'endorser': endorser_json,
                 'endorsee': endorsee.json_data(),
+                'category_name': service.category_name,
                 'error': "{0}".format(ex)
             }
