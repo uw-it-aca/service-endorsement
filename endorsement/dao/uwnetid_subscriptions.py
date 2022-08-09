@@ -49,9 +49,16 @@ def activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
 
 
 def _error_message(error):
-    # uwnetid web service has fancy marked-up error responses
-    # but it's a little much for our purposes
-    message = re.match(
-        '<p><font color=red><b>ERROR: </b></font>(.*)</p>', error)
+    message = 'Invalid Subscription Response'
 
-    return message.group(1) if message else 'Invalid Subscription Response'
+    # uwnetid web service has fancy marked-up error responses
+    # remap wording here
+    print("ERROR ERROR ERROR: {}".format(error))
+
+    custom = re.match(('<p><font color=red><b>ERROR: </b></font>'
+                       'UW NetID <b>([^<]+)</b> not present in '
+                       'NETID Active Directory.</p>'), error)
+    if custom:
+        message = "INACTIVE_NETID"
+
+    return message

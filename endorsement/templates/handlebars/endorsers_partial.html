@@ -59,7 +59,13 @@
 
   {{#if endorsement.error }}
     <td class="endorsed-error" colspan="3">
-      <span>Problem Accessing Provision Status</span>{{{endorsement.error}}}
+      <span>Problem Accessing Provision Status</span>
+      {{#equals endorsement.error 'INACTIVE_NETID' }}
+      UW NetID <b>{{netid}}</b> is currently <a href="https://itconnect.uw.edu/wares/msinf/design/users/inactive-users/" target="_blank">marked as inactive</a>.<br />
+      Change <a href="https://identity.uw.edu/account/resetpassword/" target="_blank">UW NetID password</a>, wait 4 hours, and try again.
+      {{else}}
+      {{{endorsement.error}}}
+      {{/equals}}
     </td>
   {{else}}
 
