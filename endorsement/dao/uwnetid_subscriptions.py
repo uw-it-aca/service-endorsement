@@ -6,6 +6,7 @@ from uw_uwnetid.subscription import (
     get_netid_subscriptions, update_subscription)
 from restclients_core.exceptions import DataFailureException
 from endorsement.exceptions import SubscriptionFailureException
+import re
 import logging
 
 
@@ -41,7 +42,23 @@ def activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
                             response.result, response.more_info))
 
             raise SubscriptionFailureException(
-                'Invalid Subscription Response')
+                _error_message(response.more_info))
 
     except DataFailureException as ex:
         raise SubscriptionFailureException('{0}'.format(ex))
+
+
+def _error_message(error):
+    message = 'Invalid Subscription Response'
+
+    # uwnetid web service has fancy marked-up error responses
+    # remap wording here
+    print("ERROR ERROR ERROR: {}".format(error))
+
+    custom = re.match(('<p><font color=red><b>ERROR: </b></font>'
+                       'UW NetID <b>([^<]+)</b> not present in '
+                       'NETID Active Directory.</p>'), error)
+    if custom:
+        message = "INACTIVE_NETID"
+
+    return message
