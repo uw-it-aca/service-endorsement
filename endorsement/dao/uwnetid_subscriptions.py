@@ -51,9 +51,10 @@ def activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
 
 def _error_message(ex):
     # uwnetid web service has fancy marked-up error responses
+    # remap here to help exception handler
     inactive_netid_re = re.compile(
         '.*<b>ERROR: </b></font>UW NetID <b>([^<]+)</b> '
-        'not present in NETID Active Directory\..*')
+        'not present in NETID Active Directory\\..*')
 
     logger.error("Subscription Error: {}".format(ex))
 
