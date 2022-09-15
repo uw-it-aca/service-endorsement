@@ -69,7 +69,6 @@ class Notification(RESTDispatch):
 
                 if notification == 'endorsee':
                     record.accept_id = record.get_accept_id(netid)
-                    print("ACCEPT ID: {}".format(record.accept_id))
 
                 endorsed.append(record)
 
@@ -115,7 +114,6 @@ def _get_unendorsed_unnotified(unendorsed):
     endorsements = {}
     for er in unendorsed:
         email = "{}@blackhole.uw.edu".format(er.endorsee.netid)
-        print("EMAIL: {}".format(email))
 
         if email not in endorsements:
             endorsements[email] = {
