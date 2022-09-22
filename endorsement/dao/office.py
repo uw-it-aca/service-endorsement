@@ -20,7 +20,7 @@ def is_office_permitted(netid):
     """
     test for office mailbox availability
     """
-    o365 = get_endorsement_service('o365');
+    o365 = get_endorsement_service('o365')
     endorsee = get_endorsee_model(netid)
     for er in EndorsementRecord.objects.get_endorsements_for_endorsee(
             endorsee, o365.category_code):

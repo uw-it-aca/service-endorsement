@@ -113,7 +113,7 @@ def _revoke_access_model(accessee, accessor, right_id, acted_as=None):
         raise NoEndorsementException()
 
     logger.info("Revoking {} access to {} for {}".format(
-        ar.right_id, ar.accessee.netid, ar.accessor.name, 
+        ar.right_id, ar.accessee.netid, ar.accessor.name,
         " (by {})".format(acted_as) if acted_as else ""))
     ar.revoke()
 
