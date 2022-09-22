@@ -72,7 +72,7 @@ var ManageSharedNetids = (function () {
             _enableSharedEndorsability();
 
             // pause for shared endorse modal fade
-            if (data.endorsed.endorsed) {
+            if (data.endorsed.endorsed && _validEndorsementResults(data.endorsed.endorsed)) {
                 setTimeout(function () {
                     _enableSharedEndorsability();
                     _sharedEndorseSuccessModal(data.endorsed.endorsed);
@@ -337,6 +337,25 @@ var ManageSharedNetids = (function () {
 
         $('.modal-content', $modal).html(template(context));
         $modal.modal('show');
+    },
+
+    _validEndorsementResults = function (endorsed) {
+        var is_success = true;
+
+        $.each(endorsed, function (netid, endorsements) {
+            $.each(endorsements.endorsements, function (service, state) {
+                if (state.hasOwnProperty('error')) {
+                    is_success = false;
+                    return false;
+                }
+            });
+
+            if (!is_success) {
+                return false;
+            }
+        });
+
+        return is_success;
     };
 
     return {

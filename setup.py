@@ -31,7 +31,7 @@ setup(
         'simplejson',
         'django-webpack-loader>=1.0,<2.0',
         'django-userservice<4.0,>3.1',
-        'urllib3>=1.25.3,<1.26',
+        'urllib3~=1.26',
         'unittest2',
         'pytz',
         'psycopg2>=2.8,<2.9',
