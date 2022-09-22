@@ -3,6 +3,8 @@
 
 import logging
 from django.utils import timezone
+from uw_msca.delegate import set_delegate, remove_delegate
+from restclients_core.exceptions import DataFailureException
 from endorsement.models import Accessee, Accessor, AccessRecord
 from endorsement.dao.pws import get_endorsee_data
 from endorsement.exceptions import NoEndorsementException
@@ -56,6 +58,14 @@ def get_accessor_model(name, validator):
 
 
 def store_access(accessee, accessor, right_id, acted_as=None):
+    try:
+        set_delegate(accessee, accessor, right_id)
+        return _store_access_record(accessee, accessor, right_id, acted_as)
+    except DataFailureException as ex:
+        raise
+
+
+def _store_access_record(accessee, accessor, right_id, acted_as=None):
     now = timezone.now()
     try:
         ar = AccessRecord.objects.get(accessee=accessee, accessor=accessor)
@@ -90,14 +100,21 @@ def store_access(accessee, accessor, right_id, acted_as=None):
     return ar
 
 
-def revoke_access(accessee, accessor, acted_as=None):
+def revoke_access(accessee, accessor, right_id, acted_as=None):
+    remove_delegate(accessee, accessor, right_id)
+    return _revoke_access_model(accessee, accessor, right_id, acted_as)
+
+
+def _revoke_access_model(accessee, accessor, right_id, acted_as=None):
     try:
-        ar = AccessRecord.objects.get(accessee=accessee, accessor=accessor)
-    except AccessRecord.DoesNotExist:
+        ar = AccessRecord.objects.get(
+            accessee=accessee, accessor=accessor, right_id=right_id)
+    except (AccessRecord.DoesNotExist):
         raise NoEndorsementException()
 
     logger.info("Revoking {} access to {} for {}".format(
-        ar.right_id, ar.accessee.netid, ar.accessor.name))
+        ar.right_id, ar.accessee.netid, ar.accessor.name, 
+        " (by {})".format(acted_as) if acted_as else ""))
     ar.revoke()
 
     return ar

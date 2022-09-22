@@ -125,7 +125,7 @@ class AccessRecord(
                                  on_delete=models.PROTECT)
     accessor = models.ForeignKey(Accessor,
                                  on_delete=models.PROTECT)
-    right_id = models.SmallIntegerField()
+    right_id = models.SlugField(max_length=24, null=True)
     right_name = models.SlugField(max_length=64, null=True)
     acted_as = models.SlugField(max_length=32, null=True)
     datetime_created = models.DateTimeField(null=True)

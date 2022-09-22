@@ -1,10 +1,12 @@
 # Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-import logging
-from userservice.user import UserService
 from endorsement.dao.office import get_office_accessor
 from endorsement.views.rest_dispatch import RESTDispatch, invalid_session
+from userservice.user import UserService
+from restclients_core.exceptions import DataFailureException
+from uw_msca.validate_user import validate_user
+import logging
 
 
 logger = logging.getLogger(__name__)
@@ -37,9 +39,20 @@ class Validate(RESTDispatch):
                 display_name = None
                 message = "{}".format(ex)
 
-            #
-            # call validation dao.access_office
-            #
+            try:
+                validate_user(name)
+            except DataFailureException as ex:
+                valid.append({
+                    'name': name,
+                    'display_name': display_name,
+                    'mailbox': mailbox,
+                    'is_valid': False,
+                    'message': "{} Outlook Access{}".format(
+                        "Unknown" if (ex.status == 404) else "Invalid",
+                        " user" if (
+                            ex.status == 404) else ": {}".format(ex.msg))
+                })
+                continue
 
             valid.append({
                 'name': name,

@@ -71,7 +71,7 @@ class Access(RESTDispatch):
 
         accessee = get_accessee_model(mailbox)
         accessor = get_office_accessor(delegate)
-        access = store_access(accessee, accessor, int(access_type), acted_as)
+        access = store_access(accessee, accessor, access_type, acted_as)
 
         return self.json_response(access.json_data())
 
@@ -85,10 +85,11 @@ class Access(RESTDispatch):
 
         mailbox = request.GET.get('mailbox')
         delegate = request.GET.get('delegate')
+        access_type = request.GET.get('access_type')
 
         accessee = get_accessee_model(mailbox)
         accessor = get_office_accessor(delegate)
-        access = revoke_access(accessee, accessor, acted_as)
+        access = revoke_access(accessee, accessor, access_type, acted_as)
         return self.json_response(access.json_data())
 
     def _load_access_for_accessee(self, accessee):

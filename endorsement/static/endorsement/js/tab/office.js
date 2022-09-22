@@ -483,7 +483,9 @@ var ManageOfficeAccess = (function () {
             var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
             $.ajax({
-                url: '/office/v1/access?mailbox=' + context.mailbox + '&delegate=' + context.delegate,
+                url: '/office/v1/access?mailbox=' + context.mailbox
+                    + '&delegate=' + context.delegate
+                    + '&access_type=' + context.access_type,
                 type: 'DELETE',
                 accepts: {html: 'application/json'},
                 headers: {
