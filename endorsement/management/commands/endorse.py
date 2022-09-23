@@ -57,7 +57,7 @@ class Command(BaseCommand):
             endorsee = get_endorsee_model(endorsee_netid)
             try:
                 er = EndorsementRecord.objects.get(
-                    endorser=endorser, endorsee=endorsee, 
+                    endorser=endorser, endorsee=endorsee,
                     category_code=service.category_code)
                 if not er.is_deleted and er.datetime_endorsed:
                     print(("Currently endorsed {} "
@@ -69,7 +69,7 @@ class Command(BaseCommand):
                 print("{}Endorse {} (act_as {}) for {} with reason: {}".format(
                     "" if commit_endorsement else "WOULD ",
                     endorsee.netid, act_as,
-                    service.service_name, 
+                    service.service_name,
                     er.reason if er.reason else reason if (
                         reason) else "Restored Service"))
 
@@ -84,9 +84,9 @@ class Command(BaseCommand):
                            " with reason: {}").format(
                                "" if commit_endorsement else "WOULD ",
                                endorsee.netid, act_as,
-                               service.service_name, 
+                               service.service_name,
                                reason if reason else "Restored Service"))
-    
+
                     if commit_endorsement:
                         service.store_endorsement(
                             endorser, endorsee, act_as,
@@ -94,5 +94,3 @@ class Command(BaseCommand):
                 else:
                     print("Skip create {} endoresement for {}".format(
                         service.service_name, endorsee.netid))
- 
-
