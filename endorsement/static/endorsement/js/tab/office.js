@@ -249,11 +249,9 @@ var ManageOfficeAccess = (function () {
             $.each(validated, function () {
                 var v = this,
                     mailbox = this.mailbox,
-                    delegate = this.name,
-                    $rows;
+                    delegate = this.name;
 
-                $rows = $('.office-access-table tr[data-mailbox="' + v.mailbox + '"]'),
-                $rows.each(function (i) {
+                $('.office-access-table tr[data-mailbox="' + v.mailbox + '"]').each(function (i) {
                     var $this_row = $(this),
                         row_delegate = $this_row.attr('data-delegate');
                     if (v.name == row_delegate) {
@@ -311,7 +309,7 @@ var ManageOfficeAccess = (function () {
                 $('button#confirm_netid_access').one('click', function(e) {
                     $panel.trigger('endorse:OfficeDelegateConfirmation', [context]);
                 });
-            })
+            });
         },
         _confirmNetidRevokeModal = function ($row) {
             var context = {
@@ -326,7 +324,7 @@ var ManageOfficeAccess = (function () {
                 $('button#confirm_netid_revoke').one('click', function(e) {
                     $panel.trigger('endorse:OfficeDelegateRevoke', [context]);
                 });
-            })
+            });
         },
         _confirmNetidRenewModal = function ($row) {
             var context = {
@@ -341,7 +339,7 @@ var ManageOfficeAccess = (function () {
                 $('button#confirm_netid_renew').one('click', function(e) {
                     $panel.trigger('endorse:OfficeDelegateRenew', [context]);
                 });
-            })
+            });
         },
         _confirmNetidUpdateModal = function ($row) {
             var new_access_type = $('select.office-access-types option:selected', $row).val(),
@@ -360,10 +358,10 @@ var ManageOfficeAccess = (function () {
                 $('button#confirm_netid_update').one('click', function(e) {
                     $panel.trigger('endorse:OfficeDelegateUpdate', [context]);
                 });
-            })
+            });
         },
         _accessTypeName = function (type_id) {
-            return $('.access-type select option[value="' + type_id + '"]', $content).first().text()
+            return $('.access-type select option[value="' + type_id + '"]', $content).first().text();
         },
         _grantedNetidAccessModal = function (context) {
             _displayModal("#granted_netid_modal_content", context);
@@ -407,7 +405,7 @@ var ManageOfficeAccess = (function () {
         },
         _datetimeRelative = function (datetime, from_now) {
             if (datetime) {
-                return moment(datetime).add(from_now, 'days').fromNow()
+                return moment(datetime).add(from_now, 'days').fromNow();
             }
         },
         _deleteOfficeAccessDisplay = function (context) {
@@ -424,7 +422,7 @@ var ManageOfficeAccess = (function () {
                     delete_row = mailbox_rows;
                     $delete_row = $row;
                 } else if ($delete_row) {
-                    if (delete_row == 0) {
+                    if (delete_row === 0) {
                         $row
                             .removeClass('endorsement_row_following')
                             .addClass('endorsement_row_first');
@@ -443,7 +441,7 @@ var ManageOfficeAccess = (function () {
             });
 
             if ($delete_row) {
-                if (mailbox_rows == 0) {
+                if (mailbox_rows === 0) {
                     var source = $("#office_access_row_partial").html(),
                         template = Handlebars.compile(source),
                         html = template({
@@ -483,9 +481,9 @@ var ManageOfficeAccess = (function () {
             var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
             $.ajax({
-                url: '/office/v1/access?mailbox=' + context.mailbox
-                    + '&delegate=' + context.delegate
-                    + '&access_type=' + context.access_type,
+                url: '/office/v1/access?mailbox=' + context.mailbox +
+                    '&delegate=' + context.delegate +
+                    '&access_type=' + context.access_type,
                 type: 'DELETE',
                 accepts: {html: 'application/json'},
                 headers: {
@@ -564,7 +562,7 @@ var ManageOfficeAccess = (function () {
                     "X-CSRFToken": csrf_token
                 },
                 success: function(results) {
-                    window.access.office.types = results
+                    window.access.office.types = results;
                     $panel.trigger('endorse:OfficeAccessTypesSuccess');
                 },
                 error: function(xhr, status, error) {
@@ -582,11 +580,10 @@ var ManageOfficeAccess = (function () {
                 $provision_button = $('button#access_provision', $buttons),
                 $renew_button = $('button#access_renew', $buttons),
                 $revoke_button = $('button#access_revoke', $buttons),
-                $update_button = $('button#access_update', $buttons),
-                right_id = $select.attr('data-access-right-id');
+                $update_button = $('button#access_update', $buttons);
 
             if ($('option:first', $select).val().length === 0) {
-                if ($('option:selected', $select).val() != 0) {
+                if ($('option:selected', $select).val() !== 0) {
                     Button.enable($provision_button);
                 } else {
                     Button.disable($provision_button);
