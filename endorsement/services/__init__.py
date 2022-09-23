@@ -221,7 +221,7 @@ class EndorsementServiceBase(ABC):
                     if dao == 'File':
                         e = ER.objects.get_endorsements_for_endorsee(
                             endorsee, self.category_code)
-                        return len(e) > 0
+                        return len(e) > 0, False
                     else:
                         raise
 

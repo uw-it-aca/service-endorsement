@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TransactionTestCase
+from django.test.utils import override_settings
 from endorsement.models import EndorsementRecord
 from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
@@ -11,6 +12,10 @@ from endorsement.dao.endorse import (
 from endorsement.dao.uwnetid_categories import is_endorsed
 
 
+standard_test_override = override_settings(DEBUG=True)
+
+
+@standard_test_override
 class TestEndorseDao(TransactionTestCase):
 
     def test_endorsement_store_and_clear(self):
