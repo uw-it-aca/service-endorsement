@@ -118,6 +118,8 @@ externalSecrets:
           property: django-secret
         - name: email-host
           property: email-host
+        - name: msca-subscription-key
+          property: msca-subscription-key
     - name: test.provision.uw.edu-sql-secret
       externalKey: provision/test/sql-secret
       data:
@@ -146,6 +148,10 @@ environmentVariablesSecrets:
     name: EMAIL_HOST
     secretName: test.provision.uw.edu-secrets
     secretKey: email-host
+  MSCASubscriptionKey:
+    name: MSCA_SUBSCRIPTION_KEY
+    secretName: test.provision.uw.edu-secrets
+    secretKey: msca-subscription-key
   SAMLServiceProviderCert:
     name: SP_CERT
     secretName: test.provision.uw.edu-ic-certs
