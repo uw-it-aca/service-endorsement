@@ -50,8 +50,9 @@ var Scroll = (function () {
         return $table.find('tr').eq(index).attr('data-netid');
     },
 
-    _scrollToNetid = function (netid) {
-        var $tr = $('tr[data-netid="' + netid + '"]');
+    _scrollToNetid = function (netid, container) {
+        var $container = $(container),
+            $tr = $('tr[data-netid="' + netid + '"]', $container);
 
         if ($tr.length) {
             var top = $tr[0].offsetTop,
@@ -68,7 +69,10 @@ var Scroll = (function () {
         init: function (container) {
             _track(container);
             _mouseover(container);
-            _scrollToNetid(window.location.hash.substr(1));
+            _scrollToNetid(window.location.hash.substr(1), container);
+        },
+        scrollToNetid: function (netid, container) {
+            _scrollToNetid(netid, container);
         }
     };
 }());

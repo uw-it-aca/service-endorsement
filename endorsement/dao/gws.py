@@ -11,6 +11,7 @@ used for validation is "uw_employee"
 """
 
 from endorsement.util.log import log_exception
+from endorsement.exceptions import UnrecognizedGroupID
 from restclients_core.exceptions import DataFailureException
 from uw_gws import GWS
 import logging
@@ -33,5 +34,21 @@ def is_group_member(uwnetid, group):
         log_exception(logger,
                       '{0} is_effective_member of {1} group'.format(
                           uwnetid, group),
+                      traceback.format_exc())
+        raise
+
+
+def get_group_by_id(group):
+    """
+    Return GWS group
+    """
+    try:
+        return gws.get_group_by_id(group)
+    except DataFailureException as ex:
+        if ex.status == 404:
+            raise UnrecognizedGroupID()
+
+        log_exception(logger,
+                      'get_group_by_id {}: {}'.format(group, ex),
                       traceback.format_exc())
         raise

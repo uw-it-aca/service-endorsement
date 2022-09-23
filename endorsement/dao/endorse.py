@@ -2,14 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.utils import timezone
-from django.conf import settings
 from endorsement.dao.uwnetid_categories import (
     set_active_category, set_former_category)
-from endorsement.dao.uwnetid_subscriptions import (
-    activate_subscriptions, active_subscriptions_for_netid)
+from endorsement.dao.uwnetid_subscriptions import activate_subscriptions
 from endorsement.models import EndorsementRecord
 from endorsement.exceptions import NoEndorsementException
-from restclients_core.exceptions import DataFailureException
 import logging
 
 
@@ -155,22 +152,3 @@ def get_endorsements_for_endorsee_re(endorsee_regex):
 def get_endorsement_records_for_endorsee_re(endorsee_regex):
     return EndorsementRecord.objects.get_all_endorsements_for_endorsee_re(
         endorsee_regex)
-
-
-def is_permitted(endorser, endorsee, subscription_codes):
-    active = False
-    try:
-        active = active_subscriptions_for_netid(
-            endorsee.netid, subscription_codes)
-    except DataFailureException as ex:
-        if ex.status == 404:
-            active = False
-            # weirdness for testing with mock data
-            if getattr(settings, "RESTCLIENTS_DAO_CLASS", 'File') == 'File':
-                e = EndorsementRecord.objects.filter(endorsee=endorsee,
-                                                     is_deleted__isnull=True)
-                active = len(e) < 0
-        else:
-            raise
-
-    return active

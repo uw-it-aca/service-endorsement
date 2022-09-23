@@ -12,16 +12,19 @@ listed individually or all grouped together by "['*']".
 """
 
 from django.conf import settings
-from endorsement.models import Endorsee, EndorsementRecord
+from endorsement.models import EndorsementRecord as ER
 from endorsement.dao.gws import is_group_member
 from endorsement.dao.endorse import (
-    is_permitted, get_endorsement, initiate_endorsement,
+    get_endorsement, initiate_endorsement,
     store_endorsement, clear_endorsement)
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.uwnetid_categories import shared_netid_has_category
-from endorsement.exceptions import NoEndorsementException, UnrecognizedUWNetid
+from endorsement.dao.uwnetid_subscriptions import (
+    active_subscriptions_for_netid)
+from endorsement.exceptions import NoEndorsementException
 from endorsement.util.string import listed_list
 from uw_uwnetid.models import Category
+from restclients_core.exceptions import DataFailureException
 
 from abc import ABC, abstractmethod
 from importlib import import_module
@@ -101,8 +104,7 @@ class EndorsementServiceBase(ABC):
     @property
     def category_name(self):
         """Service's presentable name"""
-        return dict(
-            EndorsementRecord.CATEGORY_CODE_CHOICES)[self.category_code]
+        return dict(ER.CATEGORY_CODE_CHOICES)[self.category_code]
 
     @property
     def endorsement_lifetime(self):
@@ -209,8 +211,19 @@ class EndorsementServiceBase(ABC):
             self.get_endorsement(endorser, endorsee)
             return True, True
         except NoEndorsementException:
-            return is_permitted(
-                endorser, endorsee, self.subscription_codes), False
+            try:
+                return active_subscriptions_for_netid(
+                    endorsee.netid, self.subscription_codes), False
+            except DataFailureException as ex:
+                if getattr(settings, "DEBUG", False) and ex.status == 404:
+                    # weirdness for testing with mock data
+                    dao = getattr(settings, "RESTCLIENTS_DAO_CLASS", 'File')
+                    if dao == 'File':
+                        e = ER.objects.get_endorsements_for_endorsee(
+                            endorsee, self.category_code)
+                        return len(e) > 0, False
+                    else:
+                        raise
 
     def initiate_endorsement(self, endorser, endorsee, reason):
         return initiate_endorsement(
@@ -331,6 +344,8 @@ def get_endorsement_service(service_ref):
         key = 'service_name'
     elif isinstance(service_ref, int):
         key = 'category_code'
+    elif isinstance(service_ref, list):
+        key = 'subscription_codes'
     else:
         return None
 

@@ -34,6 +34,7 @@ MockSAMLAttributes = {
                    'u_acadev_provision_support', 'u_acadev_provision_admin'],
 }
 standard_test_override = override_settings(
+    DEBUG=True,
     MIDDLEWARE_CLASSES=(Session,
                         Common,
                         CsrfView,

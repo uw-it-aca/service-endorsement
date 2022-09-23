@@ -1,0 +1,32 @@
+{% verbatim %}
+<script id="confirm_update_modal_content" type="text/x-handlebars-template">
+<div class="modal-header">
+  <span>Confirm UW NetID Access Update Request</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+    <p>Really wanna update {{ delegate }} access from <strong>{{ previous_access_type_name }}</strong> to <strong>{{ access_type_name }}</strong> for {{ mailbox }} mailbox?
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
+  <button type="button" id="confirm_netid_update" class="btn btn-primary">OK</button>
+</div>
+</script>
+
+<script id="updated_netid_modal_content" type="text/x-handlebars-template">
+<div class="modal-header">
+  <span>UW NetID Access is Updated</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+    <p>Mailbox access to {{ mailbox }} by {{ delegate }} has been updated.
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary button-link" data-dismiss="modal">OK</button>
+</div>
+</script>
+{% endverbatim %}

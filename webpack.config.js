@@ -13,6 +13,7 @@ module.exports = {
     entry: {
         main: ['./endorsement/static/endorsement/js/main.js', './endorsement/static/endorsement/css/critical.scss'],
         handlebars: ['./endorsement/static/endorsement/js/handlebars-helpers.js'],
+        tabs: ['./endorsement/static/endorsement/js/tabs.js'],
         accept: ['./endorsement/static/endorsement/js/accept.js'],
         endorsee: ['./endorsement/static/endorsement/js/endorsee.js'],
         endorser: ['./endorsement/static/endorsement/js/endorser.js'],

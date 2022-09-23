@@ -4,7 +4,7 @@
 from django.urls import reverse
 from userservice.user import get_original_user
 from endorsement.test.views import require_url, TestViewApi
-from endorsement.models.core import EndorsementRecord
+from endorsement.models import EndorsementRecord
 from endorsement.exceptions import NoEndorsementException
 from endorsement.dao.user import get_endorser_model, get_endorsee_model
 from endorsement.services import endorsement_services, get_endorsement_service
