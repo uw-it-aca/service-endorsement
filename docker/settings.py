@@ -77,6 +77,8 @@ else:
     RESTCLIENTS_PRT_DAO_CLASS = 'Live'
     RESTCLIENTS_MSCA_HOST = 'https://pplat-apimgmt.azure-api.net'
     RESTCLIENTS_MSCA_DAO_CLASS = 'Live'
+    RESTCLIENTS_MSCA_TIMEOUT = os.getenv(
+        "MSCA_TIMEOUT", RESTCLIENTS_DEFAULT_TIMEOUT)
     RESTCLIENTS_MSCA_SUBSCRIPTION_KEY = os.getenv('MSCA_SUBSCRIPTION_KEY', '')
 
 PROVISION_ADMIN_GROUP = 'u_acadev_provision_admin'
