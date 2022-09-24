@@ -98,8 +98,6 @@ environmentVariables:
     value: PROD
   - name: UWNETID_ENV
     value: EVAL
-  - name: MSCA_ENV
-    value: PROD
   - name: AUTH
     value: SAML
   - name: SAML_ENTITY_ID
