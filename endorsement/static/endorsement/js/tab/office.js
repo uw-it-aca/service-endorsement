@@ -249,9 +249,10 @@ var ManageOfficeAccess = (function () {
             $.each(validated, function () {
                 var v = this,
                     mailbox = this.mailbox,
-                    delegate = this.name;
+                    delegate = this.name,
+                    $rows = $('.office-access-table tr[data-mailbox="' + v.mailbox + '"]');
 
-                $('.office-access-table tr[data-mailbox="' + v.mailbox + '"]').each(function (i) {
+                $rows.each(function (i) {
                     var $this_row = $(this),
                         row_delegate = $this_row.attr('data-delegate');
                     if (v.name == row_delegate) {
