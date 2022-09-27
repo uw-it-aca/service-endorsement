@@ -58,11 +58,8 @@ def get_accessor_model(name, validator):
 
 
 def store_access(accessee, accessor, right_id, acted_as=None):
-    try:
-        set_delegate(accessee.netid, accessor.name, right_id)
-        return _store_access_record(accessee, accessor, right_id, acted_as)
-    except DataFailureException as ex:
-        raise
+    set_delegate(accessee.netid, accessor.name, right_id)
+    return _store_access_record(accessee, accessor, right_id, acted_as)
 
 
 def _store_access_record(accessee, accessor, right_id, acted_as=None):
