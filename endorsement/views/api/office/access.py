@@ -65,7 +65,6 @@ class Access(RESTDispatch):
         mailbox = request.data.get('mailbox', None)
         delegate = request.data.get('delegate', None)
         access_type = request.data.get('access_type', None)
-        access_type = request.data.get('access_type', None)
         previous_access_type = request.data.get('previous_access_type', None)
 
         if not is_office_permitted(mailbox):
