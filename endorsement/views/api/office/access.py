@@ -65,12 +65,20 @@ class Access(RESTDispatch):
         mailbox = request.data.get('mailbox', None)
         delegate = request.data.get('delegate', None)
         access_type = request.data.get('access_type', None)
+        access_type = request.data.get('access_type', None)
+        previous_access_type = request.data.get('previous_access_type', None)
 
         if not is_office_permitted(mailbox):
             return invalid_endorser(logger)
 
         accessee = get_accessee_model(mailbox)
         accessor = get_office_accessor(delegate)
+
+        # remove previous access type before setting updated type
+        if previous_access_type and previous_access_type != access_type:
+            revoke_access(
+                accessee, accessor, previous_access_type, acted_as)
+
         access = store_access(accessee, accessor, access_type, acted_as)
 
         return self.json_response(access.json_data())
