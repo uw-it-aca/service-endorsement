@@ -337,16 +337,14 @@ label.accept_responsibility {
   }
 }
 
-.form-group { margin-top: 15px; }
 .panel-toggle { color:#0077c2; display: inline-block; margin-bottom: 10px; }
 
 .netid-panel { margin-bottom: 40px; }
 
 #provision { margin-bottom: 38px; }
 
-#office_access {
-    position: relative;
-    top: -3rem;
+#office_access { padding-top: 2em;
+    .access-header { font-size: 1.1em; font-weight: 800; }
 }
 
 #provisioned, #shared, #office_access {
