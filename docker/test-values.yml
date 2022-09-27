@@ -92,9 +92,9 @@ certs:
 environmentVariables:
   - name: ENV
     value: dev
-  - name: GWS_ENV
-    value: PROD
   - name: PWS_ENV
+    value: PROD
+  - name: GWS_ENV
     value: PROD
   - name: UWNETID_ENV
     value: EVAL
