@@ -25,7 +25,7 @@ var MainTabs = (function () {
         });
 
         $(window).on('popstate', function(event) {
-            $(document).trigger('endorse:HistoryChange',)
+            $(document).trigger('endorse:HistoryChange');
         });
     };
 
