@@ -5,6 +5,7 @@ import { Scroll } from "../scroll.js";
 import { Button } from "../button.js";
 import { Notify } from "../notify.js";
 import { DateTime } from "../datetime.js";
+import { History } from "../history.js";
 
 var ManageOfficeAccess = (function () {
     var content_id = 'office_access',
@@ -16,7 +17,7 @@ var ManageOfficeAccess = (function () {
             var $tab = $('.tabs div#access');
 
             // delegated events within our content
-            $tab.on('endorse:MainTabExposed', function (e) {
+            $tab.on('endorse:accessTabExposed', function (e) {
                 var $access_table = $('.office-access-table', $panel);
 
                 if ($access_table.length) {
@@ -130,6 +131,14 @@ var ManageOfficeAccess = (function () {
                 _displayOfficeAccessTypes();
             }).on('endorse:OfficeAccessTypesFailure', function (e, data) {
                 alert('Cannot determine Access Types: ' + data);
+            });
+
+            $(document).on('endorse:TabChange', function (e, data) {
+                if (data == 'access') {
+                    _adjustTabLocation();
+                }
+            }).on('endorse:HistoryChange', function (e) {
+                _showTab();
             });
         },
         _showLoading = function () {
@@ -601,8 +610,8 @@ var ManageOfficeAccess = (function () {
         },
         _accessTableRow = function (netid, delegate) {
             var id = '.office-access-table tr[data-mailbox="' +
-                netid + 
-                '"][data-delegate="' + 
+                netid +
+                '"][data-delegate="' +
                 delegate +
                 '"]',
                 $x = $(id, $content);
@@ -622,11 +631,22 @@ var ManageOfficeAccess = (function () {
             } else {
                 $button.prop('disabled', true);
             }
+        },
+        _adjustTabLocation = function (tab) {
+            History.addPath('access');
+        },
+        _showTab = function () {
+            if (window.location.pathname.match(/\/access$/)) {
+                setTimeout(function(){
+                    $('.tabs .tabs-list li[data-tab="access"] span').click();
+                },100);
+            }
         };
 
     return {
         load: function () {
             _registerEvents();
+            _showTab();
         }
     };
 }());

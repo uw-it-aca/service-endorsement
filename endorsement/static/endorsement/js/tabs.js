@@ -1,5 +1,6 @@
 // javascript for service endorsement manager
 /* jshint esversion: 6 */
+import { History } from "./history.js";
 
 var MainTabs = (function () {
     var _registerEvents = function () {
@@ -17,8 +18,14 @@ var MainTabs = (function () {
                 $(".tabs-list li, .tabs div.tab").removeClass("active");
                 $li.addClass("active");
                 $tab.addClass("active");
-                $tab.trigger('endorse:MainTabExposed');
+                $tab.trigger('endorse:' + tab + 'TabExposed');
+
+                $(document).trigger('endorse:TabChange', [tab]);
             }
+        });
+
+        $(window).on('popstate', function(event) {
+            $(document).trigger('endorse:HistoryChange',)
         });
     };
 

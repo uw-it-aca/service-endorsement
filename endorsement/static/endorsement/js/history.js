@@ -9,10 +9,29 @@ var History = (function () {
         if (hash) {
             history.replaceState({ hash: hash }, null, '#' + hash);
         }
+    },
+
+    _addPath = function (component) {
+        var re = new RegExp('\/' + component + '$');
+
+        if (! window.location.pathname.match(re)) {
+            history.pushState({}, null, window.location.origin + '/' + component);
+        }
+    },
+
+    _clipPath = function (component) {
+        var re = new RegExp('\/' + component + '$');
+
+        if (window.location.pathname.match(re)) {
+            history.pushState({}, "", window.location.origin + '/' +
+                              window.location.pathname.replace(re, ''));
+        }
     };
 
     return {
-        replaceHash: _replaceHash
+        replaceHash: _replaceHash,
+        addPath: _addPath,
+        clipPath: _clipPath
     };
 }());
 

@@ -9,6 +9,7 @@ import { Banner } from "../banner.js";
 import { Button } from "../button.js";
 import { Scroll } from "../scroll.js";
 import { Notify } from "../notify.js";
+import { History } from "../history.js";
 
 var ManageProvisionedServices = (function () {
     var content_id = 'provisioned',
@@ -207,6 +208,14 @@ var ManageProvisionedServices = (function () {
             Notify.error('Unable to Revoke at this time: ' + error);
             Revoke.resetRevokeButton(revokees);
         });
+
+        $(document).on('endorse:TabChange', function (e, data) {
+            if (data == 'services') {
+                _adjustTabLocation();
+            }
+        }).on('endorse:HistoryChange', function (e) {
+            _showTab();
+        });
     },
 
     _getNetidList = function () {
@@ -345,6 +354,19 @@ var ManageProvisionedServices = (function () {
                 $panel.trigger('endorse:UWNetIDsValidatedError', [error]);
             }
         });
+    },
+
+    _adjustTabLocation = function (tab) {
+        History.clipPath('access');
+    },
+
+    _showTab = function () {
+        // Services tab is default
+        if (! window.location.pathname.match(/\/access$/)) {
+            setTimeout(function(){
+                $('.tabs .tabs-list li[data-tab="services"] span').click();
+            },100);
+        }
     };
 
     return {
