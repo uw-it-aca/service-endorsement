@@ -298,6 +298,7 @@ a {
   tr.new_access .access-status,
   tr.new_access .access-type,
   tr.new_access .access-action  { background: #efffef !important; }
+  .access-status p { padding-left: 1.2em; }
   .endorsed-netid, .access-mailbox { border-top: none; }
   tr.endorsee_row_odd { background: #f8f8f8;  }
   tr.endorsement_row_first {
