@@ -38,6 +38,8 @@ if not os.getenv("ENV") == "localdev":
     RESTCLIENTS_DAO_CACHE_CLASS = 'endorsement.cache.RestClientsCache'
     if os.getenv("ENV") == "prod":
         APP_SERVER_BASE = 'https://provision.uw.edu'
+    else:
+        PROVISIONER_ACCESS_TEST = 'endorsement.provisioner_validation.allowed_test_endorsers'
 
 INSTALLED_APPS += [
     'django.contrib.humanize',
@@ -83,6 +85,7 @@ else:
 
 PROVISION_ADMIN_GROUP = 'u_acadev_provision_admin'
 PROVISION_SUPPORT_GROUP = 'u_acadev_provision_support'
+PROVISION_TEST_GROUP = 'u_acadev_provision_test'
 
 USERSERVICE_VALIDATION_MODULE = "endorsement.userservice_validation.validate"
 USERSERVICE_OVERRIDE_AUTH_MODULE = "endorsement.userservice_validation.can_override_user"

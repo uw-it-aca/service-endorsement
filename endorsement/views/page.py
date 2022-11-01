@@ -8,6 +8,7 @@ from django.contrib.auth import logout as django_logout
 from userservice.user import UserService
 from endorsement.util.auth import is_only_support_user
 from endorsement.services import service_contexts, is_valid_endorser
+from endorsement.provisioner_validation import can_view_endorsements
 from endorsement.views.session import log_session_key
 from endorsement.views.rest_dispatch import invalid_session, handle_exception
 import logging
@@ -40,7 +41,7 @@ def index(request):
             'support_override_user': is_only_support_user(request)
         }
 
-        if not is_valid_endorser(netid):
+        if not (is_valid_endorser(netid) and can_view_endorsements(request)):
             context["auth_failure"] = "provisioner"
             return render(request, "401.html", context, status=401)
 
