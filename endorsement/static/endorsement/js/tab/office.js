@@ -137,7 +137,24 @@ var ManageOfficeAccess = (function () {
                 if (data == 'access') {
                     _adjustTabLocation();
                 }
-            }).on('endorse:HistoryChange', function (e) {
+            }).on('change', '#access_netids_modal input', function () {
+                var $modal = $(this).closest('#access_netids_modal'),
+                $accept_button = $('button#confirm_netid_access', $modal),
+                $checkboxes = $('input.accept_responsibility', $modal),
+                checked = 0;
+
+            $checkboxes.each(function () {
+                if (this.checked)
+                    checked += 1;
+            });
+
+            // accept all inputs and no "errors"
+            if ($checkboxes.length === checked && $('.error').length === 0) {
+                $accept_button.removeAttr('disabled');
+            } else {
+                $accept_button.attr('disabled', 'disabled');
+            }
+        }).on('endorse:HistoryChange', function (e) {
                 _showTab();
             });
         },
