@@ -99,7 +99,7 @@ jobs:
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
-        uses: uw-it-aca/actions/gcr-push@feaure/set-output-deprecated
+        uses: uw-it-aca/actions/gcr-push@feature/set-output-deprecated
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
