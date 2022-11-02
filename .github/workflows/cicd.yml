@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Set up Context
         id: context
-        uses: uw-it-aca/actions/cicd-context@feature/set-output-deprecated
+        uses: uw-it-aca/actions/cicd-context@main
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
@@ -99,7 +99,7 @@ jobs:
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
-        uses: uw-it-aca/actions/gcr-push@feature/set-output-deprecated
+        uses: uw-it-aca/actions/gcr-push@main
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
@@ -122,7 +122,7 @@ jobs:
         if: >-
           contains(fromJSON('["main", "develop"]'),
             needs.context.outputs.git_repo_branch)
-        uses: uw-it-aca/actions/cicd-deploy@feature/set-output-deprecated
+        uses: uw-it-aca/actions/cicd-deploy@main
         with:
           release_name: ${{ env.RELEASE_NAME }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
@@ -145,7 +145,7 @@ jobs:
 
     steps:
       - name: House Keeping
-        uses: uw-it-aca/actions/cicd-housekeeping@feature/set-output-deprecated
+        uses: uw-it-aca/actions/cicd-housekeeping@main
         with:
           release_name: ${{ env.RELEASE_NAME }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
