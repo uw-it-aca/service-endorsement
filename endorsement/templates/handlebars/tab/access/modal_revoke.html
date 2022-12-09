@@ -1,13 +1,24 @@
 {% verbatim %}
 <script id="confirm_revoke_modal_content" type="text/x-handlebars-template">
 <div class="modal-header">
-  <span>Confirm UW NetID Access Revoke Request</span>
+  <span class="significant">Confirm UW NetID Access Revoke Request</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-    <p>Really wanna remove {{ delegate }} <strong>{{ access_type_name }}</strong> access from {{ mailbox }} mailbox?
+  <div class="endorsed-acceptance container">
+    <div class="row">
+      <div class="col-md-12">
+    You are about to revoke access from "UW NetID {{delegate}}" to the UW Office 365 Exchange Online mailbox belonging to "UW NetID {{mailbox}}".
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+    Are you sure?
+      </div>
+    </div>
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
@@ -17,13 +28,19 @@
 
 <script id="revoked_netid_modal_content" type="text/x-handlebars-template">
 <div class="modal-header">
-  <span>UW NetID Access is Revoked</span>
+  <span class="significant">UW NetID Access is Revoked</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-    <p>Mailbox access to {{ mailbox }} by {{ delegate }} has been revoked.
+  <div class="endorsed-acceptance container col-md-12">
+    <div class="row">
+      <div class="col-md-12">
+    You have successfully revoked your provision.
+      </div>
+    </div>
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-primary button-link" data-dismiss="modal">OK</button>

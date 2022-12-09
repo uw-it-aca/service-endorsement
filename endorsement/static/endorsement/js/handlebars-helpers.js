@@ -6,12 +6,13 @@ $(window.document).ready(function() {
         'endorse_button_partial': $("#endorse_button_partial").html(),
         'display_filter_partial': $("#display_filter_partial").html(),
         'email_editor_partial': $("#email_editor_partial").html(),
-        'office_access_row_partial': $("#office_access_row_partial").html()
+        'office_access_row_partial': $("#office_access_row_partial").html(),
+        'modal_action_partial': $("#modal_action_partial_template").html()
     });
 
     Handlebars.registerHelper({
         'plural': function(n, singular, plural) {
-            if (n === 1) { 
+            if (n === 1) {
                 return singular;
             }
 

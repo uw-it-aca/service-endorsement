@@ -1,0 +1,26 @@
+{% verbatim %}
+<script id="modal_action_partial_template" type="text/x-handlebars-template">
+  <div class="row"><div class="col-md-12">
+  You are about to {{action}} access to the UW Office 365 Exchange Online mailbox belonging
+  to "UW NetID {{mailbox}}"{{#equals action "provision"}} to another account: "UW NetID {{delegate}}"{{/equals}}.
+  </div></div>
+  <div class="row"><div class="col-md-12">
+   With <span class="significant">{{access_type_name}}</span> permissions UWNetID {{delegate}} will be able to:
+    <ul style="margin-bottom: 0;">
+    {{#equals access_type "FullAccessandSendAs"}}
+      <li>Open the mailbox</li>
+      <li>View, add and remove the contents of the mailbox</li>
+      <li>Send messages as if they came directly from the mailbox</li>
+    {{else}}{{#equals access_type "FullAccess"}}
+      <li>Open the mailbox</li>
+      <li>View, add and remove the contents of the mailbox</li>
+    {{else}}{{#equals access_type "SendAs"}}
+      <li>Send messages as if they came directly from the mailbox</li>
+    {{else}}{{#equals access_type "SendOnBehalf"}}
+      <li>Allows the delegate to send messages from the mailbox or group</li>
+      <li>The From address of these messages clearly shows that the message was sent by the delegate (" {{delegate}} on behalf of {{mailbox}}")</li>
+    {{/equals}}{{/equals}}{{/equals}}{{/equals}}
+    </ul>
+   </div></div>
+</script>
+{% endverbatim %}

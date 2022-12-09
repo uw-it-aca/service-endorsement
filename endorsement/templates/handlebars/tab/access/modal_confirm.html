@@ -1,23 +1,23 @@
 {% verbatim %}
 <script id="confirm_netids_modal_content" type="text/x-handlebars-template">
 <div class="modal-header">
-  <span>Confirm UW NetID Access Request</span>
+  <span class="significant">Confirm UW NetID Access Request</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-  <div class="endorsed-acceptance container col-md-12">
+  <div class="endorsed-acceptance container">
+    {{> modal_action_partial}}
     <div class="row">
-    You are about to provision access to the UW Office 365 Exchange Online mailbox belonging to “UW NetID {{ mailbox }}” to another account: “UW NetID {{ delegate }}”.
-    </div>
-    <div class="row">
+      <div class="col-md-12">
     As the owner of “UW NetID {{ mailbox }}”, you are responsible for proper use, account maintenance, and access privileges to its mailbox.
+      </div>
     </div>
     <div class="row">
-    The use of the mailbox by any individual acting as the UW NetID is bound by UW-IT's Appropriate Use policy,
-    as well as being subject to state and federal law, and other UW policies and procedures.
-    For more information, visit <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">UW-IT's Appropriate Use</a> page.
+      <div class="col-md-12">
+    The use of the mailbox by any individual acting as the UW NetID is bound by UW-IT's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures.For more information, visit <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">UW-IT's Appropriate Use</a> page.
+      </div>
     </div>
     <div class="row">
       <div class="col-md-12">
@@ -44,16 +44,23 @@
 
 <script id="granted_netid_modal_content" type="text/x-handlebars-template">
 <div class="modal-header">
-  <span>Access to Provisioned Services</span>
+  <span class="significant">Access to Provisioned Services</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-    <p>You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. “UW NetID {{ delegate }}” now has {{ access_type_name }} access to the UW Office 365 Exchange Online mailbox belonging to “UW NetID {{ mailbox }}”. 
-    </p>
-    <p>Click here to learn how to access the mailbox (links to IT Connect article).
-    </p>
+  <div class="endorsed-acceptance container">
+    <div class="row">
+      <div class="col-md-12">
+    You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. “UW NetID {{ accessor.name }}” now has {{ right_name }} access to the UW Office 365 Exchange Online mailbox belonging to “UW NetID {{ accessee.netid }}”.
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+    Click here to learn how to access the mailbox (links to IT Connect article).
+      </div>
+    </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">OK</button>

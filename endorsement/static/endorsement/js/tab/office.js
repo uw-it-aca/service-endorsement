@@ -325,6 +325,7 @@ var ManageOfficeAccess = (function () {
         },
         _confirmNetidAccessModal = function ($row) {
             var context = {
+                action: "provision",
                 mailbox: $row.attr('data-mailbox'),
                 delegate: $row.attr('data-delegate'),
                 access_type: $('.access-type select option:selected', $row).val(),
@@ -340,6 +341,7 @@ var ManageOfficeAccess = (function () {
         },
         _confirmNetidRevokeModal = function ($row) {
             var context = {
+                action: "revoke",
                 mailbox: $row.attr('data-mailbox'),
                 delegate: $row.attr('data-delegate'),
                 access_type: $('.access-type select option:selected', $row).val(),
@@ -355,6 +357,7 @@ var ManageOfficeAccess = (function () {
         },
         _confirmNetidRenewModal = function ($row) {
             var context = {
+                action: "renew",
                 mailbox: $row.attr('data-mailbox'),
                 delegate: $row.attr('data-delegate'),
                 access_type: $('.access-type select option:selected', $row).val(),
@@ -372,6 +375,7 @@ var ManageOfficeAccess = (function () {
             var new_access_type = $('select.office-access-types option:selected', $row).val(),
                 current_access_type = $('.access-type select').attr('data-access-right-id'),
                 context = {
+                    action: "update",
                     mailbox: $row.attr('data-mailbox'),
                     delegate: $row.attr('data-delegate'),
                     previous_access_type: current_access_type,
@@ -391,7 +395,13 @@ var ManageOfficeAccess = (function () {
             return $('.access-type select option[value="' + type_id + '"]', $content).first().text();
         },
         _grantedNetidAccessModal = function (context) {
-            _displayModal("#granted_netid_modal_content", context);
+            if (!context.right_name) {
+                context.right_name = _accessTypeName(context.right_id);
+            }
+
+            _displayModal((context.action === 'renew') ? '#renewed_netid_modal_content'
+                          : (context.action === 'update') ? "#updated_netid_modal_content"
+                          : "#granted_netid_modal_content", context);
         },
         _revokedNetidAccessModal = function (context) {
             _displayModal("#revoked_netid_modal_content", context);
@@ -497,6 +507,7 @@ var ManageOfficeAccess = (function () {
                     "X-CSRFToken": csrf_token
                 },
                 success: function(results) {
+                    results.action = context.action;
                     $panel.trigger('endorse:OfficeDelegateAccessSuccess', [results]);
                 },
                 error: function(xhr, status, error) {
