@@ -399,10 +399,8 @@ var ManageOfficeAccess = (function () {
                 context.right_name = _accessTypeName(context.right_id);
             }
 
-            _displayModal((context.action === 'renew')
-                          ? '#renewed_netid_modal_content'
-                          : (context.action === 'update')
-                          ? "#updated_netid_modal_content"
+            _displayModal((context.action === 'renew') ? '#renewed_netid_modal_content'
+                          : (context.action === 'update') ? "#updated_netid_modal_content"
                           : "#granted_netid_modal_content", context);
         },
         _revokedNetidAccessModal = function (context) {
