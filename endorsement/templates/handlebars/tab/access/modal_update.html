@@ -7,10 +7,8 @@
   </button>
 </div>
 <div class="modal-body">
-  <div class="endorsed-acceptance container col-md-12">
-    <div class="row">
+  <div class="endorsed-acceptance container">
     {{> modal_action_partial}}
-    </div>
   </div>
 </div>
 <div class="modal-footer">
@@ -27,7 +25,13 @@
   </button>
 </div>
 <div class="modal-body">
-    <p>Mailbox access to {{ accessee.netid }} by {{ accessor.name }} has been updated.
+  <div class="endorsed-acceptance container col-md-12">
+    <div class="row">
+      <div class="col-md-12">
+    Mailbox access to {{ accessee.netid }} by {{ accessor.name }} has been updated.
+      </div>
+    </div>
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-primary button-link" data-dismiss="modal">OK</button>

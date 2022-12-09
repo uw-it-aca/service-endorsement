@@ -7,15 +7,17 @@
   </button>
 </div>
 <div class="modal-body">
-  <div class="endorsed-acceptance container col-md-12">
-    <div class="row">
+  <div class="endorsed-acceptance container">
     {{> modal_action_partial}}
-    </div>
     <div class="row">
+      <div class="col-md-12">
     As the owner of “UW NetID {{ mailbox }}”, you are responsible for proper use, account maintenance, and access privileges to its mailbox.
+      </div>
     </div>
     <div class="row">
+      <div class="col-md-12">
     The use of the mailbox by any individual acting as the UW NetID is bound by UW-IT's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures.For more information, visit <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">UW-IT's Appropriate Use</a> page.
+      </div>
     </div>
     <div class="row">
       <div class="col-md-12">
@@ -48,10 +50,17 @@
   </button>
 </div>
 <div class="modal-body">
-    <p>You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. “UW NetID {{ accessor.name }}” now has {{ right_name }} access to the UW Office 365 Exchange Online mailbox belonging to “UW NetID {{ accessee.netid }}”.
-    </p>
-    <p>Click here to learn how to access the mailbox (links to IT Connect article).
-    </p>
+  <div class="endorsed-acceptance container">
+    <div class="row">
+      <div class="col-md-12">
+    You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. “UW NetID {{ accessor.name }}” now has {{ right_name }} access to the UW Office 365 Exchange Online mailbox belonging to “UW NetID {{ accessee.netid }}”.
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+    Click here to learn how to access the mailbox (links to IT Connect article).
+      </div>
+    </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">OK</button>
