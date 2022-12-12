@@ -395,13 +395,22 @@ var ManageOfficeAccess = (function () {
             return $('.access-type select option[value="' + type_id + '"]', $content).first().text();
         },
         _grantedNetidAccessModal = function (context) {
+            var template;
+
+            if (context.action === 'renew') {
+                template = '#renewed_netid_modal_content';
+                context.renewal_date = moment().add(1, 'Y').format('MM/DD/YYYY');
+            } else if (context.action === 'update') {
+                template = "#updated_netid_modal_content";
+            } else {
+                template = "#granted_netid_modal_content";
+            }
+
             if (!context.right_name) {
                 context.right_name = _accessTypeName(context.right_id);
             }
 
-            _displayModal((context.action === 'renew') ? '#renewed_netid_modal_content'
-                          : (context.action === 'update') ? "#updated_netid_modal_content"
-                          : "#granted_netid_modal_content", context);
+            _displayModal(template, context);
         },
         _revokedNetidAccessModal = function (context) {
             _displayModal("#revoked_netid_modal_content", context);
