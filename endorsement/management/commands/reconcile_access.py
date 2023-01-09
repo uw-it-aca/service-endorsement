@@ -8,6 +8,7 @@ from endorsement.dao.office import get_office_accessor
 import argparse
 import json
 import sys
+import csv
 import logging
 
 
@@ -31,18 +32,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         commit_changes = options['commit_changes']
-        raw = options['infile'].read()
-        first_line = raw.find('\n')
-        raw_js = raw[first_line + 1:].strip().replace(
-            '""', '"').replace(
-                ',"[', ':[').replace(
-                    ',"{', ':[{').replace(
-                        ']"', '],').replace(
-                            '}"', '}],')
+        first_line = True
+        for row in csv.reader(options['infile'], delimiter=","):
+            if first_line:
+                first_line = False
+                continue
 
-        for id, access in json.loads('{' + raw_js[:-1] + '}').items():
-            netid = self.strip_domain(id)
+            netid = self.strip_domain(row[0])
             accessee = get_accessee_model(netid)
+            access = json.loads(row[1])
+            if isinstance(access, dict):
+                access = [access]
+
             records = list(
                 AccessRecord.objects.get_access_for_accessee(accessee))
             stale = []
