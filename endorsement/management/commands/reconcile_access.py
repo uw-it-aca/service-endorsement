@@ -85,11 +85,11 @@ class Command(BaseCommand):
                 if commit_changes:
                     ar.revoke()
 
-    def has_access(self, access_record, access):
+    def has_access(self, record, access):
         for a in access:
-            if (a['User']
-                and access_record.accessor.name == self.strip_domain(a['User'])
-                and access_record.right_id == a['AccessRights']):
+            if (a['User'] and
+                    and record.accessor.name == self.strip_domain(a['User'])
+                    and record.right_id == a['AccessRights']):
                 return a
 
         return None
@@ -97,4 +97,3 @@ class Command(BaseCommand):
     def strip_domain(self, name):
         has_at = name.find('@')
         return (name[:-len(name[has_at:])] if has_at >= 0 else name).lower()
-
