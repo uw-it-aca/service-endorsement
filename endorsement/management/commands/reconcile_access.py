@@ -87,7 +87,7 @@ class Command(BaseCommand):
 
     def has_access(self, record, access):
         for a in access:
-            if (a['User'] and
+            if (a['User']
                     and record.accessor.name == self.strip_domain(a['User'])
                     and record.right_id == a['AccessRights']):
                 return a
