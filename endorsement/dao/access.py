@@ -1,4 +1,4 @@
-# Copyright 2022 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
@@ -59,10 +59,10 @@ def get_accessor_model(name, validator):
 
 def store_access(accessee, accessor, right_id, acted_as=None):
     set_delegate(accessee.netid, accessor.name, right_id)
-    return _store_access_record(accessee, accessor, right_id, acted_as)
+    return store_access_record(accessee, accessor, right_id, acted_as)
 
 
-def _store_access_record(accessee, accessor, right_id, acted_as=None):
+def store_access_record(accessee, accessor, right_id, acted_as=None):
     now = timezone.now()
     try:
         ar = AccessRecord.objects.get(accessee=accessee, accessor=accessor)
