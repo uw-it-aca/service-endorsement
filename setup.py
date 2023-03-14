@@ -30,7 +30,7 @@ setup(
         'ordereddict',
         'simplejson',
         'django-webpack-loader>=1.0,<2.0',
-        'django-userservice<4.0,>3.1',
+        'django-userservice<4.0',
         'urllib3~=1.26',
         'unittest2',
         'pytz',

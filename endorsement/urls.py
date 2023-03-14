@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.urls import re_path
-from userservice.views import support as userservice_override
+from userservice.views import SupportView
 from endorsement.views import page
 from endorsement.views.accept import accept
 from endorsement.views.support.endorser_search import EndorserSearch
@@ -41,7 +41,7 @@ urlpatterns = [
             name='endorser_search'),
     re_path(r'^support/notifications/?', EndorseeNotifications.as_view(),
             name='endorsee_notifications'),
-    re_path(r'^support/override/?', userservice_override,
+    re_path(r'^support/override/?', SupportView.as_view(),
             name='userservice_override'),
     re_path(r'^support/persistent_messages/?', PersistentMessages.as_view(),
             name='manage_persistent_messages_init'),
