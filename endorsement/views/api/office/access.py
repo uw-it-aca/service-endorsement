@@ -42,7 +42,8 @@ class Access(RESTDispatch):
 
         for supported in get_supported_resources_for_netid(netid):
             if supported.is_owner() and (
-                    supported.is_shared_netid() or supported.is_admin()):
+                    supported.is_shared_netid() or
+                    supported.netid_type == 'administrator'):
                 if is_office_permitted(supported.name):
                     accessee = get_accessee_model(supported.name)
                     netids[supported.name] = {
