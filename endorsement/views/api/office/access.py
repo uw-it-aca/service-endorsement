@@ -41,9 +41,7 @@ class Access(RESTDispatch):
             }
 
         for supported in get_supported_resources_for_netid(netid):
-            if supported.is_owner() and (
-                    supported.is_shared_netid() or
-                    supported.netid_type == 'administrator'):
+            if self._is_valid_accessor(supported):
                 if is_office_permitted(supported.name):
                     accessee = get_accessee_model(supported.name)
                     netids[supported.name] = {
@@ -120,6 +118,11 @@ class Access(RESTDispatch):
             raise InvalidNetID()
 
         return netid, acted_as
+
+    def _is_valid_accessor(self, supported):
+        return (supported.is_owner() and (
+            supported.is_shared_netid()
+            or supported.netid_type == 'administrator'))
 
 
 class AccessRights(RESTDispatch):
