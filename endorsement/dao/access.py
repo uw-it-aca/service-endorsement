@@ -3,8 +3,7 @@
 
 import logging
 from django.utils import timezone
-from uw_msca.delegate import set_delegate, remove_delegate
-from restclients_core.exceptions import DataFailureException
+from uw_msca.delegate import set_delegate, update_delegate, remove_delegate
 from endorsement.models import Accessee, Accessor, AccessRecord
 from endorsement.dao.pws import get_endorsee_data
 from endorsement.exceptions import NoEndorsementException
@@ -59,6 +58,11 @@ def get_accessor_model(name, validator):
 
 def store_access(accessee, accessor, right_id, acted_as=None):
     set_delegate(accessee.netid, accessor.name, right_id)
+    return store_access_record(accessee, accessor, right_id, acted_as)
+
+
+def update_access(accessee, accessor, old_right_id, right_id, acted_as=None):
+    update_delegate(accessee.netid, accessor.name, old_right_id, right_id)
     return store_access_record(accessee, accessor, right_id, acted_as)
 
 
