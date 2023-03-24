@@ -292,6 +292,7 @@ var ManageOfficeAccess = (function () {
                             mailbox: v.mailbox,
                             name: $('td.access-mailbox-name', $this_row).text(),
                             delegate: v.name,
+                            delegate_link: _getDelegateLink(v.name),
                             accessee_index: $this_row.hasClass('endorsee_row_even') ? 0 : 1,
                             access_index: i});
 
@@ -432,13 +433,15 @@ var ManageOfficeAccess = (function () {
             var $row = _accessTableRow(context.accessee.netid, context.accessor.name),
                 source = $("#office_access_row_partial").html(),
                 template = Handlebars.compile(source),
+                delegate = (!context.is_revoke) ? context.accessor.name : null,
                 html;
 
             html = template({
                 is_valid: true,
                 mailbox: context.accessee.netid,
                 name: context.accessee.display_name,
-                delegate: (!context.is_revoke) ? context.accessor.name : null,
+                delegate: delegate,
+                delegate_link: _getDelegateLink(delegate),
                 date_granted: DateTime.utc2localdate(context.datetime_granted),
                 date_granted_relative: _datetimeRelative(context.datetime_granted, 365),
                 right_id: context.right_id,
@@ -453,6 +456,10 @@ var ManageOfficeAccess = (function () {
             if (datetime) {
                 return moment(datetime).add(from_now, 'days').fromNow();
             }
+        },
+        _getDelegateLink = function (delegate) {
+            return (delegate && delegate.match(/^u[w]_.+/)) ?
+                'https://groups.uw.edu/group/' + delegate : null;
         },
         _deleteOfficeAccessDisplay = function (context) {
             var selector = '.office-access-table tbody tr[data-mailbox="' + context.accessee.netid + '"]',
@@ -544,8 +551,9 @@ var ManageOfficeAccess = (function () {
                 }
             });
         },
-        _getNetidList = function ($textarea) {
-            var netids = $('.validate-netid-list textarea').val(),
+        _getNetidList = function () {
+            var $textarea = $('.validate-netid-list textarea'),
+                netids = $textarea.val(),
                 netid_list = (netids) ? _unique(
                     netids.toLowerCase()
                         .replace(/\n/g, ' ')
@@ -554,15 +562,12 @@ var ManageOfficeAccess = (function () {
                         : [];
 
             if (netid_list.length) {
-                $('.office-access-table td[data-mailbox]', $content).each(function () {
-                    var mailbox = $(this).attr('data-mailbox'),
-                        i;
-
+                var mailbox = $textarea.attr('data-mailbox'),
                     i = netid_list.indexOf(mailbox);
-                    if (i >= 0) {
-                        netid_list.splice(i, 1);
-                    }
-                });
+
+                if (i >= 0) {
+                    netid_list.splice(i, 1);
+                }
             }
 
             return netid_list;
