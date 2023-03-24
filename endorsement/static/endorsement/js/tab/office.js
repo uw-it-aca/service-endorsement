@@ -458,8 +458,8 @@ var ManageOfficeAccess = (function () {
             }
         },
         _getDelegateLink = function (delegate) {
-            return (delegate && delegate.match(/^u[w]_.+/))
-                ? 'https://groups.uw.edu/group/' + delegate : null;
+            return (delegate && delegate.match(/^u[w]_.+/)) ?
+                'https://groups.uw.edu/group/' + delegate : null;
         },
         _deleteOfficeAccessDisplay = function (context) {
             var selector = '.office-access-table tbody tr[data-mailbox="' + context.accessee.netid + '"]',
