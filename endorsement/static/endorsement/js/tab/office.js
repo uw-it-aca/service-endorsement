@@ -95,7 +95,7 @@ var ManageOfficeAccess = (function () {
                     var $row = _accessTableRow(context.mailbox, context.delegate);
 
                     Button.loading($('#access_update', $row));
-                    _setAccessForDelegate(context);
+                    _updateAccessForDelegate(context);
                 });
                 _modalHide();
             }).on('endorse:OfficeDelegatableSuccess', function (e, data) {
@@ -458,7 +458,7 @@ var ManageOfficeAccess = (function () {
             }
         },
         _getDelegateLink = function (delegate) {
-            return (delegate && delegate.match(/^u[w]_.+/)) ?
+            return (delegate && delegate.match(/^u[w]?_.+/)) ?
                 'https://groups.uw.edu/group/' + delegate : null;
         },
         _deleteOfficeAccessDisplay = function (context) {
@@ -511,11 +511,17 @@ var ManageOfficeAccess = (function () {
             }
         },
         _setAccessForDelegate = function (context) {
+            _setDelegateAccess(context);
+        },
+        _updateAccessForDelegate = function (context) {
+            _setDelegateAccess(context, 'PATCH');
+        },
+        _setDelegateAccess = function (context, method) {
             var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
             $.ajax({
                 url: "/office/v1/access",
-                type: "POST",
+                type: method ? method : "POST",
                 data: JSON.stringify(context),
                 contentType: "application/json",
                 accepts: {html: "application/json"},
