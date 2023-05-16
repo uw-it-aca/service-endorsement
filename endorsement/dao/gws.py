@@ -71,4 +71,3 @@ def get_group_admin_emails(group_id):
             emails += get_group_admin_emails(admin.name)
 
     return emails
-
