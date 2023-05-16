@@ -5,12 +5,13 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader, Template, Context
 from django.utils import timezone
-from endorsement.models import EndorsementRecord
+from endorsement.models import EndorsementRecord, AccessRecord
 from endorsement.services import (
     endorsement_services, get_endorsement_service, service_names)
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
+from endorsement.dao.accessors import get_accessor_email
 from endorsement.exceptions import EmailFailureException
 from endorsement.policy import endorsements_to_warn
 from endorsement.util.string import listed_list
@@ -408,6 +409,50 @@ def warn_new_shared_netid_owner(new_owner, endorsements):
     for endorsement in endorsements:
         endorsement.datetime_notice_1_emailed = sent_date
         endorsement.save()
+
+
+def notify_accessors():
+    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                     "provision-noreply@uw.edu")
+
+    for ar in AccessRecord.objects.get_unnotified_accessors():
+        try:
+            emails = get_accessor_email(ar)
+
+            (subject, text_body, html_body) = _create_accessor_message(
+                ar, emails)
+
+            recipients = []
+            for addr in emails:
+                recipients.append(addr['email'])
+
+            send_email(
+                sender, recipients, subject,
+                text_body, html_body, "Accessor")
+
+            ar.emailed()
+        except EmailFailureException as ex:
+            logger.error("Accessor notification failed: {}".format(ex))
+        except Exception as ex:
+            logger.error("Notify get email failed: {0}, netid: {1}"
+                         .format(ex, ar.accessor))
+
+
+def _create_accessor_message(access_record, emails):
+    subject = "Delegated Mailbox Access to {}".format(
+        access_record.accessee.netid)
+
+    params = {
+        'record': access_record,
+        'emails': emails
+    }
+
+    text_template = "email/accessor.txt"
+    html_template = "email/accessor.html"
+
+    return (subject,
+            loader.render_to_string(text_template, params),
+            loader.render_to_string(html_template, params))
 
 
 def send_email(sender, recipients, subject, text_body, html_body, kind):

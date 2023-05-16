@@ -11,6 +11,7 @@ used for validation is "uw_employee"
 """
 
 from endorsement.util.log import log_exception
+from endorsement.util.email import uw_email_address
 from endorsement.exceptions import UnrecognizedGroupID
 from restclients_core.exceptions import DataFailureException
 from uw_gws import GWS
@@ -52,3 +53,22 @@ def get_group_by_id(group):
                       'get_group_by_id {}: {}'.format(group, ex),
                       traceback.format_exc())
         raise
+
+
+def get_group_admin_emails(group_id):
+    group = gws.get_group_by_id(group_id)
+    emails = []
+    for admin in group.admins:
+        if admin.is_uwnetid():
+            emails.append({
+                'email': uw_email_address(admin.name),
+                'display_name': admin.display_name})
+        elif admin.is_eppn():
+            emails.append({
+                'email': admin.name,
+                'display_name': admin.display_name})
+        elif admin.is_group():
+            emails += get_group_admin_emails(admin.name)
+
+    return emails
+

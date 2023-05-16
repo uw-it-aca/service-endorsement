@@ -2,7 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TransactionTestCase
+from django.utils import timezone
 from django.core import mail
+from endorsement.models import Accessor, Accessee, AccessRecord
+from endorsement.dao.notification import notify_accessors
 from endorsement.services import endorsement_services, service_names
 from endorsement.dao.notification import (
     notify_endorsees, notify_endorsers,
@@ -121,3 +124,35 @@ class TestNotificationDao(TransactionTestCase):
             service.category_name in mail.outbox[0].body)
         self.assertTrue(
             service.category_name in mail.outbox[0].alternatives[0][0])
+
+
+class TestAccessorNotification(TransactionTestCase):
+    def setUp(self):
+        now = timezone.now()
+        self.accessee = Accessee.objects.create(
+            netid='accessee', display_name="Netid Accessee",
+            regid='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', is_valid=True)
+        self.accessor = Accessor.objects.create(
+            name='accessor', display_name='Netid Accessor',
+            is_valid=True, is_shared_netid=False, is_group=False)
+        self.group_accessor = Accessor.objects.create(
+            name='endorsement_group', display_name='Group Accessor',
+            is_valid=True, is_shared_netid=False, is_group=True)
+
+        AccessRecord.objects.create(
+            accessee=self.accessee, accessor=self.accessor,
+            right_id='1', right_name='AllAccessAllOfTheTime',
+            datetime_created=now)
+        AccessRecord.objects.create(
+            accessee=self.accessee, accessor=self.group_accessor,
+            right_id='1', right_name='SomeAccessSomeOfTheTime',
+            datetime_created=now)
+
+    def test_access_notifications(self):
+        notify_accessors()
+        self.assertEqual(len(mail.outbox), 2)
+
+        self.assertEqual(len(mail.outbox[0].to), 1)
+        self.assertEqual(len(mail.outbox[1].to), 2)
+        self.assertTrue('AllAccessAllOfTheTime' in mail.outbox[0].body)
+        self.assertTrue('SomeAccessSomeOfTheTime' in mail.outbox[1].body)
