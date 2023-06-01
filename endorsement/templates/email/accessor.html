@@ -1,0 +1,28 @@
+<h3>Accessee Info</h3>
+      <p>
+       Delegated {{ record.right_name }} ({{ record.right_id }}) access is being given to the outlook mailbox {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
+      </p>
+<h3>Accessor Info</h3>
+      {% if record.accessor.is_group %}
+      <p>
+      You've been identified as an admin of the group {{ record.accessor.display_name }} ({{ record.accessor.name }})!
+      </p>
+      <p>
+      You all are receiving this email because your list members are getting delegated access to the above mailbox.
+      <p>
+      Admin emails of group given delegated access:
+      </p>
+      </p>
+      {% else %}
+      <p>
+      You are receiving this email because you were given delegated access to the above mailbox.
+      </p>
+      <p>
+      Delegated netid email address:
+      </p>
+      {% endif %}
+      <ul>
+          {% for email in emails %}
+          <li>{{ email.display_name }} &lt;{{ email.email }}&gt;</li>
+          {% endfor %}
+      </ul>

@@ -80,7 +80,7 @@ cronjob:
     - name: notify-endorsees
       schedule: "*/2 * * * *"
       command: ["/scripts/management_command.sh"]
-      args: ["notify_endorsees"]
+      args: ["notify_provisionees"]
     - name: validate-shared-owners
       schedule: "15 11 * * *"
       command: ["/scripts/management_command.sh"]

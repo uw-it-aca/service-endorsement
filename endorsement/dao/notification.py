@@ -5,14 +5,16 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader, Template, Context
 from django.utils import timezone
-from endorsement.models import EndorsementRecord
+from endorsement.models import EndorsementRecord, AccessRecord
 from endorsement.services import (
     endorsement_services, get_endorsement_service, service_names)
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
+from endorsement.dao.accessors import get_accessor_email
 from endorsement.exceptions import EmailFailureException
 from endorsement.policy import endorsements_to_warn
+from endorsement.util.email import uw_email_address
 from endorsement.util.string import listed_list
 import re
 import logging
@@ -20,6 +22,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 logging.captureWarnings(True)
+EMAIL_REPLY_ADDRESS = getattr(settings, "EMAIL_REPLY_ADDRESS",
+                              "provision-noreply@uw.edu")
 
 
 # This function is a monument to technical debt and intended
@@ -116,9 +120,7 @@ def get_unendorsed_unnotified():
 
 
 def notify_endorsees():
-    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
-                     "provision-noreply@uw.edu")
-
+    sender = EMAIL_REPLY_ADDRESS
     endorsements = get_unendorsed_unnotified()
 
     for email, endorsers in endorsements.items():
@@ -182,7 +184,7 @@ def _get_endorsed_unnotified(endorsed_unnotified):
     endorsements = {}
     for er in endorsed_unnotified:
         # rely on @u forwarding for valid address
-        email = "{0}@uw.edu".format(er.endorser.netid)
+        email = uw_email_address(er.endorser.netid)
         if email not in endorsements:
             endorsements[email] = {}
 
@@ -206,8 +208,7 @@ def _get_endorsed_unnotified(endorsed_unnotified):
 
 
 def notify_endorsers():
-    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
-                     "provision-noreply@uw.edu")
+    sender = EMAIL_REPLY_ADDRESS
     endorsements = get_endorsed_unnotified()
     for email, endorsed in endorsements.items():
         (subject, text_body, html_body) = _create_endorser_message(endorsed)
@@ -259,9 +260,8 @@ def notify_invalid_endorser(invalid_endorsements):
         return
 
     sent_date = timezone.now()
-    email = "{0}@uw.edu".format(invalid_endorsements[0].endorser.netid)
-    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
-                     "provision-noreply@uw.edu")
+    email = uw_email_address(invalid_endorsements[0].endorser.netid)
+    sender = EMAIL_REPLY_ADDRESS
     (subject, text_body, html_body) = _create_invalid_endorser_message(
         invalid_endorsements)
 
@@ -345,9 +345,8 @@ def warn_endorsers(notice_level):
             endorsed = endorsements.filter(endorser=endorser)
 
             sent_date = timezone.now()
-            email = "{0}@uw.edu".format(endorsed[0].endorser.netid)
-            sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
-                             "provision-noreply@uw.edu")
+            email = uw_email_address(endorsed[0].endorser.netid)
+            sender = EMAIL_REPLY_ADDRESS
 
             try:
                 (subject,
@@ -395,9 +394,8 @@ def warn_new_shared_netid_owner(new_owner, endorsements):
     confirm_common_lifecyle_values()
 
     sent_date = timezone.now()
-    email = "{0}@uw.edu".format(new_owner.netid)
-    sender = getattr(settings, "EMAIL_REPLY_ADDRESS",
-                     "provision-noreply@uw.edu")
+    email = uw_email_address(new_owner.netid)
+    sender = EMAIL_REPLY_ADDRESS
     (subject, text_body, html_body) = _create_warn_shared_owner_message(
         new_owner, endorsements)
 
@@ -408,6 +406,49 @@ def warn_new_shared_netid_owner(new_owner, endorsements):
     for endorsement in endorsements:
         endorsement.datetime_notice_1_emailed = sent_date
         endorsement.save()
+
+
+def notify_accessors():
+    sender = EMAIL_REPLY_ADDRESS
+
+    for ar in AccessRecord.objects.get_unnotified_accessors():
+        try:
+            emails = get_accessor_email(ar)
+
+            (subject, text_body, html_body) = _create_accessor_message(
+                ar, emails)
+
+            recipients = []
+            for addr in emails:
+                recipients.append(addr['email'])
+
+            send_email(
+                sender, recipients, subject,
+                text_body, html_body, "Accessor")
+
+            ar.emailed()
+        except EmailFailureException as ex:
+            logger.error("Accessor notification failed: {}".format(ex))
+        except Exception as ex:
+            logger.error("Notify get email failed: {0}, netid: {1}"
+                         .format(ex, ar.accessor))
+
+
+def _create_accessor_message(access_record, emails):
+    subject = "Delegated Mailbox Access to {}".format(
+        access_record.accessee.netid)
+
+    params = {
+        'record': access_record,
+        'emails': emails
+    }
+
+    text_template = "email/accessor.txt"
+    html_template = "email/accessor.html"
+
+    return (subject,
+            loader.render_to_string(text_template, params),
+            loader.render_to_string(html_template, params))
 
 
 def send_email(sender, recipients, subject, text_body, html_body, kind):

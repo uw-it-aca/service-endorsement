@@ -83,7 +83,7 @@ daemon:
   daemons:
     - name: notify-endorsees
       command: ["/scripts/management_daemon.sh"]
-      args: ['--cron', '*/5 * * * *', 'notify_endorsees']
+      args: ['--cron', '*/5 * * * *', 'notify_provisionees']
 certs:
   mounted: true
   certPath: /certs/test.provision.uw.edu.cert

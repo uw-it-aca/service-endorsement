@@ -111,11 +111,11 @@ class AccessRecordManager(models.Manager):
         return super(AccessRecordManager, self).get_queryset().filter(
             accessee_id__in=accessees)
 
-    def emailed(self, id):
-        datetime_emailed = timezone.now()
-        super(AccessRecordManager, self).get_queryset().filter(
-            pk=id, is_deleted__isnull=True).update(
-                datetime_emailed=datetime_emailed)
+    def get_unnotified_accessors(self):
+        return super(AccessRecordManager, self).get_queryset().filter(
+            datetime_emailed__isnull=True,
+            datetime_created__isnull=False,
+            is_deleted__isnull=True)
 
 
 class AccessRecord(
@@ -150,6 +150,10 @@ class AccessRecord(
     def revoke(self):
         self.datetime_expired = timezone.now()
         self.is_deleted = True
+        self.save()
+
+    def emailed(self):
+        self.datetime_emailed = timezone.now()
         self.save()
 
     def json_data(self):
