@@ -135,6 +135,9 @@ class TestAccessorNotification(TransactionTestCase):
         self.accessor = Accessor.objects.create(
             name='accessor', display_name='Netid Accessor',
             is_valid=True, is_shared_netid=False, is_group=False)
+        self.accessor2 = Accessor.objects.create(
+            name='accessor2', display_name='Netid Accessor Two',
+            is_valid=True, is_shared_netid=False, is_group=False)
         self.group_accessor = Accessor.objects.create(
             name='endorsement_group', display_name='Group Accessor',
             is_valid=True, is_shared_netid=False, is_group=True)
@@ -142,11 +145,15 @@ class TestAccessorNotification(TransactionTestCase):
         AccessRecord.objects.create(
             accessee=self.accessee, accessor=self.accessor,
             right_id='1', right_name='AllAccessAllOfTheTime',
-            datetime_created=now)
+            datetime_granted=now)
         AccessRecord.objects.create(
             accessee=self.accessee, accessor=self.group_accessor,
             right_id='1', right_name='SomeAccessSomeOfTheTime',
-            datetime_created=now)
+            datetime_granted=now)
+        AccessRecord.objects.create(
+            accessee=self.accessee, accessor=self.accessor2,
+            right_id='1', right_name='SomeAccessSomeOfTheTime',
+            datetime_granted=now, is_reconcile=True)
 
     def test_access_notifications(self):
         notify_accessors()

@@ -78,7 +78,8 @@ def reconcile_access(commit_changes=False):
                                      a['AccessRights']))
                     if commit_changes:
                         ar = store_access_record(
-                            accessee, accessor, a['AccessRights'])
+                            accessee, accessor,
+                            a['AccessRights'], is_reconcile=True)
                 except Exception as ex:
                     logger.error(
                         "Reconcile: ERROR: ADD {}: {}".format(name, ex))

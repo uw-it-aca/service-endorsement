@@ -66,7 +66,8 @@ def update_access(accessee, accessor, old_right_id, right_id, acted_as=None):
     return store_access_record(accessee, accessor, right_id, acted_as)
 
 
-def store_access_record(accessee, accessor, right_id, acted_as=None):
+def store_access_record(
+        accessee, accessor, right_id, acted_as=None, is_reconcile=None):
     now = timezone.now()
     try:
         ar = AccessRecord.objects.get(accessee=accessee, accessor=accessor)
@@ -96,6 +97,7 @@ def store_access_record(accessee, accessor, right_id, acted_as=None):
             datetime_notice_4_emailed=None,
             datetime_renewed=None,
             datetime_expired=None,
+            is_reconcile=is_reconcile,
             is_deleted=None)
 
     return ar

@@ -114,7 +114,8 @@ class AccessRecordManager(models.Manager):
     def get_unnotified_accessors(self):
         return super(AccessRecordManager, self).get_queryset().filter(
             datetime_emailed__isnull=True,
-            datetime_created__isnull=False,
+            datetime_granted__isnull=False,
+            is_reconcile__isnull=True,
             is_deleted__isnull=True)
 
 
@@ -137,6 +138,7 @@ class AccessRecord(
     datetime_granted = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
+    is_reconcile = models.BooleanField(null=True)
     is_deleted = models.BooleanField(null=True)
 
     objects = AccessRecordManager()

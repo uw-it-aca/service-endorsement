@@ -332,6 +332,10 @@ label.accept_responsibility {
   padding-bottom: 0;
 }
 
+.table td, .table th {
+    overflow: hidden;
+}
+
 #shared-uwnetids {
   button#shared_update {
     margin-top: 10px;
@@ -621,7 +625,7 @@ td.error, tr.error {
         margin: 0px;
         padding: 0px;
         li {
-            width: 100px;
+            margin-right: 1.75em;
             float: left;
             text-align: center;
             span {
