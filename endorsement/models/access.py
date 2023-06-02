@@ -186,4 +186,3 @@ class AccessRecord(
     class Meta:
         unique_together = (("accessor", "accessee"),)
         db_table = 'uw_service_endorsement_access'
-
