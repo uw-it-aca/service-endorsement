@@ -31,28 +31,21 @@ class Validate(RESTDispatch):
 
             try:
                 accessor = get_office_accessor(name)
-                is_valid = True
                 display_name = accessor.display_name
-                message = 'Access Valid'
-            except Exception as ex:
-                is_valid = False
-                display_name = None
-                message = "{}".format(ex)
-
-            try:
-                validate_user(name)
-            except DataFailureException as ex:
-                valid.append({
-                    'name': name,
-                    'display_name': display_name,
-                    'mailbox': mailbox,
-                    'is_valid': False,
-                    'message': "{} Outlook Access{}".format(
+                try:
+                    is_valid = validate_user(name).is_valid()
+                    message = 'Access Valid' if (
+                        is_valid) else 'NetID or Group is not valid'
+                except DataFailureException as ex:
+                    is_valid = False
+                    message = "{} Outlook Access{}".format(
                         "Unknown" if (ex.status == 404) else "Invalid",
                         " user" if (
                             ex.status == 404) else ": {}".format(ex.msg))
-                })
-                continue
+            except Exception as ex:
+                is_valid = False
+                display_name = None
+                message = "Unrecognized NetID or Group"
 
             valid.append({
                 'name': name,
