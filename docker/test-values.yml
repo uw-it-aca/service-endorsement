@@ -79,7 +79,7 @@ cronjob:
         - expiration_notice
         - "4"
 daemon:
-  enabled: true
+  enabled: false
   daemons:
     - name: notify-endorsees
       command: ["/scripts/management_daemon.sh"]
