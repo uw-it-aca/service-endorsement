@@ -80,7 +80,8 @@ class Access(RESTDispatch):
                 revoke_access(
                     accessee, accessor, previous_access_type, acted_as)
 
-                access = store_access(accessee, accessor, access_type, acted_as)
+                access = store_access(
+                    accessee, accessor, access_type, acted_as)
         except DataFailureException as ex:
             return self.error_response(ex.status, message=ex.msg)
 
