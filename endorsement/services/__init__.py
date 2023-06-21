@@ -333,7 +333,7 @@ def service_names(service_list=None):
 
 
 def service_name_list():
-    return [s.category_name for s in endorsement_services()]
+    return list({s.category_name for s in endorsement_services()})
 
 
 def get_endorsement_service(service_ref):

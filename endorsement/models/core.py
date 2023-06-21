@@ -189,6 +189,7 @@ class EndorsementRecord(
         ExportModelOperationsMixin('endorsement_record'), models.Model):
     GOOGLE_SUITE_ENDORSEE = Category.GOOGLE_SUITE_ENDORSEE
     OFFICE_365_ENDORSEE = Category.OFFICE_365_ENDORSEE
+    OFFICE_365_STUDENT_ENDORSEE = Category.OFFICE_365_STUDENT_ENDORSEE
     CANVAS_PROVISIONEE = Category.CANVAS_PROVISIONEE
     ZOOM_LICENSED_PROVISIONEE = Category.ZOOM_LICENSED_PROVISIONEE
     ZOOM_BASIC_PROVISIONEE = Category.ZOOM_BASIC_PROVISIONEE
@@ -196,6 +197,7 @@ class EndorsementRecord(
 
     CATEGORY_CODE_CHOICES = (
         (OFFICE_365_ENDORSEE, "UW Office 365"),
+        (OFFICE_365_STUDENT_ENDORSEE, "UW Office 365"),
         (GOOGLE_SUITE_ENDORSEE, "UW Google"),
         (CANVAS_PROVISIONEE, "Canvas and Panopto"),
         (ZOOM_LICENSED_PROVISIONEE, "UW Zoom Licensed"),
@@ -232,6 +234,13 @@ class EndorsementRecord(
                 self.endorser == other.endorser and
                 self.endorsee == other.endorsee and
                 self.category_code == other.category_code)
+
+    def __hash__(self):
+        if self.pk is None:
+            return int("{}{}{}".format(
+                self.endoser.pk, self.endorsee.pk, self.category_code))
+
+        return super().__hash__()
 
     def save(self, *args, **kwargs):
         if not self.accept_salt:

@@ -5,8 +5,9 @@ from django.test import TransactionTestCase
 from django.utils import timezone
 from django.core import mail
 from endorsement.models import Accessor, Accessee, AccessRecord
+from endorsement.util.string import listed_list
 from endorsement.dao.notification import notify_accessors
-from endorsement.services import endorsement_services, service_names
+from endorsement.services import endorsement_services
 from endorsement.dao.notification import (
     notify_endorsees, notify_endorsers,
     get_unendorsed_unnotified, get_endorsed_unnotified,
@@ -42,9 +43,13 @@ class TestNotificationDao(TransactionTestCase):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
 
-        service_list = service_names()
+        service_names = []
         for service in endorsement_services():
-            service.initiate_endorsement(endorser, endorsee, 'because')
+            if service.valid_person_endorsee(endorsee):
+                service.initiate_endorsement(endorser, endorsee, 'because')
+                service_names.append(service.category_name)
+
+        service_list = listed_list(service_names)
 
         endorsements = get_unendorsed_unnotified()
         self.assertEqual(len(endorsements), 1)
@@ -86,9 +91,13 @@ class TestNotificationDao(TransactionTestCase):
         endorser = get_endorser_model('jstaff')
         endorsee = get_endorsee_model('endorsee7')
 
-        service_list = service_names()
+        service_names = []
         for service in endorsement_services():
-            service.store_endorsement(endorser, endorsee, None, 'because')
+            if service.valid_person_endorsee(endorsee):
+                service.store_endorsement(endorser, endorsee, None, 'because')
+                service_names.append(service.category_name)
+
+        service_list = listed_list(service_names)
 
         endorsements = get_endorsed_unnotified()
         self.assertEqual(len(endorsements), 1)
