@@ -5,7 +5,7 @@
 Defines UW Office 365 Student License service endorsement steps
 
 To endorse O365, the tools should:
-   *  Add category 291, status 1 for given endorsee 
+   *  Add category 291, status 1 for given endorsee
       (Office 365 Student (A5 License))
    *  Activate subscription 250 Future Office 365
 
