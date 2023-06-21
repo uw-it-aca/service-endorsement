@@ -2,8 +2,8 @@
 <script id="office_access_panel" type="text/x-handlebars-template">
 <div class="row justify-content-end">
  <div class="col-sm-9">
-    <span class="access-header">UW Office 365 Outlook (aka Exchange Online) mailbox permissions to accounts you own.</span>
-    <p>Manage access to Outlook mailboxes that you own. &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/endorse-uw-netids/" target="_blank">Learn more.</a>
+    <span class="access-header">UW Office 365 Outlook (Exchange Online) mailbox permissions</span>
+    <p>Manage access to Outlook mailboxes that you own. &nbsp;<a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/" target="_blank">Learn more.</a>
 
  </div>
  <div class="col-sm-3">
@@ -65,7 +65,7 @@ endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} en
       <td class="access-type"><select class="office-access-types" data-access-right-id="{{ right_id }}"></select></td>
       <td class="access-action">{{#if date_granted}}<button type="button" class="btn btn-primary" id="access_update" data-loading-text="Updating" style="display: none;">Update</button><button type="button" class="btn btn-primary" id="access_renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="access_provision" disabled="disabled" data-loading-text="Provisioning">Provision Access</button>{{/if}}</td>
 {{else}}
-      <td class="text-center" colspan="4"><span class="fw-lighter">This NetID has not provided access to other NetIDs yet.</span></td>
+      <td class="text-center" colspan="4"><span class="fw-lighter">No elevated access provisioned</span></td>
 {{/if}}
 {{else}}
     <td>{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
@@ -77,7 +77,7 @@ endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} en
 
 <script id="no-access-netids-content" type="text/x-handlebars-template">
   <div class="no-access-netids">
-      <p>You do appear to have any Office365 Inboxes.</br>
+      <p>You do not appear to have any Office365 Inboxes.</br>
       Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view Office365 service status.</p>
   </div>
 </script>

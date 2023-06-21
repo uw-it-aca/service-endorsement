@@ -13,6 +13,7 @@ from endorsement.views.rest_dispatch import (
 from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
 from endorsement.util.auth import is_only_support_user
 from uw_msca.access_rights import get_access_rights
+from restclients_core.exceptions import DataFailureException
 import logging
 
 
@@ -73,12 +74,16 @@ class Access(RESTDispatch):
         accessee = get_accessee_model(mailbox)
         accessor = get_office_accessor(delegate)
 
-        # remove previous access type before setting updated type
-        if previous_access_type and previous_access_type != access_type:
-            revoke_access(
-                accessee, accessor, previous_access_type, acted_as)
+        try:
+            # remove previous access type before setting updated type
+            if previous_access_type and previous_access_type != access_type:
+                revoke_access(
+                    accessee, accessor, previous_access_type, acted_as)
 
-        access = store_access(accessee, accessor, access_type, acted_as)
+                access = store_access(
+                    accessee, accessor, access_type, acted_as)
+        except DataFailureException as ex:
+            return self.error_response(ex.status, message=ex.msg)
 
         return self.json_response(access.json_data())
 
@@ -101,8 +106,12 @@ class Access(RESTDispatch):
         accessee = get_accessee_model(mailbox)
         accessor = get_office_accessor(delegate)
 
-        access = update_access(
-            accessee, accessor, previous_access_type, access_type, acted_as)
+        try:
+            access = update_access(
+                accessee, accessor, previous_access_type,
+                access_type, acted_as)
+        except DataFailureException as ex:
+            return self.error_response(ex.status, message=ex.msg)
 
         return self.json_response(access.json_data())
 
@@ -120,7 +129,12 @@ class Access(RESTDispatch):
 
         accessee = get_accessee_model(mailbox)
         accessor = get_office_accessor(delegate)
-        access = revoke_access(accessee, accessor, access_type, acted_as)
+
+        try:
+            access = revoke_access(accessee, accessor, access_type, acted_as)
+        except DataFailureException as ex:
+            return self.error_response(ex.status, message=ex.msg)
+
         return self.json_response(access.json_data())
 
     def _load_access_for_accessee(self, accessee):

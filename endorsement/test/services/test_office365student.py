@@ -12,7 +12,7 @@ from endorsement.services import get_endorsement_service
 class TestOffice365Service(ServicesApiTest):
     @property
     def service(self):
-        return get_endorsement_service('o365')
+        return get_endorsement_service('o365student')
 
     def test_valid_endorser(self):
         self.assertTrue(self.service.valid_endorser('jstaff'))
@@ -25,17 +25,36 @@ class TestOffice365Service(ServicesApiTest):
         self.assertRaises(Exception, self.service.valid_endorser, None)
 
     def test_endorsed(self):
-        self._test_endorsed()
+        endorser = get_endorser_model('jstaff')
+        endorsee1 = get_endorsee_model('endorsee2')
+        endorsee2 = get_endorsee_model('endorsee6')
+        self.service.initiate_endorsement(endorser, endorsee1, 'testing')
+        self.service.store_endorsement(endorser, endorsee2, None, 'testing')
+
+        self.set_user('jstaff')
+        url = reverse('endorsed_api')
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        data = json.loads(response.content)
+
+        endorsible, endorsing, endorsed, errored = self.get_endorsed(data)
+        self.assertEquals(len(endorsible), 0)
+        self.assertEquals(len(endorsing), 0)
+        self.assertEquals(len(endorsed), 0)
+        self.assertFalse(endorsee1.netid in endorsing)
+        self.assertFalse(endorsee2.netid in endorsed)
 
     def test_shared(self):
         endorser = get_endorser_model('jstaff')
-        endorsee = get_endorsee_model('wadm_jstaff')
+        bad_endorsee = get_endorsee_model('wadm_jstaff')
+        good_endorsee = get_endorsee_model('emailinf')
 
         self.assertEqual(len(
             EndorsementRecord.objects.get_endorsements_for_endorser(
                 endorser)), 0)
 
-        self.service.store_endorsement(endorser, endorsee, None, "for fun")
+        self.service.store_endorsement(
+            endorser, good_endorsee, None, "for fun")
 
         self.set_user('jstaff')
         url = reverse('shared_api')
@@ -46,16 +65,33 @@ class TestOffice365Service(ServicesApiTest):
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 3)
+        self.assertEquals(len(endorsible), 6)
         self.assertEquals(len(endorsed), 1)
-        self.assertFalse('cpnebeng' in endorsible)
-        self.assertTrue('wadm_jstaff' in endorsed)
+        self.assertTrue('cpnebeng' in endorsible)
+        self.assertFalse('wadm_jstaff' in endorsed)
 
         # exlude category 22
         self.assertTrue('nebionotic' not in endorsible)
 
     def test_endorse_netid(self):
-        self._test_endorse_netid()
+        endorsible, endorsing, endorsed, errored = self._test_endorse({
+            "endorsees": {
+                "endorsee2": {
+                    "name": "JERRY ENDORSEE2",
+                    "email": "endorsee2@uw.edu",
+                    self.service.service_name: {
+                        "state": True,
+                        "reason": "testing"
+                    }
+                }
+            }
+        })
+
+        self.assertEqual(len(endorsible), 0)
+        self.assertEqual(len(endorsing), 0)
+        self.assertEqual(len(endorsed), 0)
+        self.assertEqual(len(errored), 1)
+        self.assertFalse('endorsee2' in endorsing)
 
     def test_endorse_shared(self):
         endorsible, endorsing, endorsed, errored = self._test_endorse({
@@ -70,7 +106,7 @@ class TestOffice365Service(ServicesApiTest):
                         "reason": "testing"
                     }
                 },
-                # endorse invalid shared
+                # endorse valid shared
                 "cpnebeng": {
                     "name": "cpneb eng",
                     "email": "cpnebeng@uw.edu",
@@ -87,5 +123,5 @@ class TestOffice365Service(ServicesApiTest):
         self.assertEqual(len(endorsing), 0)
         self.assertEqual(len(endorsed), 1)
         self.assertEqual(len(errored), 1)
-        self.assertTrue('wadm_jstaff' in endorsed)
-        self.assertFalse('cpnebeng' in endorsed)
+        self.assertFalse('wadm_jstaff' in endorsed)
+        self.assertTrue('cpnebeng' in endorsed)

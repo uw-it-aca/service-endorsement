@@ -40,7 +40,7 @@ setup(
         'UW-RestClients-Core~=1.3.3',
         'UW-Restclients-PWS==2.0.2',
         'UW-RestClients-GWS~=2.0.1',
-        'UW-RestClients-UWNetID~=1.0.11',
+        'UW-RestClients-UWNetID~=1.1.2',
         'UW-RestClients-Django-Utils~=2.1.5',
         'Django-Safe-EmailBackend~=1.1.1',
         'UW-Django-SAML2>=1.3.8,<2.0',
