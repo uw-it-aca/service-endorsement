@@ -49,8 +49,6 @@ var ManageSharedNetids = (function () {
         }).on('click', '#check_all', function(e) {
             $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).prop('checked', $(this).prop('checked'));
             _enableSharedEndorsability();
-        }).on('change', 'input[id^="aggregate_"]', function(e) {
-            _enableSharedEndorsability();
         }).on('endorse:PanelToggleExposed', function (e, $div) {
             $('.aggregate_action', $panel).removeClass('visually-hidden');
             $('input[id^="aggregate_"]', $panel).prop('checked', false);
@@ -104,8 +102,6 @@ var ManageSharedNetids = (function () {
                 $td.addClass('error');
                 $('button#shared_update').prop('disabled', true);
             }
-        }).on('change', 'input[id^="endorse_"]', function (e) {
-            _enableSharedEndorsability();
         }).on('endorse:UWNetIDsShared', function (e, shared) {
             _displaySharedUWNetIDs(shared);
         }).on('endorse:UWNetIDsSharedError', function (e, error) {
