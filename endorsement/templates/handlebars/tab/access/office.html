@@ -61,7 +61,7 @@ endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} en
 {{#if is_valid}}
 {{#if delegate}}
     <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
-    <td class="access-status">{{#if date_granted}}<i class="fa fa-check" style="color: green;"></i> Provisioned<p>Renew by {{date_granted}}<br />({{date_granted_relative}})</p>{{else}}Not Provisioned{{/if}}</td>
+    <td class="access-status">{{#if date_granted}}<i class="fa fa-check" style="color: green;"></i> Provisioned<p>Renew by {{date_renewal}}<br />({{date_renewal_relative}})</p>{{else}}Not Provisioned{{/if}}</td>
       <td class="access-type"><select class="office-access-types" data-access-right-id="{{ right_id }}"></select></td>
       <td class="access-action">{{#if date_granted}}<button type="button" class="btn btn-primary" id="access_update" data-loading-text="Updating" style="display: none;">Update</button><button type="button" class="btn btn-primary" id="access_renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="access_provision" disabled="disabled" data-loading-text="Provisioning">Provision Access</button>{{/if}}</td>
 {{else}}

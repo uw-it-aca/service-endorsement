@@ -183,13 +183,16 @@ var ManageOfficeAccess = (function () {
 
                 if (this.access.length > 0) {
                     $.each(this.access, function(i, d) {
+                        var renewal_date = _renewalDate(d.datetime_granted);
+
                         context.access.push({
                             is_valid: true,
                             mailbox: d.accessee.netid,
                             name: d.accessee.display_name,
                             delegate: d.accessor.name,
                             date_granted: DateTime.utc2localdate(d.datetime_granted),
-                            date_granted_relative: _datetimeRelative(d.datetime_granted, 365),
+                            date_renewal: _renewalDateFormat(renewal_date),
+                            date_renewal_relative: renewal_date.fromNow(),
                             right_id: d.right_id,
                             accessee_index: accessee_index,
                             access_index: i
@@ -402,7 +405,7 @@ var ManageOfficeAccess = (function () {
 
             if (context.action === 'renew') {
                 template = '#renewed_netid_modal_content';
-                context.renewal_date = moment().add(1, 'Y').format('MM/DD/YYYY');
+                context.renewal_date = _renewalDateFormat(moment().add(1, 'Y'));
             } else if (context.action === 'update') {
                 template = "#updated_netid_modal_content";
             } else {
@@ -436,8 +439,10 @@ var ManageOfficeAccess = (function () {
                 source = $("#office_access_row_partial").html(),
                 template = Handlebars.compile(source),
                 delegate = (!context.is_revoke) ? context.accessor.name : null,
+                renewal_date = _renewalDate(context.datetime_granted),
                 html;
 
+            re
             html = template({
                 is_valid: true,
                 mailbox: context.accessee.netid,
@@ -445,7 +450,8 @@ var ManageOfficeAccess = (function () {
                 delegate: delegate,
                 delegate_link: _getDelegateLink(delegate),
                 date_granted: DateTime.utc2localdate(context.datetime_granted),
-                date_granted_relative: _datetimeRelative(context.datetime_granted, 365),
+                date_renewal: _renewalDateFormat(renewal_date),
+                date_renewal_relative: renewal_date.fromNow(),
                 right_id: context.right_id,
                 accessee_index: $row.hasClass('endorsee_row_even') ? 0 : 1,
                 access_index: $row.hasClass('endorsement_row_first') ? 0 : 1});
@@ -454,10 +460,12 @@ var ManageOfficeAccess = (function () {
             _loadOfficeAccessTypeOptions(context.right_id,
                                          $('.office-access-types', $row));
         },
-        _datetimeRelative = function (datetime, from_now) {
-            if (datetime) {
-                return moment(datetime).add(from_now, 'days').fromNow();
-            }
+        _renewalDate = function (datetime) {
+
+            return datetime ? moment(datetime).add(365, 'days') : moment();
+        },
+        _renewalDateFormat = function (mdatetime) {
+            return (mdatetime) ? mdatetime.format('MM/DD/YYYY') : "";
         },
         _getDelegateLink = function (delegate) {
             return (delegate && delegate.match(/^u[w]?_.+/)) ?
