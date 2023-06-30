@@ -442,7 +442,6 @@ var ManageOfficeAccess = (function () {
                 renewal_date = _renewalDate(context.datetime_granted),
                 html;
 
-            re
             html = template({
                 is_valid: true,
                 mailbox: context.accessee.netid,
