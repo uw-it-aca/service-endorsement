@@ -323,6 +323,15 @@ a {
   }
 }
 
+.prt-data-popover {
+    cursor: pointer;
+    color: #007bff!important;
+}
+
+span.mailbox, span.delegate {
+    font-weight: 800;
+}
+
 label.accept_responsibility {
   font-weight: normal;
 }

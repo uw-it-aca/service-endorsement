@@ -212,6 +212,7 @@ var ManageOfficeAccess = (function () {
 
             $content.html(template(context));
             Scroll.init('.office-access-table');
+            $('[data-toggle="popover"]').popover();
         },
         _getOfficeAccessUWNetIDs = function() {
             var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
@@ -243,6 +244,7 @@ var ManageOfficeAccess = (function () {
                 };
 
             _displayModal("#access_validate_netids_modal_content", context);
+
             $panel.one('shown.bs.modal', '#access_netids_modal', function() {
                 $('textarea', $(this)).focus();
             });
@@ -589,7 +591,7 @@ var ManageOfficeAccess = (function () {
         _loadOfficeAccessTypeOptions = function (right_id, $select) {
             if (!right_id) {
                 $('<option/>')
-                    .text('-- Select --')
+                    .text('-- Select access type --')
                     .val('')
                     .appendTo($select);
             }
