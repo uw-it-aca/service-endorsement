@@ -81,6 +81,7 @@ def store_access_record(
         ar.datetime_notice_4_emailed = None
         ar.datetime_renewed = now if ar.is_deleted else None
         ar.datetime_expired = None
+        is_reconcile = None
         ar.is_deleted = None
         ar.save()
     except AccessRecord.DoesNotExist:
