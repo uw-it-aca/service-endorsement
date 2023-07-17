@@ -21,7 +21,7 @@ class Command(BaseCommand):
         endorsements = EndorsementRecord.objects.filter(
             is_deleted__isnull=True,
             endorsee__is_person=False,
-            category_code__in=[Category.OFFICE_365_ENDORSEE])
+            category_code=Category.OFFICE_365_ENDORSEE)
 
         print("owner netid,shared netid")
         print("-----------,------------")
