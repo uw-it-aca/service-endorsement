@@ -36,7 +36,7 @@ class Command(BaseCommand):
                 status = "{},{}".format(e.endorser.netid, e.endorsee.netid)
                 if commit_former:
                     status += ',former'
-                    #clear_endorsement(e)
+                    clear_endorsement(e)
                 else:
                     status += ',active'
 
