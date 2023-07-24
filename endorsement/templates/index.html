@@ -2,37 +2,46 @@
 {% load static %}
 
 {% block content %}
+<!-- DISABLE GREETING
 <div class="container persistent-messages">
 </div>
+-->
 
 <div class="container">
-
+  <div>
+    Provision Request Tool is currently undergoing maintenance.<br />
+    Check back later to manage provisioned services.
+  </div>
+<!-- DISABLE GREETING
  <h2 style="text-transform: uppercase;">Manage Provisions</h2>
 
  <p>Grant, revoke, and renew access to UW-IT services for UW NetIDs you own and UW NetIDs owned by others.</p>
+-->
 
-
-<!-- <div class="tabs">
+<!-- DISABLE ACCESS PANEL
+<div class="tabs">
  <ul class="tabs-list">
    <li class="active" data-tab="services"><span>Services</span></li>
    <li data-tab="access"><span>Elevated Access</span></li>
  </ul>
  <div id="services" class="tab active">
 -->
+<!-- DISABLE GREETING
   <div id="shared-uwnetids">
 
-    <h3>UW NetIDs you own</h3><!-- <h4>UW NetIDs you own</h4> -->
+    <h4>UW NetIDs you own</h4>
     <p>Manage access to provisioned UW-IT services for UW NetIDs you own (Shared, Admin, etc.). &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/endorse-uw-netids/" target="_blank">Learn more.</a>
     </p>
     <div id="shared" class="netid-panel"></div>
   </div>
 
   <div id="endorsed-uwnetids">
-    <h3>UW NetIDs owned by others</h3><!--<h4>UW NetIDs owned by others</h4> -->
+    <h4>UW NetIDs owned by others</h4>
     <p>Manage access to UW-IT services for UW affiliates working on behalf of the UW (alumni, retirees, consultants, etc.). &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">Learn more.</a></p>
     <div id="provisioned" class="netid-panel"></div>
   </div>
-<!--
+-->
+<!-- DISABLE ACCESS PANEL
  </div>
  <div id="access" class="tab">
     <div id="office_access" class="netid-panel"></div>
