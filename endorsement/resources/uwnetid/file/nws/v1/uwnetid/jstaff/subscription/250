@@ -1,0 +1,37 @@
+{
+  "uwNetID": "jstaff",
+  "subscriptionList": [
+    {
+      "subscriptionCode": 250,
+      "subscriptionName": "UW Office 365",
+      "permitted": true,
+      "statusCode": 20,
+      "statusName": "Active",
+      "actions": [
+        "Show",
+        "Modify",
+        "Deactivate",
+        "Suspend",
+        "Permit",
+        "Deny",
+        "Activate"
+      ],
+      "notified": "2021-09-11",
+      "dataField": "License",
+      "dataValue": "foofoofoo",
+      "permits": [
+        {
+          "type": "permit",
+          "mode": "implicit",
+          "categoryCode": 36,
+          "categoryName": "UW-IT Staff",
+          "statusCode": 1,
+          "statusName": "current",
+          "dataValue": "M365EDU_A5_FACULTY"
+        }
+      ]
+    }
+  ],
+  "timeStamp": "Sun, 15 May 2022 17:21:29 -0700",
+  "duration": 0.114
+}

@@ -1,6 +1,7 @@
 // javascript for service endorsement manager
 /* jshint esversion: 6 */
 
+import { MainTabs } from "./tabs.js";
 import { Endorse } from "./endorse.js";
 import { Revoke } from "./revoke.js";
 import { Renew } from "./renew.js";
@@ -12,6 +13,7 @@ import { DisplayFilterPanel } from "./filter.js";
 import { HandlebarsHelpers } from "./handlebars-helpers.js";
 import { ManageProvisionedServices } from "./tab/endorsed.js";
 import { ManageSharedNetids } from "./tab/shared.js";
+import { ManageOfficeAccess } from "./tab/office.js";
 
 $(window.document).ready(function() {
     var common_tools,
@@ -31,8 +33,10 @@ $(window.document).ready(function() {
                         DisplayFilterPanel];
         loadTools(common_tools);
 
-        panels = [ManageProvisionedServices,
-                  ManageSharedNetids];
+        panels = [MainTabs,
+                  ManageProvisionedServices,
+                  ManageSharedNetids,
+                  ManageOfficeAccess];
         loadTools(panels);
     }
     catch (err) {

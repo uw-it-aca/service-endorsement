@@ -7,15 +7,10 @@ from django.urls import reverse
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 from uw_uwnetid.models import Category
+from endorsement.util.date import datetime_to_str
 import hashlib
 import random
 import json
-
-
-def datetime_to_str(d_obj):
-    if d_obj is not None:
-        return d_obj.strftime("%Y-%m-%d %H:%M:%S")
-    return None
 
 
 class Endorser(ExportModelOperationsMixin('endorser'), models.Model):
@@ -194,6 +189,7 @@ class EndorsementRecord(
         ExportModelOperationsMixin('endorsement_record'), models.Model):
     GOOGLE_SUITE_ENDORSEE = Category.GOOGLE_SUITE_ENDORSEE
     OFFICE_365_ENDORSEE = Category.OFFICE_365_ENDORSEE
+    OFFICE_365_STUDENT_ENDORSEE = Category.OFFICE_365_STUDENT_ENDORSEE
     CANVAS_PROVISIONEE = Category.CANVAS_PROVISIONEE
     ZOOM_LICENSED_PROVISIONEE = Category.ZOOM_LICENSED_PROVISIONEE
     ZOOM_BASIC_PROVISIONEE = Category.ZOOM_BASIC_PROVISIONEE
@@ -201,6 +197,7 @@ class EndorsementRecord(
 
     CATEGORY_CODE_CHOICES = (
         (OFFICE_365_ENDORSEE, "UW Office 365"),
+        (OFFICE_365_STUDENT_ENDORSEE, "UW Office 365"),
         (GOOGLE_SUITE_ENDORSEE, "UW Google"),
         (CANVAS_PROVISIONEE, "Canvas and Panopto"),
         (ZOOM_LICENSED_PROVISIONEE, "UW Zoom Licensed"),
@@ -237,6 +234,13 @@ class EndorsementRecord(
                 self.endorser == other.endorser and
                 self.endorsee == other.endorsee and
                 self.category_code == other.category_code)
+
+    def __hash__(self):
+        if self.pk is None:
+            return int("{}{}{}".format(
+                self.endoser.pk, self.endorsee.pk, self.category_code))
+
+        return super().__hash__()
 
     def save(self, *args, **kwargs):
         if not self.accept_salt:

@@ -1,5 +1,6 @@
 # Copyright 2021 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
+
 import os
 from setuptools import setup
 
@@ -29,7 +30,7 @@ setup(
         'ordereddict',
         'simplejson',
         'django-webpack-loader>=1.0,<2.0',
-        'django-userservice<4.0,>3.1',
+        'django-userservice<4.0',
         'urllib3~=1.26',
         'unittest2',
         'pytz',
@@ -39,7 +40,7 @@ setup(
         'UW-RestClients-Core~=1.3.3',
         'UW-Restclients-PWS==2.0.2',
         'UW-RestClients-GWS~=2.0.1',
-        'UW-RestClients-UWNetID~=1.0.11',
+        'UW-RestClients-UWNetID~=1.1.2',
         'UW-RestClients-Django-Utils~=2.1.5',
         'Django-Safe-EmailBackend~=1.1.1',
         'UW-Django-SAML2>=1.3.8,<2.0',

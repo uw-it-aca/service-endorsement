@@ -3,7 +3,7 @@
 
 import json
 from django.urls import reverse
-from endorsement.models.core import EndorsementRecord
+from endorsement.models import EndorsementRecord
 from endorsement.test.api import EndorsementApiTest
 from endorsement.exceptions import NoEndorsementException
 from endorsement.dao.user import get_endorser_model, get_endorsee_model

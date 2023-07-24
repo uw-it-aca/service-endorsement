@@ -10,21 +10,21 @@
 </div>
 <div class="modal-body">
   {{#if unique}}
-  <div class="shared-acceptance container col-md-12">
+  <div class="shared-acceptance container-fluid">
     <div class="row">
-      You are about to provision access to UW-IT services for {{#gt unique.length 1}}{{unique.length}} {{/gt}}UW NetID{{plural unique.length '' 's'}}{{#gt unique.length 1}}{{else}} <ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/gt}}.
+      You are about to provision access to UW-IT services for {{#gt unique.length 1}}{{unique.length}} {{/gt}}UW NetID{{plural unique.length '' 's'}}{{#gt unique.length 1}}{{else}}&nbsp;<ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/gt}}.
     </div>
     <div class="row">
       As the UW NetID owner, you are responsible for proper use, account maintenance, and file privileges.
     </div>
     <div class="row">
-      The use of 
+      The use of&nbsp;
       <ul class="comma-list">
         {{#each services}}
         {{#if this.count}}<li>{{this.name}}</li>{{/if}}
         {{/each}}
-      </ul>
-      <span style="font-weight: bold">by any individual acting as the UW NetID</span> is bound by UW-IT's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures. For more information, visit UW-IT's Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">http://itconnect.uw.edu/work/appropriate-use/</a>.
+      </ul>&nbsp;
+      <span style="font-weight: bold"> by any individual acting as the UW NetID</span> is bound by UW-IT's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures. For more information, visit UW-IT's Appropriate Use page at <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">http://itconnect.uw.edu/work/appropriate-use/</a>.
     </div>
     <h3>Statement of agreement</h3>
     <div class="row">

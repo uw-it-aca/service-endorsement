@@ -30,6 +30,7 @@ a.dummy {
 
 html, body {
     font-family: 'Open Sans', Helvetica, arial, san-serif;
+    font-size: 10pt;
     padding:0;
     margin:0;
     height: 100%;
@@ -82,8 +83,21 @@ img {
 
 h1, h2, h3, h4 { font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif; font-weight: bold; /*color: $uwpurple;*/ }
 
+.container h2 {
+    margin-top: 16px;
+}
+
 h3 {
     font-size: 1.8rem;
+}
+
+.tabs h3 {
+    margin-top: 2rem;
+    font-size: 12pt;
+}
+
+.modal-body h3 {
+    font-size: 12pt;
 }
 
 h4 {
@@ -267,7 +281,7 @@ a {
   }
 }
 
-.endorsed-netids-table, .shared-netids-table { border: 1px solid #ddd; 
+.endorsed-netids-table, .shared-netids-table, .office-access-table { border: 1px solid #ddd; 
 
   table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }
   thead { flex: 0 0 auto; }
@@ -279,29 +293,47 @@ a {
      label { margin-bottom: 0; }
      span { font-weight: 200; font-size: .9em; }
   }
-  tr.new_netid { background: #efffef !important; }
-  .endorsed-netid { border-top: none; }
+  tr.new_netid,
+  tr.new_access .access-delegate-id,
+  tr.new_access .access-status,
+  tr.new_access .access-type,
+  tr.new_access .access-action  { background: #efffef !important; }
+  .access-status p { padding-left: 1.2em; }
+  .endorsed-netid, .access-mailbox { border-top: none; }
   tr.endorsee_row_odd { background: #f8f8f8;  }
-  tr.top-border {
-    .endorsed-netid, .endorsed-name { border-top: 1px solid #ddd; }
+  tr.endorsement_row_first {
+    .endorsed-netid, .endorsed-name, .access-mailbox, .access-mailbox-name { border-top: 1px solid #ddd; }
   }
-  tr.hidden-names {
-    .endorsed-netid, .endorsed-name { color: transparent; }
+  tr.endorsement_row_following {
+    .endorsed-netid, .endorsed-name, .access-mailbox, .access-mailbox-name { color: transparent; }
   }
-  .endorsed-netid { width: 12rem; white-space: nowrap; }
-  .endorsed-name { border-top: none; border-right: 1px solid #ddd; }
+  .endorsed-netid, .access-mailbox { width: 12rem; white-space: nowrap; }
+  .endorsed-name, .access-mailbox-name { border-top: none; border-right: 1px solid #ddd; }
   .endorsed-status-icon { width: 20px; }
   .endorsed-status {
       width: 15rem;
       p { font-size: smaller; }
   }
-  .endorsed-reason { width: 17rem; }
-  .endorsed-action { width: 19rem; white-space: nowrap; }
+  .endorsed-reason { width: 13rem; }
+  .endorsed-action { width: 12rem; white-space: nowrap; }
   .aggregate_action { margin-right: 10px; }
   .endorsed-error {
       width: 51rem;
       span { display: block; color: red; }
   }
+}
+
+.prt-data-popover {
+    cursor: pointer;
+    color: #007bff!important;
+}
+
+.popover {
+    max-width: 380px;
+}
+
+span.mailbox, span.delegate {
+    font-weight: 800;
 }
 
 label.accept_responsibility {
@@ -313,20 +345,27 @@ label.accept_responsibility {
   padding-bottom: 0;
 }
 
+.table td, .table th {
+    overflow: hidden;
+}
+
 #shared-uwnetids {
   button#shared_update {
     margin-top: 10px;
   }
 }
 
-.form-group { margin-top: 15px; }
 .panel-toggle { color:#0077c2; display: inline-block; margin-bottom: 10px; }
 
 .netid-panel { margin-bottom: 40px; }
 
 #provision { margin-bottom: 38px; }
 
-#provisioned, #shared {
+#office_access { padding-top: 2em;
+    .access-header { font-size: 1.1em; font-weight: 800; }
+}
+
+#provisioned, #shared, #office_access {
   .loading {
     min-height: 180px;
     > div {
@@ -390,6 +429,8 @@ label.accept_responsibility {
     pointer-events: none;
   }
 }
+
+button.btn[disabled=disabled]:hover { cursor: not-allowed !important; }
 
 ul.comma-list { display: inline; list-style: none; padding: 0;
   li { display: inline; }
@@ -584,6 +625,51 @@ td.error, tr.error {
     }
     .displaying-email {
         display: none;
+    }
+}
+
+.tabs {
+    margin-top: 2em;
+    .tabs-list {
+        position: relative;
+        top: 1px;
+        z-index: 100;
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+        li {
+            margin-right: 1.75em;
+            float: left;
+            padding-bottom: 2px;
+            span {
+                text-transform: uppercase;
+                font-weight: bold;
+            }
+            span:hover {
+                cursor: pointer;
+            }
+        }
+        li.active {
+            border-bottom: 3px solid black;
+        }
+    }
+    .tab {
+        position: relative;
+        clear: both;
+        top: -2px;
+        border-top: 3px solid lightgray;
+        display: none;
+    }
+    .tab.active {
+        display: block;
+    }
+}
+
+.add-accessee {
+    position: relative;
+    float: right;
+    top: -3.5em;
+    select {
     }
 }
 

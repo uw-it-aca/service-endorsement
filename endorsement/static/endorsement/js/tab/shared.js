@@ -6,6 +6,7 @@ import { Revoke } from "../revoke.js";
 import { Renew } from "../renew.js";
 import { Reasons } from "../reasons.js";
 import { Banner } from "../banner.js";
+import { Button } from "../button.js";
 import { Scroll } from "../scroll.js";
 import { Notify } from "../notify.js";
 
@@ -48,8 +49,6 @@ var ManageSharedNetids = (function () {
         }).on('click', '#check_all', function(e) {
             $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).prop('checked', $(this).prop('checked'));
             _enableSharedEndorsability();
-        }).on('change', 'input[id^="aggregate_"]', function(e) {
-            _enableSharedEndorsability();
         }).on('endorse:PanelToggleExposed', function (e, $div) {
             $('.aggregate_action', $panel).removeClass('visually-hidden');
             $('input[id^="aggregate_"]', $panel).prop('checked', false);
@@ -60,7 +59,7 @@ var ManageSharedNetids = (function () {
             _enableSharedEndorsability();
         }).on('click', 'button#confirm_shared_endorse', function(e) {
             $(this).parents('.modal').modal('hide');
-            $('button#shared_update').button('loading');
+            Button.loading($('button#shared_update'));
             var shared = _getSharedUWNetIDsToEndorse();
 
             _endorseSharedUWNetIDs(shared);
@@ -101,10 +100,8 @@ var ManageSharedNetids = (function () {
         }).on('endorse:UWNetIDsInvalidReasonError', function (e, $row, $td) {
             if ($('input[type="checkbox"]:checked', $row).length > 0) {
                 $td.addClass('error');
-                $('button#shared_update').attr('disabled', 'disabled');
+                $('button#shared_update').prop('disabled', true);
             }
-        }).on('change', 'input[id^="endorse_"]', function (e) {
-            _enableSharedEndorsability();
         }).on('endorse:UWNetIDsShared', function (e, shared) {
             _displaySharedUWNetIDs(shared);
         }).on('endorse:UWNetIDsSharedError', function (e, error) {
@@ -164,7 +161,7 @@ var ManageSharedNetids = (function () {
             var $this = $(this);
 
             if ($('option:selected', $this).val() !== '') {
-                $('button.endorse_service', $this.closest('tr')).removeAttr('disabled');
+                $('button.endorse_service', $this.closest('tr')).prop('disabled', false);
             }
         });
 
@@ -203,12 +200,12 @@ var ManageSharedNetids = (function () {
                 if (check_count) {
                     $('span', $agg_button).html('(' + check_count + ') ');
                     if ($disabled.length > 0) {
-                        $agg_button.attr('disabled', 'disabled');
+                        $agg_button.prop('disabled', true);
                     } else {
-                        $agg_button.removeAttr('disabled');
+                        $agg_button.prop('disabled', false);
                     }
                 } else {
-                    $agg_button.attr('disabled', 'disabled');
+                    $agg_button.prop('disabled', true);
                     $('span', $agg_button).html('');
                 }
 

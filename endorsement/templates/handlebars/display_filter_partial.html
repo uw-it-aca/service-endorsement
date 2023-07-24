@@ -1,13 +1,18 @@
 {% verbatim %}
 <script id="display_filter_partial" type="text/x-handlebars-template">
 
-View <select class="display-filter">
-  <option value="all">All</option>
-  <option value="expiring">Expiring</option>
-  <option value="endorsed">Provisioned</option>
-  <option value="pending">Pending</option>
-  <option value="unendorsed">Unprovisioned</option>
-</select>
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <label class="input-group-text" for="inputGroupFilter">View</label>
+  </div>
+  <select class="custom-select display-filter" id="inputGroupFilter">
+    <option value="all">All</option>
+    <option value="expiring">Expiring</option>
+    <option value="endorsed">Provisioned</option>
+    <option value="pending">Pending</option>
+    <option value="unendorsed">Unprovisioned</option>
+  </select>
+</div>
 
 </script>
 {% endverbatim %}

@@ -1,0 +1,24 @@
+Accessee Info
+
+   Delegated {{ record.right_name }} ({{ record.right_id }}) access is being given
+   to the outlook mailbox {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
+
+Accessor Info
+
+{% if record.accessor.is_group %}
+You've been identified as an admin of the group
+{{ accessor.display_name }} ({{ record.accessor.name }}).
+
+You all are receiving this email because your list members have been givena
+delegated access to the above mailbox.
+
+Admin emails of group given delegated access:
+{% else %}
+You are receiving this email because you were given delegated access to the above mailbox.
+
+Delegated netid email address:
+{% endif %}
+
+{% for email in emails %}
+    * {{ email.display_name }} <{{ email.email }}>
+{% endfor %}

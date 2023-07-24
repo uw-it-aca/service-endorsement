@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.urls import re_path
-from userservice.views import support as userservice_override
+from userservice.views import SupportView
 from endorsement.views import page
 from endorsement.views.accept import accept
 from endorsement.views.support.endorser_search import EndorserSearch
@@ -23,6 +23,9 @@ from endorsement.views.api.shared import Shared
 from endorsement.views.api.shared_owner import SharedOwner
 from endorsement.views.api.shared_proxy import SharedProxyEndorse
 from endorsement.views.api.statistics import Statistics
+from endorsement.views.api.office.access import (
+    Access as OfficeAccess, AccessRights as OfficeAccessRights)
+from endorsement.views.api.office.validate import Validate as OfficeValidate
 from endorsement.views.api.notification import Notification
 
 
@@ -38,7 +41,7 @@ urlpatterns = [
             name='endorser_search'),
     re_path(r'^support/notifications/?', EndorseeNotifications.as_view(),
             name='endorsee_notifications'),
-    re_path(r'^support/override/?', userservice_override,
+    re_path(r'^support/override/?', SupportView.as_view(),
             name='userservice_override'),
     re_path(r'^support/persistent_messages/?', PersistentMessages.as_view(),
             name='manage_persistent_messages_init'),
@@ -63,5 +66,10 @@ urlpatterns = [
     re_path(r'^api/v1/accept', Accept.as_view(), name='accept_api'),
     re_path(r'^api/v1/notification', Notification.as_view(),
             name='notification_api'),
+    re_path(r'^office/v1/access/rights',
+            OfficeAccessRights.as_view(), name='access_rights_api'),
+    re_path(r'^office/v1/access', OfficeAccess.as_view(), name='access_api'),
+    re_path(r'^office/v1/validate', OfficeValidate.as_view(),
+            name='office_validate_api'),
     re_path(r'.*', page.index, name='home'),
 ]

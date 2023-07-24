@@ -6,8 +6,10 @@ import { Revoke } from "../revoke.js";
 import { Renew } from "../renew.js";
 import { Reasons } from "../reasons.js";
 import { Banner } from "../banner.js";
+import { Button } from "../button.js";
 import { Scroll } from "../scroll.js";
 import { Notify } from "../notify.js";
+import { History } from "../history.js";
 
 var ManageProvisionedServices = (function () {
     var content_id = 'provisioned',
@@ -158,13 +160,13 @@ var ManageProvisionedServices = (function () {
         }).on('click', '#export_csv', function (e) {
             _exportProvisionedToCSV();
         }).on('endorse:UWNetIDsEndorsed', function (e, endorsed) {
-            $('button#confirm_endorsements').button('reset');
+            Button.reset($('button#confirm_endorsements'));
             Endorse.updateExpireWarning();
             _displayEndorsedUWNetIDs(endorsed);
         }).on('endorse:UWNetIDsEndorsedError', function (e, error) {
             $(location_hash).html($('#endorsed-failure').html());
         }).on('endorse:UWNetIDReasonEdited endorse:UWNetIDChangedReason endorse:UWNetIDApplyAllReasons', function (e, $row) {
-            $('button.endorse_service', $row).removeAttr('disabled');
+            $('button.endorse_service', $row).prop('disabled', false);
         }).on('endorse:PanelToggleExposed', function (e, $div) {
             $('#netid_list', $div).focus();
             _enableCheckEligibility();
@@ -174,7 +176,7 @@ var ManageProvisionedServices = (function () {
         }).on('input change', '#netid_list', function () {
             _enableCheckEligibility();
         }).on('click', 'button#validate', function(e) {
-            $(this).button('loading');
+            Button.loading($(this));
             _validateUWNetids(_getNetidList());
         }).on('click', 'button.button_url', function(e) {
             location.href = $(this).attr('data-url');
@@ -184,10 +186,10 @@ var ManageProvisionedServices = (function () {
         }).on('focus', '.endorsed-netids-table table tbody', function(e) {
             console.log("focus endorsed");
         }).on('endorse:UWNetIDsValidated', function (e, validated) {
-            $('button#validate').button('reset');
+            Button.reset($('button#validate'));
             _displayValidationResult(validated);
         }).on('endorse:UWNetIDsValidatedError', function (e, error) {
-            $('button#validate').button('reset');
+            Button.reset($('button#validate'));
             Notify.error('Validation error: ' + error);
         }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.endorsed.endorsed);
@@ -205,6 +207,14 @@ var ManageProvisionedServices = (function () {
         }).on('endorse:UWNetIDsRevokeError', function (e, revokees, error) {
             Notify.error('Unable to Revoke at this time: ' + error);
             Revoke.resetRevokeButton(revokees);
+        });
+
+        $(document).on('endorse:TabChange', function (e, data) {
+            if (data == 'services') {
+                _adjustTabLocation();
+            }
+        }).on('endorse:HistoryChange', function (e) {
+            _showTab();
         });
     },
 
@@ -230,9 +240,9 @@ var ManageProvisionedServices = (function () {
             netids = _getNetidList();
 
         if (netids.length > 0) {
-            $('#validate', $panel).removeAttr('disabled');
+            $('#validate', $panel).prop('disabled', false);
         } else {
-            $('#validate', $panel).attr('disabled', 'disabled');
+            $('#validate', $panel).prop('disabled', true);
         }
     },
 
@@ -344,6 +354,19 @@ var ManageProvisionedServices = (function () {
                 $panel.trigger('endorse:UWNetIDsValidatedError', [error]);
             }
         });
+    },
+
+    _adjustTabLocation = function (tab) {
+        History.clipPath('access');
+    },
+
+    _showTab = function () {
+        // Services tab is default
+        if (! window.location.pathname.match(/\/access$/)) {
+            setTimeout(function(){
+                $('.tabs .tabs-list li[data-tab="services"] span').click();
+            },100);
+        }
     };
 
     return {

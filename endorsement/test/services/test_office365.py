@@ -46,9 +46,9 @@ class TestOffice365Service(ServicesApiTest):
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 12)
+        self.assertEquals(len(endorsible), 3)
         self.assertEquals(len(endorsed), 1)
-        self.assertTrue('cpnebeng' in endorsible)
+        self.assertFalse('cpnebeng' in endorsible)
         self.assertTrue('wadm_jstaff' in endorsed)
 
         # exlude category 22
@@ -70,7 +70,7 @@ class TestOffice365Service(ServicesApiTest):
                         "reason": "testing"
                     }
                 },
-                # endorse valid shared
+                # endorse invalid shared
                 "cpnebeng": {
                     "name": "cpneb eng",
                     "email": "cpnebeng@uw.edu",
@@ -83,9 +83,9 @@ class TestOffice365Service(ServicesApiTest):
             }
         })
 
-        self.assertEqual(len(endorsible), 2)
+        self.assertEqual(len(endorsible), 1)
         self.assertEqual(len(endorsing), 0)
-        self.assertEqual(len(endorsed), 2)
-        self.assertEqual(len(errored), 0)
+        self.assertEqual(len(endorsed), 1)
+        self.assertEqual(len(errored), 1)
         self.assertTrue('wadm_jstaff' in endorsed)
-        self.assertTrue('cpnebeng' in endorsed)
+        self.assertFalse('cpnebeng' in endorsed)

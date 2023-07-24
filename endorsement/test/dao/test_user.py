@@ -3,7 +3,7 @@
 
 from django.test import TransactionTestCase
 from endorsement.exceptions import UnrecognizedUWNetid
-from endorsement.models.core import Endorser, Endorsee
+from endorsement.models import Endorser, Endorsee
 from endorsement.dao.user import (
     get_endorser_model, get_endorsee_model,
     get_endorsee_email_model, is_shared_netid)

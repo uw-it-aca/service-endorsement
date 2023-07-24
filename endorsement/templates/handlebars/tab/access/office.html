@@ -1,0 +1,93 @@
+{% verbatim %}
+<script id="office_access_panel" type="text/x-handlebars-template">
+<div class="row justify-content-end">
+ <div class="col-sm-9">
+    <span class="access-header">UW Office 365 Outlook (Exchange Online) mailbox permissions</span>
+    <p>Manage access to Outlook mailboxes that you own. &nbsp;<a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/" target="_blank">Learn more.</a>
+
+ </div>
+ <div class="col-sm-3">
+  <div class="input-group mb-3">
+    <select class="custom-select inbox-netids">
+      <option value="">Select a UWNetID</option>
+      {{#each netids}}
+      <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+    <div class="input-group-append">
+      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="Adding NetID">Add Access</button>
+    </div>
+  </div>
+ </div>
+</div>
+
+  <div class="form-group">
+    <div class="office-access-table">
+    <table class="table outlook-access-table">
+      <thead class="thead-light">
+        <tr>
+          <th class="endorsed-netid">UW NetID <span class="prt-data-popover"><i class="fa fa-question-circle" aria-hidden="true" tabindex="0" data-placement="right" data-toggle="popover" data-trigger="focus" title data-content="If you’re not seeing a UWNetID that you’d expect, make sure that UW Office 365 is provisioned under the SERVICES tab." data-original-title="UW NetID"></i></span></th>
+          <th>Name</th>
+          <th class="access-delegate"><label>UW NetID/Group</label></th>
+          <th class="access-status"><span>Status</span></th>
+          <th class="access-type"><span>Access Type</span> <span class="prt-data-popover"><i class="fa fa-question-circle" aria-hidden="true" tabindex="0" data-placement="left" data-toggle="popover" data-trigger="focus" data-html="true" data-content="<h6>Full Access and Send As</h6><ul><li>Open the mailbox</li><li>View, add and remove the contents of the mailbox</li><li>Send messages as if they came directly from the mailbox</li></ul><h6>Full Access</h6><ul><li>Open the mailbox</li><li>View, add and remove the contents of the mailbox</li></ul><h6>Send As</h6><ul><li>Send messages as if they came directly from the mailbox</li></ul><h6>Send on Behalf</h6><ul><li>Alows the delegate to send messages from the mailbox or group</li><li>The From address of these messages clearly shows that the message was sent by the delegate</li></ul>" data-original-title="Access Types"></i></th>
+          <th class="access-action"><span>Action</span></th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#each access}}
+        {{> office_access_row_partial access=access }}
+      {{/each}}
+      </tbody>
+    </table>
+    </div>
+  </div>
+<!-- <button type="button" class="btn btn-primary" id="shared_update" data-loading-text="Provisioning">Provision access to selected<br />Shared UW NetIDs</button>
+-->
+
+<div class="modal fade" id="access_netids_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+</script>
+
+<script id="office_access_row_partial" type="text/x-handlebars-template">
+    <tr class="
+endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
+      <td class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</td>
+    <td class="access-mailbox-name">{{ name }}</td>
+{{#if is_valid}}
+{{#if delegate}}
+    <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
+    <td class="access-status">{{#if date_granted}}<i class="fa fa-check" style="color: green;"></i> Provisioned<p>Renew by {{date_renewal}}<br />({{date_renewal_relative}})</p>{{else}}Not Provisioned{{/if}}</td>
+      <td class="access-type"><select class="office-access-types" data-access-right-id="{{ right_id }}"></select></td>
+      <td class="access-action">{{#if date_granted}}<button type="button" class="btn btn-primary" id="access_update" data-loading-text="Updating" style="display: none;">Update</button><button type="button" class="btn btn-primary" id="access_renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="access_provision" disabled="disabled" data-loading-text="Provisioning">Provision Access</button>{{/if}}</td>
+{{else}}
+      <td class="text-center" colspan="4"><span class="fw-lighter">No elevated access provisioned</span></td>
+{{/if}}
+{{else}}
+    <td>{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
+    <td colspan="3"><span class="fw-lighter"><i class="fas fa-exclamation-triangle" style="color: red;"></i> {{#if message}}{{ message }}{{else}}Name cannot be given access.{{/if}}</span></td>
+{{/if}}
+    </tr>
+</script>
+
+
+<script id="no-access-netids-content" type="text/x-handlebars-template">
+  <div class="no-access-netids">
+      <p>You do not appear to have any Office365 Inboxes.</br>
+      Visit <a href="https://uwnetid.washington.edu/manage/?shared">your Shared UW NetID Manage page</a> to view Office365 service status.</p>
+  </div>
+</script>
+
+
+<script id="access-loading" type="text/x-handlebars-template">
+<div class="loading"><div></div></div>
+</script>
+
+<script id="access-failure" type="text/x-handlebars-template">
+<div class="no-access">We are unable to determine if you own any Shared UW NetIDs at this time.  Please try again later.</dev>
+</script>
+{% endverbatim %}
