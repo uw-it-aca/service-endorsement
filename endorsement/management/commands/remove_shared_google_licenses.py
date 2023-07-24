@@ -4,43 +4,43 @@
 from django.core.management.base import BaseCommand
 from endorsement.models import EndorsementRecord
 from uw_uwnetid.category import get_netid_categories
-from endorsement.dao.uwnetid_categories import (
-    shared_netid_has_category, set_active_category, set_former_category)
+from endorsement.dao.endorse import clear_endorsement
 from uw_uwnetid.models import Category
 import logging
 
 
-OFFICE_365_STUDENT_ENDORSEE = Category.OFFICE_365_STUDENT_ENDORSEE
-
-
 class Command(BaseCommand):
-    help = 'Convert category 11 shared netids o365 to o365 student license'
+    help = 'Set non-admin shared netids google category to FORMER_STATUS_CODE'
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--commit',
+            action='store_true',
+            default=False,
+            help='Actually Former GOOGLE_SUITE_ENDORSEE category',
+        )
 
     def handle(self, *args, **options):
         logging.getLogger().setLevel(logging.INFO)
+        commit_former = options['commit']
 
         endorsements = EndorsementRecord.objects.filter(
             is_deleted__isnull=True,
             endorsee__is_person=False,
-            category_code=Category.OFFICE_365_ENDORSEE)
+            category_code=Category.GOOGLE_SUITE_ENDORSEE)
 
-        print("owner netid,shared netid")
-        print("-----------,------------")
+        print("owner netid,shared netid,status")
+        print("-----------,------------,------")
         for e in endorsements:
             if not self.is_admin_netid(e.endorsee.netid):
-                print("{},{}".format(e.endorser.netid, e.endorsee.netid))
+                status = "{},{}".format(e.endorser.netid, e.endorsee.netid)
+                if commit_former:
+                    status += ',former'
+                    clear_endorsement(e)
+                else:
+                    status += ',active'
 
-                # former Category.OFFICE_365_ENDORSEE
-                set_former_category(
-                    e.endorsee.netid, Category.OFFICE_365_ENDORSEE)
-
-                # activate Category.OFFICE_365_STUDENT_ENDORSEE
-                set_active_category(
-                    e.endorsee.netid, OFFICE_365_STUDENT_ENDORSEE)
-
-                # update EndorsementRecord
-                e.category_code = OFFICE_365_STUDENT_ENDORSEE
-                e.save()
+                print(status)
 
     def is_admin_netid(self, netid):
         for cat in get_netid_categories(
