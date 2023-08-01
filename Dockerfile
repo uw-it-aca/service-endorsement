@@ -29,7 +29,7 @@ COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/endorsement
 COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/ /static/
 COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/webpack-stats.json /app/endorsement/static/webpack-stats.json
 
-FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-container:${DJANGO_CONTAINER_VERSION} as app-test-container
+FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-test-container:${DJANGO_CONTAINER_VERSION} as app-test-container
 
 COPY --from=app-container /app/ /app/
 COPY --from=app-container /static/ /static/
