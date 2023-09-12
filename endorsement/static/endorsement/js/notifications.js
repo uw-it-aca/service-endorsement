@@ -1,24 +1,52 @@
 // javascript for service endorsement manager
 /* jshint esversion: 6 */
+
+import { MainTabs } from "./tabs.js";
+import { ManageOfficeAccess } from "./tab/office.js";
+
 $(window.document).ready(function() {
     registerEvents();
     $('[data-toggle="tooltip"]').tooltip();
     showInfoMessage('warning_1');
+    MainTabs.load.apply(this);
 });
 
 var registerEvents = function() {
     $('button#generate_notification').on('click', function (e) {
         $(this).button('loading');
-        generateNotification();
+        generateNotification('service');
     });
 
     $('input.service').on('change', function (e) {
-        generateNotification();
+        generateNotification('service');
     });
 
     $('select#notification').on('change', function (e) {
         showInfoMessage($(this).val());
-        generateNotification();
+        generateNotification('service');
+    });
+
+    $('select#access_type, select#delegate_type').on('change', function (e) {
+        showInfoMessage($(this).val());
+        generateNotification('access');
+    });
+
+    $('.tabs div#access').on('endorse:accessTabExposed', function (e) {
+        if (window.access.hasOwnProperty('office')
+                && window.access.office.hasOwnProperty('types')) {
+            renderAccessTypes();
+        } else {
+            window.access.office = {};
+            ManageOfficeAccess.getOfficeAccessTypes($('.tabs div#access'));
+        }
+    }).on('endorse:OfficeAccessTypesSuccess', function () {
+        renderAccessTypes();
+    });
+
+    $(document).on('endorse:TabChange', function (e) {
+        var notice = $('ul.tabs-list li.active').attr('data-tab');
+
+        generateNotification((notice == 'services') ? 'service' : 'access');
     });
 
     $(document).on('endorse:NotificationResult', function (e, notification) {
@@ -59,28 +87,59 @@ var displayNotificationError = function(json_data) {
     }));
 };
 
+var renderAccessTypes = function () {
+    var $select = $('select#access_type');
 
-var generateNotification = function () {
+    if ($('option', $select).length < 2) {
+        $.each(window.access.office.types, function () {
+            $select.append($('<option>', {
+                value: this.id,
+                text : this.displayname
+            }));
+        });
+    }
+};
+
+var generateNotification = function (notice_type) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
         data = {
-            notification: $("select#notification option:selected").val(),
-            endorsees: {}
+            type: notice_type,
+            notification: $("select#" +
+                            ((notice_type == 'service') ? 'notification' : 'access_type') +
+                            " option:selected").val(),
         };
 
-    if (!$(".service:enabled:checked").length) {
-        $('#notification_result').html("");
-        return;
-    }
+    if (notice_type == 'service') {
+        data['endorsees'] = {}
 
-    $('div.endorsee').each(function () {
-        var $this = $(this),
-            netid = $this.attr('id');
+        if (!$(".service:enabled:checked").length) {
+            $('#notification_result').html("");
+            return;
+        }
 
-        data.endorsees[netid] = [];
-        $(".service:enabled:checked", $this).each(function () {
-            data.endorsees[netid].push($(this).val());
+        $('div.endorsee').each(function () {
+            var $this = $(this),
+                netid = $this.attr('id');
+
+            data.endorsees[netid] = [];
+            $(".service:enabled:checked", $this).each(function () {
+                data.endorsees[netid].push($(this).val());
+            });
         });
-    });
+    } else if (notice_type == 'access') {
+        if (data['notification'] == '') {
+            $('#notification_result').html("");
+            return;
+        }
+
+        var delegate_type = $("select#delegate_type option:selected").val();
+        var $access_type = $("select#access_type option:selected");
+
+        data['right'] = $access_type.val();
+        data['right_name'] = $access_type.text();
+        data['is_group'] = (delegate_type == 'group');
+        data['is_shared_netid'] = (delegate_type == 'shared');
+    }
 
     $.ajax({
         url: "/api/v1/notification/",
