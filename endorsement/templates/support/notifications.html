@@ -27,10 +27,10 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
 
 <div class="tabs">
  <ul class="tabs-list">
-   <li class="active" data-tab="services"><span>Services</span></li>
+   <li class="active" data-tab="service"><span>Services</span></li>
    <li data-tab="access"><span>Elevated Access</span></li>
  </ul>
- <div id="services" class="tab active">
+ <div id="service" class="tab active">
 
   <p>
     Choose a notification type and select services to see the email contents that will be sent.  Notification email is sent as multipart messages containing a text and html representation.
@@ -103,7 +103,19 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
 
   <form>
     {% csrf_token %}
-    <div class="form-group">
+   <div class="row">
+    <div class="form-group col-md-4">
+      <h4>Notification Message Type</h4>
+      <select class="form-control" id="notification">
+        <option value="delegate">New Delegate Welcome</option>
+        <option value="warning_1">Initial Renewal Notice</option>
+        <option value="warning_2">Penultimate Renewal Notice</option>
+        <option value="warning_3">Final Renewal Notice</option>
+        <option value="warning_4">Provision Expiration</option>
+      </select>
+    </div>
+
+    <div class="form-group col-md-4">
       <h4>Delegate Type</h4>
         <select class="form-control" id="delegate_type">
           <option value="personal">Personal Netid</option>
@@ -112,12 +124,13 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
         </select>
     </div>
 
-    <div class="form-group">
+    <div class="form-group col-md-4">
       <h4>Access Type</h4>
       <select class="form-control" id="access_type">
         <option value="">Select Access Type...</option>
       </select>
-    </div>
+     </div>
+   </div>
 
 
     <!--    <div class="form-group button">

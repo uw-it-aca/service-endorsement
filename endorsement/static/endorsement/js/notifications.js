@@ -22,13 +22,19 @@ var registerEvents = function() {
     });
 
     $('select#notification').on('change', function (e) {
-        showInfoMessage($(this).val());
-        generateNotification('service');
+        var $this = $(this);
+
+        showInfoMessage($this.val());
+        generateNotification($this.closest('div.tab').attr('id'));
     });
 
     $('select#access_type, select#delegate_type').on('change', function (e) {
         showInfoMessage($(this).val());
         generateNotification('access');
+    });
+
+    $('.tabs div#service').on('endorse:serviceTabExposed', function (e) {
+        generateNotification('service');
     });
 
     $('.tabs div#access').on('endorse:accessTabExposed', function (e) {
@@ -39,14 +45,10 @@ var registerEvents = function() {
             window.access.office = {};
             ManageOfficeAccess.getOfficeAccessTypes($('.tabs div#access'));
         }
+
+        generateNotification('access');
     }).on('endorse:OfficeAccessTypesSuccess', function () {
         renderAccessTypes();
-    });
-
-    $(document).on('endorse:TabChange', function (e) {
-        var notice = $('ul.tabs-list li.active').attr('data-tab');
-
-        generateNotification((notice == 'services') ? 'service' : 'access');
     });
 
     $(document).on('endorse:NotificationResult', function (e, notification) {
@@ -104,9 +106,7 @@ var generateNotification = function (notice_type) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value,
         data = {
             type: notice_type,
-            notification: $("select#" +
-                            ((notice_type == 'service') ? 'notification' : 'access_type') +
-                            " option:selected").val(),
+            notification: $("div.tab#" + notice_type + " select#notification option:selected").val()
         };
 
     if (notice_type == 'service') {
@@ -127,13 +127,13 @@ var generateNotification = function (notice_type) {
             });
         });
     } else if (notice_type == 'access') {
-        if (data['notification'] == '') {
+        var delegate_type = $("select#delegate_type option:selected").val();
+        var $access_type = $("select#access_type option:selected");
+
+        if (data['notification'] == '' || $access_type.val() == '') {
             $('#notification_result').html("");
             return;
         }
-
-        var delegate_type = $("select#delegate_type option:selected").val();
-        var $access_type = $("select#access_type option:selected");
 
         data['right'] = $access_type.val();
         data['right_name'] = $access_type.text();

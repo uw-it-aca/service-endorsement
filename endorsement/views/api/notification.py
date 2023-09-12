@@ -33,22 +33,18 @@ class Notification(RESTDispatch):
 
     def post(self, request, *args, **kwargs):
         notice_type = request.data.get('type', None)
-        notification = request.data.get('notification', None)
 
         if notice_type == 'service':
-            return self._service_notification(
-                notification, request.data.get('endorsees', {}))
+            return self._service_notification(request)
         elif notice_type == 'access':
-            return self._access_notification(
-                notification,
-                request.data.get('right', ''),
-                request.data.get('right_name', ''),
-                request.data.get('is_shared_netid', False),
-                request.data.get('is_group', False))
+            return self._access_notification(request)
 
-        return self.error_response(400, "Bad Request")
+        return self.error_response(400, "Incomplete or unknown notification.")
 
-    def _service_notification(self, notification, endorsements):
+    def _service_notification(self, request):
+        notification = request.data.get('notification', None)
+        endorsements = request.data.get('endorsees', {})
+
         warning_level = None
         m = re.match(r'^warning_([1-4])$', notification)
         if m:
@@ -126,8 +122,13 @@ class Notification(RESTDispatch):
             return self.error_response(500, "{}".format(
                 traceback.format_exc()))
 
-    def _access_notification(
-            self, notification, right, right_name, is_shared_netid, is_group):
+    def _access_notification(self, request):
+        notification = request.data.get('notification', None)
+        right = request.data.get('right', "")
+        right_name = request.data.get('right_name', "")
+        is_shared_netid = request.data.get('is_shared_netid', False)
+        is_group = request.data.get('is_group', False)
+
         accessee = Accessee(netid="jfaculty",
                             regid="1234567890abcdef1234567890abcdef",
                             display_name="Dr J Faculty",
@@ -137,12 +138,18 @@ class Notification(RESTDispatch):
             display_name="Jamie Average", is_valid=True,
             is_shared_netid=is_shared_netid, is_group=is_group)
 
+        if right == "":
+            return self.error_response(400, "Unknown notification.")
+
         ar = AccessRecord(
             accessee=accessee, accessor=accessor,
             right_id=right, right_name=right_name)
 
-        (subject, text_body, html_body) = _create_accessor_message(
-            ar, get_accessor_email(ar))
+        if notification == 'delegate':
+            (subject, text_body, html_body) = _create_accessor_message(
+                ar, get_accessor_email(ar))
+        else:
+            return self.error_response(400, "Unknown notification.")
 
         return self.json_response({
             'subject': subject,

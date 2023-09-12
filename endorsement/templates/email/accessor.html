@@ -3,6 +3,8 @@ Hello {{ email.display_name }},
 You are receiving this email because {{ record.accessee.display_name }} ({{ record.accessee.netid }}) has given
 {% if record.accessor.is_group %}
   the group you administrate
+{% elif record.accessor.is_shared_netid %}
+  the shared netid
 {% else %}
   you
 {% endif %}
