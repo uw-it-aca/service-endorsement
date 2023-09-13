@@ -8,11 +8,14 @@ You are receiving this email because {{ record.accessee.display_name }} ({{ reco
 {% else %}
   you
 {% endif %}
-{{ record.right_name }} permissions to their Outlook mailbox. Access to this mailbox lasts for 365 days and must be renewed by {{ record.accessee.display_name }}.
+{{ record.right_name }} permissions to their Outlook mailbox.
+</p>
+<p>
+Access to this mailbox lasts for 365 days and must be renewed by {{ record.accessee.display_name }}.
 </p>
 <p>
 With &quot;{{ record.right_name }}&quot; {% if record.accessor.is_group %}group members{% else %}you{% endif %} will be able to:
-<ol>
+<ul>
   {% if record.right_id == 'FullAccessandSendAs' %}
     <li>Open the mailbox</li>
     <li>View, add and remove the contents of the mailbox</li>
@@ -28,7 +31,7 @@ With &quot;{{ record.right_name }}&quot; {% if record.accessor.is_group %}group 
   {% else %}
     <li>Some additional access.</li>
   {% endif %}
-</ol>
+</ul>
 </p>
 <p>
 To begin accessing this mailbox, join this group: https://groups.uw.edu/group/u_msca_enable_uw-forwarding-bypass and go to your email platform to add the new mailbox…..??????? (need help filling this in)
