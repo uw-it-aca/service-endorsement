@@ -38,8 +38,7 @@ var registerEvents = function() {
     });
 
     $('.tabs div#access').on('endorse:accessTabExposed', function (e) {
-        if (window.access.hasOwnProperty('office')
-                && window.access.office.hasOwnProperty('types')) {
+        if (window.access.hasOwnProperty('office') && window.access.office.hasOwnProperty('types')) {
             renderAccessTypes();
         } else {
             window.access.office = {};
@@ -110,7 +109,7 @@ var generateNotification = function (notice_type) {
         };
 
     if (notice_type == 'service') {
-        data['endorsees'] = {}
+        data.endorsees = {};
 
         if (!$(".service:enabled:checked").length) {
             $('#notification_result').html("");
@@ -130,15 +129,15 @@ var generateNotification = function (notice_type) {
         var delegate_type = $("select#delegate_type option:selected").val();
         var $access_type = $("select#access_type option:selected");
 
-        if (data['notification'] == '' || $access_type.val() == '') {
+        if (data.notification === '' || $access_type.val() === '') {
             $('#notification_result').html("");
             return;
         }
 
-        data['right'] = $access_type.val();
-        data['right_name'] = $access_type.text();
-        data['is_group'] = (delegate_type == 'group');
-        data['is_shared_netid'] = (delegate_type == 'shared');
+        data.right = $access_type.val();
+        data.right_name = $access_type.text();
+        data.is_group = (delegate_type == 'group');
+        data.is_shared_netid = (delegate_type == 'shared');
     }
 
     $.ajax({
