@@ -5,7 +5,7 @@ import logging
 from endorsement.views.rest_dispatch import RESTDispatch
 from endorsement.models import (
     Endorser, Endorsee, EndorsementRecord,
-    Accessor, Accessee, AccessRecord)
+    Accessor, Accessee, AccessRight, AccessRecord)
 from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.util.auth import SupportGroupAuthentication
 from endorsement.dao.notification import (
@@ -141,9 +141,13 @@ class Notification(RESTDispatch):
         if right == "":
             return self.error_response(400, "Unknown notification.")
 
+        try:
+            access_right = AccessRight.objects.get(name=right)
+        except AccessRight.DoesNotExist:
+            return self.error_response(400, "Unknown access right.")
+
         ar = AccessRecord(
-            accessee=accessee, accessor=accessor,
-            right_id=right, right_name=right_name)
+            accessee=accessee, accessor=accessor, access_right=access_right)
 
         if notification == 'delegate':
             (subject, text_body, html_body) = _create_accessor_message(

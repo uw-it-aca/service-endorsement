@@ -100,7 +100,7 @@ var ManageOfficeAccess = (function () {
                 _modalHide();
             }).on('endorse:OfficeDelegatableSuccess', function (e, data) {
                 _displayOfficeAccessDelegatable(data.netids);
-                getOfficeAccessTypes($panel);
+                _getOfficeAccessTypes($panel);
             }).on('endorse:OfficeDelegatableFailure', function (e, data) {
                 _displayOfficeAccessUWNetIDFailure(data);
             }).on('endorse:OfficeValidateNetIDsSuccess', function (e, data) {
@@ -193,7 +193,7 @@ var ManageOfficeAccess = (function () {
                             date_granted: DateTime.utc2localdate(d.datetime_granted),
                             date_renewal: _renewalDateFormat(renewal_date),
                             date_renewal_relative: renewal_date.fromNow(),
-                            right_id: d.right_id,
+                            right_id: d.access_right.name,
                             accessee_index: accessee_index,
                             access_index: i
                         });

@@ -67,6 +67,20 @@ class Accessee(ExportModelOperationsMixin('accessee'), models.Model):
         db_table = 'uw_service_endorsement_accessee'
 
 
+class AccessRight(ExportModelOperationsMixin('access_right'), models.Model):
+    name = models.SlugField(max_length=24, null=True)
+    display_name = models.SlugField(max_length=64, null=True)
+
+    def json_data(self):
+        return {
+            "name": self.name,
+            "display_name": self.display_name
+            }
+
+    class Meta:
+        db_table = 'uw_service_endorsement_access_right'
+
+
 class AccessRecordManager(models.Manager):
     def get_access(self, accessor=None, accessee=None):
         params = {
@@ -88,7 +102,7 @@ class AccessRecordManager(models.Manager):
     def get_access_for_accessor(self, accessor):
         return self.get_access(accessor, None)
 
-    def get_all_access_for_accessor(self, accessor, right_id=None):
+    def get_all_access_for_accessor(self, accessor):
         return super(AccessRecordManager, self).get_queryset().filter(
             accessor=accessor)
 
@@ -119,15 +133,13 @@ class AccessRecordManager(models.Manager):
             is_deleted__isnull=True)
 
 
-class AccessRecord(
-        ExportModelOperationsMixin('access_record'), models.Model):
-
+class AccessRecord(ExportModelOperationsMixin('access_record'), models.Model):
     accessee = models.ForeignKey(Accessee,
                                  on_delete=models.PROTECT)
     accessor = models.ForeignKey(Accessor,
                                  on_delete=models.PROTECT)
-    right_id = models.SlugField(max_length=24, null=True)
-    right_name = models.SlugField(max_length=64, null=True)
+    access_right = models.ForeignKey(
+        AccessRight, on_delete=models.PROTECT, null=True)
     acted_as = models.SlugField(max_length=32, null=True)
     datetime_created = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
@@ -147,7 +159,7 @@ class AccessRecord(
         return (other is not None and
                 self.accessor == other.accessor and
                 self.accessee == other.accessee and
-                self.right_id == other.right_id)
+                self.access_right.name == other.access_right.name)
 
     def revoke(self):
         self.datetime_expired = timezone.now()
@@ -162,8 +174,7 @@ class AccessRecord(
         return {
             "accessor": self.accessor.json_data(),
             "accessee": self.accessee.json_data(),
-            "right_id": self.right_id,
-            "right_name": self.right_name,
+            "access_right": self.access_right.json_data(),
             "acted_as": self.acted_as,
             "datetime_granted": datetime_to_str(self.datetime_granted),
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
@@ -186,3 +197,26 @@ class AccessRecord(
     class Meta:
         unique_together = (("accessor", "accessee"),)
         db_table = 'uw_service_endorsement_access'
+
+
+class AccessRecordConflict(
+        ExportModelOperationsMixin('access_record'), models.Model):
+    accessee = models.ForeignKey(Accessee,
+                                 on_delete=models.PROTECT)
+    accessor = models.ForeignKey(Accessor,
+                                 on_delete=models.PROTECT)
+    rights = models.ManyToManyField("AccessRight")
+    datetime_noted = models.DateTimeField(null=True)
+
+    def json_data(self):
+        return {
+            "accessor": self.accessor.json_data(),
+            "accessee": self.accessee.json_data(),
+            "rights": [r.json_data() for r in self.rights]
+        }
+
+    def __str__(self):
+        return json.dumps(self.json_data())
+
+    class Meta:
+        db_table = 'uw_service_endorsement_access_record_conflict'

@@ -11,6 +11,7 @@ class TestNotificationAPI(EndorsementApiTest):
         self.set_user('jstaff')
         url = reverse('notification_api')
         notification_data = {
+            'type': 'service',
             'notification': 'warning_1',
             'endorsees': {
                 'endorsee1': ['o365'],

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from userservice.user import UserService
-from endorsement.models import AccessRecord
+from endorsement.models import AccessRecord, AccessRight
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.access import (
@@ -176,6 +176,8 @@ class AccessRights(RESTDispatch):
             access_rights = []
 
             for t in get_access_rights():
+                r, created = AccessRight.objects.update_or_create(
+                    name=t.right_id, defaults={'display_name': t.displayname})
                 access_rights.append(t.json_data())
 
             return self.json_response(access_rights)
