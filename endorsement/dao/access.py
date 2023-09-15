@@ -4,7 +4,7 @@
 import logging
 from django.utils import timezone
 from uw_msca.delegate import set_delegate, update_delegate, remove_delegate
-from endorsement.models import Accessee, Accessor, AccessRecord
+from endorsement.models import Accessee, Accessor, AccessRight, AccessRecord
 from endorsement.dao.pws import get_endorsee_data
 from endorsement.exceptions import NoEndorsementException
 
@@ -69,9 +69,11 @@ def update_access(accessee, accessor, old_right_id, right_id, acted_as=None):
 def store_access_record(
         accessee, accessor, right_id, acted_as=None, is_reconcile=None):
     now = timezone.now()
+    access_right, created = AccessRight.objects.get_or_create(name=right_id)
+
     try:
         ar = AccessRecord.objects.get(accessee=accessee, accessor=accessor)
-        ar.right_id = right_id
+        ar.right = access_right
         ar.datetime_granted = now
         ar.acted_as = acted_as
         ar.datetime_emailed = None
@@ -88,7 +90,7 @@ def store_access_record(
         ar = AccessRecord.objects.create(
             accessee=accessee,
             accessor=accessor,
-            right_id=right_id,
+            right=access_right,
             datetime_granted=now,
             acted_as=acted_as,
             datetime_emailed=None,
@@ -111,8 +113,9 @@ def revoke_access(accessee, accessor, right_id, acted_as=None):
 
 def _revoke_access_model(accessee, accessor, right_id, acted_as=None):
     try:
+        access_right = AccessRight.objects.get(name=right_id)
         ar = AccessRecord.objects.get(
-            accessee=accessee, accessor=accessor, right_id=right_id)
+            accessee=accessee, accessor=accessor, right=access_right)
     except (AccessRecord.DoesNotExist):
         raise NoEndorsementException()
 

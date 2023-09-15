@@ -100,7 +100,7 @@ var ManageOfficeAccess = (function () {
                 _modalHide();
             }).on('endorse:OfficeDelegatableSuccess', function (e, data) {
                 _displayOfficeAccessDelegatable(data.netids);
-                _getOfficeAccessTypes();
+                _getOfficeAccessTypes($panel);
             }).on('endorse:OfficeDelegatableFailure', function (e, data) {
                 _displayOfficeAccessUWNetIDFailure(data);
             }).on('endorse:OfficeValidateNetIDsSuccess', function (e, data) {
@@ -193,7 +193,7 @@ var ManageOfficeAccess = (function () {
                             date_granted: DateTime.utc2localdate(d.datetime_granted),
                             date_renewal: _renewalDateFormat(renewal_date),
                             date_renewal_relative: renewal_date.fromNow(),
-                            right_id: d.right_id,
+                            right_id: d.access_right.name,
                             accessee_index: accessee_index,
                             access_index: i
                         });
@@ -617,7 +617,7 @@ var ManageOfficeAccess = (function () {
                 $option.appendTo($select);
             });
         },
-        _getOfficeAccessTypes = function() {
+        _getOfficeAccessTypes = function($event_panel) {
             var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
             $.ajax({
@@ -630,10 +630,10 @@ var ManageOfficeAccess = (function () {
                 },
                 success: function(results) {
                     window.access.office.types = results;
-                    $panel.trigger('endorse:OfficeAccessTypesSuccess');
+                    $event_panel.trigger('endorse:OfficeAccessTypesSuccess');
                 },
                 error: function(xhr, status, error) {
-                    $panel.trigger('endorse:OfficeAccessTypesFailure', [error]);
+                    $event_panel.trigger('endorse:OfficeAccessTypesFailure', [error]);
                 }
             });
         },
@@ -704,7 +704,8 @@ var ManageOfficeAccess = (function () {
         load: function () {
             _registerEvents();
             _showTab();
-        }
+        },
+        getOfficeAccessTypes: _getOfficeAccessTypes
     };
 }());
 

@@ -1,24 +1,38 @@
-Accessee Info
+Hello {{ email.display_name }},
 
-   Delegated {{ record.right_name }} ({{ record.right_id }}) access is being given
-   to the outlook mailbox {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
+You are receiving this email because {{ record.accessee.display_name }} ({{ record.accessee.netid }}) has given
+{% if record.accessor.is_group %}the group you administrate{% elif record.accessor.is_shared_netid %}the shared netid{% else %}you{% endif %} {{ record.access_right.display_name }} permissions to their Outlook mailbox.
 
-Accessor Info
+Access to this mailbox lasts for 365 days and must renewed by {{ record.accessee.display_name }}.
 
-{% if record.accessor.is_group %}
-You've been identified as an admin of the group
-{{ accessor.display_name }} ({{ record.accessor.name }}).
-
-You all are receiving this email because your list members have been givena
-delegated access to the above mailbox.
-
-Admin emails of group given delegated access:
+With "{{ record.access_right.display_name }}" {% if record.accessor.is_group %}group members{% else %}you{% endif %} will be able to:
+{% if record.access_right.name == 'FullAccessandSendAs' %}
+   -  Open the mailbox
+   -  View, add and remove the contents of the mailbox
+   -  Send messages as if they came directly from the mailbox
+{% elif record.access_right.name == 'FullAccess' %}
+   -  Open the mailbox
+   -  View, add and remove the contents of the mailbox
+{% elif record.access_right.name == 'SendAs' %}
+   -  Send messages as if they came directly from the mailbox
+{% elif record.access_right.name == 'SendOnBehalf' %}
+   -  Allows the delegate to send messages from the mailbox or group
+      The From address of these messages clearly shows that the message was
+      sent by the delegate (&quot; &lt;Delegate&gt; on behalf of &lt;MailboxOrGroup&gt;&quot;)
 {% else %}
-You are receiving this email because you were given delegated access to the above mailbox.
+   -  Some additional access.
+  {% endif %}
+To begin accessing this mailbox, join this group:
 
-Delegated netid email address:
-{% endif %}
+    https://groups.uw.edu/group/u_msca_enable_uw-forwarding-bypass
 
-{% for email in emails %}
-    * {{ email.display_name }} <{{ email.email }}>
-{% endfor %}
+and go to your email platform to add the new mailbox…..??????? (need help filling this in)
+
+(links to IT Connect article)
+
+Is there a delay that folks need to be aware about?
+
+If you have any questions, please contact help@uw.edu or 206-221-5000.
+
+Thank you,
+UW-IT
