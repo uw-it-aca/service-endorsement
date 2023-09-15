@@ -162,7 +162,6 @@ class Notification(RESTDispatch):
         })
 
 
-
 # mimic function in dao.notification
 def _get_unendorsed_unnotified(unendorsed):
     endorsements = {}
