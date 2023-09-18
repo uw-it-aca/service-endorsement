@@ -212,7 +212,7 @@ class AccessRecordConflict(
         return {
             "accessor": self.accessor.json_data(),
             "accessee": self.accessee.json_data(),
-            "rights": [r.json_data() for r in self.rights]
+            "rights": [r.json_data() for r in self.rights.all()]
         }
 
     def __str__(self):
