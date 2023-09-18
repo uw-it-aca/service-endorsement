@@ -17,8 +17,6 @@ def reconcile_access(commit_changes=False):
     delegates = get_all_delegates()[1:]
     # make sure an empty response (likely an MSCA error condition) doesn't
     # cause all delegations to be deleted
-
-    # make sure something is in all delegates response
     if len(delegates) < 1024:
         logger.error(
             "Possible malformed delegates response: {}".format(delegates))
@@ -52,22 +50,22 @@ def reconcile_access(commit_changes=False):
                         netid, delegate, rights))
 
                 if record:
-                    # stash existing access record
-                    if not commit_changes:
-                        record.is_delete = True
-                        record.save()
+                    if commit_changes:
+                        # stash existing access record
+                        record.revoke()
 
                     records.remove(record)
 
-                # create conflict record
-                conflict, created = AccessRecordConflict.objects.get_or_create(
-                    accessee=accessee, accessor=record.accessor if (
-                        record) else get_office_accessor(delegate))
-                for right in rights:
-                    conflict.rights.add(get_access_right(right))
+                if commit_changes:
+                    # create conflict record
+                    conflict, c = AccessRecordConflict.objects.get_or_create(
+                        accessee=accessee, accessor=record.accessor if (
+                            record) else get_office_accessor(delegate))
+                    for right in rights:
+                        conflict.rights.add(get_access_right(right))
 
-                conflict.save()
-            else:
+                    conflict.save()
+            elif len(rights) == 1:
                 right = next(iter(rights))
                 if record:
                     if record.access_right.name != right:
@@ -91,6 +89,9 @@ def reconcile_access(commit_changes=False):
                         accessor = get_office_accessor(delegate)
                         store_access_record(
                             accessee, accessor, right, is_reconcile=True)
+            else:
+                logger.info("mailbox {} empty rights for {}".format(
+                    netid, delegate))
 
         # at this point, records only contains stale delegations
         for record in records:
@@ -102,7 +103,7 @@ def reconcile_access(commit_changes=False):
 
 
 def get_access_right(right):
-    ar, created = AccessRight.objects.get_or_create(name=right)
+    ar, c = AccessRight.objects.get_or_create(name=right)
     return ar
 
 
