@@ -65,6 +65,11 @@ var ManageOfficeAccess = (function () {
                     $row = $button.closest('tr');
 
                 _confirmNetidUpdateModal($row);
+            }).on('click', '.access-conflict', function (e) {
+                var $this = $(this),
+                    $button = $this.closest('div.row').find('button#access_resolve');
+
+                $button.prop('disabled', false);
             }).on('endorse:OfficeDelegateConfirmation', function (e, context) {
                 $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
                     var $row = _accessTableRow(context.mailbox, context.delegate);
@@ -168,14 +173,27 @@ var ManageOfficeAccess = (function () {
             var source = $("#office_access_panel").html(),
                 template = Handlebars.compile(source),
                 context = {
-                    access: []
+                    access: [],
+                    conflict: []
                 },
                 unique_netids = [],
                 accessee_index = 0;
 
-
             $.each(netids, function(netid) {
                 var name = this.name;
+
+                if (this.conflict.length > 0) {
+                    $.each(this.conflict, function(i, d) {
+                        context.conflict.push({
+                            mailbox: d.accessee.netid,
+                            name: d.accessee.display_name,
+                            delegate: d.accessor.name,
+                            rights: d.rights,
+                            accessee_index: accessee_index,
+                            access_index: i
+                        });
+                    });
+                }
 
                 if (unique_netids.indexOf(netid) < 0) {
                     unique_netids.push(netid);

@@ -45,14 +45,24 @@ def validate_office_access(name):
     try:
         # get netid (personal/shared) data
         uwregid, display_name, email, is_person = get_endorsee_data(name)
-        return display_name, (not is_person), False
+        if is_person:
+            return display_name, False, False
+        elif name.index('_') == 0:
+            return display_name, True, False
+
+        return validate_group(name, display_name)
     except UnrecognizedUWNetid:
-        try:
-            group = get_group_by_id(name)
-            return group.name, False, True
-        except UnrecognizedGroupID:
-            raise Exception("Unrecognized Netid or Group")
-        except Exception as ex:
-            logger.error(
-                "validate_office_access get_group {}: {}".format(name, ex))
-            raise
+        return validate_group(name, None)
+
+
+def validate_group(name, display_name):
+    try:
+        group = get_group_by_id(name)
+        return group.name, False, True
+    except UnrecognizedGroupID:
+        is_group = name.startswith("u_") or name.startswith("uw_")
+        return display_name if display_name else name, not is_group, is_group
+    except Exception as ex:
+        logger.error(
+            "validate_office_access get_group {}: {}".format(name, ex))
+        raise
