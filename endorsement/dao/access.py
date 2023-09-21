@@ -73,7 +73,7 @@ def store_access_record(
 
     try:
         ar = AccessRecord.objects.get(accessee=accessee, accessor=accessor)
-        ar.right = access_right
+        ar.access_right = access_right
         ar.datetime_granted = now
         ar.acted_as = acted_as
         ar.datetime_emailed = None
@@ -90,7 +90,7 @@ def store_access_record(
         ar = AccessRecord.objects.create(
             accessee=accessee,
             accessor=accessor,
-            right=access_right,
+            access_right=access_right,
             datetime_granted=now,
             acted_as=acted_as,
             datetime_emailed=None,
