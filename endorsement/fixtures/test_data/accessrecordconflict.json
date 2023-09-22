@@ -1,0 +1,12 @@
+[
+    {
+        "model": "endorsement.accessrecordconflict",
+        "pk": 1,
+        "fields": {
+            "accessee": 1,
+            "accessor": 1,
+            "datetime_noted": null,
+            "rights": [2, 4]
+        }
+    }
+]

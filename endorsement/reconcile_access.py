@@ -1,7 +1,6 @@
 # Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-
 from endorsement.models import AccessRecord, AccessRight, AccessRecordConflict
 from endorsement.dao.access import get_accessee_model, store_access_record
 from endorsement.dao.office import get_office_accessor
@@ -10,7 +9,9 @@ import json
 import csv
 import logging
 
+
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def reconcile_access(commit_changes=False):

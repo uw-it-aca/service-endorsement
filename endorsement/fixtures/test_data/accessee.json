@@ -1,0 +1,12 @@
+[
+    {
+        "model": "endorsement.accessee",
+        "pk": 1,
+        "fields": {
+            "netid": "jstaff",
+            "display_name": "JAMES STAFF",
+            "regid": "10000000000000000000000000000001",
+            "is_valid": false
+        }
+    }
+]

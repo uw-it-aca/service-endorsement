@@ -1,0 +1,13 @@
+[
+    {
+        "model": "endorsement.accessor",
+        "pk": 1,
+        "fields": {
+            "name": "u_javerage_admin",
+            "display_name": "u_javerage_admin",
+            "is_valid": true,
+            "is_shared_netid": false,
+            "is_group": true
+        }
+    }
+]
