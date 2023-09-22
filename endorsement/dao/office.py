@@ -60,8 +60,7 @@ def validate_group(name, display_name):
         group = get_group_by_id(name)
         return group.name, False, True
     except UnrecognizedGroupID:
-        is_group = name.startswith("u_") or name.startswith("uw_")
-        return display_name if display_name else name, not is_group, is_group
+        raise
     except Exception as ex:
         logger.error(
             "validate_office_access get_group {}: {}".format(name, ex))

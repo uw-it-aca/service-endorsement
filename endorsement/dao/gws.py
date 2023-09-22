@@ -15,6 +15,7 @@ from endorsement.util.email import uw_email_address
 from endorsement.exceptions import UnrecognizedGroupID
 from restclients_core.exceptions import DataFailureException
 from uw_gws import GWS
+from uw_gws.exceptions import InvalidGroupID
 import logging
 import traceback
 
@@ -45,6 +46,8 @@ def get_group_by_id(group):
     """
     try:
         return gws.get_group_by_id(group)
+    except InvalidGroupID as ex:
+        raise UnrecognizedGroupID()
     except DataFailureException as ex:
         if ex.status == 404:
             raise UnrecognizedGroupID()
