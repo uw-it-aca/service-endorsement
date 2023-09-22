@@ -65,11 +65,22 @@ var ManageOfficeAccess = (function () {
                     $row = $button.closest('tr');
 
                 _confirmNetidUpdateModal($row);
-            }).on('click', '.access-conflict', function (e) {
+            }).on('click', 'input.access-conflict', function (e) {
                 var $this = $(this),
                     $button = $this.closest('div.row').find('button#access_resolve');
 
                 $button.prop('disabled', false);
+            }).on('click', 'button#access_resolve', function (e) {
+                var $this = $(this),
+                    $checked = $this.closest('div.row').find('input.access-conflict:checked'),
+                    mailbox = $this.attr('data-mailbox'),
+                    delegate = $this.attr('data-delegate'),
+                    right = $checked.val();
+
+                _resolveAccessConflict(mailbox, delegate,right);
+            }).on('click', 'button#confirm_resolved_conflict', function (e) {
+                _modalHide();
+                $('.tabs div#access').trigger('endorse:accessTabExposed');
             }).on('endorse:OfficeDelegateConfirmation', function (e, context) {
                 $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
                     var $row = _accessTableRow(context.mailbox, context.delegate);
@@ -132,6 +143,11 @@ var ManageOfficeAccess = (function () {
                 Notify.error('Revoke error: ' + error);
                 Button.reset($('#access_revoke', $row));
                 Button.enable($('#access_renew', $row));
+
+            }).on('endorse:OfficeAccessResolveSuccess', function (e, data) {
+                _resolvedAccessModal(data);
+            }).on('endorse:OfficeAccessResolveFailure', function (e, data) {
+                alert('Access Resolution failure: ' + data);
             }).on('endorse:OfficeAccessTypesSuccess', function (e) {
                 _displayOfficeAccessTypes();
             }).on('endorse:OfficeAccessTypesFailure', function (e, data) {
@@ -148,18 +164,18 @@ var ManageOfficeAccess = (function () {
                 $checkboxes = $('input.accept_responsibility', $modal),
                 checked = 0;
 
-            $checkboxes.each(function () {
-                if (this.checked)
-                    checked += 1;
-            });
+                $checkboxes.each(function () {
+                    if (this.checked)
+                        checked += 1;
+                });
 
-            // accept all inputs and no "errors"
-            if ($checkboxes.length === checked && $('.error').length === 0) {
-                $accept_button.removeAttr('disabled');
-            } else {
-                $accept_button.attr('disabled', 'disabled');
-            }
-        }).on('endorse:HistoryChange', function (e) {
+                // accept all inputs and no "errors"
+                if ($checkboxes.length === checked && $('.error').length === 0) {
+                    $accept_button.removeAttr('disabled');
+                } else {
+                    $accept_button.attr('disabled', 'disabled');
+                }
+            }).on('endorse:HistoryChange', function (e) {
                 _showTab();
             });
         },
@@ -439,6 +455,9 @@ var ManageOfficeAccess = (function () {
         _revokedNetidAccessModal = function (context) {
             _displayModal("#revoked_netid_modal_content", context);
         },
+        _resolvedAccessModal = function (context) {
+            _displayModal("#resolved_conflict_modal_content", context);
+        },
         _displayModal = function (template_id, context) {
             var source = $(template_id).html(),
                 template = Handlebars.compile(source);
@@ -451,6 +470,8 @@ var ManageOfficeAccess = (function () {
         },
         _modalHide = function () {
             $('#access_netids_modal', $content).modal('hide');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
         },
         _updateOfficeAccessDisplay = function (context) {
             var $row = _accessTableRow(context.accessee.netid, context.accessor.name),
@@ -654,6 +675,31 @@ var ManageOfficeAccess = (function () {
                     $event_panel.trigger('endorse:OfficeAccessTypesFailure', [error]);
                 }
             });
+        },
+        _resolveAccessConflict = function (mailbox, delegate, right) {
+            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+
+            $.ajax({
+                url: "/office/v1/access/resolve",
+                type: "POST",
+                data: JSON.stringify({
+                    mailbox: mailbox,
+                    delegate: delegate,
+                    access_type: right
+                }),
+                contentType: "application/json",
+                accepts: {html: "application/json"},
+                headers: {
+                    "X-CSRFToken": csrf_token
+                },
+                success: function(results) {
+                    $panel.trigger('endorse:OfficeAccessResolveSuccess', [results]);
+                },
+                error: function(xhr, status, error) {
+                    $panel.trigger('endorse:OfficeAccessResolveFailure', [error]);
+                }
+            });
+
         },
         _scrollNetIDIntoView = function (netid) {
             Scroll.scrollToNetid(netid, '.office-access-table');

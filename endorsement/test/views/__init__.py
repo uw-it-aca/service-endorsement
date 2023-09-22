@@ -96,3 +96,8 @@ class TestViewApi(TestCase):
     def get_response(self, url_name, **kwargs):
         url = reverse(url_name)
         return self.client.get(url, **kwargs)
+
+    def post_response(self, url_name, body, **kwargs):
+        url = reverse(url_name, **kwargs)
+        return self.client.post(
+            url, data=body, content_type="application/json")
