@@ -13,4 +13,3 @@ class Command(BaseCommand):
         call_command('loaddata', 'test_data/accessee.json')
         call_command('loaddata', 'test_data/accessor.json')
         call_command('loaddata', 'test_data/accessrecordconflict.json')
-
