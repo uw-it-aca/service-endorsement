@@ -101,4 +101,3 @@ class TestViewApi(TestCase):
         url = reverse(url_name, **kwargs)
         return self.client.post(
             url, data=body, content_type="application/json")
-
