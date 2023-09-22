@@ -2,14 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from userservice.user import UserService
-from endorsement.models import AccessRecord, AccessRecordConflict
+from endorsement.models import AccessRecordConflict
 from endorsement.dao.access import get_accessee_model, store_access_record
 from endorsement.dao.office import is_office_permitted, get_office_accessor
 from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session, invalid_endorser, data_error)
+    RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
 from endorsement.util.auth import is_only_support_user
-from uw_msca.access_rights import get_access_rights
 from restclients_core.exceptions import DataFailureException
 import logging
 
