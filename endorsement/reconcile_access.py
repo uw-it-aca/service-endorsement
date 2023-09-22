@@ -1,16 +1,18 @@
 # Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-
 from endorsement.models import AccessRecord, AccessRight, AccessRecordConflict
 from endorsement.dao.access import get_accessee_model, store_access_record
 from endorsement.dao.office import get_office_accessor
+from endorsement.exceptions import UnrecognizedUWNetid, UnrecognizedGroupID
 from uw_msca.delegate import get_all_delegates
 import json
 import csv
 import logging
 
+
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def reconcile_access(commit_changes=False):
@@ -86,9 +88,14 @@ def reconcile_access(commit_changes=False):
                         "mailbox {} with {} to {} created".format(
                             netid, right, delegate))
                     if commit_changes:
-                        accessor = get_office_accessor(delegate)
-                        store_access_record(
-                            accessee, accessor, right, is_reconcile=True)
+                        try:
+                            accessor = get_office_accessor(delegate)
+                            store_access_record(
+                                accessee, accessor, right, is_reconcile=True)
+                        except (UnrecognizedUWNetid, UnrecognizedGroupID):
+                            logger.error(
+                                "Delegate neither netid nor group: {}".format(
+                                    delegate))
             else:
                 logger.info("mailbox {} empty rights for {}".format(
                     netid, delegate))
