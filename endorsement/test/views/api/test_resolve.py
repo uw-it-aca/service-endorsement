@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from unittest.mock import MagicMock, patch
 from django.urls import reverse
 from django.core.management import call_command
 from django.test import Client
@@ -24,8 +23,6 @@ class TestResolve(TestViewApi):
         call_command('loaddata', 'test_data/accessor.json')
         call_command('loaddata', 'test_data/accessrecordconflict.json')
 
-#    @patch('endorsement.views.api.office.resolve.revoke_access')
-#    def test_resolve_api(self, mock_revoke_delegate):
     def test_resolve_api(self):
         test_request = {
             'access_type': "FullAccess",
@@ -38,8 +35,6 @@ class TestResolve(TestViewApi):
 
         request = self.get_request('/', 'jstaff')
         response = self.post_response('access_right_resolve_api', test_request)
-
-#        mock_revoke_delegate.assert_called_once()
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(1, AccessRecord.objects.all().count())
