@@ -94,8 +94,7 @@ def reconcile_access(commit_changes=False):
                                 accessee, accessor, right, is_reconcile=True)
                         except (UnrecognizedUWNetid, UnrecognizedGroupID):
                             logger.error(
-                                "Delegate neither netid nor group: {}".format(
-                                    delegate))
+                                "Unknown netid or group: {}".format(delegate))
             else:
                 logger.info("mailbox {} empty rights for {}".format(
                     netid, delegate))

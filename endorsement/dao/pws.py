@@ -9,7 +9,7 @@ provides Person information of the current user
 import logging
 import traceback
 from uw_pws import PWS
-from restclients_core.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException, InvalidNetID
 from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.util.log import log_exception
 
@@ -52,6 +52,8 @@ def get_endorsee_data(uwnetid):
         return (person.uwregid, person.display_name,
                 person.email_addresses[0] if (
                     len(person.email_addresses) > 0) else None, True)
+    except InvalidNetID:
+        raise UnrecognizedUWNetid(uwnetid)
     except DataFailureException as ex:
         if int(ex.status) == 404:
             try:
@@ -59,9 +61,7 @@ def get_endorsee_data(uwnetid):
                 return entity.uwregid, entity.display_name, None, False
             except DataFailureException:
                 # stack logged by get_entity
-                pass
-
-        raise UnrecognizedUWNetid(uwnetid)
+                raise UnrecognizedUWNetid(uwnetid)
 
 
 def get_endorser_data(uwnetid):

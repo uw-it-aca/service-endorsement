@@ -47,7 +47,7 @@ def validate_office_access(name):
         uwregid, display_name, email, is_person = get_endorsee_data(name)
         if is_person:
             return display_name, False, False
-        elif name.index('_') == 0:
+        elif '_' not in name:
             return display_name, True, False
 
         return validate_group(name, display_name)
