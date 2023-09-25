@@ -11,7 +11,7 @@ from endorsement.test.dao import TestDao
 class TestPwsDao(TestDao):
 
     def test_is_renamed_uwnetid(self):
-        self.assertRaises(InvalidNetID,
+        self.assertRaises(UnrecognizedUWNetid,
                           get_endorsee_data,
                           "0notareal_uwnetid")
         self.assertFalse(is_renamed_uwnetid("nomockid"))
@@ -28,7 +28,7 @@ class TestPwsDao(TestDao):
         self.assertEqual(display_anme, "SIMON ENDORSEE2")
         self.assertEqual(email, "endorsee2@uw.edu")
 
-        self.assertRaises(InvalidNetID,
+        self.assertRaises(UnrecognizedUWNetid,
                           get_endorsee_data,
                           "0notareal_uwnetid")
         self.assertRaises(UnrecognizedUWNetid,
