@@ -3,13 +3,16 @@
 
 from userservice.user import UserService
 from endorsement.models import AccessRecordConflict
-from endorsement.dao.access import get_accessee_model, store_access_record
+from endorsement.dao.access import (
+    get_accessee_model, store_access_record, revoke_access)
 from endorsement.dao.office import is_office_permitted, get_office_accessor
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
-from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
+from endorsement.exceptions import (
+    UnrecognizedUWNetid, InvalidNetID, NoEndorsementException)
 from endorsement.util.auth import is_only_support_user
 from restclients_core.exceptions import DataFailureException
+
 import logging
 
 
@@ -47,10 +50,20 @@ class ResolveRightsConflict(RESTDispatch):
                 return self.error_response(
                     404, message="Unknown Access Conflict")
 
-            access = store_access_record(
-                accessee, accessor, access_type, acted_as, is_reconcile=True)
+            # record delegation and remove up unselected rights
+            for right in conflict.rights.all():
+                if right.name == access_type:
+                    access = store_access_record(
+                        accessee, accessor, access_type,
+                        acted_as, is_reconcile=True)
+                else:
+                    try:
+                        revoke_access(accessee, accessor, access_type)
+                    except NoEndorsementException:
+                        pass
 
             conflict.delete()
+
         except AccessRecordConflict.DoesNotExist:
             return self.error_response(
                 404, message="Unknown Access Conflict")
