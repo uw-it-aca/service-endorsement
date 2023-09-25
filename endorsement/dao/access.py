@@ -115,7 +115,7 @@ def _revoke_access_model(accessee, accessor, right_id, acted_as=None):
     try:
         access_right = AccessRight.objects.get(name=right_id)
         ar = AccessRecord.objects.get(
-            accessee=accessee, accessor=accessor, right=access_right)
+            accessee=accessee, accessor=accessor, access_right=access_right)
     except (AccessRecord.DoesNotExist):
         raise NoEndorsementException()
 
