@@ -12,12 +12,11 @@ from endorsement.exceptions import (
     UnrecognizedUWNetid, InvalidNetID, NoEndorsementException)
 from endorsement.util.auth import is_only_support_user
 from restclients_core.exceptions import DataFailureException
-
 import logging
 
 
 logger = logging.getLogger(__name__)
-
+logger.setLevel(logging.INFO)
 
 class ResolveRightsConflict(RESTDispatch):
     """
@@ -54,13 +53,17 @@ class ResolveRightsConflict(RESTDispatch):
             for right in conflict.rights.all():
                 if right.name == access_type:
                     access = store_access_record(
-                        accessee, accessor, access_type,
+                        accessee, accessor, right.name,
                         acted_as, is_reconcile=True)
                 else:
                     try:
-                        revoke_access(accessee, accessor, access_type)
+                        revoke_access(accessee, accessor, right.name)
                     except NoEndorsementException:
                         pass
+                    except DataFailureException as ex:
+                        return self.error_response(
+                            ex.status,
+                            message="Revoke access: {}".format(ex.status))
 
             conflict.delete()
 
