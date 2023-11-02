@@ -86,7 +86,7 @@ endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} en
       <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
       <td colspan="3">
        <p>
-    PRT policy limits elevated access to one Access Type. PRT has discovered more than one Access Type assigned to this {{#if is_group}}UW Group{{else}}{{#if is_shared_netid}}shared {{else}}{{/if}}UW NetID{{/if}} {{accessee.netid}}.  Please select one of the currently assigned Access Types to be the PRT-managaged Access Right.
+         PRT policy allows only one access type, however, this {{#if is_group}}UW Group{{else}}{{#if is_shared_netid}}shared {{else}}{{/if}}UW NetID{{/if}} has multiple access types assigned.  Please select one access type for this {{#if is_group}}UW Group{{else}}{{#if is_shared_netid}}shared {{else}}{{/if}}UW NetID{{/if}}.
        </p>
       <div class="row">
         <div class="col-md-8">
@@ -94,9 +94,7 @@ endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} en
           <input type="radio" class="access-conflict" id="{{ name }}" value="{{name}}">
           <label for="{{ name }}"> {{ display_name }}</label><br />
         {{/each}}
-       </div>
-       <div class="col-md-4">
-          <button type="button" class="btn btn-primary" id="access_resolve" data-loading-text="Setting Access Type" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}" disabled="disabled">Choose Access Type</button>
+        <button type="button" class="btn btn-primary" id="access_resolve" data-loading-text="Setting Access Type" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}" disabled="disabled">Choose Access Type</button>
        </div>
       </div>
       </td>
