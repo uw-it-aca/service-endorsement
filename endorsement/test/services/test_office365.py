@@ -89,3 +89,4 @@ class TestOffice365Service(ServicesApiTest):
         self.assertEqual(len(errored), 1)
         self.assertTrue('wadm_jstaff' in endorsed)
         self.assertFalse('cpnebeng' in endorsed)
+        self.assertFalse('phil123' in endorsed)

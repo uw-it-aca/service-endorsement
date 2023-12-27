@@ -39,6 +39,7 @@ class EndorsementService(EndorsementServiceBase):
             'types': ['shared', 'administrator', 'support'],
             'excluded_categories': [
                 Category.ALTID_SHARED_DEPARTMENTAL,
+                Category.ALTID_SHARED_COURSE,
                 Category.ALTID_SHARED_CLINICAL_1]
         }
 

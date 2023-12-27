@@ -65,9 +65,10 @@ class TestOffice365Service(ServicesApiTest):
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 6)
+        self.assertEquals(len(endorsible), 7)
         self.assertEquals(len(endorsed), 1)
         self.assertTrue('cpnebeng' in endorsible)
+        self.assertTrue('phil123' in endorsible)
         self.assertFalse('wadm_jstaff' in endorsed)
 
         # exlude category 22
