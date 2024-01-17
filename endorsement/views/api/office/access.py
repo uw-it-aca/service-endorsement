@@ -1,8 +1,8 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from userservice.user import UserService
-from endorsement.models import AccessRecord
+from endorsement.models import AccessRecord, AccessRecordConflict, AccessRight
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.access import (
@@ -38,7 +38,8 @@ class Access(RESTDispatch):
             accessee = get_accessee_model(netid)
             netids[netid] = {
                 'name': accessee.display_name,
-                'access': self._load_access_for_accessee(accessee)
+                'access': self._load_access_for_accessee(accessee),
+                'conflict': self._load_access_conflict_for_accessee(accessee)
             }
 
         for supported in get_supported_resources_for_netid(netid):
@@ -47,7 +48,9 @@ class Access(RESTDispatch):
                     accessee = get_accessee_model(supported.name)
                     netids[supported.name] = {
                         'name': accessee.display_name,
-                        'access': self._load_access_for_accessee(accessee)
+                        'access': self._load_access_for_accessee(accessee),
+                        'conflict': self._load_access_conflict_for_accessee(
+                            accessee)
                     }
 
         return self.json_response({
@@ -138,11 +141,12 @@ class Access(RESTDispatch):
         return self.json_response(access.json_data())
 
     def _load_access_for_accessee(self, accessee):
-        accessors = []
-        for ar in AccessRecord.objects.get_access_for_accessee(accessee):
-            accessors.append(ar.json_data())
+        access = AccessRecord.objects.get_access_for_accessee(accessee)
+        return [ar.json_data() for ar in access]
 
-        return accessors
+    def _load_access_conflict_for_accessee(self, accessee):
+        conflict = AccessRecordConflict.objects.filter(accessee=accessee)
+        return [arc.json_data() for arc in conflict]
 
     def _validate_user(self, request):
         user_service = UserService()
@@ -176,6 +180,8 @@ class AccessRights(RESTDispatch):
             access_rights = []
 
             for t in get_access_rights():
+                r, created = AccessRight.objects.update_or_create(
+                    name=t.right_id, defaults={'display_name': t.displayname})
                 access_rights.append(t.json_data())
 
             return self.json_response(access_rights)

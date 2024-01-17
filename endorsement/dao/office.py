@@ -1,4 +1,4 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
@@ -45,14 +45,23 @@ def validate_office_access(name):
     try:
         # get netid (personal/shared) data
         uwregid, display_name, email, is_person = get_endorsee_data(name)
-        return display_name, (not is_person), False
+        if is_person:
+            return display_name, False, False
+        elif '_' not in name:
+            return display_name, True, False
+
+        return validate_group(name, display_name)
     except UnrecognizedUWNetid:
-        try:
-            group = get_group_by_id(name)
-            return group.name, False, True
-        except UnrecognizedGroupID:
-            raise Exception("Unrecognized Netid or Group")
-        except Exception as ex:
-            logger.error(
-                "validate_office_access get_group {}: {}".format(name, ex))
-            raise
+        return validate_group(name, None)
+
+
+def validate_group(name, display_name):
+    try:
+        group = get_group_by_id(name)
+        return group.name, False, True
+    except UnrecognizedGroupID:
+        raise
+    except Exception as ex:
+        logger.error(
+            "validate_office_access get_group {}: {}".format(name, ex))
+        raise

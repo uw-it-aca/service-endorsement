@@ -1,4 +1,4 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from endorsement.services import endorsement_services
@@ -12,7 +12,7 @@ class TestNetidSupported(TestDao):
     def test_get_supported_netids_for_netid(self):
         endorser = get_endorser_model('jstaff')
         supported = get_supported_resources_for_netid(endorser.netid)
-        self.assertEqual(len(supported), 23)
+        self.assertEqual(len(supported), 24)
 
         netids = set()
         for s in supported:
@@ -21,4 +21,4 @@ class TestNetidSupported(TestDao):
                     netids.add(s.name)
                     break
 
-        self.assertEqual(len(netids), 15)
+        self.assertEqual(len(netids), 16)

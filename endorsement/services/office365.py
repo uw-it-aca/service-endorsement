@@ -1,4 +1,4 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 """
@@ -39,6 +39,7 @@ class EndorsementService(EndorsementServiceBase):
             'types': ['shared', 'administrator', 'support'],
             'excluded_categories': [
                 Category.ALTID_SHARED_DEPARTMENTAL,
+                Category.ALTID_SHARED_COURSE,
                 Category.ALTID_SHARED_CLINICAL_1]
         }
 

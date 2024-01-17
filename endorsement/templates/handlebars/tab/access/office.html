@@ -35,6 +35,9 @@
         </tr>
       </thead>
       <tbody>
+      {{#each conflict}}
+        {{> office_conflict_row_partial conflict=conflict }}
+      {{/each}}
       {{#each access}}
         {{> office_access_row_partial access=access }}
       {{/each}}
@@ -74,6 +77,29 @@ endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} en
     </tr>
 </script>
 
+
+<script id="office_conflict_row_partial" type="text/x-handlebars-template">
+    <tr class="
+endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
+      <td class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</td>
+      <td class="access-mailbox-name">{{ name }}</td>
+      <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
+      <td colspan="3">
+       <p>
+         PRT policy allows only one access type, however, this {{#if is_group}}UW Group{{else}}{{#if is_shared_netid}}shared {{else}}{{/if}}UW NetID{{/if}} has multiple access types assigned.  Please select one access type for this {{#if is_group}}UW Group{{else}}{{#if is_shared_netid}}shared {{else}}{{/if}}UW NetID{{/if}}.
+       </p>
+      <div class="row">
+        <div class="col-md-8">
+        {{#each rights}}
+          <input type="radio" class="access-conflict" id="{{ name }}" value="{{name}}">
+          <label for="{{ name }}"> {{ display_name }}</label><br />
+        {{/each}}
+        <button type="button" class="btn btn-primary" id="access_resolve" data-loading-text="Setting Access Type" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}" disabled="disabled">Choose Access Type</button>
+       </div>
+      </div>
+      </td>
+    </tr>
+</script>
 
 <script id="no-access-netids-content" type="text/x-handlebars-template">
   <div class="no-access-netids">

@@ -1,0 +1,33 @@
+[{
+    "model": "endorsement.accessright",
+    "pk": 1,
+    "fields": {
+        "name": "FullAccessandSendAs",
+        "display_name": "Full Access and Send As"
+    }
+},
+ {
+     "model": "endorsement.accessright",
+     "pk": 2,
+     "fields": {
+         "name": "FullAccess",
+         "display_name": "Full Access"
+     }
+ },
+ {
+     "model": "endorsement.accessright",
+     "pk": 3,
+     "fields": {
+         "name": "SendAs",
+         "display_name": "Send As"
+     }
+ },
+ {
+     "model": "endorsement.accessright",
+     "pk": 4,
+     "fields": {
+         "name": "SendOnBehalf",
+         "display_name": "Send on Behalf"
+     }
+ }
+]

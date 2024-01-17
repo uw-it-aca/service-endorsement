@@ -1,0 +1,15 @@
+{
+  "uwNetID": "phil123",
+  "categoryList": [
+    {
+      "categoryCode": 12,
+      "categoryName": "Course",
+      "sourceCode": 4,
+      "sourceName": "Supplemental",
+      "statusCode": 1,
+      "statusName": "Active",
+      "instance": 0
+    }
+  ],
+  "timeStamp": "Mon, 18 Jun 2018 13:02:46 -0700"
+}

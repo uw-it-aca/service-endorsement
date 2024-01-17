@@ -12,10 +12,26 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
 .notification.notification-subject { font-family: courier; }
 .notification.notification-html p { margin: 12px 0; }
 .notification.notification-text pre { margin: 0; border: 0; padding: 0; }
+.tabs {  margin-top: 2em; }
+.tabs .tabs-list { position: relative; top: 1px; z-index: 100; list-style: none; margin: 0px; padding: 0px; }
+.tabs .tabs-list li { margin-right: 1.75em; float: left; padding-bottom: 2px;}
+.tabs .tabs-list li span { text-transform: uppercase; font-weight: bold; }
+.tabs .tabs-list li span:hover { cursor: pointer; }
+.tabs .tabs-list li.active { border-bottom: 3px solid black; }
+.tabs .tab { position: relative; clear: both; top: -2px; border-top: 3px solid lightgray; display: none; padding-top: 20px; }
+.tabs .tab.active { display: block; }
 </style>
 <div class="container" style="max-width: 100%;">
 
   <h2>Lifecycle Notifications</h2>
+
+<div class="tabs">
+ <ul class="tabs-list">
+   <li class="active" data-tab="service"><span>Services</span></li>
+   <li data-tab="access"><span>Elevated Access</span></li>
+ </ul>
+ <div id="service" class="tab active">
+
   <p>
     Choose a notification type and select services to see the email contents that will be sent.  Notification email is sent as multipart messages containing a text and html representation.
   </p>
@@ -58,7 +74,7 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
     <div class="form-group info" id="info_warning_4">
       Notice that provisioned services have expired sent to the provisioner on expiration day.
     </div>
-    
+
     <div class="form-group">
       <h4>Provisioned Services</h4>
       <div class="row">
@@ -79,6 +95,51 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
             <button type="button" name="GenerateNotification" id="generate_notification" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Generating">Show Notification</button>
     </div> -->
   </form>
+ </div>
+ <div id="access" class="tab">
+  <p>
+    Choose an access type to see the the email text sent to the new delegate.  Notification email is sent as multipart messages containing a text and html representation.
+  </p>
+
+  <form>
+    {% csrf_token %}
+   <div class="row">
+    <div class="form-group col-md-4">
+      <h4>Notification Message Type</h4>
+      <select class="form-control" id="notification">
+        <option value="delegate">New Delegate Welcome</option>
+        <option value="warning_1">Initial Renewal Notice</option>
+        <option value="warning_2">Penultimate Renewal Notice</option>
+        <option value="warning_3">Final Renewal Notice</option>
+        <option value="warning_4">Provision Expiration</option>
+      </select>
+    </div>
+
+    <div class="form-group col-md-4">
+      <h4>Delegate Type</h4>
+        <select class="form-control" id="delegate_type">
+          <option value="personal">Personal Netid</option>
+          <option value="shared">Shared NetID</option>
+          <option value="group">Group Name</option>
+        </select>
+    </div>
+
+    <div class="form-group col-md-4">
+      <h4>Access Type</h4>
+      <select class="form-control" id="access_type">
+        <option value="">Select Access Type...</option>
+      </select>
+     </div>
+   </div>
+
+
+    <!--    <div class="form-group button">
+            <button type="button" name="GenerateNotification" id="generate_notification" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Generating">Show Notification</button>
+    </div> -->
+  </form>
+
+ </div>
+</div>
 
   <div id="notification_result">
   </div>

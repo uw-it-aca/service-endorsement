@@ -1,16 +1,20 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
 from endorsement.views.rest_dispatch import RESTDispatch
-from endorsement.models import Endorser, Endorsee, EndorsementRecord
+from endorsement.models import (
+    Endorser, Endorsee, EndorsementRecord,
+    Accessor, Accessee, AccessRight, AccessRecord)
 from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.util.auth import SupportGroupAuthentication
 from endorsement.dao.notification import (
     _get_endorsed_unnotified,
     _create_expire_notice_message,
     _create_endorsee_message, _create_endorser_message,
-    _create_warn_shared_owner_message)
+    _create_warn_shared_owner_message,
+    _create_accessor_message)
+from endorsement.dao.accessors import get_accessor_email
 from datetime import datetime, timedelta
 import re
 import uuid
@@ -28,6 +32,16 @@ class Notification(RESTDispatch):
     authentication_classes = [SupportGroupAuthentication]
 
     def post(self, request, *args, **kwargs):
+        notice_type = request.data.get('type', None)
+
+        if notice_type == 'service':
+            return self._service_notification(request)
+        elif notice_type == 'access':
+            return self._access_notification(request)
+
+        return self.error_response(400, "Incomplete or unknown notification.")
+
+    def _service_notification(self, request):
         notification = request.data.get('notification', None)
         endorsements = request.data.get('endorsees', {})
 
@@ -107,6 +121,45 @@ class Notification(RESTDispatch):
         except Exception as ex:
             return self.error_response(500, "{}".format(
                 traceback.format_exc()))
+
+    def _access_notification(self, request):
+        notification = request.data.get('notification', None)
+        right = request.data.get('right', "")
+        right_name = request.data.get('right_name', "")
+        is_shared_netid = request.data.get('is_shared_netid', False)
+        is_group = request.data.get('is_group', False)
+
+        accessee = Accessee(netid="jfaculty",
+                            regid="1234567890abcdef1234567890abcdef",
+                            display_name="Dr J Faculty",
+                            is_valid=True)
+        accessor = Accessor(
+            name="u_javerage_admin" if is_group else "javerage",
+            display_name="Jamie Average", is_valid=True,
+            is_shared_netid=is_shared_netid, is_group=is_group)
+
+        if right == "":
+            return self.error_response(400, "Unknown notification.")
+
+        try:
+            access_right = AccessRight.objects.get(name=right)
+        except AccessRight.DoesNotExist:
+            return self.error_response(400, "Unknown access right.")
+
+        ar = AccessRecord(
+            accessee=accessee, accessor=accessor, access_right=access_right)
+
+        if notification == 'delegate':
+            (subject, text_body, html_body) = _create_accessor_message(
+                ar, get_accessor_email(ar))
+        else:
+            return self.error_response(400, "Unknown notification.")
+
+        return self.json_response({
+            'subject': subject,
+            'text': text_body,
+            'html': html_body
+        })
 
 
 # mimic function in dao.notification

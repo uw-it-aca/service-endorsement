@@ -1,0 +1,22 @@
+{% verbatim %}
+<script id="resolved_conflict_modal_content" type="text/x-handlebars-template">
+<div class="modal-header">
+  <span class="significant">Access Type Conflict Resolved</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="endorsed-acceptance container">
+    <div class="row">
+      <div class="col-md-12">
+    You have granted {{ accessor.display_name}} ({{accessor.name}}) &quot;{{access_right.display_name}}&quot; to the mailbox {{accessee.netid}}.
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" id="confirm_resolved_conflict" class="btn btn-primary">OK</button>
+</div>
+</script>
+{% endverbatim %}

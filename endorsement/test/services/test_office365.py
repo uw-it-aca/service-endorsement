@@ -1,4 +1,4 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import json
@@ -89,3 +89,4 @@ class TestOffice365Service(ServicesApiTest):
         self.assertEqual(len(errored), 1)
         self.assertTrue('wadm_jstaff' in endorsed)
         self.assertFalse('cpnebeng' in endorsed)
+        self.assertFalse('phil123' in endorsed)

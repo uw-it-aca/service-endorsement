@@ -78,6 +78,10 @@ cronjob:
       args:
         - expiration_notice
         - "4"
+    - name: reconcile-access
+      schedule: "1 6 * * 3,6"
+      command: ["/scripts/management_command.sh"]
+      args: ["reconcile_access"]
 daemon:
   enabled: true
   daemons:

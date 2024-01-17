@@ -1,10 +1,10 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TransactionTestCase
 from django.utils import timezone
 from django.core import mail
-from endorsement.models import Accessor, Accessee, AccessRecord
+from endorsement.models import Accessor, Accessee, AccessRight, AccessRecord
 from endorsement.util.string import listed_list
 from endorsement.dao.notification import notify_accessors
 from endorsement.services import endorsement_services
@@ -151,18 +151,20 @@ class TestAccessorNotification(TransactionTestCase):
             name='endorsement_group', display_name='Group Accessor',
             is_valid=True, is_shared_netid=False, is_group=True)
 
+        aaaott = AccessRight.objects.create(
+            name='1', display_name='AllAccessAllOfTheTime')
+        sasott = AccessRight.objects.create(
+            name='2', display_name='SomeAccessSomeOfTheTime')
+
         AccessRecord.objects.create(
             accessee=self.accessee, accessor=self.accessor,
-            right_id='1', right_name='AllAccessAllOfTheTime',
-            datetime_granted=now)
+            access_right=aaaott, datetime_granted=now)
         AccessRecord.objects.create(
             accessee=self.accessee, accessor=self.group_accessor,
-            right_id='1', right_name='SomeAccessSomeOfTheTime',
-            datetime_granted=now)
+            access_right=sasott, datetime_granted=now)
         AccessRecord.objects.create(
             accessee=self.accessee, accessor=self.accessor2,
-            right_id='1', right_name='SomeAccessSomeOfTheTime',
-            datetime_granted=now, is_reconcile=True)
+            access_right=sasott, datetime_granted=now, is_reconcile=True)
 
     def test_access_notifications(self):
         notify_accessors()

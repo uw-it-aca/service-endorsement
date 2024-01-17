@@ -1,4 +1,4 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from unittest2 import skipIf
@@ -96,3 +96,8 @@ class TestViewApi(TestCase):
     def get_response(self, url_name, **kwargs):
         url = reverse(url_name)
         return self.client.get(url, **kwargs)
+
+    def post_response(self, url_name, body, **kwargs):
+        url = reverse(url_name, **kwargs)
+        return self.client.post(
+            url, data=body, content_type="application/json")
