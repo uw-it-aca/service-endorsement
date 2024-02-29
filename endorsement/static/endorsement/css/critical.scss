@@ -281,7 +281,7 @@ a {
   }
 }
 
-.endorsed-netids-table, .shared-netids-table, .office-access-table { border: 1px solid #ddd; 
+.endorsed-netids-table, .shared-netids-table, .office-access-table, .shared-drive-table { border: 1px solid #ddd;
 
   table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }
   thead { flex: 0 0 auto; }
@@ -358,11 +358,16 @@ label.accept_responsibility {
 .panel-toggle { color:#0077c2; display: inline-block; margin-bottom: 10px; }
 
 .netid-panel { margin-bottom: 40px; }
+.shared-drive-panel { margin-bottom: 40px; }
 
 #provision { margin-bottom: 38px; }
 
 #office_access { padding-top: 2em;
     .access-header { font-size: 1.1em; font-weight: 800; }
+}
+
+#shared_drives { padding-top: 2em;
+    .shared-drive-header { font-size: 1.1em; font-weight: 800; }
 }
 
 #provisioned, #shared, #office_access {

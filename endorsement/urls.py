@@ -27,6 +27,7 @@ from endorsement.views.api.office.access import (
     Access as OfficeAccess, AccessRights as OfficeAccessRights)
 from endorsement.views.api.office.resolve import ResolveRightsConflict
 from endorsement.views.api.office.validate import Validate as OfficeValidate
+from endorsement.views.api.google.shared_drive import SharedDrive
 from endorsement.views.api.notification import Notification
 
 
@@ -74,5 +75,7 @@ urlpatterns = [
     re_path(r'^office/v1/access', OfficeAccess.as_view(), name='access_api'),
     re_path(r'^office/v1/validate', OfficeValidate.as_view(),
             name='office_validate_api'),
+    re_path(r'^google/v1/shared_drives', SharedDrive.as_view(),
+            name='shared_drives_api'),
     re_path(r'.*', page.index, name='home'),
 ]

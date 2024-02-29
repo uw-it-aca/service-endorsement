@@ -41,3 +41,7 @@ class TooManyUWNetids(Exception):
 
 class EmailFailureException(Exception):
     pass
+
+
+class SharedDriveNonPrivilegedMember(Exception):
+    pass

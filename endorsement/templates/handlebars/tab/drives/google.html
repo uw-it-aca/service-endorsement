@@ -1,0 +1,51 @@
+{% verbatim %}
+<script id="shared_drives_panel" type="text/x-handlebars-template">
+<div class="row justify-content-end">
+ <div class="col-sm-12">
+    <span class="shared-drive-header">Your Google Shared Drives</span>
+    <p>Manage the quota size of your shared drives. &nbsp;<a href="javascript: void()" target="_blank">Learn more.</a>
+
+  <div class="form-group">
+    <div class="shared-drive-table">
+    <table class="table shared-drive-table">
+      <thead class="thead-light">
+        <tr>
+          <th class="shared-drive-name"><label>Shared Drive Name</label></th>
+          <th class="shared-drive-quota"><label>Shared Drive Quota</label></th>
+          <th class="shared-drive-members"><span>Members</span></th>
+          <th class="access-action"><span>Action</span></th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#each drives}}
+        {{> shared_drives_row_partial drive=drive }}
+      {{/each}}
+      </tbody>
+    </table>
+    </div>
+  </div>
+</script>
+
+<script id="shared_drives_row_partial" type="text/x-handlebars-template">
+    <tr class="shared-drive-row">
+      <td class="shared-drive-name" data-shared-drive_id="{{ share_drive.drive_id }}">{{ shared_drive.drive_name }}</td>
+      <td class="shared-drive-quota">{{ shared_drive.drive_quota.org_unit }}</td>
+      <td class="shared-drive-members">{{#each shared_drive.members}}{{name}}, {{/each}}</td>
+      <td class="access-action">
+            <button type="button" class="btn btn-primary" id="shared_drive_change" data-loading-text="Loading..." data-mailbox="{{ shared_drive.drive_id }}">Change Quota</button></td>
+    </tr>
+</script>
+
+<script id="no-shared-drives-content" type="text/x-handlebars-template">
+  <div class="no-access-netids">
+      <p>You do not appear to have any Google Shared Drives.</br>
+      Visit this page to request a Google Shared Drive.</p>
+  </div>
+</script>
+
+
+<script id="shared-drives-loading" type="text/x-handlebars-template">
+<div class="loading"><div></div></div>
+</script>
+</script>
+{% endverbatim %}

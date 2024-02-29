@@ -8,7 +8,9 @@ $(window.document).ready(function() {
         'email_editor_partial': $("#email_editor_partial").html(),
         'office_access_row_partial': $("#office_access_row_partial").html(),
         'office_conflict_row_partial': $('#office_conflict_row_partial').html(),
-        'modal_action_partial': $("#modal_action_partial_template").html()
+        'modal_action_partial': $("#modal_action_partial_template").html(),
+        'shared_drives_row_partial': $("#shared_drives_row_partial").html(),
+
     });
 
     Handlebars.registerHelper({
