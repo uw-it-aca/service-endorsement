@@ -30,7 +30,7 @@
     <tr class="shared-drive-row">
       <td class="shared-drive-name" data-shared-drive_id="{{ share_drive.drive_id }}">{{ shared_drive.drive_name }}</td>
       <td class="shared-drive-quota">{{ shared_drive.drive_quota.org_unit }}</td>
-      <td class="shared-drive-members">{{#each shared_drive.members}}{{name}}, {{/each}}</td>
+      <td class="shared-drive-members"><ul class="comma-list">{{#each shared_drive.members}}<li>{{name}}</li>{{/each}}</ul></td>
       <td class="access-action">
             <button type="button" class="btn btn-primary" id="shared_drive_change" data-loading-text="Loading..." data-mailbox="{{ shared_drive.drive_id }}">Change Quota</button></td>
     </tr>
