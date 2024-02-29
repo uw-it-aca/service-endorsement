@@ -4,7 +4,7 @@
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from endorsement.dao.shared_drive import load_shared_drives
+from endorsement.dao.shared_drive import load_shared_drives_from_csv
 
 
 class Command(BaseCommand):
@@ -14,4 +14,4 @@ class Command(BaseCommand):
         parser.add_argument('csv_file')
 
     def handle(self, *args, **options):
-        load_shared_drives(options['csv_file'])
+        load_shared_drives_from_csv(options['csv_file'])

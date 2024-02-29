@@ -11,49 +11,64 @@ import logging
 
 
 logger = logging.getLogger(__name__)
+netid_regex = re.compile(
+    r'^(?P<netid>[^@]+)@(uw|(u\.)?washington)\.edu$', re.I)
 
 
-def load_shared_drives(file_path):
+def load_shared_drives_from_csv(file_path):
     """
     populate shared drive models
     """
+    seen_shared_drives = set()
+    columns = None
     with open(file_path, 'r') as csvfile:
-        next(csvfile, None)
         for row in csv.reader(csvfile, delimiter=","):
-            a = SharedDriveData(row)
             try:
-                shared_drive_record = get_shared_drive_record(a)
+                if columns:
+                    a = DataFromRow(row=row, columns=columns)
+                    load_shared_drive_record(
+                        a, a.DriveId in seen_shared_drives)
+                    seen_shared_drives.add(a.DriveId)
+                else:
+                    columns = list(filter(None, row))
             except SharedDriveNonPrivilegedMember as ex:
                 logger.info(f"{ex}")
             except Exception as ex:
                 logger.error(f"shared drive record: {a}: {ex}")
 
 
-def get_shared_drive_record(a):
+def load_shared_drive_record(a, is_seen):
     """
     ensure shared drive record is created
     """
-    shared_drive = get_shared_drive(a)
+    shared_drive = upsert_shared_drive(a, is_seen)
     shared_drive_record, _ = SharedDriveRecord.objects.get_or_create(
         shared_drive=shared_drive)
     return shared_drive_record
 
 
-def get_shared_drive(a):
+def upsert_shared_drive(a, is_seen):
     """
-    return a shared drive model
+    return a shared drive model for given DriveId, allowing for
+    name, quota and membership chantges
     """
     drive_quota = get_drive_quota(a)
     shared_drive_member = get_shared_drive_member(a)
-    shared_drive, _ = SharedDrive.objects.get_or_create(
-        drive_id=a.DriveId, drive_name=a.DriveName, drive_quota=drive_quota)
+    shared_drive, created = SharedDrive.objects.update_or_create(
+        drive_id=a.DriveId, defaults={
+            'drive_name': a.DriveName,
+            'drive_quota': drive_quota})
+
+    if not created and not is_seen:
+        shared_drive.members.clear()
+
     shared_drive.members.add(shared_drive_member)
     return shared_drive
 
 
 def get_drive_quota(a):
     """
-    return a shared drive quota model
+    return a shared drive quota model from OrgUnit
     """
     drive_quota, _ = SharedDriveQuota.objects.get_or_create(org_unit=a.OrgUnit)
     return drive_quota
@@ -61,7 +76,7 @@ def get_drive_quota(a):
 
 def get_shared_drive_member(a):
     """
-    return a shared drive member model
+    return a shared drive member model from Member and Role
     """
     member = get_member(a)
     role = get_role(a)
@@ -72,12 +87,11 @@ def get_shared_drive_member(a):
 
 def get_member(a):
     """
-    return a member model, netid-ing as necessary
+    return a member model, bare netid or non-uw email
     """
-    is_netid = re.match(
-        r'^(?P<netid>[^@]+)@(uw|(u\.)?washington)\.edu$', a.Member, re.I)
+    netid = netid_regex.match(a.Member)
     member, _ = Member.objects.get_or_create(
-        name=is_netid.group('netid') if is_netid else a.Member)
+        name=netid.group('netid') if netid else a.Member)
     return member
 
 
@@ -94,11 +108,10 @@ def get_role(a):
     return role
 
 
-class SharedDriveData(object):
-    SHARED_DRIVE_COLUMNS = [
-        "DriveId", "DriveName", "TotalMembers", "OrgUnit", "Member",
-        "Role", "QueryDate"]
+class DataFromRow(object):
+    def __init__(self, *args, **kwargs):
+        columns = kwargs.get('columns', [])
+        row = kwargs.get('row', [])
 
-    def __init__(self, row):
-        for i, k in enumerate(self.SHARED_DRIVE_COLUMNS):
+        for i, k in enumerate(columns):
             setattr(self, k, row[i])
