@@ -112,8 +112,6 @@ environmentVariables:
     value: https://test.provision.uw.edu/saml
   - name: CLUSTER_CNAME
     value: test.provision.uw.edu
-  - name: SAFE_EMAIL_RECIPIENT
-    value: "mikes@uw.edu"
 externalSecrets:
   enabled: true
   secrets:
@@ -126,6 +124,10 @@ externalSecrets:
           property: email-host
         - name: msca-subscription-key
           property: msca-subscription-key
+        - name: safe-email-recipient
+          property: safe-email-recipient
+        - name: safe-email-safelist
+          property: safe-email-safelist
     - name: test.provision.uw.edu-sql-secret
       externalKey: provision/test/sql-secret
       data:
@@ -158,6 +160,14 @@ environmentVariablesSecrets:
     name: MSCA_SUBSCRIPTION_KEY
     secretName: test.provision.uw.edu-secrets
     secretKey: msca-subscription-key
+  SafeEmailRecipient:
+    name: SAFE_EMAIL_RECIPIENT
+    secretName: test.provision.uw.edu-secrets
+    secretKey: safe-email-recipient
+  SafeEmailSafelist:
+    name: SAFE_EMAIL_SAFELIST
+    secretName: test.provision.uw.edu-secrets
+    secretKey: safe-email-safelist
   SAMLServiceProviderCert:
     name: SP_CERT
     secretName: test.provision.uw.edu-ic-certs

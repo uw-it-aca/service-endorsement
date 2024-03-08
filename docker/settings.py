@@ -106,6 +106,8 @@ EMAIL_SSL_KEYFILE = os.getenv('KEY_PATH', '')
 EMAIL_USE_TLS=True
 if os.getenv("SAFE_EMAIL_RECIPIENT", None):
     SAFE_EMAIL_RECIPIENT = os.getenv("SAFE_EMAIL_RECIPIENT")
+    SAFE_EMAIL_SAFELIST = [s.strip() for s in os.getenv(
+        'SAFE_EMAIL_SAFELIST', '').split(',')]
     EMAIL_BACKEND = 'saferecipient.EmailBackend'
     EMAIL_NOREPLY_ADDRESS = 'Service Endorsement <endorsement-noreply@uw.edu>'
 else:
