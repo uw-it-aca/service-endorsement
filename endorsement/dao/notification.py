@@ -243,9 +243,7 @@ def _create_invalid_endorser_message(endorsements):
 
     params['services'] = list(services.keys())
 
-    subject = "{0}{1}".format(
-        "Action Required: Services that you provisioned for other ",
-        "UW NetIDs will be revoked soon")
+    subject = "Action Required: Provisioned UW-IT services will expire soon"
 
     text_template = "email/invalid_endorser.txt"
     html_template = "email/invalid_endorser.html"
@@ -312,15 +310,11 @@ def _create_expire_notice_message(notice_level, lifetime, endorsed):
         context['impacts'].append(impact_statement)
 
     if notice_level < 4:
-        subject = "{0}{1}".format(
-            "Action Required: UW-IT services that you provisioned access to ",
-            "for other UW NetIDs will expire soon")
+        subject = "Action Required: Provisioned UW-IT services will expire soon"
         text_template = "email/notice_warning.txt"
         html_template = "email/notice_warning.html"
     else:
-        subject = "{0}{1}".format(
-            "Action Required: UW-IT services that you provisioned access to ",
-            "for other UW NetIDs have expired")
+        subject = "Action Required: Provisioned UW-IT services have expired"
         text_template = "email/notice_warning_final.txt"
         html_template = "email/notice_warning_final.html"
 
