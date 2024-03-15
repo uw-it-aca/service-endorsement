@@ -127,8 +127,8 @@ class TestNotificationDao(TransactionTestCase):
         notify_invalid_endorser(endorsements)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
-            mail.outbox[0].subject[:46],
-            'Action Required: Services that you provisioned')
+            mail.outbox[0].subject,
+            'Action Required: Provisioned UW-IT services will expire soon')
         self.assertTrue(
             service.category_name in mail.outbox[0].body)
         self.assertTrue(

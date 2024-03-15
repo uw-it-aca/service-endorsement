@@ -21,7 +21,7 @@ RUN chmod u+x /scripts/app_start.sh
 RUN . /app/bin/activate && pip install django-webpack-loader
 RUN . /app/bin/activate && python manage.py collectstatic
 
-FROM node:14.18.1-stretch AS node-bundler
+FROM node:lts-slim AS node-bundler
 ADD . /app/
 WORKDIR /app/
 RUN npm install .
