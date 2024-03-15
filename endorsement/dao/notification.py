@@ -310,7 +310,7 @@ def _create_expire_notice_message(notice_level, lifetime, endorsed):
         context['impacts'].append(impact_statement)
 
     if notice_level < 4:
-        subject = {"Action Required: Provisioned UW-IT "
+        subject = ("Action Required: Provisioned UW-IT "
                    "services will expire soon")
         text_template = "email/notice_warning.txt"
         html_template = "email/notice_warning.html"
