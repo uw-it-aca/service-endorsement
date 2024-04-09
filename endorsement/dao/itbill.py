@@ -52,5 +52,3 @@ def get_subscription_by_key_remote(key_remote):
             raise ITBillSubscriptionNotFound(key_remote)
 
         raise
-
-    return None

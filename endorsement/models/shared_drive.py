@@ -116,7 +116,8 @@ class SharedDriveRecord(
         (SUBSCRIPTION_CANCELLED, "Cancelled")
     )
 
-    shared_drive = models.ForeignKey(SharedDrive, on_delete=models.PROTECT)
+    shared_drive = models.ForeignKey(
+        SharedDrive, unique=True, on_delete=models.PROTECT)
     subscription_key_remote = models.SlugField(max_length=32)
     subscription_state = models.CharField(
         max_length=16, choices=SUBSCRIPTION_STATE_CHOICES)
