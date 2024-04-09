@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 from endorsement.util.date import datetime_to_str
+import secrets
 import json
 
 
@@ -137,9 +138,7 @@ class SharedDriveRecord(
 
     def save(self, *args, **kwargs):
         if not self.subscription_key_remote:
-            self.subscription_key_remote = "".join(
-                ["0123456789abcdef"[
-                    random.randint(0, 0xF)] for _ in range(32)])
+            self.subscription_key_remote = secrets.token_hex(16)
 
         super(SharedDriveRecord, self).save(*args, **kwargs)
 
