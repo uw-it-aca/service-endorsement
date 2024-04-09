@@ -45,3 +45,11 @@ class EmailFailureException(Exception):
 
 class SharedDriveNonPrivilegedMember(Exception):
     pass
+
+
+class SharedDriveRecordExists(Exception):
+    pass
+
+
+class ITBillSubscriptionNotFound(Exception):
+    pass

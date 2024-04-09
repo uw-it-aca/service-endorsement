@@ -101,10 +101,25 @@ class SharedDriveRecord(
     various states and timestamps to manage its lifecycle. 
     """
     MANAGER_ROLE = "organizer"
+    SUBSCRIPTION_DRAFT = "draft"
+    SUBSCRIPTION_PROVISIONING = "provisioning"
+    SUBSCRIPTION_DEPLOYED = "deployed"
+    SUBSCRIPTION_DEPROVISION = "deprovision"
+    SUBSCRIPTION_CLOSED = "closed"
+    SUBSCRIPTION_CANCELLED = "cancelled"
+    SUBSCRIPTION_STATE_CHOICES = (
+        (SUBSCRIPTION_DRAFT, "Draft"),
+        (SUBSCRIPTION_PROVISIONING, "Provisioning"),
+        (SUBSCRIPTION_DEPLOYED, "Deployed"),
+        (SUBSCRIPTION_DEPROVISION, "Deprovision"),
+        (SUBSCRIPTION_CLOSED, "Closed"),
+        (SUBSCRIPTION_CANCELLED, "Cancelled")
+    )
 
     shared_drive = models.ForeignKey(SharedDrive, on_delete=models.PROTECT)
-    subscription_id = models.SlugField(max_length=32, null=True)
-    state = models.CharField(max_length=128, null=True)
+    subscription_key_remote = models.SlugField(max_length=32)
+    subscription_state = models.CharField(
+        max_length=16, choices=SUBSCRIPTION_STATE_CHOICES)
     acted_as = models.SlugField(max_length=32, null=True)
     datetime_created = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
@@ -118,6 +133,14 @@ class SharedDriveRecord(
     is_deleted = models.BooleanField(null=True)
 
     objects = SharedDriveRecordManager()
+
+    def save(self, *args, **kwargs):
+        if not self.subscription_key_remote:
+            self.subscription_key_remote = "".join(
+                ["0123456789abcdef"[
+                    random.randint(0, 0xF)] for _ in range(32)])
+
+        super(SharedDriveRecord, self).save(*args, **kwargs)
 
     def json_data(self):
         return {
