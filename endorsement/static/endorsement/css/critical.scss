@@ -281,6 +281,16 @@ a {
   }
 }
 
+.no-provisions-found {
+  height: 600px !important;
+  font-size: 1.4em;
+  font-weight: 600;
+}
+
+.shared-drive-table-tall {
+  tbody { height: 600px !important; }
+}
+
 .endorsed-netids-table, .shared-netids-table, .office-access-table, .shared-drive-table { border: 1px solid #ddd;
 
   table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }
@@ -298,6 +308,9 @@ a {
   tr.new_access .access-status,
   tr.new_access .access-type,
   tr.new_access .access-action  { background: #efffef !important; }
+  .shared-drive-action { width: 16em !important; }
+  .xshared-drive-quota { width: 5em; }
+  .shared-drive-est-usage { width: 7em; }
   .access-status p { padding-left: 1.2em; }
   .endorsed-netid, .access-mailbox { border-top: none; }
   tr.endorsee_row_odd { background: #f8f8f8;  }
@@ -309,18 +322,20 @@ a {
   }
   .endorsed-netid, .access-mailbox { width: 12rem; white-space: nowrap; }
   .endorsed-name, .access-mailbox-name { border-top: none; border-right: 1px solid #ddd; }
-  .endorsed-status-icon { width: 20px; }
-  .endorsed-status {
+  .endorsed-status-icon,  { width: 20px; }
+  .shared-drive-status-icon { width: 24px; }
+  .endorsed-status, .shared-drive-status {
       width: 15rem;
       p { font-size: smaller; }
   }
   .endorsed-reason { width: 13rem; }
-  .endorsed-action { width: 12rem; white-space: nowrap; }
+  .endorsed-action, .shared-drive-action { width: 12rem; white-space: nowrap; }
   .aggregate_action { margin-right: 10px; }
   .endorsed-error {
       width: 51rem;
       span { display: block; color: red; }
   }
+  .subscription-status { font-size: smaller; color: green; }
 }
 
 .prt-data-popover {
@@ -330,6 +345,16 @@ a {
 
 .popover {
     max-width: 380px;
+}
+
+.popover-body:has(.manager-list) {
+    max-height: 160px;
+    overflow-y: scroll;
+}
+
+div.toggle {
+    height: 100px;
+    overflow-y: auto;
 }
 
 span.mailbox, span.delegate {

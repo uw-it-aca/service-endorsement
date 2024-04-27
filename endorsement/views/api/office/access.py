@@ -148,19 +148,6 @@ class Access(RESTDispatch):
         conflict = AccessRecordConflict.objects.filter(accessee=accessee)
         return [arc.json_data() for arc in conflict]
 
-    def _validate_user(self, request):
-        user_service = UserService()
-        netid = user_service.get_user()
-        if not netid:
-            raise UnrecognizedUWNetid()
-
-        original_user = user_service.get_original_user()
-        acted_as = None if (netid == original_user) else original_user
-        if acted_as and is_only_support_user(request):
-            raise InvalidNetID()
-
-        return netid, acted_as
-
     def _is_valid_accessor(self, supported):
         return (supported.is_owner() and (
             supported.is_shared_netid()

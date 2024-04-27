@@ -27,11 +27,30 @@ $(window.document).ready(function() {
         'gt': function(a, b, options) {
             return (a > b) ? options.fn(this) : options.inverse(this);
         },
+        'lte': function(a, b, options) {
+            return (a <= b) ? options.fn(this) : options.inverse(this);
+        },
         'even': function(n, options) {
             return ((n % 2) === 0) ? options.fn(this) : options.inverse(this);
         },
+        'slice': function(a, start, end, options) {
+            if(!a || a.length == 0)
+                return options.inverse(this);
+
+            var result = [];
+            for(var i = start; i < end && i < a.length; ++i)
+                result.push(options.fn(a[i]));
+
+            return result.join('');
+        },
+        'or': function(a, b, options) {
+            return (a || b) ? options.fn(this) : options.inverse(this);
+        },
         'ifAndNot': function(a, b, options) {
             return (a && !b) ? options.fn(this) : options.inverse(this);
+        },
+        'ifNotAndNot': function(a, b, options) {
+            return (!a && !b) ? options.fn(this) : options.inverse(this);
         }
     });
 });

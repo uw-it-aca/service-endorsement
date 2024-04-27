@@ -13,18 +13,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def initiate_subscription(shared_drive):
+def initiate_subscription(shared_drive_record):
     try:
         user_service = UserService()
 
-        shared_drive_record = SharedDriveRecord.objects.create(
-            shared_drive=shared_drive, state=SharedDriveRecord.STATE_DRAFT)
-
         new_subscription = {
-            "name": getattr(
-                settings, "ITBILL_SHARED_DRIVE_NAME_FORMAT", "{}").format(
-                    shared_drive.drive_id),
-            "key_remote": shared_drive_record.subscription_key_remote,
+            "name": shared_drive_record.subscription.name,
+            "key_remote": shared_drive_record.subscription.key_remote,
             "product": getattr(settings, "ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID"),
             "start_date": "",
 	    "contact": user_service.get_user(),
@@ -46,7 +41,7 @@ def initiate_subscription(shared_drive):
 def get_subscription_by_key_remote(key_remote):
     try:
         return Subscription().get_subscription_by_key_remote(
-            subscription_key_remote)
+            subscription.key_remote)
     except DataFailureException as ex:
         if ex.status == 404:
             raise ITBillSubscriptionNotFound(key_remote)

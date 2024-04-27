@@ -1,1 +1,57 @@
-[{"model": "endorsement.shareddrive", "pk": 1, "fields": {"drive_id": "ABC_0123-DE45FF5789", "drive_name": "My Drive One", "drive_quota": 1, "members": [1, 2, 3, 4]}}, {"model": "endorsement.shareddrive", "pk": 2, "fields": {"drive_id": "IRDXB54TWF3OY8MVC9J", "drive_name": "My Other Drive", "drive_quota": 2, "members": [3, 5]}}, {"model": "endorsement.shareddrive", "pk": 3, "fields": {"drive_id": "rBQ11YNswxAz2p2yGyE", "drive_name": "Single Member Drive", "drive_quota": 3, "members": [3]}}]
+[
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 1,
+    "fields": {
+      "drive_id": "ABC_0123-DE45FF5789",
+      "drive_name": "Subsidized quota",
+      "drive_usage": 39,
+      "drive_quota": 1,
+      "members": [1, 2, 3, 4, 5]
+    }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 2,
+    "fields": {
+      "drive_id": "1KsIl1coIylwR0FQ",
+      "drive_name": "Subsidized, expiring",
+      "drive_usage": 81,
+      "drive_quota": 1,
+      "members": [5, 8, 10]
+    }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 3,
+    "fields": {
+      "drive_id": "IRDXB54TWF3OY8MVC9J",
+      "drive_name": "Lg quota, with subscription, expiring soon",
+      "drive_usage": 218,
+      "drive_quota": 3,
+      "members": [5]
+    }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 4,
+    "fields": {
+      "drive_id": "rBQ11YNswxAz2p2yGyE",
+      "drive_name": "Lg quota, day zero",
+      "drive_usage": 99,
+      "drive_quota": 2,
+      "members": [1, 3, 5]
+    }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 5,
+    "fields": {
+      "drive_id": "9F97529B38CF46F336C7408",
+      "drive_name": "Lg quota with subscription",
+      "drive_usage": 283,
+      "drive_quota": 4,
+      "members": [1, 2, 3, 4, 5, 7, 8, 10, 11]
+    }
+  }
+]
