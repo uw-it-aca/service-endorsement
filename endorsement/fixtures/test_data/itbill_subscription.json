@@ -1,0 +1,26 @@
+[
+  {
+    "model": "endorsement.itbillsubscription",
+    "pk": 1,
+    "fields": {
+      "key_remote": "C11F79E44DA766B7",
+      "name": "GSD_C11F79E44DA766B7",
+      "state": 1,
+      "url": "https://uwdev.service-now.com/sp?id=sc_cat_item&sys_id=dc46f1711b418290cc990dc0604bcbcc&remote_key=GSD_test_test_test_123_rk&shared_drive=my%20drive",
+      "query_priority": 0,
+      "query_datetime": null
+    }
+  },
+  {
+    "model": "endorsement.itbillsubscription",
+    "pk": 2,
+    "fields": {
+      "key_remote": "GSD_test_test_test_123_rk",
+      "name": "my drive",
+      "state": 1,
+      "url": "https://uwdev.service-now.com/sp?id=sc_cat_item&sys_id=dc46f1711b418290cc990dc0604bcbcc&remote_key=GSD_test_test_test_123_rk&shared_drive=my%20drive",
+      "query_priority": 0,
+      "query_datetime": null
+    }
+  }
+]

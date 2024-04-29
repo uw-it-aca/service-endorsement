@@ -16,6 +16,7 @@ class Command(BaseCommand):
 
         call_command('loaddata', 'test_data/member.json')
         call_command('loaddata', 'test_data/role.json')
+        call_command('loaddata', 'test_data/itbill_subscription.json')
         call_command('loaddata', 'test_data/shared_drive_member.json')
         call_command('loaddata', 'test_data/shared_drive_quota.json')
         call_command('loaddata', 'test_data/shared_drive.json')

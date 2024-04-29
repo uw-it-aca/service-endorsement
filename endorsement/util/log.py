@@ -55,3 +55,7 @@ def log_data_error_response(logger, ex):
 
 def log_data_not_found_response(logger):
     log_err_with_netid(logger, 'Data not found')
+
+
+def log_bad_request_response(logger):
+    log_err_with_netid(logger, 'Data not found')

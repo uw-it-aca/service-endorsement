@@ -18,16 +18,17 @@ class TestSharedDrivesAPI(EndorsementApiTest):
 
     def test_shared_drives(self):
         self.set_user('jstaff')
-        url = reverse('shared_drives_api')
+        url = reverse('shared_drive_api')
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEqual(len(data['drives']), 3)
+        self.assertEqual(len(data['drives']), 5)
 
     def test_no_shared_drives(self):
-        self.set_user('endorsee2')
-        url = reverse('shared_drives_api')
+        self.set_user('endorsee3')
+        url = reverse('shared_drive_api')
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(len(data['drives']), 0)
+

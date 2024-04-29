@@ -3,9 +3,10 @@
 
 from endorsement.models import SharedDriveRecord
 from endorsement.dao.persistent_messages import get_persistent_messages
+from endorsement.dao.itbill import initiate_subscription
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, data_not_found,
-    invalid_endorser, bad_request)
+    invalid_endorser, bad_request, data_error)
 from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
 import logging
 
@@ -13,13 +14,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class SharedDrive(RESTDispatch):
+class SharedDriveITBill(RESTDispatch):
     """
-    Manipulate SharedDriveRecords for provided netid
+    Manipulate ITBill resource SharedDriveRecords for provided netid
     """
     def get(self, request, *args, **kwargs):
         """
-        Return SharedDriveRecords for provided netid, all or by drive_id
+        Return SharedDriveRecord with suitable ITBill resource values
         """
         try:
             netid, acted_as = self._validate_user(request)
@@ -28,32 +29,22 @@ class SharedDrive(RESTDispatch):
         except InvalidNetID:
             return invalid_endorser(logger)
 
-        drive_id = self.kwargs.get('drive_id')
-        return self.json_response(self._drive_list(netid, drive_id))
-
-    def put(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request)
-        except UnrecognizedUWNetid:
-            return invalid_session(logger)
-        except InvalidNetID:
-            return invalid_endorser(logger)
-
-        try:
-            drive_id = self.kwargs['drive_id']
+            drive_id = self.kwargs.get('drive_id')
             drive = SharedDriveRecord.objects.get_shared_drives_for_netid(
-                netid, drive_id).get()
+                netid, drive_id)[0]
 
-            accept = request.data.get('accept')
-            if isinstance(accept, bool):
-                drive.set_acceptance(netid, accept)
-            else:
-                return bad_request(logger)
+            try:
+
+                subscription = initiate_subscription(drive)
+                drive.subscription.url = subscription.url
+                drive.save()
+            except Exception as ex:
+                return data_error(
+                    logger, "Error initiating subscription: {}".format(ex))
 
         except SharedDriveRecord.DoesNotExist:
             return data_not_found(logger)
-        except KeyError:
-            return bad_request(logger, "Missing accept parameter")
 
         return self.json_response(self._drive_list(netid, drive_id))
 
