@@ -40,8 +40,8 @@ resources:
     cpu: 500m
     memory: 512Mi
   requests:
-    cpu: 25m
-    memory: 128Mi
+    cpu: 15m
+    memory: 150Mi
 image:
   repository: IMAGE_REGISTRY
   tag: IMAGE_TAG
