@@ -4,6 +4,8 @@
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+from endorsement.models import SharedDriveRecord
+from datetime import datetime, timezone, timedelta
 
 
 class Command(BaseCommand):
@@ -21,3 +23,21 @@ class Command(BaseCommand):
         call_command('loaddata', 'test_data/shared_drive_quota.json')
         call_command('loaddata', 'test_data/shared_drive.json')
         call_command('loaddata', 'test_data/shared_drive_record.json')
+
+        # adjust dates relative to today
+        now = datetime.now(timezone.utc)
+        sdr = SharedDriveRecord.objects.get(pk=1)
+        sdr.datetime_accepted = now - timedelta(days=60)
+        sdr.save()
+
+        sdr = SharedDriveRecord.objects.get(pk=2)
+        sdr.datetime_accepted = now - timedelta(days=330)
+        sdr.save()
+
+        sdr = SharedDriveRecord.objects.get(pk=3)
+        sdr.datetime_accepted = now - timedelta(days=360)
+        sdr.save()
+
+        sdr = SharedDriveRecord.objects.get(pk=5)
+        sdr.datetime_accepted = now - timedelta(days=88)
+        sdr.save()

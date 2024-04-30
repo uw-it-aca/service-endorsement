@@ -17,6 +17,9 @@ class MemberManager(models.Manager):
 
 
 class Member(ExportModelOperationsMixin('member'), models.Model):
+    """
+    Member represents user associated with a shared drive
+    """
     name = models.CharField(max_length=128)
 
     def json_data(self):
@@ -61,6 +64,8 @@ class SharedDriveQuota(
         ExportModelOperationsMixin('shared_drive_tier'), models.Model):
     """
     SharedDriveQuota model represents a quota (tier)
+
+    Quota limit is represnted as an integer number of Gigabytes
     """
     SUBSIDIZED_QUOTA = 100
 
@@ -110,7 +115,7 @@ class SharedDriveAcceptance(
         ExportModelOperationsMixin('shared_drive_acceptance'), models.Model):
     """
     SharedDriveAcceptance model records each instance of a shared drive
-    record being accepted by a member.
+    record being accepted or revoked by a shared drive manager.
     """
     ACCEPT = 0
     REVOKE = 1
