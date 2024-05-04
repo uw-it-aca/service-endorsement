@@ -5,8 +5,8 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
+from endorsement.models.itbill import ITBillSubscription
 from endorsement.util.date import datetime_to_str
-import secrets
 import json
 
 
@@ -17,6 +17,9 @@ class MemberManager(models.Manager):
 
 
 class Member(ExportModelOperationsMixin('member'), models.Model):
+    """
+    Member represents user associated with a shared drive
+    """
     name = models.CharField(max_length=128)
 
     def json_data(self):
@@ -61,23 +64,24 @@ class SharedDriveQuota(
         ExportModelOperationsMixin('shared_drive_tier'), models.Model):
     """
     SharedDriveQuota model represents a quota (tier)
-    """
-    SUBSIDIZED_QUOTA = 100
 
+    Quota limit is represnted as an integer number of Gigabytes
+    """
     org_unit_id = models.CharField(max_length=32)
     org_unit_name = models.CharField(max_length=64, null=True)
     quota_limit = models.IntegerField(null=True)
 
     @property
     def is_subsidized(self):
-        return self.drive_quota.quota_limit <= self.SUBSIDIZED_QUOTA
+        return self.quota_limit <= getattr(
+            settings, 'ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA')
 
     def json_data(self):
         return {
             "org_unit_id": self.org_unit_id,
             "org_unit_name": self.org_unit_name,
             "quota_limit": self.quota_limit,
-            "is_subsidized": self.quota_limit <= self.SUBSIDIZED_QUOTA
+            "is_subsidized": self.is_subsidized
         }
 
 
@@ -110,7 +114,7 @@ class SharedDriveAcceptance(
         ExportModelOperationsMixin('shared_drive_acceptance'), models.Model):
     """
     SharedDriveAcceptance model records each instance of a shared drive
-    record being accepted by a member.
+    record being accepted or revoked by a shared drive manager.
     """
     ACCEPT = 0
     REVOKE = 1
@@ -135,74 +139,10 @@ class SharedDriveAcceptance(
         return json.dumps(self.json_data())
 
 
-class ITBillSubscription(
-        ExportModelOperationsMixin('itbill_subscription'), models.Model):
-    MANAGER_ROLE = "organizer"
-
-    SUBSCRIPTION_DRAFT = 0
-    SUBSCRIPTION_PROVISIONING = 1
-    SUBSCRIPTION_DEPLOYED = 2
-    SUBSCRIPTION_DEPROVISION = 3
-    SUBSCRIPTION_CLOSED = 4
-    SUBSCRIPTION_CANCELLED = 5
-    SUBSCRIPTION_STATE_CHOICES = (
-        (SUBSCRIPTION_DRAFT, "Draft"),
-        (SUBSCRIPTION_PROVISIONING, "Provisioning"),
-        (SUBSCRIPTION_DEPLOYED, "Deployed"),
-        (SUBSCRIPTION_DEPROVISION, "Deprovision"),
-        (SUBSCRIPTION_CLOSED, "Closed"),
-        (SUBSCRIPTION_CANCELLED, "Cancelled")
-    )
-
-    PRIORITY_NONE = 0
-    PRIORITY_DEFAULT = 1
-    PRIORITY_HIGH = 2
-    PRIORITY_CHOICES = (
-        (PRIORITY_NONE, 'none'),
-        (PRIORITY_DEFAULT, 'normal'),
-        (PRIORITY_HIGH, 'high')
-    )
-
-    key_remote = models.SlugField(max_length=32, unique=True, null=True)
-    name = models.CharField(max_length=128, null=True)
-    url = models.CharField(max_length=256, null=True)
-    state = models.SmallIntegerField(
-        default=SUBSCRIPTION_DRAFT, choices=SUBSCRIPTION_STATE_CHOICES)
-    query_priority = models.SmallIntegerField(
-        default=PRIORITY_DEFAULT, choices=PRIORITY_CHOICES)
-    query_datetime = models.DateTimeField(null=True)
-
-    def save(self, *args, **kwargs):
-        if not self.key_remote:
-            self.key_remote = secrets.token_hex(16)
-
-        if not self.name:
-            self.name = getattr(
-                settings, "ITBILL_SHARED_DRIVE_NAME_FORMAT", "{}").format(
-                    self.shared_drive.drive_id),
-
-        super(SharedDriveSubscription, self).save(*args, **kwargs)
-
-    def json_data(self):
-        return {
-            "key_remote": self.key_remote,
-            "name": self.name,
-            "url": self.url,
-            "state": self.SUBSCRIPTION_STATE_CHOICES[self.state][1],
-            "query_priority": self.PRIORITY_CHOICES[
-                self.query_priority][1],
-            "query_datetime": datetime_to_str(
-                self.query_datetime)
-        }
-
-    def __str__(self):
-        return json.dumps(self.json_data())
-
-
 class SharedDriveRecordManager(models.Manager):
-    def get_shared_drives_for_netid(self, netid, drive_id=None):
+    def get_member_drives(self, member_netid, drive_id=None):
         parms = {
-            "shared_drive__members__member__name": netid,
+            "shared_drive__members__member__name": member_netid,
             "is_deleted__isnull": True}
 
         if drive_id:
@@ -254,6 +194,16 @@ class SharedDriveRecord(
                             claim_span)) if (
                                 self.datetime_created) else None)
 
+    @property
+    def itbill_form_url(self):
+        url_base = getattr(settings, 'ITBILL_FORM_URL_BASE')
+        url_base_id = getattr(settings, 'ITBILL_FORM_URL_BASE_ID')
+        sys_id = getattr(settings, 'ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID')
+
+        return (f"{url_base}?id={url_base_id}&sys_id={sys_id}"
+                f"&remote_key={self.subscription.key_remote}"
+                f"&shared_drive={self.shared_drive.drive_name}")
+
     def set_acceptance(self, member_netid, accept=True):
         member = Member.objects.get_member(member_netid)
         action = SharedDriveAcceptance.ACCEPT if (
@@ -271,10 +221,17 @@ class SharedDriveRecord(
 
         self.save()
 
+    def update_subscription(self, itbill):
+        self.subscription.from_json(itbill)
+        self.subscription.save()
+        self.save()
+
     def json_data(self):
         return {
             "drive": self.shared_drive.json_data(),
             "subscription": self.subscription.json_data() if (
+                self.subscription) else None,
+            "itbill_form_url": self.itbill_form_url if (
                 self.subscription) else None,
             "acted_as": self.acted_as,
             "datetime_created": datetime_to_str(self.datetime_created),

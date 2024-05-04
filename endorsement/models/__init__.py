@@ -3,4 +3,5 @@
 
 from endorsement.models.core import *
 from endorsement.models.access import *
+from endorsement.models.itbill import *
 from endorsement.models.shared_drive import *

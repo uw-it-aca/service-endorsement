@@ -18,7 +18,7 @@
    "model": "endorsement.shareddrivemember",
    "pk": 3,
    "fields": {
-     "member": 3,
+     "member": 8,
      "role": 1
    }
  },

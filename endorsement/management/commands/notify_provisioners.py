@@ -3,6 +3,7 @@
 
 from django.core.management.base import BaseCommand, CommandError
 from endorsement.notifications.endorsement import notify_endorsers
+from endorsement.notifications.access import notify_accessees
 
 
 class Command(BaseCommand):
@@ -11,5 +12,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             notify_endorsers()
+            notify_accessees()
         except Exception as ex:
             raise CommandError('notify endorser: {0}'.format(ex))

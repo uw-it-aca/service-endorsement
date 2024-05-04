@@ -8,11 +8,12 @@ from endorsement.models import (
     Accessor, Accessee, AccessRight, AccessRecord)
 from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.util.auth import SupportGroupAuthentication
-from endorsement.dao.notification import (
+from endorsement.notifications.endorsement import (
     _get_endorsed_unnotified,
     _create_expire_notice_message,
     _create_endorsee_message, _create_endorser_message,
-    _create_warn_shared_owner_message,
+    _create_warn_shared_owner_message)
+from endorsement.notifications.access import (
     _create_accessor_message)
 from endorsement.dao.accessors import get_accessor_email
 from datetime import datetime, timedelta

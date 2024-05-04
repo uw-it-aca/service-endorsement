@@ -4,7 +4,7 @@
 from django.conf import settings
 from endorsement.models import EndorsementRecord as ER
 from endorsement.services import get_endorsement_service
-from endorsement.dao.notification import notify_invalid_endorser
+from endorsement.notifications.endorsement import notify_invalid_endorser
 from uw_saml.utils import is_member_of_group
 from importlib import import_module
 import logging

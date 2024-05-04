@@ -152,6 +152,10 @@ var ManageOfficeAccess = (function () {
                 _displayOfficeAccessTypes();
             }).on('endorse:OfficeAccessTypesFailure', function (e, data) {
                 alert('Cannot determine Access Types: ' + data);
+            }).popover({
+                selector: 'span.prt-data-popover',
+                trigger: 'focus',
+                html: true
             });
 
             $(document).on('endorse:TabChange', function (e, data) {
@@ -249,7 +253,6 @@ var ManageOfficeAccess = (function () {
 
             $content.html(template(context));
             Scroll.init('.office-access-table');
-            $('[data-toggle="popover"]').popover();
         },
         _getOfficeAccessUWNetIDs = function() {
             var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;

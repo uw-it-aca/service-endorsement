@@ -7,7 +7,7 @@
       "drive_name": "Subsidized quota",
       "drive_usage": 39,
       "drive_quota": 1,
-      "members": [1, 2, 3, 4, 5]
+      "members": [1, 2, 4, 5, 10]
     }
   },
   {
@@ -26,7 +26,7 @@
     "pk": 3,
     "fields": {
       "drive_id": "IRDXB54TWF3OY8MVC9J",
-      "drive_name": "Lg quota, with subscription, expiring soon",
+      "drive_name": "Lg quota, expiring soon",
       "drive_usage": 218,
       "drive_quota": 3,
       "members": [5]
@@ -48,10 +48,10 @@
     "pk": 5,
     "fields": {
       "drive_id": "9F97529B38CF46F336C7408",
-      "drive_name": "Lg quota with subscription",
+      "drive_name": "Lg quota with subscription (mock)",
       "drive_usage": 283,
       "drive_quota": 4,
-      "members": [1, 2, 3, 4, 5, 7, 8, 10, 11]
+      "members": [1, 2, 4, 5, 7, 8, 9, 10, 11]
     }
   }
 ]
