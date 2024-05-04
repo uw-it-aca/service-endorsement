@@ -53,5 +53,16 @@
       "drive_quota": 4,
       "members": [1, 2, 4, 5, 7, 8, 9, 10, 11]
     }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 6,
+    "fields": {
+      "drive_id": "g2ns3fxmo2x8wo6j7e5gloet",
+      "drive_name": "UX Design Team Drive",
+      "drive_usage": 359,
+      "drive_quota": 3,
+      "members": [1, 4, 5, 7, 10, 11]
+    }
   }
 ]

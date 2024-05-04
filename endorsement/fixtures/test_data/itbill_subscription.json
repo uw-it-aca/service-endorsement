@@ -18,5 +18,15 @@
       "query_priority": 0,
       "query_datetime": null
     }
+  },
+  {
+    "model": "endorsement.itbillsubscription",
+    "pk": 3,
+    "fields": {
+      "key_remote": "spw48mh5yutht3431v4d8olsx04yi8dz",
+      "state": 1,
+      "query_priority": 0,
+      "query_datetime": null
+    }
   }
 ]

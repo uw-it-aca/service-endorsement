@@ -4,13 +4,16 @@
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from endorsement.models import SharedDriveRecord
+from endorsement.models import SharedDriveRecord, ITBillQuantity
 from datetime import datetime, timezone, timedelta
 
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        # reset quantities
+        ITBillQuantity.objects.all().delete()
+
         call_command('loaddata', 'test_data/accessright.json')
         call_command('loaddata', 'test_data/accessee.json')
         call_command('loaddata', 'test_data/accessor.json')

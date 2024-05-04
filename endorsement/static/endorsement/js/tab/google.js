@@ -147,28 +147,31 @@ var ManageSharedDrives = (function () {
             drive.expiration_days = expiration.diff(now, 'days');
             drive.expiration_from_now = expiration.from(now);
             drive.in_flight = (drive.subscription && drive.subscription.query_priority === 'high');
-            drive.future_quotas = [];
+            drive.quota_notes = [{
+                is_capped: drive.drive.drive_usage > drive.drive.drive_quota.quota_limit
+            }];
+
             if (drive.subscription) {
                 $.each(drive.subscription.provisions, function () {
                     $.each(this.quantities, function () {
-                            var starting = moment(this.start_date),
-                                ending = moment(this.end_date),
-                                is_future = starting.diff(now) > 0,
-                                is_ending = starting.diff(now) < 0 && ending.diff(now) > 0,
-                                is_increasing = this.quota_limit > drive.drive.drive_quota.quota_limit,
-                                is_decreasing = this.quota_limit < drive.drive.drive_quota.quota_limit,
-                                is_changing = (is_future || is_ending);
+                        var starting = this.start_date ? moment(this.start_date) : null,
+                            ending = this.end_date ? moment(this.end_date): null,
+                            is_future = starting && starting.diff(now) > 0,
+                            is_ending = starting && ending && starting.diff(now) < 0 && ending.diff(now) > 0,
+                            is_increasing = this.quota_limit > drive.drive.drive_quota.quota_limit,
+                            is_decreasing = this.quota_limit < drive.drive.drive_quota.quota_limit,
+                            is_changing = (is_future || is_ending);
 
-                            drive.future_quotas.push({
-                                is_future: is_future,
-                                is_ending: is_ending,
-                                quota_limit: this.quota_limit,
-                                is_increasing: is_increasing,
-                                is_decreasing: is_decreasing,
-                                is_changing: is_changing,
-                                start_date: moment(this.start_date).format('M/D/YYYY'),
-                                end_date: moment(this.end_date).format('M/D/YYYY')
-                            });
+                        drive.quota_notes.push({
+                            is_future: is_future,
+                            is_ending: is_ending,
+                            quota_limit: this.quota_limit,
+                            is_increasing: is_increasing && is_future,
+                            is_decreasing: is_decreasing && is_future,
+                            is_changing: is_changing,
+                            start_date: moment(this.start_date).format('M/D/YYYY'),
+                            end_date: moment(this.end_date).format('M/D/YYYY')
+                        });
                     });
                 });
             }

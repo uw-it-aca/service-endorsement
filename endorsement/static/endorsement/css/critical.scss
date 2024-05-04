@@ -321,11 +321,17 @@ a {
   }
   .endorsed-netid, .access-mailbox { width: 12rem; white-space: nowrap; }
   .endorsed-name, .access-mailbox-name { border-top: none; border-right: 1px solid #ddd; }
-  .endorsed-status-icon,  { width: 20px; }
-  .shared-drive-status-icon { width: 24px; }
-  .endorsed-status, .shared-drive-status, .shared-drive-quota {
+  .endorsed-status-icon,  .shared-drive-status-icon { width: 26px; }
+  .endorsed-status, .shared-drive-status {
+      padding-left: 6px;
       width: 15rem;
-      p { font-size: smaller; width: 10rem; }
+      p { font-size: smaller; width: 10rem; margin-bottom: 0px; }
+  }
+  .shared-drive-quota { padding-left: 24px; width: 12rem;
+    div { position: relative; width: 14rem; left: -.85rem;
+          div:first-child { clear: left; float: left; width: 1.65rem; }
+          div:last-child { font-size: smaller; float: left; width: 10rem; }
+    }
   }
   .endorsed-reason { width: 13rem; }
   .endorsed-action, .shared-drive-action { width: 12rem; white-space: nowrap; }
