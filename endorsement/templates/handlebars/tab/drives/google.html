@@ -56,7 +56,22 @@
   <p>{{#or drive.drive_quota.is_subsidized subscription}}Renew{{else}}Select quota{{/or}} by {{expiration_date}}{{#lte expiration_days 90}}<br />({{expiration_from_now}}){{/lte}}</p>
       </td>
       <td class="shared-drive-est-usage">{{drive.drive_usage}}GB</td>
-      <td class="shared-drive-quota">{{drive.drive_quota.quota_limit}}GB{{#each future_quotas}}{{#if is_changing}}<p>{{#if is_ending}}Ending on {{end_date}}{{else}}{{#if is_future}}{{#if is_increasing}}In{{else}}De{{/if}}creasing to {{quota_limit}}GB on {{start_date}}{{/if}}{{/if}}</p>{{/if}}{{/each}}</td>
+      </td>
+      <td class="shared-drive-quota">{{drive.drive_quota.quota_limit}}GB
+{{#each quota_notes}}
+{{#if is_capped}}
+   <div><div><i class="fa fa-exclamation-circle text-danger"></i></div><div class="text-danger">Drive capped: usage is greater than current quota. Delete data or increase quota to resolve.</div></div>
+{{else}}
+  {{#if is_ending}}
+   <div><div>&nbsp;</div><div>Ending on {{end_date}}</div></div>
+  {{else}}
+   {{#or is_increasing is_decreasing}}
+     <div><div>&nbsp;</div><div>{{#if is_increasing}}In{{else}}De{{/if}}creasing to {{quota_limit}}GB on {{start_date}}</div></div>
+   {{/or}}
+  {{/if}}
+{{/if}}
+{{/each}}
+      </td>
       <td class="shared-drive-members">
         <ul class="comma-list">
           {{#gt drive.members.length 5}}

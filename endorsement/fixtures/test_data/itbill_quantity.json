@@ -6,7 +6,7 @@
       "provision": 1,
       "quantity": 2,
       "start_date": "2024-01-01",
-      "end_date": "2024-12-31",
+      "end_date": "2024-12-29",
       "stage": null
     }
   },
@@ -16,6 +16,17 @@
     "fields": {
       "provision": 2,
       "quantity": 5,
+      "start_date": null,
+      "end_date": null,
+      "stage": null
+    }
+  },
+  {
+    "model": "endorsement.itbillquantity",
+    "pk": 3,
+    "fields": {
+      "provision": 3,
+      "quantity": 1,
       "start_date": null,
       "end_date": null,
       "stage": null
