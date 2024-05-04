@@ -3,9 +3,10 @@
 
 from endorsement.models import SharedDriveRecord
 from endorsement.dao.persistent_messages import get_persistent_messages
+from endorsement.dao.itbill import refresh_subscription
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, data_not_found,
-    invalid_endorser, bad_request)
+    invalid_endorser, bad_request, data_error)
 from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
 import logging
 
@@ -29,6 +30,15 @@ class SharedDrive(RESTDispatch):
             return invalid_endorser(logger)
 
         drive_id = self.kwargs.get('drive_id')
+        refresh = request.GET.get('refresh')
+
+        try:
+            if drive_id and refresh:
+                refresh_subscription(netid, drive_id)
+        except Exception as ex:
+            logger.exception("refresh_subscription: {}".format(ex))
+            return data_error(logger, ex)
+
         return self.json_response(self._drive_list(netid, drive_id))
 
     def put(self, request, *args, **kwargs):
@@ -41,7 +51,7 @@ class SharedDrive(RESTDispatch):
 
         try:
             drive_id = self.kwargs['drive_id']
-            drive = SharedDriveRecord.objects.get_shared_drives_for_netid(
+            drive = SharedDriveRecord.objects.get_member_drives(
                 netid, drive_id).get()
 
             accept = request.data.get('accept')
@@ -58,8 +68,7 @@ class SharedDrive(RESTDispatch):
         return self.json_response(self._drive_list(netid, drive_id))
 
     def _drive_list(self, netid, drive_id=None):
-        drives = SharedDriveRecord.objects.get_shared_drives_for_netid(
-            netid, drive_id)
+        drives = SharedDriveRecord.objects.get_member_drives(netid, drive_id)
 
         return {
             'drives': [d.json_data() for d in drives],

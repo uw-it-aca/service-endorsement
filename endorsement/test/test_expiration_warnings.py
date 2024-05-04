@@ -8,7 +8,7 @@ from django.db.models import F
 from endorsement.models import Endorser, Endorsee, EndorsementRecord
 from endorsement.policy import (_endorsements_to_warn, _endorsements_to_expire)
 from endorsement.services import get_endorsement_service
-from endorsement.dao.notification import warn_endorsers
+from endorsement.notifications.endorsement import warn_endorsers
 from datetime import timedelta
 
 

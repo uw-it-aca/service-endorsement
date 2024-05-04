@@ -13,9 +13,9 @@
           <th class="shared-drive-name"><label>Shared Drive Name</label></th>
           <td class="shared-drive-status-icon"></td>
           <th class="shared-drive-status"><label>Provision Status</label></th>
-          <th class="shared-drive-est-usage"><span>Est Usage <span> <span class="prt-data-popover"><i class="fa fa-question-circle" aria-hidden="true" tabindex="0" data-placement="top" data-toggle="popover" data-trigger="focus" title data-content="Estimated usage for each drive is updated once a week and may not reflect exact usage." data-original-title="Estimated Usage (Est. Usage)"></i></span></span></span></th>
+          <th class="shared-drive-est-usage"><span>Est Usage</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Estimated usage for each drive is updated once a week and may not reflect exact usage." data-original-title="Estimated Usage (Est. Usage)"><i class="fa fa-question-circle"></i></span></th>
           <th class="shared-drive-quota"><span>Quota</span></th>
-          <th class="shared-drive-members"><span>Managers <span class="prt-data-popover"><i class="fa fa-question-circle" aria-hidden="true" tabindex="0" data-placement="top" data-toggle="popover" data-trigger="focus" title data-content="Only UW employees who have manager permissions for this drive are listed here." data-original-title="Managers"></i></span></span></th>
+          <th class="shared-drive-members"><span>Managers</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Only UW employees who have manager permissions for this drive are listed here." data-original-title="Managers"><i class="fa fa-question-circle"></i></span></th>
           <th class="shared-drive-action"><span>Action</span></th>
         </tr>
       </thead>
@@ -56,14 +56,14 @@
   <p>{{#or drive.drive_quota.is_subsidized subscription}}Renew{{else}}Select quota{{/or}} by {{expiration_date}}{{#lte expiration_days 90}}<br />({{expiration_from_now}}){{/lte}}</p>
       </td>
       <td class="shared-drive-est-usage">{{drive.drive_usage}}GB</td>
-      <td class="shared-drive-quota">{{drive.drive_quota.quota_limit}}GB<span class="quota-status"></span></td>
+      <td class="shared-drive-quota">{{drive.drive_quota.quota_limit}}GB{{#each future_quotas}}{{#if is_changing}}<p>{{#if is_ending}}Ending on {{end_date}}{{else}}{{#if is_future}}{{#if is_increasing}}In{{else}}De{{/if}}creasing to {{quota_limit}}GB on {{start_date}}{{/if}}{{/if}}</p>{{/if}}{{/each}}</td>
       <td class="shared-drive-members">
         <ul class="comma-list">
           {{#gt drive.members.length 5}}
             {{#slice drive.members 0 4}}
               {{name}},
            {{/slice}}
-           <span class="prt-data-popover manager-list" aria-hidden="true" tabindex="0" data-placement="right" data-toggle="popover" data-trigger="focus" data-html="true" title data-content="<div class='manager-list'>{{#each drive.members}}{{name}}<br />{{/each}}</div>" data-original-title="All Eligibile Managers">
+           <span class="prt-data-popover manager-list" aria-hidden="true" tabindex="0" data-placement="right" data-html="true" title data-content="<div class='manager-list'>{{#each drive.members}}{{name}}<br />{{/each}}</div>" data-original-title="All Eligibile Managers">
 view&nbsp;all</span>
            {{else}}
              {{#each drive.members}}
@@ -73,7 +73,10 @@ view&nbsp;all</span>
         </ul>
      </td>
      <td class="shared-drive-action">
-       <select id="shared_drive_action" data-drive-id={{drive.drive_id}} class="custom-select" data-itbill-url="{{#if subscription}}{{ subscription.url }}{{/if}}">
+{{#if in_flight}}
+      <button type="button" class="btn btn-primary" id="refresh_drive" data-drive-id={{drive.drive_id}} data-loading-text="Adding NetID">Done Creating Subscription</button>
+{{else}}
+       <select id="shared_drive_action" data-drive-id={{drive.drive_id}} class="custom-select" data-itbill-url="{{#if subscription}}{{ itbill_form_url }}{{/if}}">
          <option value="select">Select</option>
          {{#if drive.drive_quota.is_subsidized}}
            <option value="shared_drive_change">Increase quota</option>
@@ -86,6 +89,7 @@ view&nbsp;all</span>
          {{/if}}
          <option value="shared_drive_revoke">Revoke provision</option>
        </select>
+{{/if}}
      </td>
   </tr>
 </script>

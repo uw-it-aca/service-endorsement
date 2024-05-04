@@ -7,6 +7,9 @@ services:
       PORT: 8000
       AUTH: SAML_MOCK
       # ENDORSEMENT_SERVICES: "google, office365"
+      ITBILL_FORM_URL_BASE: https://uwdev.service-now.com/sp
+      ITBILL_FORM_URL_BASE_ID: sc_cat_item
+      ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID: 7078586b2f6cb076cad75ae9aab3ea05
     restart: always
     container_name: app-provision
     build:

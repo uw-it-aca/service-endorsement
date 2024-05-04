@@ -42,7 +42,7 @@
     "pk": 3,
     "fields": {
       "shared_drive": 3,
-      "subscription": 2,
+      "subscription": 1,
       "acted_as": null,
       "datetime_created": "2024-04-22T17:41:28+00:00",
       "datetime_emailed": null,

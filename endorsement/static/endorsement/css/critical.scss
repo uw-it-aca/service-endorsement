@@ -309,7 +309,6 @@ a {
   tr.new_access .access-type,
   tr.new_access .access-action  { background: #efffef !important; }
   .shared-drive-action { width: 16em !important; }
-  .xshared-drive-quota { width: 5em; }
   .shared-drive-est-usage { width: 7em; }
   .access-status p { padding-left: 1.2em; }
   .endorsed-netid, .access-mailbox { border-top: none; }
@@ -324,9 +323,9 @@ a {
   .endorsed-name, .access-mailbox-name { border-top: none; border-right: 1px solid #ddd; }
   .endorsed-status-icon,  { width: 20px; }
   .shared-drive-status-icon { width: 24px; }
-  .endorsed-status, .shared-drive-status {
+  .endorsed-status, .shared-drive-status, .shared-drive-quota {
       width: 15rem;
-      p { font-size: smaller; }
+      p { font-size: smaller; width: 10rem; }
   }
   .endorsed-reason { width: 13rem; }
   .endorsed-action, .shared-drive-action { width: 12rem; white-space: nowrap; }

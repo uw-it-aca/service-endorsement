@@ -16,9 +16,10 @@ var ManageSharedDrives = (function () {
         _registerEvents = function () {
             var $tab = $('.tabs div#drives');
 
-            // delegated events within our content
             $tab.on('endorse:drivesTabExposed', function (e) {
-                _getSharedDrives();
+                if ($content.is(':empty')) {
+                    _getSharedDrives();
+                }
             });
 
             $panel.on('change', 'select#shared_drive_action', function (e) {
@@ -34,25 +35,21 @@ var ManageSharedDrives = (function () {
                 } else if (action === 'shared_drive_revoke') {
                     _sharedDriveRevokeModal(drive_id);
                 }
-            }).on('click', '#shared_drive_accept', function (e) {
+            }).delegate('#shared_drive_accept', 'click', function (e) {
                 _displayModal('#shared-drive-acceptance', {
                     drive_id: $(this).attr('data-drive-id')});
-            }).on('click', '#confirm_itbill_visit', function (e) {
-                var $this = $(this),
-                    itbill_url = $this.attr('data-itbill-url'),
-                    drive_id = $this.attr('data-drive-id');
-
-                if (itbill_url) {
-                    window.open(itbill_url, '_blank');
-                } else {
-                    _getITBill_URL(drive_id);
-                }
-
-                _modalHide();
-            }).on('click', '#confirm_shared_drive_acceptance', function (e) {
+            }).delegate('#confirm_itbill_visit', 'click', function (e) {
+                _getITBill_URL($(this).attr('data-drive-id'));
+            }).delegate('#confirm_shared_drive_acceptance', 'click', function (e) {
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), true);
-            }).on('click', '#confirm_shared_drive_revoke', function (e) {
+            }).delegate('#confirm_shared_drive_revoke', 'click', function (e) {
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), false);
+            }).delegate('#refresh_drive', 'click', function (e) {
+                _refreshSharedDrive($(this).attr('data-drive-id'));
+            }).on('endorse:SharedDriveRefresh', function (e, data) {
+                _updateSharedDrivesDiplay(data.drives[0]);
+            }).on('endorse:SharedDriveRefreshError', function (e, error) {
+                Notify.error('Sorry, but subscription information unavailable at this time: ' + error);
             }).on('endorse:SharedDriveResponsibilityAccepted', function (e, data) {
                 _modalHide();
                 _updateSharedDrivesDiplay(data.drives[0]);
@@ -81,10 +78,22 @@ var ManageSharedDrives = (function () {
             }).on('endorse:SharedDrivesFailure', function (e, data) {
                 _displaySharedDrivesFailure(data);
             }).on('endorse:SharedDrivesITBIllURLSuccess', function (e, data) {
-                debugger
-                window.open(data.subscription.url, '_blank');
+                var url = (data.hasOwnProperty('drives') && data.drives.length == 1) ? data.drives[0].itbill_form_url : null;
+
+                _modalHide();
+                _updateSharedDrivesDiplay(data.drives[0]);
+                if (url) {
+                    window.open(url, '_blank');
+                } else {
+                    Notify.error('Sorry, but we cannot retrieve the ITBill Form URL at this time.');
+                }
             }).on('endorse:SharedDrivesITBIllURLFailure', function (e, data) {
+                _modalHide();
                 Notify.error('Sorry, but we cannot retrieve the ITBill URL at this time: ' + data);
+            }).popover({
+                selector: 'span.prt-data-popover',
+                trigger: 'focus',
+                html: true
             });
 
             $(document).on('endorse:TabChange', function (e, data) {
@@ -128,7 +137,6 @@ var ManageSharedDrives = (function () {
 
             $content.html(template({drives: drives}));
             Scroll.init('.shared-drives-table');
-            $('[data-toggle="popover"]').popover();
         },
         _prepSharedDriveContext = function (drive) {
             var expiration = moment(drive.datetime_expiration),
@@ -138,6 +146,32 @@ var ManageSharedDrives = (function () {
             drive.expiration_date = expiration.format('M/D/YYYY');
             drive.expiration_days = expiration.diff(now, 'days');
             drive.expiration_from_now = expiration.from(now);
+            drive.in_flight = (drive.subscription && drive.subscription.query_priority === 'high');
+            drive.future_quotas = [];
+            if (drive.subscription) {
+                $.each(drive.subscription.provisions, function () {
+                    $.each(this.quantities, function () {
+                            var starting = moment(this.start_date),
+                                ending = moment(this.end_date),
+                                is_future = starting.diff(now) > 0,
+                                is_ending = starting.diff(now) < 0 && ending.diff(now) > 0,
+                                is_increasing = this.quota_limit > drive.drive.drive_quota.quota_limit,
+                                is_decreasing = this.quota_limit < drive.drive.drive_quota.quota_limit,
+                                is_changing = (is_future || is_ending);
+
+                            drive.future_quotas.push({
+                                is_future: is_future,
+                                is_ending: is_ending,
+                                quota_limit: this.quota_limit,
+                                is_increasing: is_increasing,
+                                is_decreasing: is_decreasing,
+                                is_changing: is_changing,
+                                start_date: moment(this.start_date).format('M/D/YYYY'),
+                                end_date: moment(this.end_date).format('M/D/YYYY')
+                            });
+                    });
+                });
+            }
         },
         _getSharedDrives = function() {
             var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
@@ -157,6 +191,25 @@ var ManageSharedDrives = (function () {
                 },
                 error: function(xhr, status, error) {
                     $panel.trigger('endorse:SharedDrivesFailure', [error]);
+                }
+            });
+        },
+        _refreshSharedDrive = function (drive_id) {
+            var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+
+            $.ajax({
+                url: "/google/v1/shared_drive/" + drive_id + "/?refresh=1",
+                type: "GET",
+                contentType: "application/json",
+                accepts: {html: "application/json"},
+                headers: {
+                    "X-CSRFToken": csrf_token
+                },
+                success: function(results) {
+                    $panel.trigger('endorse:SharedDriveRefresh', [results]);
+                },
+                error: function(xhr, status, error) {
+                    $panel.trigger('endorse:SharedDriveRefreshError', [error]);
                 }
             });
         },
