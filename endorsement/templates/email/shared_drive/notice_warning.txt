@@ -4,8 +4,8 @@ You are receiving this email because you are identified as {%if drive.shared_dri
 of the Google Shared Drive named "{{drive.shared_drive.drive_name}}".
 
 To maintain service, Google Shared Drive use must be actively acknowledged
-every {{lifetime}} days.  The drive "{{drive.shared_drive.drive_name}}" was last acknowledged by
-the netid {{acceptor.member.netid}} on {{acceptor.datetime_accepted|date:"M j, Y"}}, and is now within {{notice_time}} days of its required renewal.
+every {{lifetime}} days.  The drive "{{drive.shared_drive.drive_name}}"{%if acceptor %}, last acknowledged by
+the netid {{acceptor.member.netid}} on {{acceptor.datetime_accepted|date:"M j, Y"}},{% endif %} is now within {{notice_time}} days of its required renewal.
 
 To log in to the Provisioning Request Tool (PRT) and renew the expiring shared drive visit:
 

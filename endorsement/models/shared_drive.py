@@ -183,9 +183,12 @@ class SharedDriveRecord(
         if not self.datetime_accepted:
             return None
 
-        return SharedDriveAcceptance.objects.get(
-            shared_drive_record=self,
-            datetime_accepted=self.datetime_accepted)
+        try:
+            return SharedDriveAcceptance.objects.get(
+                shared_drive_record=self,
+                datetime_accepted=self.datetime_accepted)
+        except SharedDriveAcceptance.DoesNotExist:
+            return None
 
     def get_acceptance(self):
         return SharedDriveAcceptance.objects.filter(
