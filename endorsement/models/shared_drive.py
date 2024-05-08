@@ -11,8 +11,8 @@ import json
 
 
 class MemberManager(models.Manager):
-    def get_member(self, name):
-        member, _ = self.get_or_create(name=name)
+    def get_member(self, netid):
+        member, _ = self.get_or_create(netid=netid)
         return member
 
 
@@ -20,10 +20,10 @@ class Member(ExportModelOperationsMixin('member'), models.Model):
     """
     Member represents user associated with a shared drive
     """
-    name = models.CharField(max_length=128)
+    netid = models.CharField(max_length=128)
 
     def json_data(self):
-        return self.name
+        return self.netid
 
     objects = MemberManager()
 
@@ -52,7 +52,7 @@ class SharedDriveMember(
 
     def json_data(self):
         return {
-            "name": self.member.json_data(),
+            "netid": self.member.json_data(),
             "role": self.role.json_data()
             }
 
@@ -84,6 +84,9 @@ class SharedDriveQuota(
             "is_subsidized": self.is_subsidized
         }
 
+    def __str__(self):
+        return json.dumps(self.json_data())
+
 
 class SharedDrive(ExportModelOperationsMixin('shared_drive'), models.Model):
     """
@@ -94,8 +97,11 @@ class SharedDrive(ExportModelOperationsMixin('shared_drive'), models.Model):
     drive_name = models.CharField(max_length=128)
     drive_quota = models.ForeignKey(SharedDriveQuota, on_delete=models.PROTECT)
     drive_usage = models.IntegerField(null=True)
-    members = models.ManyToManyField(SharedDriveMember)
+    members = models.ManyToManyField(SharedDriveMember, blank=True)
     query_date = models.DateTimeField(null=True)
+
+    def get_members(self):
+        return [m.member.netid for m in self.members.all()]
 
     def json_data(self):
         return {
@@ -142,7 +148,7 @@ class SharedDriveAcceptance(
 class SharedDriveRecordManager(models.Manager):
     def get_member_drives(self, member_netid, drive_id=None):
         parms = {
-            "shared_drive__members__member__name": member_netid,
+            "shared_drive__members__member__netid": member_netid,
             "is_deleted__isnull": True}
 
         if drive_id:

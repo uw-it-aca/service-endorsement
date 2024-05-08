@@ -1,0 +1,17 @@
+Hello,
+
+You are receiving this email because you are identified as a Manager of the
+Google Shared Drive "{{drive.shared_drive.drive_name}}".
+
+To maintain service, Google Shared Drive use must be actively
+acknowledged every {{lifetime}} days.  The drive "{{drive.shared_drive.drive_name}}"
+is within {{notice_time}} days of its required renewal.
+
+To log in to the Provisioning Request Tool (PRT) and renew the expiring shared drive visit:
+
+https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/#prt
+
+If you have any questions, please contact help@uw.edu or 206-221-5000.
+
+Thank you,
+UW-IT

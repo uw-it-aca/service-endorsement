@@ -4,6 +4,7 @@
 from endorsement.models import AccessRecord
 from endorsement.dao.notification import send_notification
 from endorsement.dao.accessors import get_accessor_email
+from endorsement.exceptions import EmailFailureException
 from django.template import loader, Template, Context
 import logging
 

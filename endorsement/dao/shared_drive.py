@@ -15,6 +15,13 @@ netid_regex = re.compile(
     r'^(?P<netid>[^@]+)@(uw|(u\.)?washington)\.edu$', re.I)
 
 
+def shared_drive_lifecycle_expired(drive_record):
+    """
+    Set lifecycle to expired for shared drive
+    """
+    logger.info(f"Shared drive {drive_record} lifecycle expired")
+
+
 def load_shared_drives_from_csv(file_path):
     """
     populate shared drive models

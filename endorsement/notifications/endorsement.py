@@ -8,9 +8,10 @@ from endorsement.services import (
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
-from endorsement.policy import endorsements_to_warn
+from endorsement.policy.endorsement import endorsements_to_warn
 from endorsement.util.email import uw_email_address
 from endorsement.util.string import listed_list
+from endorsement.exceptions import EmailFailureException
 from django.template import loader, Template, Context
 from django.utils import timezone
 import re
