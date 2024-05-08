@@ -27,7 +27,8 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
 
 <div class="tabs">
  <ul class="tabs-list">
-   <li class="active" data-tab="service"><span>Services</span></li>
+   <li class="active" data-tab="service"><span>Services for NetIDs</span></li>
+   <li data-tab="shared_drive"><span>Google Shared Drives</span></li>
    <li data-tab="access"><span>Elevated Access</span></li>
  </ul>
  <div id="service" class="tab active">
@@ -95,6 +96,41 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
             <button type="button" name="GenerateNotification" id="generate_notification" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Generating">Show Notification</button>
     </div> -->
   </form>
+ </div>
+ <div id="shared_drive" class="tab active">
+  <p>
+    Choose a notification type to see the email contents that will be sent.  Notification email is sent as multipart messages containing a text and html representation.
+  </p>
+
+  <form>
+    {% csrf_token %}
+    <div class="form-group">
+      <h4>Notification Message Type</h4>
+      <div class="form-group">
+        <select class="form-control" id="notification">
+          <option value="">Select Notification Type...</option>
+          <option value="warning_1">Initial Renewal Notice</option>
+          <option value="warning_2">Penultimate Renewal Notice</option>
+          <option value="warning_3">Final Renewal Notice</option>
+          <option value="warning_4">Provision Expiration</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group info" id="info_warning_1">
+      First renewal notice sent to provisioner {{ warning_1 }} days prior to service expiration.
+    </div>
+    <div class="form-group info" id="info_warning_2">
+      Second renewal notice sent to provisioner {{ warning_2 }} days prior to service expiration.
+    </div>
+    <div class="form-group info" id="info_warning_3">
+      Third and final renewal notice sent to provisioner {{ warning_3 }} days before expiration.
+    </div>
+    <div class="form-group info" id="info_warning_4">
+      Notice that provisioned services have expired sent to the provisioner on expiration day.
+    </div>
+  </form>
+
  </div>
  <div id="access" class="tab">
   <p>

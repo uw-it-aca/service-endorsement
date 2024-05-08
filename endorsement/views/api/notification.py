@@ -5,7 +5,9 @@ import logging
 from endorsement.views.rest_dispatch import RESTDispatch
 from endorsement.models import (
     Endorser, Endorsee, EndorsementRecord,
-    Accessor, Accessee, AccessRight, AccessRecord)
+    Accessor, Accessee, AccessRight, AccessRecord,
+    Member, Role, SharedDriveMember, SharedDrive,
+    SharedDriveQuota, SharedDriveRecord, SharedDriveRecord)
 from endorsement.services import endorsement_services, get_endorsement_service
 from endorsement.util.auth import SupportGroupAuthentication
 from endorsement.notifications.endorsement import (
@@ -15,6 +17,8 @@ from endorsement.notifications.endorsement import (
     _create_warn_shared_owner_message)
 from endorsement.notifications.access import (
     _create_accessor_message)
+from endorsement.notifications.shared_drive import (
+    _create_notification_expiration_notice)
 from endorsement.dao.accessors import get_accessor_email
 from datetime import datetime, timedelta
 import re
@@ -39,6 +43,8 @@ class Notification(RESTDispatch):
             return self._service_notification(request)
         elif notice_type == 'access':
             return self._access_notification(request)
+        elif notice_type == 'shared_drive':
+            return self._shared_drive_notification(request)
 
         return self.error_response(400, "Incomplete or unknown notification.")
 
@@ -160,6 +166,29 @@ class Notification(RESTDispatch):
             'subject': subject,
             'text': text_body,
             'html': html_body
+        })
+
+    def _shared_drive_notification(self, request):
+        notification = request.data.get('notification', None)
+
+        warning_level = None
+        m = re.match(r'^warning_([1-4])$', notification)
+        if m:
+            warning_level = int(m.group(1))
+
+        record = SharedDriveRecord.objects.filter(
+            is_deleted__isnull=True).first()
+
+        if warning_level:
+            subject, text, html = _create_notification_expiration_notice(
+                warning_level, 365, record)
+        else:
+            return self.error_response(400, "Unknown notification.")
+
+        return self.json_response({
+            'subject': subject,
+            'text': text,
+            'html': html
         })
 
 

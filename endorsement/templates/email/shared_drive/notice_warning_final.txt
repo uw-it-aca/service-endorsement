@@ -1,0 +1,18 @@
+Hello,
+
+You are receiving this email because you are identified as {%if drive.shared_drive.members.all.count > 0 %}one of {{ drive.shared_drive.members.all.count }}{% else %}the{% endif %} UW manager{{drive.shared_drive.members.all.count|pluralize}}
+of the Google Shared Drive named "{{drive.shared_drive.drive_name}}".
+
+To maintain service, Google Shared Drive use must be actively acknowledged
+every {{lifetime}} days.  The drive "{{drive.shared_drive.drive_name}}"
+has expired and will be marked for deletion soon.
+
+To log in to the Provisioning Request Tool (PRT) and renew expiring services visit:
+
+https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/#prt
+
+If you have any questions, please contact help@uw.edu or 206-221-5000.
+
+Thank you,
+UW-IT Help Center
+help@uw.edu

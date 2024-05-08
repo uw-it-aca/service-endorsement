@@ -76,13 +76,13 @@
         <ul class="comma-list">
           {{#gt drive.members.length 5}}
             {{#slice drive.members 0 4}}
-              {{name}},
+              {{netid}},
            {{/slice}}
-           <span class="prt-data-popover manager-list" aria-hidden="true" tabindex="0" data-placement="right" data-html="true" title data-content="<div class='manager-list'>{{#each drive.members}}{{name}}<br />{{/each}}</div>" data-original-title="All Eligibile Managers">
+           <span class="prt-data-popover manager-list" aria-hidden="true" tabindex="0" data-placement="right" data-html="true" title data-content="<div class='manager-list'>{{#each drive.members}}{{netid}}<br />{{/each}}</div>" data-original-title="All Eligibile Managers">
 view&nbsp;all</span>
            {{else}}
              {{#each drive.members}}
-               <li>{{name}}</li>
+               <li>{{netid}}</li>
              {{/each}}
            {{/gt}}
         </ul>

@@ -45,7 +45,7 @@ def _endorsements_to_warn(now, level):
         if level == 1:
             endorsed = now - timedelta(
                 days=service.endorsement_lifetime - days_prior)
-            q = q | Q(datetime_endorsed__lt=endorsed,
+            q = q | Q(datetime_endorsed__lte=endorsed,
                       datetime_notice_1_emailed__isnull=True,
                       category_code=service.category_code,
                       is_deleted__isnull=True)
@@ -55,17 +55,17 @@ def _endorsements_to_warn(now, level):
                 days=prev_days_prior - days_prior)
 
             if level == 2:
-                q = q | Q(datetime_notice_1_emailed__lt=prev_warning_date,
+                q = q | Q(datetime_notice_1_emailed__lte=prev_warning_date,
                           datetime_notice_2_emailed__isnull=True,
                           category_code=service.category_code,
                           is_deleted__isnull=True)
             elif level == 3:
-                q = q | Q(datetime_notice_2_emailed__lt=prev_warning_date,
+                q = q | Q(datetime_notice_2_emailed__lte=prev_warning_date,
                           datetime_notice_3_emailed__isnull=True,
                           category_code=service.category_code,
                           is_deleted__isnull=True)
             else:
-                q = q | Q(datetime_notice_3_emailed__lt=prev_warning_date,
+                q = q | Q(datetime_notice_3_emailed__lte=prev_warning_date,
                           datetime_notice_4_emailed__isnull=True,
                           category_code=service.category_code,
                           is_deleted__isnull=True)
@@ -88,7 +88,7 @@ def _endorsements_to_expire(now):
 
     for service in endorsement_services():
         expiration_date = now - timedelta(days=service.endorsement_graceperiod)
-        q = q | Q(datetime_notice_4_emailed__lt=expiration_date,
+        q = q | Q(datetime_notice_4_emailed__lte=expiration_date,
                   datetime_notice_3_emailed__isnull=False,
                   datetime_notice_2_emailed__isnull=False,
                   datetime_notice_1_emailed__isnull=False,
