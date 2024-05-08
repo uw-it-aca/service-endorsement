@@ -56,7 +56,7 @@ def warn_members(notice_level):
                 netid) in drive.shared_drive.get_members()]
             (subject,
              text_body,
-             html_body) = _create_expire_notice_message(
+             html_body) = _create_notification_expiration_notice(
                  notice_level, lifetime, drive)
             send_notification(
                 members, subject, text_body, html_body,
