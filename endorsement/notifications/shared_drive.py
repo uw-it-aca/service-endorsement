@@ -23,9 +23,10 @@ def _email_template(template_name):
     return "email/shared_drive/{}".format(template_name)
 
 
-def _create_expire_notice_message(notice_level, lifetime, drive):
+def _create_notification_expiration_notice(notice_level, lifetime, drive):
     context = {
         'drive': drive,
+        'acceptor': drive.acceptor,
         'lifetime': lifetime,
         'notice_time': expiration_warning(notice_level)
     }

@@ -18,7 +18,7 @@ from endorsement.notifications.endorsement import (
 from endorsement.notifications.access import (
     _create_accessor_message)
 from endorsement.notifications.shared_drive import (
-    _create_expire_notice_message)
+    _create_notification_expiration_notice)
 from endorsement.dao.accessors import get_accessor_email
 from datetime import datetime, timedelta
 import re
@@ -176,16 +176,11 @@ class Notification(RESTDispatch):
         if m:
             warning_level = int(m.group(1))
 
-        shared_drive = SharedDrive(
-            drive_id='1234567890abcdef1234567890abcdef',
-            drive_name='My shared drive',
-            drive_quota=SharedDriveQuota.objects.get(quota_limit=200),
-            drive_usage=200)
-
-        record = SharedDriveRecord(shared_drive=shared_drive)
+        record = SharedDriveRecord.objects.filter(
+            is_deleted__isnull=True).first()
 
         if warning_level:
-            subject, text, html = _create_expire_notice_message(
+            subject, text, html = _create_notification_expiration_notice(
                 warning_level, 365, record)
         else:
             return self.error_response(400, "Unknown notification.")
