@@ -6,46 +6,49 @@ from django.core import mail
 from django.db.models import F
 from django.utils import timezone
 from endorsement.test.notifications import NotificationsTestCase
-from endorsement.models import SharedDriveRecord
-from endorsement.policy.shared_drive import SharedDrivePolicy
-from endorsement.notifications.shared_drive import warn_members
+from endorsement.models import AccessRecord, Accessee, Accessor
+from endorsement.policy.access import AccessPolicy
+from endorsement.notifications.access import warn_accessees
 from datetime import timedelta
 
 
 class TestSharedDriveExpirationNotices(NotificationsTestCase):
-    fixtures = [
-        'test_data/member.json',
-        'test_data/role.json',
-        'test_data/itbill_subscription.json',
-        'test_data/itbill_provision.json',
-        'test_data/itbill_quantity.json',
-        'test_data/shared_drive_member.json',
-        'test_data/shared_drive_quota.json',
-        'test_data/shared_drive.json',
-        'test_data/shared_drive_record.json'
-    ]
-
     def setUp(self):
         self.now = timezone.now()
-        self.policy = SharedDrivePolicy()
+        self.policy = AccessPolicy()
 
-        # reset all mock dates
-        SharedDriveRecord.objects.all().update(datetime_accepted=self.now)
+        accessee1 = Accessee.objects.create(
+            netid='accessee1', regid='dddddddddddddddddddddddddddddddd',
+            display_name='Accessee One')
+        accessee2 = Accessee.objects.create(
+            netid='accessee2', regid='eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+            display_name='Accessee Two')
+        accessee3 = Accessee.objects.create(
+            netid='accessee3', regid='ffffffffffffffffffffffffffffffff',
+            display_name='Accessee Three')
+
+        accessor1 = Accessor.objects.create(
+            name='accessor1', display_name='Accessor One')
+        accessor2 = Accessor.objects.create(
+            name='accessor2', display_name='Accessor Two')
+        accessor3 = Accessor.objects.create(
+            name='accessor3', display_name='Accessor Three')
+
 
         # accepted date long ago
-        drive = SharedDriveRecord.objects.get(pk=1)
-        drive.datetime_accepted = self.days_ago(self.policy.lifetime + 200)
-        drive.save()
+        AccessRecord.objects.create(
+            accessor=accessor1, accessee=accessee1,
+            datetime_granted=self.days_ago(self.policy.lifetime + 200))
 
         # expire date today
-        drive = SharedDriveRecord.objects.get(pk=2)
-        drive.datetime_accepted = self.days_ago(self.policy.lifetime)
-        drive.save()
+        AccessRecord.objects.create(
+            accessor=accessor2, accessee=accessee2,
+            datetime_granted=self.days_ago(self.policy.lifetime))
 
         # expire date tomorrow
-        drive = SharedDriveRecord.objects.get(pk=6)
-        drive.datetime_accepted = self.days_ago(self.policy.lifetime - 1)
-        drive.save()
+        AccessRecord.objects.create(
+            accessor=accessor3, accessee=accessee3,
+            datetime_granted=self.days_ago(self.policy.lifetime - 1))
 
     def notice_and_expire(self, offset_days, expected_results):
         self.notice_and_expire_test(offset_days, expected_results)
@@ -71,29 +74,29 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
         self.message_timing(expected_results)
 
     def test_expiration_and_notice_email(self):
-        warn_members(1)
+        warn_accessees(1)
         self.assertEqual(len(mail.outbox), 3)
 
-        SharedDriveRecord.objects.filter(
+        AccessRecord.objects.filter(
             datetime_notice_1_emailed__isnull=False).update(
                 datetime_notice_1_emailed=F(
                     'datetime_notice_1_emailed')-timedelta(days=61))
 
-        warn_members(2)
+        warn_accessees(2)
         self.assertEqual(len(mail.outbox), 6)
 
-        SharedDriveRecord.objects.filter(
+        AccessRecord.objects.filter(
             datetime_notice_2_emailed__isnull=False).update(
                 datetime_notice_2_emailed=F(
                     'datetime_notice_2_emailed')-timedelta(days=30))
 
-        warn_members(3)
+        warn_accessees(3)
         self.assertEqual(len(mail.outbox), 9)
 
-        SharedDriveRecord.objects.filter(
+        AccessRecord.objects.filter(
             datetime_notice_3_emailed__isnull=False).update(
                 datetime_notice_3_emailed=F(
                     'datetime_notice_2_emailed')-timedelta(days=23))
 
-        warn_members(4)
+        warn_accessees(4)
         self.assertEqual(len(mail.outbox), 12)

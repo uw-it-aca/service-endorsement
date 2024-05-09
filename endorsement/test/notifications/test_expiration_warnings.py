@@ -7,8 +7,7 @@ from django.db.models import F
 from django.utils import timezone
 from endorsement.test.notifications import NotificationsTestCase
 from endorsement.models import Endorser, Endorsee, EndorsementRecord
-from endorsement.policy.endorsement import (
-    _endorsements_to_warn, _endorsements_to_expire)
+from endorsement.policy.endorsement import EndorsementPolicy
 from endorsement.services import get_endorsement_service
 from endorsement.notifications.endorsement import warn_endorsers
 from datetime import timedelta
@@ -17,6 +16,7 @@ from datetime import timedelta
 class TestProvisioneExpirationNotices(NotificationsTestCase):
     def setUp(self):
         self.now = timezone.now()
+        self.policy = EndorsementPolicy()
 
         self.endorser1 = Endorser.objects.create(
             netid='endorser1', regid='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
@@ -31,45 +31,34 @@ class TestProvisioneExpirationNotices(NotificationsTestCase):
             netid='endorsee2', regid='dddddddddddddddddddddddddddddddd',
             display_name='Endorsee Seven', is_person=True)
 
-        # common lifecycle dates, two services to test combined email
         o365 = get_endorsement_service('o365')
         google = get_endorsement_service('google')
-
-        self.assertEqual(o365.endorsement_lifetime,
-                         google.endorsement_lifetime)
-
-        self.lifetime = o365.endorsement_lifetime
-        self.graceperiod = o365.endorsement_graceperiod
 
         # expire date long ago
         EndorsementRecord.objects.create(
             endorser=self.endorser1, endorsee=self.endorsee1,
             category_code=o365.category_code,
             reason="Just Because",
-            datetime_endorsed=self.days_ago(self.lifetime + 200))
+            datetime_endorsed=self.days_ago(self.policy.lifetime + 200))
 
 
         # expire date today
         EndorsementRecord.objects.create(
             endorser=self.endorser1, endorsee=self.endorsee1,
             category_code=google.category_code, reason="Just Because",
-            datetime_endorsed=self.days_ago(self.lifetime))
+            datetime_endorsed=self.days_ago(self.policy.lifetime))
 
         # expire date tomorrow
         EndorsementRecord.objects.create(
             endorser=self.endorser2, endorsee=self.endorsee2,
             category_code=o365.category_code,
             reason="I said so",
-            datetime_endorsed=self.days_ago(self.lifetime - 1))
+            datetime_endorsed=self.days_ago(self.policy.lifetime - 1))
 
     def notice_and_expire(self, offset_days, expected_results):
-        self.notice_and_expire_test(
-            _endorsements_to_expire, _endorsements_to_warn,
-            offset_days, expected_results)
+        self.notice_and_expire_test(offset_days, expected_results)
 
     def test_expiration_and_notices(self):
-        service = get_endorsement_service('o365')
-
         # use first service to get lifecycle dates
         expected_results = [
             [0, 2, 0, 0, 0],  # level one
@@ -88,8 +77,7 @@ class TestProvisioneExpirationNotices(NotificationsTestCase):
             [2, 0, 0, 0, 0],  # grace
             [1, 0, 0, 0, 0]]  # grace plus a day
 
-        self.message_timing(
-            service.endorsement_expiration_warning, expected_results)
+        self.message_timing(expected_results)
 
     def test_expiration_and_notice_email(self):
         warn_endorsers(1)

@@ -4,6 +4,7 @@
 from django.db import models
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
+from endorsement.models.base import RecordManagerBase
 from endorsement.util.date import datetime_to_str
 import json
 
@@ -81,7 +82,7 @@ class AccessRight(ExportModelOperationsMixin('access_right'), models.Model):
         db_table = 'uw_service_endorsement_access_right'
 
 
-class AccessRecordManager(models.Manager):
+class AccessRecordManager(RecordManagerBase):
     def get_access(self, accessor=None, accessee=None):
         params = {
             'is_deleted__isnull': True

@@ -5,9 +5,7 @@ from endorsement.dao.notification import send_notification
 from endorsement.models import SharedDriveRecord
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
-from endorsement.policy.shared_drive import (
-    shared_drives_to_warn, expiration_warning,
-    DEFAULT_SHARED_DRIVE_LIFETIME)
+from endorsement.policy.shared_drive import SharedDrivePolicy
 from endorsement.util.email import uw_email_address
 from endorsement.exceptions import EmailFailureException
 from django.template import loader, Template, Context
@@ -23,12 +21,12 @@ def _email_template(template_name):
     return "email/shared_drive/{}".format(template_name)
 
 
-def _create_notification_expiration_notice(notice_level, lifetime, drive):
+def _create_notification_expiration_notice(notice_level, drive, policy):
     context = {
         'drive': drive,
         'acceptor': drive.acceptor,
-        'lifetime': lifetime,
-        'notice_time': expiration_warning(notice_level)
+        'lifetime': policy.lifetime,
+        'notice_time': policy.days_till_expiration(notice_level)
     }
 
     if notice_level < 4:
@@ -47,8 +45,8 @@ def _create_notification_expiration_notice(notice_level, lifetime, drive):
 
 
 def warn_members(notice_level):
-    drives = shared_drives_to_warn(notice_level)
-    lifetime = DEFAULT_SHARED_DRIVE_LIFETIME
+    policy = SharedDrivePolicy()
+    drives = policy.records_to_warn(notice_level)
 
     for drive in drives:
         try:
@@ -57,7 +55,7 @@ def warn_members(notice_level):
             (subject,
              text_body,
              html_body) = _create_notification_expiration_notice(
-                 notice_level, lifetime, drive)
+                 notice_level, drive, policy)
             send_notification(
                 members, subject, text_body, html_body,
                 "Shared Drive Warning")
