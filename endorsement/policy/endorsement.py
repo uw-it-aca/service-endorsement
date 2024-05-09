@@ -10,98 +10,37 @@ Basic notions:
   * The expiration clock starts on the date of the first warning notice.
   * An expiration grace period is defined by each service
 """
-from django.utils import timezone
-from django.db.models import Q
-from endorsement.services import endorsement_services
 from endorsement.models import EndorsementRecord
+from endorsement.policy import PolicyBase
+from endorsement.services import endorsement_services
 from endorsement.dao.endorse import clear_endorsement
-from datetime import timedelta
 
 
-def endorsements_to_warn(level):
-    """
-    """
-    return _endorsements_to_warn(timezone.now(), level)
+DEFAULT_ENDORSEMENT_GRACEPERIOD = 90
 
 
-def _endorsements_to_warn(now, level):
-    """
-    Gather endorsement records to receive expiration warning messages where
-    level is the index of the warning message: first, second and so forth
+class EndorsementPolicy(PolicyBase):
+    @property
+    def record_model(self):
+        return EndorsementRecord
 
-    The expiration clock starts on the date of the first warning notice
-    """
-    if level < 1 or level > 4:
-        raise Exception('bad warning level {}'.format(level))
+    @property
+    def datetime_provisioned_key(self):
+        return "datetime_endorsed"
 
-    q = Q()
+    @property
+    def graceperiod(self):
+        return DEFAULT_ENDORSEMENT_GRACEPERIOD
 
-    # select on appropriate time span for warning notice index (level)
-    for service in endorsement_services():
-        days_prior = service.endorsement_expiration_warning(level)
-        if days_prior is None:
-            continue
-
-        if level == 1:
-            endorsed = now - timedelta(
-                days=service.endorsement_lifetime - days_prior)
-            q = q | Q(datetime_endorsed__lte=endorsed,
-                      datetime_notice_1_emailed__isnull=True,
-                      category_code=service.category_code,
-                      is_deleted__isnull=True)
-        else:
-            prev_days_prior = service.endorsement_expiration_warning(level - 1)
-            prev_warning_date = now - timedelta(
-                days=prev_days_prior - days_prior)
-
-            if level == 2:
-                q = q | Q(datetime_notice_1_emailed__lte=prev_warning_date,
-                          datetime_notice_2_emailed__isnull=True,
-                          category_code=service.category_code,
-                          is_deleted__isnull=True)
-            elif level == 3:
-                q = q | Q(datetime_notice_2_emailed__lte=prev_warning_date,
-                          datetime_notice_3_emailed__isnull=True,
-                          category_code=service.category_code,
-                          is_deleted__isnull=True)
-            else:
-                q = q | Q(datetime_notice_3_emailed__lte=prev_warning_date,
-                          datetime_notice_4_emailed__isnull=True,
-                          category_code=service.category_code,
-                          is_deleted__isnull=True)
-
-    return EndorsementRecord.objects.filter(q)
-
-
-def endorsements_to_expire():
-    """
-    Return query set of endorsement records to expire
-    """
-    return _endorsements_to_expire(timezone.now())
-
-
-def _endorsements_to_expire(now):
-    """
-    Return query set of endorsements to expire for each service
-    """
-    q = Q()
-
-    for service in endorsement_services():
-        expiration_date = now - timedelta(days=service.endorsement_graceperiod)
-        q = q | Q(datetime_notice_4_emailed__lte=expiration_date,
-                  datetime_notice_3_emailed__isnull=False,
-                  datetime_notice_2_emailed__isnull=False,
-                  datetime_notice_1_emailed__isnull=False,
-                  category_code=service.category_code,
-                  is_deleted__isnull=True)
-
-    return EndorsementRecord.objects.filter(q)
+    def additional_warning_terms(self):
+        return {
+            'category_code__in': [
+                s.category_code for s in endorsement_services()]
+        }
 
 
 def expire_endorsments(gracetime, lifetime):
     """
     """
-    endorsements = endorsements_to_expire(gracetime, lifetime)
-    if len(endorsements):
-        for e in endorsements:
-            clear_endorsement(e)
+    for e in endorsements_to_expire(gracetime, lifetime):
+        clear_endorsement(e)

@@ -5,6 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
+from endorsement.models.base import RecordManagerBase
 from endorsement.models.itbill import ITBillSubscription
 from endorsement.util.date import datetime_to_str
 import json
@@ -114,7 +115,9 @@ class SharedDrive(ExportModelOperationsMixin('shared_drive'), models.Model):
 
     def __str__(self):
         return json.dumps(self.json_data())
-class SharedDriveRecordManager(models.Manager):
+
+
+class SharedDriveRecordManager(RecordManagerBase):
     def get_member_drives(self, member_netid, drive_id=None):
         parms = {
             "shared_drive__members__member__netid": member_netid,

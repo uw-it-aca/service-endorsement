@@ -37,6 +37,11 @@ var registerEvents = function() {
         generateNotification('service');
     });
 
+    $('.tabs div#shared_drive').on('endorse:shared_driveTabExposed', function (e) {
+        showInfoMessage($('div#shared_drive select#notification option:selected').val());
+        generateNotification('shared_drive');
+    });
+
     $('.tabs div#access').on('endorse:accessTabExposed', function (e) {
         if (window.access.hasOwnProperty('office') && window.access.office.hasOwnProperty('types')) {
             renderAccessTypes();
@@ -138,6 +143,15 @@ var generateNotification = function (notice_type) {
         data.right_name = $access_type.text();
         data.is_group = (delegate_type == 'group');
         data.is_shared_netid = (delegate_type == 'shared');
+    } else if (notice_type == 'shared_drive') {
+        var notification = $("select#notification option:selected").val();
+
+        if (data.notification === '') {
+            $('#notification_result').html("");
+            return;
+        }
+
+        data.notification = notification;
     }
 
     $.ajax({

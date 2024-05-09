@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 from uw_uwnetid.models import Category
+from endorsement.models.base import RecordManagerBase
 from endorsement.util.date import datetime_to_str
 import hashlib
 import random
@@ -105,7 +106,7 @@ class EndorseeEmail(
         db_table = 'uw_service_endorsement_endorsee_email'
 
 
-class EndorsementRecordManager(models.Manager):
+class EndorsementRecordManager(RecordManagerBase):
     def get_endorsement(self, endorser=None, endorsee=None,
                         category_code=None):
         params = {
