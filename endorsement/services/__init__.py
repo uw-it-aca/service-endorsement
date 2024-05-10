@@ -37,10 +37,6 @@ ENDORSER_GROUP = getattr(settings, "VALID_ENDORSER_GROUP", "uw_employee")
 # Services available for endorsement
 ENDORSEMENT_SERVICES = None
 
-# Default lifecycle day counts
-DEFAULT_ENDORSEMENT_LIFETIME = 365
-DEFAULT_ENDORSEMENT_GRACETIME = 90
-
 
 class EndorsementServiceBase(ABC):
     """
