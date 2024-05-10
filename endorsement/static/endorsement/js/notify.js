@@ -64,8 +64,8 @@ var Notify = (function () {
         };
 
     return {
-        success: function (msg) {
-            _notify(msg, 'alert-success');
+        success: function (msg, fade=3500) {
+            _notify(msg, 'alert-success', fade);
         },
 
         error: function (msg) {

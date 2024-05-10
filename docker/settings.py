@@ -6,6 +6,9 @@ from .base_settings import *
 ENDORSEMENT_SERVICES = [s.strip() for s in os.getenv(
     'ENDORSEMENT_SERVICES', '*').split(',')]
 
+ENDORSEMENT_PROVISIONING = [s.strip() for s in os.getenv(
+    'ENDORSEMENT_PROVISIONING', '*').split(',')]
+
 ALLOWED_HOSTS = ['*']
 
 CACHES = {

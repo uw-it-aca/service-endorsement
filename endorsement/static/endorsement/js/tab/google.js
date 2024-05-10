@@ -51,8 +51,16 @@ var ManageSharedDrives = (function () {
             }).on('endorse:SharedDriveRefreshError', function (e, error) {
                 Notify.error('Sorry, but subscription information unavailable at this time: ' + error);
             }).on('endorse:SharedDriveResponsibilityAccepted', function (e, data) {
+                var drive = (data.drives && data.drives.length === 1) ? data.drives[0] : null;
+
+                if (!drive) {
+                    Notify.error('Error retrieving renewal result.');
+                    return;
+                }
+
                 _modalHide();
-                _updateSharedDrivesDiplay(data.drives[0]);
+                _updateSharedDrivesDiplay(drive);
+                Notify.success('Shared drive "' + drive.drive.drive_name + '" provision renewed.', 10000);
             }).on('endorse:SharedDriveResponsibilityAcceptedError', function (e, error) {
                 Notify.error('Sorry, but we cannot accept responsibility at this time: ' + error);
             }).on('change', '#shared_drive_modal input', function () {
