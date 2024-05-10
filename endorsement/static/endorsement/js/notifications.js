@@ -38,7 +38,7 @@ var registerEvents = function() {
     });
 
     $('.tabs div#shared_drive').on('endorse:shared_driveTabExposed', function (e) {
-        showInfoMessage($('div#shared_drive select#notification option:selected').val());
+        showInfoMessage($('div.tab#shared_drive select#notification option:selected').val());
         generateNotification('shared_drive');
     });
 
@@ -150,8 +150,6 @@ var generateNotification = function (notice_type) {
             $('#notification_result').html("");
             return;
         }
-
-        data.notification = notification;
     }
 
     $.ajax({
