@@ -55,9 +55,6 @@ class TestProvisioneExpirationNotices(NotificationsTestCase):
             reason="I said so",
             datetime_endorsed=self.days_ago(self.policy.lifetime - 1))
 
-    def notice_and_expire(self, offset_days, expected_results):
-        self.notice_and_expire_test(offset_days, expected_results)
-
     def test_expiration_and_notices(self):
         # use first service to get lifecycle dates
         expected_results = [

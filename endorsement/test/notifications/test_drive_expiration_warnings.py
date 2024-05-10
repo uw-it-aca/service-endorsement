@@ -47,9 +47,6 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
         drive.datetime_accepted = self.days_ago(self.policy.lifetime - 1)
         drive.save()
 
-    def notice_and_expire(self, offset_days, expected_results):
-        self.notice_and_expire_test(offset_days, expected_results)
-
     def test_expiration_and_notices(self):
         expected_results = [
             [0, 2, 0, 0, 0], # level one
