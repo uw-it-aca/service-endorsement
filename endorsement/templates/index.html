@@ -14,13 +14,13 @@
 <div class="tabs">
  <ul class="tabs-list">
    {% if '*' in provisioning or 'services' in provisioning  %}
-   <li class="active" data-tab="services"><span>Services for NetIds</span></li>
+   <li class="active" data-tab="services"><a class="tab-link" href="/">Services for NetIds</a></li>
    {% endif %}
    {% if '*' in provisioning or 'shared_drives' in provisioning  %}
-   <li data-tab="drives"><span>Google Shared Drives</span></li>
+   <li data-tab="drives"><a class="tab-link" href="drives">Google Shared Drives</a></li>
    {% endif %}
    {% if '*' in provisioning or 'mailbox_access' in provisioning  %}
-   <li data-tab="access"><span>Elevated Access</span></li>
+   <li data-tab="access"><a class="tab-link" href="access">Elevated Access</a></li>
    {% endif %}
  </ul>
 {%endif%}
