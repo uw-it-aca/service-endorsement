@@ -4,12 +4,11 @@ import { History } from "./history.js";
 
 var MainTabs = (function () {
     var _registerEvents = function () {
-        $(".tabs .tabs-list li span").click(function(e){
-            e.preventDefault();
-        });
+        $(".tabs .tabs-list .tab-link").click(function(e){
+            var $this = $(this),
+                $li = $this.parent();
 
-        $(".tabs .tabs-list li span").click(function(){
-            var $li = $(this).parent();
+            e.preventDefault();
 
             if (! $li.hasClass('active')) {
                 var tab = $li.attr("data-tab"),

@@ -676,12 +676,12 @@ td.error, tr.error {
             margin-right: 1.75em;
             float: left;
             padding-bottom: 2px;
-            span {
+            a.tab-link {
+                text-decoration: none;
                 text-transform: uppercase;
-                font-weight: bold;
-            }
-            span:hover {
-                cursor: pointer;
+                font-size: 1.1em;
+                font-weight: 800;
+                color: #333;
             }
         }
         li.active {
