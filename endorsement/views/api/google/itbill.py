@@ -49,7 +49,6 @@ class SharedDriveITBillURL(RESTDispatch):
         except Exception as ex:
             return data_error(logger, ex)
 
-
     def _get_drive(self, netid, drive_id):
         drives = SharedDriveRecord.objects.get_member_drives(netid, drive_id)
 

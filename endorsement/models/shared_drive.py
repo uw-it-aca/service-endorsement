@@ -133,19 +133,19 @@ class SharedDriveRecordManager(RecordManagerBase):
             shared_drive__drive_id=drive_id, is_deleted__isnull=True)
 
     def get_over_quota_non_subscribed(self):
+        quota = shared_drive_subsidized_quota()
         return self.filter(
             datetime_over_quota_emailed__isnull=True,
-            shared_drive__drive_quota__quota_limit__gt=\
-            shared_drive_subsidized_quota(),
+            shared_drive__drive_quota__quota_limit__gt=quota,
             subscription__isnull=True, is_deleted__isnull=True)
 
 
 class SharedDriveRecord(
         ExportModelOperationsMixin('shared_drive_record'), models.Model):
     """
-    SharedDriveRecord model represents the binding between a 
+    SharedDriveRecord model represents the binding between a
     shared drive and its corresponding subscription, and preserves
-    various states and timestamps to manage its lifecycle. 
+    various states and timestamps to manage its lifecycle.
     """
 
     shared_drive = models.ForeignKey(

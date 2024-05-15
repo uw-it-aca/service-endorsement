@@ -11,6 +11,7 @@ from endorsement.dao.itbill import (
 from endorsement.models import SharedDriveRecord, ITBillSubscription
 from endorsement.test.api import EndorsementApiTest
 
+
 @override_settings(
     ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID='7078586b2f6cb076cad75ae9aab3ea05')
 class TestITBill(EndorsementApiTest):

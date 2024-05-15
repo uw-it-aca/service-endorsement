@@ -8,7 +8,7 @@ from endorsement.dao.shared_drive import load_shared_drives_from_csv
 
 
 class Command(BaseCommand):
-    help = "load shared drive data from csv file." 
+    help = "load shared drive data from csv file."
 
     def add_arguments(self, parser):
         parser.add_argument('csv_file')

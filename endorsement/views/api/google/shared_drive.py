@@ -74,4 +74,3 @@ class SharedDrive(RESTDispatch):
             'drives': [d.json_data() for d in drives],
             'messages': get_persistent_messages()
         }
-

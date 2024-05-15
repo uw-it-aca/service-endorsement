@@ -96,7 +96,8 @@ def notify_endorsees():
             (subject, text_body, html_body) = _create_endorsee_message(
                 endorsers)
             try:
-                send_notification([email], subject, text_body, html_body, "Endorsee")
+                send_notification(
+                    [email], subject, text_body, html_body, "Endorsee")
                 for service, data in endorsers['services'].items():
                     EndorsementRecord.objects.emailed(data['id'])
             except EmailFailureException as ex:
@@ -358,4 +359,3 @@ def _create_warn_shared_owner_message(owner_netid, endorsements, policy):
     return (subject,
             loader.render_to_string(text_template, context),
             loader.render_to_string(html_template, context))
-
