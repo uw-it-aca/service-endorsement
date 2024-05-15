@@ -60,8 +60,8 @@
 
 <script id="office_access_row_partial" type="text/x-handlebars-template">
     <tr class="
-endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
-      <th scope="row" class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</th>
+endorsement_row_{{#if (eq access_index 0) }}first {{else}}following {{/if}} endorsee_row_{{#if (even accessee_index)}}even{{else}}odd{{/if}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
+      <td scope="row" class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</td>
     <td class="access-mailbox-name">{{ name }}</td>
 {{#if is_valid}}
 {{#if delegate}}
@@ -82,8 +82,8 @@ endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} en
 
 <script id="office_conflict_row_partial" type="text/x-handlebars-template">
     <tr class="
-endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
-      <th scope="row" class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</th>
+endorsement_row_{{#if (eq access_index 0) }}first {{else}}following {{/if}} endorsee_row_{{#if (even accessee_index)}}even{{else}}odd{{/if}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
+      <td scope="row" class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</td>
       <td class="access-mailbox-name">{{ name }}</td>
       <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
       <td colspan="3">

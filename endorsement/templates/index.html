@@ -9,20 +9,20 @@
 
 {% if provisioning|length > 1 or '*' in provisioning %}
 <div class="tabs">
-  <nav>
-    <ul class="tabs-list">
-    {% if '*' in provisioning or 'services' in provisioning  %}
-    <li class="active" data-tab="services"><a class="tab-link" href="/">Services for NetIds</a></li>
-    {% endif %}
-    {% if '*' in provisioning or 'shared_drives' in provisioning  %}
-    <li data-tab="drives"><a class="tab-link" href="drives">Google Shared Drives</a></li>
-    {% endif %}
-    {% if '*' in provisioning or 'mailbox_access' in provisioning  %}
-    <li data-tab="access"><a class="tab-link" href="access">Outlook Mailbox Permissions</a></li>
-    {% endif %}
-    </ul>
-  </nav>
- {%endif%}
+ <nav>
+  <ul class="tabs-list">
+  {% if '*' in provisioning or 'services' in provisioning  %}
+  <li class="active" data-tab="services"><a class="tab-link" href="/">Services for NetIds</a></li>
+  {% endif %}
+  {% if '*' in provisioning or 'shared_drives' in provisioning  %}
+  <li data-tab="drives"><a class="tab-link" href="drives">Google Shared Drives</a></li>
+  {% endif %}
+  {% if '*' in provisioning or 'mailbox_access' in provisioning  %}
+  <li data-tab="access"><a class="tab-link" href="access">Outlook Mailbox Permissions</a></li>
+  {% endif %}
+  </ul>
+ </nav>
+{%endif%}
  {% if '*' in provisioning or 'services' in provisioning  %}
  <div id="services" class="tab active">
 

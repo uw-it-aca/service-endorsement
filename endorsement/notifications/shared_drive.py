@@ -7,7 +7,7 @@ from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.policy.shared_drive import SharedDrivePolicy
 from endorsement.util.email import uw_email_address
-from endorsement.exceptions import EmailFailureException
+from endorsement.util.itbill.shared_drive import shared_drive_subsidized_quota
 from django.template import loader, Template, Context
 from django.utils import timezone
 import re
@@ -64,6 +64,42 @@ def warn_members(notice_level):
                 'datetime_notice_{}_emailed'.format(
                     notice_level): timezone.now()
             }
-            drives.update(**sent_date)
+
+            setattr(drive, 'datetime_notice_{}_emailed'.format(notice_level),
+                    timezone.now())
+            drive.save()
+        except EmailFailureException as ex:
+            pass
+
+
+def _create_notification_over_quota_non_subsidized(drive):
+    context = {
+        'drive': drive,
+        'subsidized_quota': shared_drive_subsidized_quota()
+    }
+
+    subject = "Action Required: Shared Drive quota has been restricted"
+    text_template = _email_template("over_quota_non_subscribed.txt")
+    html_template = _email_template("over_quota_non_subscribed.html")
+
+    return (subject,
+            loader.render_to_string(text_template, context),
+            loader.render_to_string(html_template, context))
+
+
+def notify_over_quota_non_subsidized_expired():
+    for drive in SharedDriveRecord.objects.get_over_quota_non_subscribed():
+        try:
+            members = [uw_email_address(netid) for (
+                netid) in drive.shared_drive.get_members()]
+            (subject,
+             text_body,
+             html_body) = _create_notification_over_quota_non_subsidized(drive)
+            send_notification(
+                members, subject, text_body, html_body,
+                "Over Quota Shared Drive Claim Deadline")
+
+            setattr(drive, 'datetime_over_quota_emailed', timezone.now())
+            drive.save()
         except EmailFailureException as ex:
             pass

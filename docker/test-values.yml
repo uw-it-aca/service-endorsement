@@ -112,6 +112,8 @@ environmentVariables:
     value: https://test.provision.uw.edu/saml
   - name: CLUSTER_CNAME
     value: test.provision.uw.edu
+  - name: ENDORSEMENT_PROVISIONING
+    value: services,mailbox_access
 externalSecrets:
   enabled: true
   secrets:
