@@ -6,34 +6,58 @@
 </div>
 
 <div class="container">
- <h2 style="text-transform: uppercase;">Manage Provisions</h2>
 
- <p>Grant, revoke, and renew access to UW-IT services for UW NetIDs you own and UW NetIDs owned by others.</p>
-
+{% if provisioning|length > 1 or '*' in provisioning %}
 <div class="tabs">
- <ul class="tabs-list">
-   <li class="active" data-tab="services"><span>Services</span></li>
-   <li data-tab="access"><span>Elevated Access</span></li>
- </ul>
+ <nav>
+  <ul class="tabs-list">
+  {% if '*' in provisioning or 'services' in provisioning  %}
+  <li class="active" data-tab="services"><a class="tab-link" href="/">Services for NetIds</a></li>
+  {% endif %}
+  {% if '*' in provisioning or 'shared_drives' in provisioning  %}
+  <li data-tab="drives"><a class="tab-link" href="drives">Google Shared Drives</a></li>
+  {% endif %}
+  {% if '*' in provisioning or 'mailbox_access' in provisioning  %}
+  <li data-tab="access"><a class="tab-link" href="access">Outlook Mailbox Permissions</a></li>
+  {% endif %}
+  </ul>
+ </nav>
+{%endif%}
+ {% if '*' in provisioning or 'services' in provisioning  %}
  <div id="services" class="tab active">
-  <div id="shared-uwnetids">
 
-    <h4>UW NetIDs you own</h4>
+  <h1>Manage access to UW-IT Services for NetIDs</h1>
+  <p>Grant, revoke, and renew access to UW-IT services for UW NetIDs you own and UW NetIDs owned by others.</p> 
+  <div id="shared-uwnetids">
+    <h2>UW NetIDs you own</h2>
     <p>Manage access to provisioned UW-IT services for UW NetIDs you own (Shared, Admin, etc.). &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/endorse-uw-netids/" target="_blank">Learn more.</a>
     </p>
     <div id="shared" class="netid-panel"></div>
   </div>
 
   <div id="endorsed-uwnetids">
-    <h4>UW NetIDs owned by others</h4>
+    <h2>UW NetIDs owned by others</h2>
     <p>Manage access to UW-IT services for UW affiliates working on behalf of the UW (alumni, retirees, consultants, etc.). &nbsp;<a href="https://itconnect.uw.edu/connect/email/resources/affiliate-access/" target="_blank">Learn more.</a></p>
     <div id="provisioned" class="netid-panel"></div>
   </div>
  </div>
- <div id="access" class="tab">
-    <div id="office_access" class="netid-panel"></div>
+ {% endif %}
+ {% if '*' in provisioning or 'shared_drives' in provisioning  %}
+ <div id="drives" class="tab">
+  <h1>Manage your Google Shared Drives</h1>
+  <p>Update quota (storage size) and status of your Google Shared Drives.</p>
+  <div id="shared_drives" class="shared-drives-panel"></div>
  </div>
+ {% endif %}
+ {% if '*' in provisioning or 'mailbox_access' in provisioning  %}
+ <div id="access" class="tab">
+  <h1>Manage access to your Outlook mailboxes</h1>
+  <div id="office_access" class="netid-panel"></div>
+ </div>
+ {% endif %}
+{% if provisioning|length > 1 or '*' in provisioning %}
 </div>
+{% endif %}
 
 {% include "handlebars/reasons_partial.html" %}
 {% include "handlebars/email_editor_partial.html" %}
@@ -60,6 +84,11 @@
 {% include "handlebars/tab/access/modal_resolved.html" %}
 {% include "handlebars/tab/access/modal_renew.html" %}
 {% include "handlebars/tab/access/modal_update.html" %}
+
+{% include "handlebars/tab/drives/google.html" %}
+{% include "handlebars/tab/drives/modal_accept.html" %}
+{% include "handlebars/tab/drives/modal_revoke.html" %}
+{% include "handlebars/tab/drives/modal_itbill.html" %}
 
 {% include "handlebars/expiring.html" %}
 {% include "handlebars/persistent_messages.html" %}

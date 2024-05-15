@@ -1,0 +1,32 @@
+[
+  {
+    "model": "endorsement.itbillsubscription",
+    "pk": 1,
+    "fields": {
+      "key_remote": "C11F79E44DA766B7",
+      "state": 1,
+      "query_priority": 0,
+      "query_datetime": null
+    }
+  },
+  {
+    "model": "endorsement.itbillsubscription",
+    "pk": 2,
+    "fields": {
+      "key_remote": "GSD_test_test_test_123_rk",
+      "state": 1,
+      "query_priority": 0,
+      "query_datetime": null
+    }
+  },
+  {
+    "model": "endorsement.itbillsubscription",
+    "pk": 3,
+    "fields": {
+      "key_remote": "spw48mh5yutht3431v4d8olsx04yi8dz",
+      "state": 1,
+      "query_priority": 0,
+      "query_datetime": null
+    }
+  }
+]

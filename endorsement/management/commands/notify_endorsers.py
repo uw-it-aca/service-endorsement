@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.core.management.base import BaseCommand, CommandError
-from endorsement.dao.notification import notify_endorsers
+from endorsement.notifications.endorsement import notify_endorsers
 
 
 class Command(BaseCommand):

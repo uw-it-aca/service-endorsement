@@ -357,7 +357,7 @@ var ManageProvisionedServices = (function () {
     },
 
     _adjustTabLocation = function (tab) {
-        History.clipPath('access');
+        History.clearPath();
     },
 
     _showTab = function () {

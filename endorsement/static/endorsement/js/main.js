@@ -14,6 +14,7 @@ import { HandlebarsHelpers } from "./handlebars-helpers.js";
 import { ManageProvisionedServices } from "./tab/endorsed.js";
 import { ManageSharedNetids } from "./tab/shared.js";
 import { ManageOfficeAccess } from "./tab/office.js";
+import { ManageSharedDrives } from "./tab/google.js";
 
 $(window.document).ready(function() {
     var common_tools,
@@ -36,7 +37,8 @@ $(window.document).ready(function() {
         panels = [MainTabs,
                   ManageProvisionedServices,
                   ManageSharedNetids,
-                  ManageOfficeAccess];
+                  ManageOfficeAccess,
+                  ManageSharedDrives];
         loadTools(panels);
     }
     catch (err) {

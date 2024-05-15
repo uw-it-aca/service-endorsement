@@ -1,0 +1,126 @@
+{% verbatim %}
+<script id="shared_drives_panel" type="text/x-handlebars-template">
+<div class="row justify-content-end">
+ <div class="col-sm-12">
+
+  <div class="form-group">
+    <div class="shared-drive-table shared-drive-table-tall">
+    <table class="table shared-drive-table">
+      <caption class="visually-hidden">Google Shared Drives</caption>
+      <thead class="thead-light">
+        <tr>
+          <th scope="col" class="shared-drive-name">Shared Drive Name</th>
+          <th scope="col" class="shared-drive-status-icon"></th>
+          <th scope="col" class="shared-drive-status">Status</th>
+          <th scope="col" class="shared-drive-est-usage"><span>Est Usage</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Estimated usage for each drive is updated once a week and may not reflect exact usage." data-original-title="Estimated Usage (Est. Usage)"><i class="fa fa-question-circle"></i></span></th>
+          <th class="shared-drive-quota"><span>Quota</span></th>
+          <th scope="col" class="shared-drive-members"><span>Managers</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Only UW employees who have manager permissions for this drive are listed here." data-original-title="Managers"><i class="fa fa-question-circle"></i></span></th>
+          <th scope="col" class="shared-drive-action"><span>Action</span></th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#each drives}}
+        {{> shared_drives_row_partial . }}
+      {{/each}}
+      </tbody>
+    </table>
+    </div>
+  </div>
+<div class="modal fade" id="shared_drive_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+</script>
+
+<script id="shared_drives_row_partial" type="text/x-handlebars-template">
+    <tr class="shared-drive-row" data-drive-id="{{drive.drive_id}}">
+      <td scope="row" class="shared-drive-name"><span class="significant">{{ drive.drive_name }}</span></td>
+      <td class="shared-drive-status-icon">{{#if (lte expiration_days 90)}}<i class="fa {{#if (lte expiration_days 7)}}fa-exclamation-circle text-danger{{else}}fa-exclamation-triangle text-warning{{/if}}"></i>{{/if}}</td>
+      <td class="shared-drive-status">
+        <span class="significant">
+        {{#if (or drive.drive_quota.is_subsidized subscription) }}
+          {{#if (lte expiration_days 90)}}
+          Provision Expiring
+          {{else}}
+          Provisioned
+          {{/if}}
+        {{else}}
+          {{#unless subscription}}
+          Quota selection required
+          {{/unless}}
+        {{/if}}
+        </span>
+        <p>{{#if (or drive.drive_quota.is_subsidized subscription) }}Renew{{else}}Select quota{{/if}} by {{expiration_date}}{{#if (lte expiration_days 90)}}<br />({{expiration_from_now}}){{/if}}</p>
+      </td>
+      <td class="shared-drive-est-usage">{{drive.drive_usage}}GB</td>
+      </td>
+      <td class="shared-drive-quota">{{drive.drive_quota.quota_limit}}GB
+{{#if in_flight}}
+  <div><div><i class="fa fa-sync text-primary"></i></div><div class="text-primary">We noticed an attempted quota update - confirmed changes will appear here shortly.</div></div>
+{{else}}
+  {{#each quota_notes}}
+  {{#if is_capped}}
+     <div><div><i class="fa fa-exclamation-circle text-danger"></i></div><div class="text-danger">Drive capped: usage is greater than current quota. Delete data or increase quota to resolve.</div></div>
+  {{else}}
+    {{#if is_ending}}
+     <div><div>&nbsp;</div><div>Ending on {{end_date}}</div></div>
+    {{else}}
+     {{#if (or is_increasing is_decreasing) }}
+       <div><div>&nbsp;</div><div>{{#if is_increasing}}In{{else}}De{{/if}}creasing to {{quota_limit}}GB on {{start_date}}</div></div>
+     {{/if}}
+    {{/if}}
+  {{/if}}
+  {{/each}}
+{{/if}}
+      </td>
+      <td class="shared-drive-members">
+        <ul class="comma-list">
+          {{#if (gt drive.members.length 5)}}
+            {{#slice drive.members 0 4}}
+              {{netid}},
+           {{/slice}}
+           <span class="prt-data-popover manager-list" aria-hidden="true" tabindex="0" data-placement="right" data-html="true" title data-content="<div class='manager-list'>{{#each drive.members}}{{netid}}<br />{{/each}}</div>" data-original-title="All Eligibile Managers">
+view&nbsp;all</span>
+           {{else}}
+             {{#each drive.members}}
+               <li>{{netid}}</li>
+             {{/each}}
+           {{/if}}
+        </ul>
+     </td>
+     <td class="shared-drive-action">
+{{#if in_flight}}
+      <button type="button" class="btn btn-primary" id="refresh_drive" data-drive-id={{drive.drive_id}} data-loading-text="Adding NetID">Done Creating Subscription</button>
+{{else}}
+       <select id="shared_drive_action" data-drive-id={{drive.drive_id}} class="custom-select" data-itbill-url="{{#if subscription}}{{ itbill_form_url }}{{/if}}" aria-label="Select action for">
+         <option value="select">Select action...</option>
+         {{#if drive.drive_quota.is_subsidized}}
+           <option value="shared_drive_change">Increase quota</option>
+           <option value="shared_drive_accept">Renew provision</option>
+         {{else}}
+           <option value="shared_drive_change">Update quota or worktags</option>
+           {{#if subscription}}
+             <option value="shared_drive_accept">Renew provision</option>
+           {{/if}}
+         {{/if}}
+         <option value="shared_drive_revoke">Revoke provision</option>
+       </select>
+{{/if}}
+     </td>
+  </tr>
+</script>
+
+<script id="no_shared_drives" type="text/x-handlebars-template">
+  <div class="no-provisions-found">
+      <p>You do not appear to have any Google Shared Drives.</br>
+      Visit this page to request a Google Shared Drive.</p>
+  </div>
+</script>
+
+
+<script id="shared-drives-loading" type="text/x-handlebars-template">
+<div class="loading"><div></div></div>
+</script>
+{% endverbatim %}

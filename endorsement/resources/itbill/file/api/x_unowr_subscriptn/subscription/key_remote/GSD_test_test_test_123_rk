@@ -1,0 +1,106 @@
+{
+  "subscription": {
+    "sys_id": "0123456789abcdef0123456789abcdef",
+    "key_remote": "GSD_test_test_test_123_rk",
+    "name": "Google Shared Drive",
+    "lifecycle_state": "deployed",
+    "product": {
+      "name": "Google Shared Drive",
+      "sys_id": "7078586b2f6cb076cad75ae9aab3ea05",
+      "url": "/api/now/table/x_unowr_products_product/abc012def3456789abc012def3456789"
+    },
+    "contact_number": {},
+    "contacts_additional": [],
+    "configuration_item": {
+      "name": "",
+      "sys_id": null,
+      "url": "/api/now/table/cmdb_ci/null"
+    },
+    "start_date": "2023-12-01",
+    "end_date": "",
+    "note": "Google Shared Drive.   Licensee: javerge.    Requester: jfaculty",
+    "work_notes": "",
+    "budgets": [
+      {
+        "budget": "",
+        "budget_number": "",
+        "organization": "",
+        "pca_task": "",
+        "pca_option": "",
+        "pca_project": "",
+        "driver_worktag_type": "gift",
+        "cost_center_driver": "",
+        "resource_driver": "",
+        "fund_driver": "",
+        "grant_adhoc": "",
+        "program_adhoc": "",
+        "gift_driver": "",
+        "grant_driver": "",
+        "cost_center_toggle": "",
+        "resource_toggle": "",
+        "program_driver": "",
+        "project_driver": "",
+        "activity": "",
+        "assignee": "",
+        "other_worktags": "",
+        "percent": "100",
+        "start_month": "2023-07",
+        "end_month": "",
+        "last_bill_end_period": "",
+        "stage": "Future",
+        "url": "/api/now/table/x_unowr_subscriptn_subscription_budget/abcd0123ef456789abcd0123ef456789",
+        "sys_id": "abcd0123ef456789abcd0123ef456789"
+      }
+    ],
+    "provisions": [
+      {
+        "provision": {
+          "sys_id": "473ae1d097afd914e88df7300153af97",
+          "name": "Google Shared Drive",
+          "product": {
+            "url": "/api/now/table/x_unowr_products_product/abc012def3456789abc012def3456789",
+            "sys_id": "7078586b2f6cb076cad75ae9aab3ea05"
+          },
+          "subscription": {
+            "url": "/api/now/table/x_unowr_subscriptn_subscription/0123456789abcdef0123456789abcdef",
+            "sys_id": "0123456789abcdef0123456789abcdef"
+          },
+          "bill_schedule": "annual-fixed",
+          "start_date": "2023-07-01",
+          "end_date": "",
+          "last_bill_end_period": "",
+          "next_bill_start": "2023-07-01",
+          "stage": "Future",
+          "note": "",
+          "key_remote": "",
+          "current_quantity": "5",
+          "quantities": [
+            {
+              "url": "/api/now/table/x_unowr_subscriptn_provision_quantity/00112233445566778899aabbccddee00",
+              "sys_id": "00112233445566778899aabbccddee00",
+              "quantity": "5",
+              "start_date": "2024-01-01",
+              "end_date": "",
+              "stage": "Curent",
+              "bill_comment": "",
+              "last_bill_end_period": "",
+              "next_bill_start": "2024-01-01"
+            },
+            {
+              "url": "/api/now/table/x_unowr_subscriptn_provision_quantity/00112233445566778899aabbccddeeff",
+              "sys_id": "00112233445566778899aabbccddeeff",
+              "quantity": "7",
+              "start_date": "2024-12-01",
+              "end_date": "",
+              "stage": "Future",
+              "bill_comment": "",
+              "last_bill_end_period": "",
+              "next_bill_start": "2024-12-01"
+            }
+          ],
+          "budgets": []
+        }
+      }
+    ]
+  }
+}

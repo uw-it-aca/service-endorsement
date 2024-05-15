@@ -83,8 +83,13 @@ img {
 
 h1, h2, h3, h4 { font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif; font-weight: bold; /*color: $uwpurple;*/ }
 
+h1 {font-size: 1.8em;
+  margin: 2.5rem 0 0 0;}
+
 .container h2 {
-    margin-top: 16px;
+  font-size: 1.2rem;
+  margin-top: 16px;
+  margin-bottom: 0;
 }
 
 h3 {
@@ -111,7 +116,7 @@ h4 {
 
 /* Hyperlink style:*/
 a {
-	color:#0077c2;
+	color:#2F68CB;
 	&:focus, &:hover {
         color: $link_focus;
 	}
@@ -281,7 +286,17 @@ a {
   }
 }
 
-.endorsed-netids-table, .shared-netids-table, .office-access-table { border: 1px solid #ddd; 
+.no-provisions-found {
+  height: 600px !important;
+  font-size: 1.4em;
+  font-weight: 600;
+}
+
+.shared-drive-table-tall {
+  tbody { height: 600px !important; }
+}
+
+.endorsed-netids-table, .shared-netids-table, .office-access-table, .shared-drive-table { border: 1px solid #ddd;
 
   table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }
   thead { flex: 0 0 auto; }
@@ -291,13 +306,15 @@ a {
 
   thead { background-color: #eee;
      label { margin-bottom: 0; }
-     span { font-weight: 200; font-size: .9em; }
+     span { font-weight: 400; }
   }
   tr.new_netid,
   tr.new_access .access-delegate-id,
   tr.new_access .access-status,
   tr.new_access .access-type,
   tr.new_access .access-action  { background: #efffef !important; }
+  .shared-drive-action { width: 16em !important; }
+  .shared-drive-est-usage { width: 7em; }
   .access-status p { padding-left: 1.2em; }
   .endorsed-netid, .access-mailbox { border-top: none; }
   tr.endorsee_row_odd { background: #f8f8f8;  }
@@ -309,27 +326,45 @@ a {
   }
   .endorsed-netid, .access-mailbox { width: 12rem; white-space: nowrap; }
   .endorsed-name, .access-mailbox-name { border-top: none; border-right: 1px solid #ddd; }
-  .endorsed-status-icon { width: 20px; }
-  .endorsed-status {
+  .endorsed-status-icon,  .shared-drive-status-icon { width: 26px; }
+  .endorsed-status, .shared-drive-status {
+      padding-left: 6px;
       width: 15rem;
-      p { font-size: smaller; }
+      p { font-size: smaller; width: 10rem; margin-bottom: 0px; }
+  }
+  .shared-drive-quota { padding-left: 24px; width: 12rem;
+    div { position: relative; width: 14rem; left: -.85rem;
+          div:first-child { clear: left; float: left; width: 1.65rem; }
+          div:last-child { font-size: smaller; float: left; width: 10rem; }
+    }
   }
   .endorsed-reason { width: 13rem; }
-  .endorsed-action { width: 12rem; white-space: nowrap; }
+  .endorsed-action, .shared-drive-action { width: 12rem; white-space: nowrap; }
   .aggregate_action { margin-right: 10px; }
   .endorsed-error {
       width: 51rem;
       span { display: block; color: red; }
   }
+  .subscription-status { font-size: smaller; color: green; }
 }
 
 .prt-data-popover {
     cursor: pointer;
-    color: #007bff!important;
+    color: #2F68CB !important;
 }
 
 .popover {
     max-width: 380px;
+}
+
+.popover-body:has(.manager-list) {
+    max-height: 160px;
+    overflow-y: scroll;
+}
+
+div.toggle {
+    height: 100px;
+    overflow-y: auto;
 }
 
 span.mailbox, span.delegate {
@@ -349,20 +384,33 @@ label.accept_responsibility {
     overflow: hidden;
 }
 
+.table th {
+  white-space: nowrap;
+}
+
+.shared-drive-row .table th, #office_access_row_partial .table th, #office_conflict_row_partial .table th {
+  white-space: normal;
+}
+
 #shared-uwnetids {
   button#shared_update {
     margin-top: 10px;
   }
 }
 
-.panel-toggle { color:#0077c2; display: inline-block; margin-bottom: 10px; }
+.panel-toggle { display: inline-block; margin-bottom: 10px; }
 
 .netid-panel { margin-bottom: 40px; }
+.shared-drive-panel { margin-bottom: 40px; }
 
 #provision { margin-bottom: 38px; }
 
-#office_access { padding-top: 2em;
+#office_access { padding-top: .5em;
     .access-header { font-size: 1.1em; font-weight: 800; }
+}
+
+#shared_drives { padding-top: .5em;
+    .shared-drive-header { font-size: 1.1em; font-weight: 800; }
 }
 
 #provisioned, #shared, #office_access {
@@ -641,12 +689,12 @@ td.error, tr.error {
             margin-right: 1.75em;
             float: left;
             padding-bottom: 2px;
-            span {
+            a.tab-link {
+                text-decoration: none;
                 text-transform: uppercase;
-                font-weight: bold;
-            }
-            span:hover {
-                cursor: pointer;
+                font-size: 1.1em;
+                font-weight: 800;
+                color: #333;
             }
         }
         li.active {

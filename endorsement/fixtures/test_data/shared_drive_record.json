@@ -1,0 +1,116 @@
+[
+  {
+    "model": "endorsement.shareddriverecord",
+    "pk": 1,
+    "fields": {
+      "shared_drive": 1,
+      "subscription": null,
+      "acted_as": null,
+      "datetime_created": "2024-04-22T17:41:28+00:00",
+      "datetime_emailed": null,
+      "datetime_notice_1_emailed": null,
+      "datetime_notice_2_emailed": null,
+      "datetime_notice_3_emailed": null,
+      "datetime_notice_4_emailed": null,
+      "datetime_accepted": "2024-04-22T17:41:28+00:00",
+      "datetime_renewed": null,
+      "datetime_expired": null,
+      "is_deleted": null
+    }
+  },
+  {
+    "model": "endorsement.shareddriverecord",
+    "pk": 2,
+    "fields": {
+      "shared_drive": 2,
+      "subscription": null,
+      "acted_as": null,
+      "datetime_created": "2023-06-22T17:41:28+00:00",
+      "datetime_emailed": null,
+      "datetime_notice_1_emailed": null,
+      "datetime_notice_2_emailed": null,
+      "datetime_notice_3_emailed": null,
+      "datetime_notice_4_emailed": null,
+      "datetime_accepted": "2023-06-22T17:41:28+00:00",
+      "datetime_renewed": null,
+      "datetime_expired": null,
+      "is_deleted": null
+    }
+  },
+  {
+    "model": "endorsement.shareddriverecord",
+    "pk": 3,
+    "fields": {
+      "shared_drive": 3,
+      "subscription": 1,
+      "acted_as": null,
+      "datetime_created": "2024-04-22T17:41:28+00:00",
+      "datetime_emailed": null,
+      "datetime_notice_1_emailed": null,
+      "datetime_notice_2_emailed": null,
+      "datetime_notice_3_emailed": null,
+      "datetime_notice_4_emailed": null,
+      "datetime_accepted": "2023-05-03T17:41:28+00:00",
+      "datetime_renewed": null,
+      "datetime_expired": null,
+      "is_deleted": null
+    }
+  },
+  {
+    "model": "endorsement.shareddriverecord",
+    "pk": 4,
+    "fields": {
+      "shared_drive": 4,
+      "subscription": null,
+      "acted_as": null,
+      "datetime_created": "2024-04-01T17:41:28+00:00",
+      "datetime_emailed": null,
+      "datetime_notice_1_emailed": null,
+      "datetime_notice_2_emailed": null,
+      "datetime_notice_3_emailed": null,
+      "datetime_notice_4_emailed": null,
+      "datetime_accepted": null,
+      "datetime_renewed": null,
+      "datetime_expired": null,
+      "is_deleted": null
+    }
+  },
+  {
+    "model": "endorsement.shareddriverecord",
+    "pk": 5,
+    "fields": {
+      "shared_drive": 5,
+      "subscription": 2,
+      "acted_as": null,
+      "datetime_created": "2024-04-22T17:41:28+00:00",
+      "datetime_emailed": null,
+      "datetime_notice_1_emailed": null,
+      "datetime_notice_2_emailed": null,
+      "datetime_notice_3_emailed": null,
+      "datetime_notice_4_emailed": null,
+      "datetime_accepted": "2024-04-22T17:41:28+00:00",
+      "datetime_renewed": null,
+      "datetime_expired": null,
+      "is_deleted": null
+    }
+  },
+  {
+    "model": "endorsement.shareddriverecord",
+    "pk": 6,
+    "fields": {
+      "shared_drive": 6,
+      "subscription": 3,
+      "acted_as": null,
+      "datetime_created": "2024-02-12T17:41:28+00:00",
+      "datetime_emailed": null,
+      "datetime_notice_1_emailed": null,
+      "datetime_notice_2_emailed": null,
+      "datetime_notice_3_emailed": null,
+      "datetime_notice_4_emailed": null,
+      "datetime_accepted": "2024-02-12T17:41:28+00:00",
+      "datetime_renewed": null,
+      "datetime_expired": null,
+      "is_deleted": null
+    }
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "model": "endorsement.itbillprovision",
+    "pk": 1,
+    "fields": {
+      "subscription": 1,
+      "current_quantity": 2
+    }
+  },
+  {
+    "model": "endorsement.itbillprovision",
+    "pk": 2,
+    "fields": {
+      "subscription": 2,
+      "current_quantity": 5
+    }
+  },
+  {
+    "model": "endorsement.itbillprovision",
+    "pk": 3,
+    "fields": {
+      "subscription": 3,
+      "current_quantity": 1
+    }
+  }
+]
