@@ -12,7 +12,7 @@ services:
       ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID: 7078586b2f6cb076cad75ae9aab3ea05
       # ENDORSEMENT_PROVISIONING: "services, shared_drives"
       # ENDORSEMENT_PROVISIONING: services,mailbox_access
-      ENDORSEMENT_PROVISIONING: services
+      # ENDORSEMENT_PROVISIONING: services
     restart: always
     container_name: app-provision
     build:

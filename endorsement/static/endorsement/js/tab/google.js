@@ -133,7 +133,7 @@ var ManageSharedDrives = (function () {
 
             if (drives.length === 0) {
                 source = $("#no_shared_drives").html();
-                template = Handlebars.compile(source),
+                template = Handlebars.compile(source);
                 $content.html(template());
                 return;
             }
