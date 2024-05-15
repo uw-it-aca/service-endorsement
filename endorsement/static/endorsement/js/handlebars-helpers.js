@@ -31,12 +31,12 @@ $(window.document).ready(function() {
 
             return result.join('');
         },
-        'even': (n) => (n % 2) === 0,
-        'eq': (a, b) => a === b,
-        'gt': (a, b) => a > b,
-        'lte': (a, b) => a <= b,
-        'and': (a, b) => a && b,
-        'or': (a, b) => a || b,
-        'not': (a) => !a
+        'even': function(n) { return ((n % 2) === 0); },
+        'eq': function(a, b) { return (a === b); },
+        'gt': function(a, b) { return (a > b); },
+        'lte': function(a, b) { return (a <= b); },
+        'and': function(a, b) { return (a && b); },
+        'or': function(a, b) { return (a || b); },
+        'not': function(a) { return (!a); }
     });
 });
