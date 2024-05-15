@@ -21,18 +21,6 @@ $(window.document).ready(function() {
 
             return plural;
         },
-        'equals': function(a, b, options) {
-            return (a == b) ? options.fn(this) : options.inverse(this);
-        },
-        'gt': function(a, b, options) {
-            return (a > b) ? options.fn(this) : options.inverse(this);
-        },
-        'lte': function(a, b, options) {
-            return (a <= b) ? options.fn(this) : options.inverse(this);
-        },
-        'even': function(n, options) {
-            return ((n % 2) === 0) ? options.fn(this) : options.inverse(this);
-        },
         'slice': function(a, start, end, options) {
             if(!a || a.length == 0)
                 return options.inverse(this);
@@ -43,14 +31,12 @@ $(window.document).ready(function() {
 
             return result.join('');
         },
-        'or': function(a, b, options) {
-            return (a || b) ? options.fn(this) : options.inverse(this);
-        },
-        'ifAndNot': function(a, b, options) {
-            return (a && !b) ? options.fn(this) : options.inverse(this);
-        },
-        'ifNotAndNot': function(a, b, options) {
-            return (!a && !b) ? options.fn(this) : options.inverse(this);
-        }
+        'even': (n) => (n % 2) === 0,
+        'eq': (a, b) => a === b,
+        'gt': (a, b) => a > b,
+        'lte': (a, b) => a <= b,
+        'and': (a, b) => a && b,
+        'or': (a, b) => a || b,
+        'not': (a) => !a
     });
 });

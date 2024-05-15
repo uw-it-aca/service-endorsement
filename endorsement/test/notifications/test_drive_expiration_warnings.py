@@ -8,7 +8,8 @@ from django.utils import timezone
 from endorsement.test.notifications import NotificationsTestCase
 from endorsement.models import SharedDriveRecord
 from endorsement.policy.shared_drive import SharedDrivePolicy
-from endorsement.notifications.shared_drive import warn_members
+from endorsement.notifications.shared_drive import (
+    warn_members, notify_over_quota_non_subsidized_expired)
 from datetime import timedelta
 
 
@@ -94,3 +95,7 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
 
         warn_members(4)
         self.assertEqual(len(mail.outbox), 12)
+
+    def test_over_quota_unsubscribed_expiration(self):
+        notify_over_quota_non_subsidized_expired()
+        self.assertEqual(len(mail.outbox), 1)

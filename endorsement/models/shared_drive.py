@@ -8,6 +8,7 @@ from django_prometheus.models import ExportModelOperationsMixin
 from endorsement.models.base import RecordManagerBase
 from endorsement.models.itbill import ITBillSubscription
 from endorsement.util.date import datetime_to_str
+from endorsement.util.itbill.shared_drive import shared_drive_subsidized_quota
 import json
 
 
@@ -74,8 +75,7 @@ class SharedDriveQuota(
 
     @property
     def is_subsidized(self):
-        return self.quota_limit <= getattr(
-            settings, 'ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA')
+        return self.quota_limit <= shared_drive_subsidized_quota()
 
     def json_data(self):
         return {
@@ -132,6 +132,13 @@ class SharedDriveRecordManager(RecordManagerBase):
         return self.get(
             shared_drive__drive_id=drive_id, is_deleted__isnull=True)
 
+    def get_over_quota_non_subscribed(self):
+        return self.filter(
+            datetime_over_quota_emailed__isnull=True,
+            shared_drive__drive_quota__quota_limit__gt=\
+            shared_drive_subsidized_quota(),
+            subscription__isnull=True, is_deleted__isnull=True)
+
 
 class SharedDriveRecord(
         ExportModelOperationsMixin('shared_drive_record'), models.Model):
@@ -153,6 +160,7 @@ class SharedDriveRecord(
     datetime_notice_2_emailed = models.DateTimeField(null=True)
     datetime_notice_3_emailed = models.DateTimeField(null=True)
     datetime_notice_4_emailed = models.DateTimeField(null=True)
+    datetime_over_quota_emailed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
     is_deleted = models.BooleanField(null=True)

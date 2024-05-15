@@ -14,14 +14,14 @@ from endorsement.policy.shared_drive import SharedDrivePolicy
 from endorsement.policy.access import AccessPolicy
 from endorsement.util.auth import SupportGroupAuthentication
 from endorsement.notifications.endorsement import (
-    _get_endorsed_unnotified,
-    _create_expire_notice_message,
+    _get_endorsed_unnotified, _create_expire_notice_message,
     _create_endorsee_message, _create_endorser_message,
     _create_warn_shared_owner_message)
 from endorsement.notifications.access import (
     _create_accessor_message, _create_accessee_expiration_notice)
 from endorsement.notifications.shared_drive import (
-    _create_notification_expiration_notice)
+    _create_notification_expiration_notice,
+    _create_notification_over_quota_non_subsidized)
 from endorsement.dao.accessors import get_accessor_email
 from datetime import datetime, timedelta
 import re
@@ -182,17 +182,21 @@ class Notification(RESTDispatch):
     def _shared_drive_notification(self, request):
         notification = request.data.get('notification', None)
 
+        record = SharedDriveRecord.objects.filter(
+            is_deleted__isnull=True).first()
+
         warning_level = None
         m = re.match(r'^warning_([1-4])$', notification)
         if m:
             warning_level = int(m.group(1))
-
-        record = SharedDriveRecord.objects.filter(
-            is_deleted__isnull=True).first()
-
-        if warning_level:
-            subject, text, html = _create_notification_expiration_notice(
-                warning_level, record, SharedDrivePolicy())
+            if warning_level:
+                subject, text, html = _create_notification_expiration_notice(
+                    warning_level, record, SharedDrivePolicy())
+            else:
+                return self.error_response(400, "Unknown notification.")
+        elif notification == 'phase_0_expiration':
+            subject, text, html = \
+                _create_notification_over_quota_non_subsidized(record)
         else:
             return self.error_response(400, "Unknown notification.")
 

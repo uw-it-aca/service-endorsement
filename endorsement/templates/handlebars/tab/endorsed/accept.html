@@ -11,7 +11,7 @@
     <div class="row">
     <div class="col">
       You are about to provision
-      {{#gt netid_count 1}}
+      {{#if (gt netid_count 1)}}
         <ul class="comma-list">{{#each services}}{{#if this.count}}<li>{{ shared }}UW NetIDs to {{this.name}}</li>{{/if}}{{/each}}</ul>.
       {{else}}
         {{#each services}}
@@ -20,7 +20,7 @@
           <ul class="comma-list">
             {{#each endorsed}}<li style="font-weight: bold;">{{this.netid}}</li>{{/each}}
           </ul> to the {{this.name}} service{{#if @last}}{{/if}}{{/if}}{{/each}}.
-      {{/gt}}
+      {{/if}}
       By selecting {{ plural netid_count 'this' 'these' }} UW NetID{{ plural netid_count '' 's' }}, you confirm that:
     </div>
     </div>

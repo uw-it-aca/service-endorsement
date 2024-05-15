@@ -96,10 +96,8 @@ def warn_accessees(notice_level):
                 email, subject, text_body, html_body,
                 "Mailbox Access Warning")
 
-            sent_date = {
-                'datetime_notice_{}_emailed'.format(
-                    notice_level): timezone.now()
-            }
-            drives.update(**sent_date)
+            setattr(drive, 'datetime_notice_{}_emailed'.format(notice_level),
+                    timezone.now())
+            drive.save()
         except EmailFailureException as ex:
             pass

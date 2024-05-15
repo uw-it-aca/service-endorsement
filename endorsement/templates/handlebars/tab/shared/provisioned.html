@@ -14,7 +14,7 @@
     {{#each services}}
   {{#if this.count}}<li>{{this.name}}</li>{{/if}}
     {{/each}}</ul>
-    for the{{#gt netid_count 1}} {{ netid_count }} {{/gt}} UW NetID{{plural netid_count '' 's'}} {{#gt this.count 1}}{{else}} <ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/gt}} has been provisioned.
+    for the{{#if (gt netid_count 1)}} {{ netid_count }} {{/if}} UW NetID{{plural netid_count '' 's'}} {{#if (gt this.count 1)}}{{else}} <ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/if}} has been provisioned.o
   </div>
   <br />
   {{#each services}}

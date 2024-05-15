@@ -1,7 +1,7 @@
 {% verbatim %}
 <script id="reasons_partial" type="text/x-handlebars-template">
 
-{{#ifAndNot endorsement.reason endorsement.is_revoked}}
+{{#if (and endorsement.reason (not endorsement.is_revoked))}}
 {{endorsement.reason}}<input type=hidden class="reason-editor" placeholder="Reason for provisioning" value="{{endorsement.reason}}">
 {{else}}
 <div class="endorse-reason">
@@ -25,6 +25,6 @@
   </div>
   <p class="apply-reason visually-hidden" style="font-size: small;"><a href="javascript:void(0);" class='apply-all'>Apply to all</a></p>
 </div>
-{{/ifAndNot}}
+{{/if}}
 </script>
 {% endverbatim %}
