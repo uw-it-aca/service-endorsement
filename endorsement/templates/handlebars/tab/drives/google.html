@@ -2,21 +2,20 @@
 <script id="shared_drives_panel" type="text/x-handlebars-template">
 <div class="row justify-content-end">
  <div class="col-sm-12">
-    <span class="shared-drive-header">Your Google Shared Drives</span>
-    <p>Manage the quota size of your shared drives. &nbsp;<a href="javascript: void()" target="_blank">Learn more.</a>
 
   <div class="form-group">
     <div class="shared-drive-table shared-drive-table-tall">
     <table class="table shared-drive-table">
+      <caption class="visually-hidden">Google Shared Drives</caption>
       <thead class="thead-light">
         <tr>
-          <th class="shared-drive-name"><label>Shared Drive Name</label></th>
-          <td class="shared-drive-status-icon"></td>
-          <th class="shared-drive-status"><label>Provision Status</label></th>
-          <th class="shared-drive-est-usage"><span>Est Usage</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Estimated usage for each drive is updated once a week and may not reflect exact usage." data-original-title="Estimated Usage (Est. Usage)"><i class="fa fa-question-circle"></i></span></th>
+          <th scope="col" class="shared-drive-name">Shared Drive Name</th>
+          <td scope="col" class="shared-drive-status-icon"></td>
+          <th scope="col" class="shared-drive-status">Status</th>
+          <th scope="col" class="shared-drive-est-usage"><span>Est Usage</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Estimated usage for each drive is updated once a week and may not reflect exact usage." data-original-title="Estimated Usage (Est. Usage)"><i class="fa fa-question-circle"></i></span></th>
           <th class="shared-drive-quota"><span>Quota</span></th>
-          <th class="shared-drive-members"><span>Managers</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Only UW employees who have manager permissions for this drive are listed here." data-original-title="Managers"><i class="fa fa-question-circle"></i></span></th>
-          <th class="shared-drive-action"><span>Action</span></th>
+          <th scope="col" class="shared-drive-members"><span>Managers</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Only UW employees who have manager permissions for this drive are listed here." data-original-title="Managers"><i class="fa fa-question-circle"></i></span></th>
+          <th scope="col" class="shared-drive-action"><span>Action</span></th>
         </tr>
       </thead>
       <tbody>
@@ -37,7 +36,7 @@
 
 <script id="shared_drives_row_partial" type="text/x-handlebars-template">
     <tr class="shared-drive-row" data-drive-id="{{drive.drive_id}}">
-      <td class="shared-drive-name"><span class="significant">{{ drive.drive_name }}</span></td>
+      <th scope="row" class="shared-drive-name"><span class="significant">{{ drive.drive_name }}</span></th>
       <td class="shared-drive-status-icon">{{#lte expiration_days 90}}<i class="fa {{#lte expiration_days 7}}fa-exclamation-circle text-danger{{else}}fa-exclamation-triangle text-warning{{/lte}}"></i>{{/lte}}</td>
       <td class="shared-drive-status">
         <span class="significant">
@@ -91,8 +90,8 @@ view&nbsp;all</span>
 {{#if in_flight}}
       <button type="button" class="btn btn-primary" id="refresh_drive" data-drive-id={{drive.drive_id}} data-loading-text="Adding NetID">Done Creating Subscription</button>
 {{else}}
-       <select id="shared_drive_action" data-drive-id={{drive.drive_id}} class="custom-select" data-itbill-url="{{#if subscription}}{{ itbill_form_url }}{{/if}}">
-         <option value="select">Select</option>
+       <select id="shared_drive_action" data-drive-id={{drive.drive_id}} class="custom-select" data-itbill-url="{{#if subscription}}{{ itbill_form_url }}{{/if}}" aria-label="Select action for">
+         <option value="select">Select action...</option>
          {{#if drive.drive_quota.is_subsidized}}
            <option value="shared_drive_change">Increase quota</option>
            <option value="shared_drive_accept">Renew provision</option>

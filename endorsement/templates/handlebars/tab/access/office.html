@@ -3,19 +3,20 @@
 <div class="row justify-content-end">
  <div class="col-sm-9">
     <span class="access-header">UW Office 365 Outlook (Exchange Online) mailbox permissions</span>
-    <p>Manage access to Outlook mailboxes that you own. &nbsp;<a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/" target="_blank">Learn more.</a>
+    <p><a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/" target="_blank">Get an overview of Exchange Online</a>
 
  </div>
  <div class="col-sm-3">
   <div class="input-group mb-3">
+    <label for="addnetid" class="visually-hidden">Select a mailbox to providing access to</label>
     <select class="custom-select inbox-netids">
-      <option value="">Select a UWNetID</option>
+      <option value="">Select a mailbox</option>
       {{#each netids}}
       <option value="{{this}}">{{this}}</option>
       {{/each}}
     </select>
     <div class="input-group-append">
-      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="Adding NetID">Add Access</button>
+      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="Adding NetID">Give access to...</button>
     </div>
   </div>
  </div>
@@ -24,14 +25,15 @@
   <div class="form-group">
     <div class="office-access-table">
     <table class="table outlook-access-table">
+      <caption class="visually-hidden">NetIDs with access to your Outlook mailboxes</caption>
       <thead class="thead-light">
         <tr>
-          <th class="endorsed-netid">UW NetID <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="right" data-content="If you’re not seeing a UWNetID that you’d expect, make sure that UW Office 365 is provisioned under the SERVICES tab." data-original-title="UW NetID"><i class="fa fa-question-circle"></i></span></th>
-          <th>Name</th>
-          <th class="access-delegate"><label>UW NetID/Group</label></th>
-          <th class="access-status"><span>Status</span></th>
-          <th class="access-type"><span>Access Type</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="left" data-content="<h6>Full Access and Send As</h6><ul><li>Open the mailbox</li><li>View, add and remove the contents of the mailbox</li><li>Send messages as if they came directly from the mailbox</li></ul><h6>Full Access</h6><ul><li>Open the mailbox</li><li>View, add and remove the contents of the mailbox</li></ul><h6>Send As</h6><ul><li>Send messages as if they came directly from the mailbox</li></ul><h6>Send on Behalf</h6><ul><li>Alows the delegate to send messages from the mailbox or group</li><li>The From address of these messages clearly shows that the message was sent by the delegate</li></ul>" data-original-title="Access Types"><i class="fa fa-question-circle"></i></th>
-          <th class="access-action"><span>Action</span></th>
+          <th scope="col" class="endorsed-netid">UW NetID's Mailbox<span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="right" data-content="If you’re not seeing a UWNetID that you’d expect, make sure that UW Office 365 is provisioned under the SERVICES tab." data-original-title="UW NetID"><i class="fa fa-question-circle"></i></span></th>
+          <th scope="col" >Name</th>
+          <th scope="col" class="access-delegate">UW NetID/Group</th>
+          <th scope="col" class="access-status">Status</th>
+          <th scope="col" class="access-type">Access Type <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="left" data-content="<h6>Full Access and Send As</h6><ul><li>Open the mailbox</li><li>View, add and remove the contents of the mailbox</li><li>Send messages as if they came directly from the mailbox</li></ul><h6>Full Access</h6><ul><li>Open the mailbox</li><li>View, add and remove the contents of the mailbox</li></ul><h6>Send As</h6><ul><li>Send messages as if they came directly from the mailbox</li></ul><h6>Send on Behalf</h6><ul><li>Alows the delegate to send messages from the mailbox or group</li><li>The From address of these messages clearly shows that the message was sent by the delegate</li></ul>" data-original-title="Access Types"><i class="fa fa-question-circle"></i></th>
+          <th scope="col" class="access-action">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -59,13 +61,13 @@
 <script id="office_access_row_partial" type="text/x-handlebars-template">
     <tr class="
 endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
-      <td class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</td>
+      <th scope="row" class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</th>
     <td class="access-mailbox-name">{{ name }}</td>
 {{#if is_valid}}
 {{#if delegate}}
     <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
     <td class="access-status">{{#if date_granted}}<i class="fa fa-check" style="color: green;"></i> Provisioned<p>Renew by {{date_renewal}}<br />({{date_renewal_relative}})</p>{{else}}Not Provisioned{{/if}}</td>
-      <td class="access-type"><select class="office-access-types" data-access-right-id="{{ right_id }}"></select></td>
+      <td class="access-type"><label for="accesstype" class="visually-hidden">Access type</label><select id="accesstype" class="office-access-types" data-access-right-id="{{ right_id }}"></select></td>
       <td class="access-action">{{#if date_granted}}<button type="button" class="btn btn-primary" id="access_update" data-loading-text="Updating" style="display: none;">Update</button><button type="button" class="btn btn-primary" id="access_renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="access_provision" disabled="disabled" data-loading-text="Provisioning">Provision Access</button>{{/if}}</td>
 {{else}}
       <td class="text-center" colspan="4"><span class="fw-lighter">No elevated access provisioned</span></td>
@@ -81,7 +83,7 @@ endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} en
 <script id="office_conflict_row_partial" type="text/x-handlebars-template">
     <tr class="
 endorsement_row_{{#equals access_index 0}}first {{else}}following {{/equals}} endorsee_row_{{#even accessee_index}}even{{else}}odd{{/even}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
-      <td class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</td>
+      <th scope="row" class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</th>
       <td class="access-mailbox-name">{{ name }}</td>
       <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
       <td colspan="3">
