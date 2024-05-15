@@ -34,4 +34,3 @@ class TestSharedDrivesAPI(EndorsementApiTest):
         self.assertEquals(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(len(data['drives']), 0)
-

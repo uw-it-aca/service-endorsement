@@ -41,7 +41,6 @@ class TestProvisioneExpirationNotices(NotificationsTestCase):
             reason="Just Because",
             datetime_endorsed=self.days_ago(self.policy.lifetime + 200))
 
-
         # expire date today
         EndorsementRecord.objects.create(
             endorser=self.endorser1, endorsee=self.endorsee1,

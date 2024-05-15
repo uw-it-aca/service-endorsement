@@ -10,12 +10,12 @@ class RecordManagerBase(models.Manager):
         """
         Gather provision records to receive expiration warning messages where
         level is the index of the warning message: first, second and so forth
-    
+
         The expiration clock starts on the date of the first warning notice
         """
         if level < 1 or level > 4:
             raise Exception('bad warning level {}'.format(level))
-    
+
         days_prior = policy.days_till_expiration(level)
         params = {
             'is_deleted__isnull': True
@@ -31,7 +31,7 @@ class RecordManagerBase(models.Manager):
             })
         else:
             prev_warning_date = policy.prior_warning_date(now, level)
-    
+
             if level == 2:
                 params.update({
                     'datetime_notice_1_emailed__lte': prev_warning_date,
@@ -47,7 +47,7 @@ class RecordManagerBase(models.Manager):
                     'datetime_notice_3_emailed__lte': prev_warning_date,
                     'datetime_notice_4_emailed__isnull': True
                 })
-    
+
         return self.filter(Q(**params))
 
     def get_records_to_expire(self, now, policy):

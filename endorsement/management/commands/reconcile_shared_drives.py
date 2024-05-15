@@ -8,21 +8,15 @@ class Command(BaseCommand):
     help = 'Loop over all shared drives verifying lifecycle and subscriptions'
 
     def handle(self, *args, **options):
-# for shared drives, only include members/managers that are in
-# the uw_employee group since we'll be showing managers that aren't
-# able to do anything about the subscription since their access to
-# prt will be denied.
 
+        # for shared drives, only include members/managers that are in
+        # the uw_employee group since we'll be showing managers that aren't
+        # able to do anything about the subscription since their access to
+        # prt will be denied.
 
-
-# query itbill status for partiular key_memote
-# only add provisions  and quanties to itbill models
-# for the given product sys_id
-# (could it be the case that the product sys_id is not unique?)
+        # query itbill status for partiular key_memote
+        # only add provisions  and quanties to itbill models
+        # for the given product sys_id
+        # (could it be the case that the product sys_id is not unique?)
 
         raise Exception("Not implemented yet")
-
-
-
-
-

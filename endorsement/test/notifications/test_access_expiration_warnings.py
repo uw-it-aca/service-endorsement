@@ -34,7 +34,6 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
         accessor3 = Accessor.objects.create(
             name='accessor3', display_name='Accessor Three')
 
-
         # accepted date long ago
         AccessRecord.objects.create(
             accessor=accessor1, accessee=accessee1,
@@ -52,21 +51,21 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
 
     def test_expiration_and_notices(self):
         expected_results = [
-            [0, 2, 0, 0, 0], # level one
-            [0, 1, 0, 0, 0], # one plus a day
-            [0, 0, 0, 0, 0], # two minus a day
-            [0, 0, 2, 0, 0], # level two
-            [0, 0, 1, 0, 0], # two plus a day
-            [0, 0, 0, 0, 0], # three minus a day
-            [0, 0, 0, 2, 0], # level three
-            [0, 0, 0, 1, 0], # three plus a day
-            [0, 0, 0, 0, 0], # four minus a day
-            [0, 0, 0, 0, 2], # level four
-            [2, 0, 0, 0, 1], # four plus a day
-            [1, 0, 0, 0, 0], # four plus two days
-            [0, 0, 0, 0, 0], # grace minus a day
-            [0, 0, 0, 0, 0], # grace
-            [0, 0, 0, 0, 0]] # grace plus a day
+            [0, 2, 0, 0, 0],  # level one
+            [0, 1, 0, 0, 0],  # one plus a day
+            [0, 0, 0, 0, 0],  # two minus a day
+            [0, 0, 2, 0, 0],  # level two
+            [0, 0, 1, 0, 0],  # two plus a day
+            [0, 0, 0, 0, 0],  # three minus a day
+            [0, 0, 0, 2, 0],  # level three
+            [0, 0, 0, 1, 0],  # three plus a day
+            [0, 0, 0, 0, 0],  # four minus a day
+            [0, 0, 0, 0, 2],  # level four
+            [2, 0, 0, 0, 1],  # four plus a day
+            [1, 0, 0, 0, 0],  # four plus two days
+            [0, 0, 0, 0, 0],  # grace minus a day
+            [0, 0, 0, 0, 0],  # grace
+            [0, 0, 0, 0, 0]]  # grace plus a day
 
         self.message_timing(expected_results)
 

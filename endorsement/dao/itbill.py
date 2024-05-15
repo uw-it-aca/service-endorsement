@@ -29,12 +29,12 @@ def initiate_subscription(shared_drive_record):
             "key_remote": itbill_subscription.key_remote,
             "product": product_sys_id(),
             "start_date": "",
-	    "contact": user_service.get_user(),
-	    "contacts_additional": ','.join([
+            "contact": user_service.get_user(),
+            "contacts_additional": ','.join([
                 member.member.name for member in membership]),
             "lifecycle_state": ITBillSubscription.SUBSCRIPTION_STATE_CHOICES[
                 ITBillSubscription.SUBSCRIPTION_DRAFT][1],
-	    "work_notes": "Subscription initiated by Provision Request Tool",
+            "work_notes": "Subscription initiated by Provision Request Tool",
         }
 
         Subscription().create_subscription(data)
