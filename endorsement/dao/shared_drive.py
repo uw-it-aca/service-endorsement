@@ -37,13 +37,18 @@ def load_shared_drives_from_csv(file_path):
                 logger.error(f"shared drive record: {a}: {ex}")
 
 
-def load_shared_drive_record(a, is_seen):
+
+def load_shared_drive_record(a: GoogleDriveState, is_seen):
     """
     ensure shared drive record is created
     """
     shared_drive = upsert_shared_drive(a, is_seen)
     shared_drive_record, _ = SharedDriveRecord.objects.get_or_create(
-        shared_drive=shared_drive)
+        shared_drive=shared_drive,
+        defaults={
+            "datetime_created": dt.datetime.now(dt.timezone.utc),
+        },
+    )
     return shared_drive_record
 
 
