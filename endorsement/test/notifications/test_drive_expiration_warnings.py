@@ -9,7 +9,7 @@ from endorsement.test.notifications import NotificationsTestCase
 from endorsement.models import SharedDriveRecord
 from endorsement.policy.shared_drive import SharedDrivePolicy
 from endorsement.notifications.shared_drive import (
-    warn_members, notify_over_quota_non_subsidized_expired)
+    drive_member_lifecycle_warning, notify_over_quota_non_subsidized_expired)
 from datetime import timedelta
 
 
@@ -69,7 +69,8 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
         self.message_timing(expected_results)
 
     def test_expiration_and_notice_email(self):
-        warn_members(1)
+
+        drive_member_lifecycle_warning(1)
         self.assertEqual(len(mail.outbox), 3)
 
         SharedDriveRecord.objects.filter(
@@ -77,7 +78,7 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
                 datetime_notice_1_emailed=F(
                     'datetime_notice_1_emailed')-timedelta(days=61))
 
-        warn_members(2)
+        drive_member_lifecycle_warning(2)
         self.assertEqual(len(mail.outbox), 6)
 
         SharedDriveRecord.objects.filter(
@@ -85,7 +86,7 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
                 datetime_notice_2_emailed=F(
                     'datetime_notice_2_emailed')-timedelta(days=30))
 
-        warn_members(3)
+        drive_member_lifecycle_warning(3)
         self.assertEqual(len(mail.outbox), 9)
 
         SharedDriveRecord.objects.filter(
@@ -93,7 +94,7 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
                 datetime_notice_3_emailed=F(
                     'datetime_notice_2_emailed')-timedelta(days=23))
 
-        warn_members(4)
+        drive_member_lifecycle_warning(4)
         self.assertEqual(len(mail.outbox), 12)
 
     def test_over_quota_unsubscribed_expiration(self):

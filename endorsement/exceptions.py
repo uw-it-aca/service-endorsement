@@ -51,5 +51,9 @@ class SharedDriveRecordExists(Exception):
     pass
 
 
+class SharedDriveRecordNotFound(Exception):
+    pass
+
+
 class ITBillSubscriptionNotFound(Exception):
     pass

@@ -81,7 +81,7 @@ def _create_accessee_expiration_notice(notice_level, access, policy):
             loader.render_to_string(html_template, context))
 
 
-def warn_accessees(notice_level):
+def accessee_lifecycle_warning(notice_level):
     policy = AccessPolicy()
     drives = policy.records_to_warn(notice_level)
 
