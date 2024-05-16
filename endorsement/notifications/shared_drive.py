@@ -44,7 +44,7 @@ def _create_notification_expiration_notice(notice_level, drive, policy):
             loader.render_to_string(html_template, context))
 
 
-def warn_members(notice_level):
+def drive_member_lifecycle_warning(notice_level):
     policy = SharedDrivePolicy()
     drives = policy.records_to_warn(notice_level)
 

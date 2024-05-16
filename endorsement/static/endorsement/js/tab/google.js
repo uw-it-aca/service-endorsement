@@ -45,6 +45,7 @@ var ManageSharedDrives = (function () {
             }).delegate('#confirm_shared_drive_revoke', 'click', function (e) {
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), false);
             }).delegate('#refresh_drive', 'click', function (e) {
+                e.preventDefault();
                 _refreshSharedDrive($(this).attr('data-drive-id'));
             }).on('endorse:SharedDriveRefresh', function (e, data) {
                 _updateSharedDrivesDiplay(data.drives[0]);

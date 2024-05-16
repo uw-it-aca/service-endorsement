@@ -8,7 +8,7 @@ from django.utils import timezone
 from endorsement.test.notifications import NotificationsTestCase
 from endorsement.models import AccessRecord, Accessee, Accessor
 from endorsement.policy.access import AccessPolicy
-from endorsement.notifications.access import warn_accessees
+from endorsement.notifications.access import accessee_lifecycle_warning
 from datetime import timedelta
 
 
@@ -70,7 +70,7 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
         self.message_timing(expected_results)
 
     def test_expiration_and_notice_email(self):
-        warn_accessees(1)
+        accessee_lifecycle_warning(1)
         self.assertEqual(len(mail.outbox), 3)
 
         AccessRecord.objects.filter(
@@ -78,7 +78,7 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
                 datetime_notice_1_emailed=F(
                     'datetime_notice_1_emailed')-timedelta(days=61))
 
-        warn_accessees(2)
+        accessee_lifecycle_warning(2)
         self.assertEqual(len(mail.outbox), 6)
 
         AccessRecord.objects.filter(
@@ -86,7 +86,7 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
                 datetime_notice_2_emailed=F(
                     'datetime_notice_2_emailed')-timedelta(days=30))
 
-        warn_accessees(3)
+        accessee_lifecycle_warning(3)
         self.assertEqual(len(mail.outbox), 9)
 
         AccessRecord.objects.filter(
@@ -94,5 +94,5 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
                 datetime_notice_3_emailed=F(
                     'datetime_notice_2_emailed')-timedelta(days=23))
 
-        warn_accessees(4)
+        accessee_lifecycle_warning(4)
         self.assertEqual(len(mail.outbox), 12)

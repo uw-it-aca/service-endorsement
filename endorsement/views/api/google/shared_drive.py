@@ -3,7 +3,8 @@
 
 from endorsement.models import SharedDriveRecord
 from endorsement.dao.persistent_messages import get_persistent_messages
-from endorsement.dao.itbill import refresh_subscription
+from endorsement.dao.itbill import update_itbill_subscription
+from endorsement.dao.shared_drive import sync_quota_from_subscription
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, data_not_found,
     invalid_endorser, bad_request, data_error)
@@ -34,7 +35,8 @@ class SharedDrive(RESTDispatch):
 
         try:
             if drive_id and refresh:
-                refresh_subscription(netid, drive_id)
+                update_itbill_subscription(netid, drive_id)
+                sync_quota_from_subscription(drive_id)
         except Exception as ex:
             logger.exception("refresh_subscription: {}".format(ex))
             return data_error(logger, ex)

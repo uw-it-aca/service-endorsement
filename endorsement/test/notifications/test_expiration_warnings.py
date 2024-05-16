@@ -9,7 +9,7 @@ from endorsement.test.notifications import NotificationsTestCase
 from endorsement.models import Endorser, Endorsee, EndorsementRecord
 from endorsement.policy.endorsement import EndorsementPolicy
 from endorsement.services import get_endorsement_service
-from endorsement.notifications.endorsement import warn_endorsers
+from endorsement.notifications.endorsement import endorser_lifecycle_warning
 from datetime import timedelta
 
 
@@ -76,7 +76,7 @@ class TestProvisioneExpirationNotices(NotificationsTestCase):
         self.message_timing(expected_results)
 
     def test_expiration_and_notice_email(self):
-        warn_endorsers(1)
+        endorser_lifecycle_warning(1)
         self.assertEqual(len(mail.outbox), 2)
 
         EndorsementRecord.objects.filter(
@@ -84,7 +84,7 @@ class TestProvisioneExpirationNotices(NotificationsTestCase):
                 datetime_notice_1_emailed=F(
                     'datetime_notice_1_emailed')-timedelta(days=61))
 
-        warn_endorsers(2)
+        endorser_lifecycle_warning(2)
         self.assertEqual(len(mail.outbox), 4)
 
         EndorsementRecord.objects.filter(
@@ -92,7 +92,7 @@ class TestProvisioneExpirationNotices(NotificationsTestCase):
                 datetime_notice_2_emailed=F(
                     'datetime_notice_2_emailed')-timedelta(days=30))
 
-        warn_endorsers(3)
+        endorser_lifecycle_warning(3)
         self.assertEqual(len(mail.outbox), 6)
 
         EndorsementRecord.objects.filter(
@@ -100,5 +100,5 @@ class TestProvisioneExpirationNotices(NotificationsTestCase):
                 datetime_notice_3_emailed=F(
                     'datetime_notice_2_emailed')-timedelta(days=23))
 
-        warn_endorsers(4)
+        endorser_lifecycle_warning(4)
         self.assertEqual(len(mail.outbox), 8)
