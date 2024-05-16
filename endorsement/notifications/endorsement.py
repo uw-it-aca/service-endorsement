@@ -289,7 +289,7 @@ def _create_expire_notice_message(notice_level, endorsed, policy):
             loader.render_to_string(html_template, context))
 
 
-def warn_endorsers(notice_level):
+def endorser_lifecycle_warning(notice_level):
     policy = EndorsementPolicy()
     endorsements = policy.records_to_warn(notice_level)
 

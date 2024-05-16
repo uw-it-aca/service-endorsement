@@ -4,7 +4,8 @@
 from endorsement.models.shared_drive import (
     SharedDriveMember, Member, Role, SharedDrive,
     SharedDriveQuota, SharedDriveRecord)
-from endorsement.exceptions import SharedDriveNonPrivilegedMember
+from endorsement.exceptions import (
+    SharedDriveNonPrivilegedMember, SharedDriveRecordNotFound)
 import csv
 import re
 import logging
@@ -13,6 +14,23 @@ import logging
 logger = logging.getLogger(__name__)
 netid_regex = re.compile(
     r'^(?P<netid>[^@]+)@(uw|(u\.)?washington)\.edu$', re.I)
+
+
+def sync_quota_from_subscription(drive_id):
+    """
+    apply SharedDriveQuota value to MSCA SharedDrive drive_id
+    """
+    try:
+        record = SharedDriveRecord.objects.get_record_by_drive_id(drive_id)
+        #
+        #
+        #
+        # TODO: all msca restclient to update shared drive
+        #
+        #
+        #
+    except SharedDriveRecord.DoesNotExist:
+        raise SharedDriveRecordNotFound(drive_id)
 
 
 def shared_drive_lifecycle_expired(drive_record):

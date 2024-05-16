@@ -4,6 +4,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from endorsement.notifications.endorsement import notify_endorsers
 from endorsement.notifications.access import notify_accessees
+from endorsement.notifications.access import warn_members
 
 
 class Command(BaseCommand):

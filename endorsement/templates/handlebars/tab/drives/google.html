@@ -58,7 +58,7 @@
       </td>
       <td class="shared-drive-quota">{{drive.drive_quota.quota_limit}}GB
 {{#if in_flight}}
-  <div><div><i class="fa fa-sync text-primary"></i></div><div class="text-primary">We noticed an attempted quota update - confirmed changes will appear here shortly.</div></div>
+  <div><div><a id="refresh_drive" data-drive-id={{drive.drive_id}} href="/drives"><i class="fa fa-sync text-primary"></i></a></div><div class="text-primary">We noticed an attempted quota update - confirmed changes will appear here shortly.</div></div>
 {{else}}
   {{#each quota_notes}}
   {{#if is_capped}}
