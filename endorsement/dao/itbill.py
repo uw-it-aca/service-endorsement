@@ -5,7 +5,9 @@ from django.conf import settings
 from userservice.user import UserService
 from endorsement.models import SharedDriveRecord, ITBillSubscription
 from endorsement.util.itbill.shared_drive import (
-    subscription_name, product_sys_id)
+    subscription_name,
+    product_sys_id,
+)
 from endorsement.exceptions import ITBillSubscriptionNotFound
 from restclients_core.exceptions import DataFailureException
 from uw_itbill.subscription import Subscription
@@ -29,12 +31,14 @@ def initiate_subscription(shared_drive_record):
             "key_remote": itbill_subscription.key_remote,
             "product": product_sys_id(),
             "start_date": "",
-	    "contact": user_service.get_user(),
-	    "contacts_additional": ','.join([
-                member.member.name for member in membership]),
+            "contact": user_service.get_user(),
+            "contacts_additional": ",".join(
+                [member.member.name for member in membership]
+            ),
             "lifecycle_state": ITBillSubscription.SUBSCRIPTION_STATE_CHOICES[
-                ITBillSubscription.SUBSCRIPTION_DRAFT][1],
-	    "work_notes": "Subscription initiated by Provision Request Tool",
+                ITBillSubscription.SUBSCRIPTION_DRAFT
+            ][1],
+            "work_notes": "Subscription initiated by Provision Request Tool",
         }
 
         Subscription().create_subscription(data)
@@ -49,7 +53,8 @@ def initiate_subscription(shared_drive_record):
 
 def refresh_subscription(member_netid, drive_id):
     record = SharedDriveRecord.objects.get_member_drives(
-        member_netid, drive_id).get()
+        member_netid, drive_id
+    ).get()
 
     load_itbill_subscription(record)
 
@@ -69,4 +74,5 @@ def load_itbill_subscription(record):
     Update the subscription record with the latest ITBill data
     """
     record.update_subscription(
-        get_subscription_by_key_remote(record.subscription.key_remote))
+        get_subscription_by_key_remote(record.subscription.key_remote)
+    )
