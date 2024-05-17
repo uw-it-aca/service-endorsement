@@ -50,7 +50,6 @@ var Notify = (function () {
                 $notify = $(html);
 
             $notify.appendTo($('body'));
-            debugger
             $notify
                 .css('top', $('.tab.active').offset().top + 'px')
                 .css('left', (($(document).width() - $notify.width())/2) + 'px')
