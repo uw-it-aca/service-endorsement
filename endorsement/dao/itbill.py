@@ -1,7 +1,6 @@
 # Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.conf import settings
 from userservice.user import UserService
 from endorsement.models import SharedDriveRecord, ITBillSubscription
 from endorsement.util.itbill.shared_drive import (
@@ -23,7 +22,9 @@ def initiate_subscription(shared_drive_record):
 
     try:
         user_service = UserService()
-        itbill_subscription = ITBillSubscription()
+        itbill_subscription = ITBillSubscription(
+            key_remote=shared_drive_record.get_itbill_key_remote()
+        )
         membership = shared_drive_record.shared_drive.members.all()
 
         data = {
