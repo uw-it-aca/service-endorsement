@@ -3,22 +3,6 @@
 
 import collections
 import datetime as dt
-from endorsement.dao.gws import is_group_member
-from endorsement.dao.itbill import get_subscription_by_key_remote
-from endorsement.exceptions import ITBillSubscriptionNotFound
-from endorsement.models import (
-    ITBillSubscription,
-)
-
-from endorsement.models.shared_drive import (
-    Member,
-    Role,
-    SharedDrive,
-    SharedDriveMember,
-    SharedDriveQuota,
-    SharedDriveRecord,
-)
-from endorsement.exceptions import SharedDriveNonPrivilegedMember
 import re
 import logging
 
@@ -29,6 +13,27 @@ from uw_msca.shared_drive import (  # noqa: F401
     set_drive_quota,
 )
 from uw_msca.models import GoogleDriveState
+
+from endorsement.dao.gws import is_group_member
+from endorsement.dao.itbill import (
+    get_subscription_by_key_remote,
+    load_itbill_subscription,
+)
+from endorsement.exceptions import (
+    ITBillSubscriptionNotFound,
+    SharedDriveNonPrivilegedMember,
+)
+from endorsement.models.itbill import (
+    ITBillSubscription,
+)
+from endorsement.models.shared_drive import (
+    Member,
+    Role,
+    SharedDrive,
+    SharedDriveMember,
+    SharedDriveQuota,
+    SharedDriveRecord,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -156,27 +161,101 @@ def get_role(a: GoogleDriveState):
     return role
 
 
-def get_subscription(sdr: SharedDriveRecord):
-    sub = sdr.subscription
-    if sub is not None:
-        return sub
+def get_or_load_active_subscription(sdr: SharedDriveRecord):
+    """
+    Get the active ("deployed") ITBillSubscription for a SharedDriveRecord.
 
+    Returns None if no subscription exists or is not in the "deployed" state.
+    """
+    sub = load_or_update_subscription(sdr)
+    if sub is None:
+        return None
+
+    if sub.state != ITBillSubscription.SUBSCRIPTION_DEPLOYED:
+        return None
+
+    return sub
+
+
+def load_or_update_subscription(sdr: SharedDriveRecord):
+    """
+    Return the ITBillSubscription associated with a SharedDriveRecord.
+
+    If no ITBillSubscription is currently associated checks ITBill and loads
+    any subscription found there.
+
+    If an ITBillSubscription is currently associated then checks ITBill and
+    updates with current information.
+
+    Returns None if no subscription exists, else the subscription.
+    """
+    # Do we already have an ITBillSubscription on file?
+    if sdr.subscription is not None:
+        load_itbill_subscription(sdr)
+        sdr.subscription.save()
+        return sdr.subscription
+
+    # Does an ITBill subscription exist remotely and we just have to get it?
     key_remote = sdr.get_itbill_key_remote()
 
     try:
         sub_json = get_subscription_by_key_remote(key_remote)
     except ITBillSubscriptionNotFound:
+        # TODO: probably run endorsement.dao.initiate_subscription
         return None
     except Exception:
         logging.exception(
             f"Error attempting to find ITBill subscription for {key_remote}"
         )
+        return None  # just raise?
     else:
         sub = ITBillSubscription()
-        sub.from_json(sub_json)
+        sub.save()
         sdr.subscription = sub
-        sdr.save()
+        sdr.update_subscription(sub_json)
         return sdr.subscription
+
+
+def get_expected_shared_drive_record_quota(
+    sdr: SharedDriveRecord, *, no_subscription_quota
+):
+    """
+    Return quota that should be applied to shared drive record.
+
+    If this drive has a deployed ITBillSubscription, the quota will be whatever
+    the subscription specifies.
+
+    Otherwise no_subscription_quota will be returned.
+
+    Returned quota will be an int with implied units GB.
+    """
+    sub = get_or_load_active_subscription(sdr)
+    if sub is None:
+        return no_subscription_quota
+    else:
+        # WARNING: implies there is only 1 provision
+        # should we pin this down more? currently ITBillProvision
+        # does not maintain enough data to differentiate between
+        # a shared drive provision and anything else
+        shared_drive_provision = sub.get_provisions().get()
+        return shared_drive_provision.current_quantity_gigabytes
+
+
+def reconcile_drive_quota(sdr: SharedDriveRecord, *, no_subscription_quota):
+    drive_quota = sdr.shared_drive.drive_quota
+
+    quota_actual = drive_quota.quota_limit
+    quota_correct = get_expected_shared_drive_record_quota(
+        sdr, no_subscription_quota=no_subscription_quota
+    )
+
+    if quota_actual != quota_correct:
+        # TODO: error handling!
+        set_drive_quota(
+            drive_id=sdr.shared_drive.drive_id, quota=quota_correct
+        )
+        drive_quota.quota_limit = quota_correct
+        drive_quota.save()
 
 
 class Reconciler:
@@ -226,15 +305,6 @@ class Reconciler:
 
             # create SharedDriveRecord + SharedDrive + Members/Roles
             sdr: SharedDriveRecord = load_shared_drives(drive_states)
-            if sdr is None:  # diagnostic
-                print(
-                    f"Got None back when providing {len(drive_states)} "
-                    "records to load_shared_Drive"
-                )
-                print(
-                    "{drive_id=} Member roles: "
-                    f"{set(X.role for X in drive_states)}"
-                )
 
             if sdr is None:
                 # examples:
@@ -246,15 +316,11 @@ class Reconciler:
                 # TODO: confirm with dsnorton this should be silently ignored
                 continue
 
-            quota = sdr.shared_drive.drive_quota
-            if quota.quota_limit == default_quota:
-                continue
+            reconcile_drive_quota(sdr, no_subscription_quota=default_quota)
 
-            sub = get_subscription(sdr)
-            if sub is None:
-                set_drive_quota(drive_id=drive_id, quota=default_quota)
-                quota.quota_limit = default_quota
-                quota.save()
+            # TODO: handle lack of provisioning status.
+            #   case 1: drive has managers - do we alert them?
+            #   case 2: drive has no mangers - ???
 
     def handle_missing_drives(self, missing_drive_ids, default_quota):
         """
@@ -293,30 +359,6 @@ class Reconciler:
 
             return result
 
-        def get_current_subscription(sdr: SharedDriveRecord):
-            """
-            Returns the current subscription associated with shared_drive.
-
-            If there is no subscription OR the subscription is not in a
-            "deployed" state returns None
-            """
-            sub = sdr.subscription
-            if sub is None:
-                return None
-
-            if sub.state == ITBillSubscription.SUBSCRIPTION_DEPLOYED:
-                return sub
-            else:
-                return None
-
-        def get_subscription_quota_gigabytes(sub: ITBillSubscription):
-            """
-            Return integer quota for subscription. Units are GB.
-            """
-            provision = sub.get_provisions().get()  # can there ever be != 1?
-            quota = provision.current_quantity_gigabytes
-            return quota
-
         # END helper functions
 
         for drive_id in drives:
@@ -339,45 +381,13 @@ class Reconciler:
                 shared_drive.save()
 
             # confirm drive and subscription match
-            #
-            # an ITBill subscription is being used to pay for additional disk
-            # storage space in a Shared Drive.
-            #
-            # We will assume that in any case the ITBill subscription diverges
-            # from current state that the state should be adjusted to match
-            # the subscription
+            sdr = SharedDriveRecord.objects.get_record_by_drive_id(drive_id)
+            reconcile_drive_quota(sdr, no_subscription_quota=subsidized_quota)
 
-            expecting_subscription = (
-                drive_state.quota_limit != subsidized_quota
-            )
-
-            sdr = shared_drive.shareddriverecord_set.get()
-            sub = get_current_subscription(sdr)
-            have_subscription = sub is not None
-
-            if not expecting_subscription and not have_subscription:
-                # most common case - drive using subsidized quota
-                continue
-
-            elif have_subscription and not expecting_subscription:
-                # at subsidized quota, not what subscription specifies
-                # set quota for
-                quota = get_subscription_quota_gigabytes(sub)
-                set_drive_quota(
-                    quota=quota,
-                    drive_id=drive_id,
-                )
-
-            elif expecting_subscription and have_subscription:
-                "confirm quota in alignment"
-                raise NotImplementedError()
-            elif expecting_subscription and not have_subscription:
-                # subscription (presumed) closed/ cancelled
-                # in absense of a subscription, become subsidized
-                set_drive_quota(
-                    quota=subsidized_quota,
-                    drive_id=drive_id,
-                )
+            # confirm drive still has a provision with current manager list
+            # TODO: what do we do if they do not?
+            #   case 1: drive still has managers - do we alert them?
+            #   case 2: drive has no mangers - ???
 
     def get_prt_drive_ids(self):
         """
