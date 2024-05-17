@@ -38,9 +38,9 @@ class ITBillSubscription(
         (PRIORITY_HIGH, "high"),
     )
 
-    # ITBill Questions: "We have a high character limit, but we don't
-    #                   recommend a name too long (<30 is good).
-    key_remote = models.SlugField(max_length=32, default=key_remote)
+    # We have a high character limit, but we don't recommend a name too long
+    #   (<30 is good). - ITBill Questions document
+    key_remote = models.SlugField(max_length=32)
     state = models.SmallIntegerField(
         default=SUBSCRIPTION_DRAFT, choices=SUBSCRIPTION_STATE_CHOICES
     )
@@ -53,12 +53,11 @@ class ITBillSubscription(
         """
         (re)load subscription from itbill data
         """
-        self.state = next(
-            filter(
-                lambda x: x[1] == itbill.lifecycle_state,
-                ITBillSubscription.SUBSCRIPTION_STATE_CHOICES,
-            )
-        )[0]
+        (self.state,) = (
+            value
+            for value, label in ITBillSubscription.SUBSCRIPTION_STATE_CHOICES
+            if label == itbill.lifecycle_state
+        )
         self.query_priority = ITBillSubscription.PRIORITY_DEFAULT
         self.update_provisions(itbill.provisions)
 
@@ -118,7 +117,7 @@ class ITBillProvision(
 
     @property
     def current_quantity_gigabytes(self):
-        return (self.quantity * 100) + getattr(
+        return (self.current_quantity * 100) + getattr(
             settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA"
         )
 
