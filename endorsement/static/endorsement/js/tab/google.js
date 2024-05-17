@@ -31,7 +31,12 @@ var ManageSharedDrives = (function () {
                 if (action === 'shared_drive_accept') {
                     _sharedDriveAcceptModal(drive_id, itbill_url);
                 } else if (action === 'shared_drive_change') {
-                    _sharedDriveChangeModal(drive_id, itbill_url);
+                    // below will indirect to itbill thru "you are leaving" modal
+                    // _sharedDriveChangeModal(drive_id, itbill_url);
+                    // below will request the url directly
+                    _getITBill_URL($(this).attr('data-drive-id'));
+                    // below opens a simple window
+                    //window.open(itbill_url, 'ITBill', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=800,height=800');
                 } else if (action === 'shared_drive_revoke') {
                     _sharedDriveRevokeModal(drive_id);
                 }
@@ -40,6 +45,10 @@ var ManageSharedDrives = (function () {
                     drive_id: $(this).attr('data-drive-id')});
             }).delegate('#confirm_itbill_visit', 'click', function (e) {
                 _getITBill_URL($(this).attr('data-drive-id'));
+            }).delegate('#confirm_itbill_form_finished', 'click', function (e) {
+                _modalHide();
+                _refreshSharedDrive($(this).attr('data-drive-id'));
+                Notify.success('Quota updated!', 10000);
             }).delegate('#confirm_shared_drive_acceptance', 'click', function (e) {
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), true);
             }).delegate('#confirm_shared_drive_revoke', 'click', function (e) {
@@ -92,7 +101,7 @@ var ManageSharedDrives = (function () {
                 _modalHide();
                 _updateSharedDrivesDiplay(data.drives[0]);
                 if (url) {
-                    window.open(url, '_blank');
+                    _ITBillFormModal(data.drives[0]);
                 } else {
                     Notify.error('Sorry, but we cannot retrieve the ITBill Form URL at this time.');
                 }
@@ -277,6 +286,11 @@ var ManageSharedDrives = (function () {
                 },100);
             }
         },
+        _ITBillFormModal = function (drive) {
+            _displayModal('#shared-drive-itbill-form-modal', {
+                drive: drive
+            }, 'modal-xl');
+        },
         _sharedDriveAcceptModal = function (drive_id, itbill_url) {
             _displayModal('#shared-drive-acceptance', {
                 drive_id: drive_id,
@@ -294,9 +308,15 @@ var ManageSharedDrives = (function () {
                 drive_id: drive_id,
             });
         },
-        _displayModal = function (template_id, context) {
+        _displayModal = function (template_id, context, modal_size) {
             var source = $(template_id).html(),
                 template = Handlebars.compile(source);
+
+            if (modal_size) {
+                $('#shared_drive_modal div.modal-dialog').addClass(modal_size);
+            } else {
+                $('#shared_drive_modal div.modal-dialog').removeClass('modal-sm modal-lg modal-xl');
+            }
 
             $('#shared_drive_modal .modal-content', $content).html(template(context));
             _modalShow();
