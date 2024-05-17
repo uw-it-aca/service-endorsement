@@ -184,7 +184,7 @@ var ManageProvisionedServices = (function () {
             $('#uwnetids-validated', $panel).addClass('visually-hidden');
             $('#uwnetids-input', $panel).removeClass('visually-hidden').focus();
         }).on('focus', '.endorsed-netids-table table tbody', function(e) {
-            console.log("focus endorsed");
+            //console.log("focus endorsed");
         }).on('endorse:UWNetIDsValidated', function (e, validated) {
             Button.reset($('button#validate'));
             _displayValidationResult(validated);
