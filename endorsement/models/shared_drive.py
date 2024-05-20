@@ -91,9 +91,7 @@ class SharedDriveQuota(
     """
 
     org_unit_id = models.CharField(max_length=32)
-    org_unit_name = models.CharField(
-        max_length=64, null=True
-    )  # TODO: shouldn't this be non-NULL?
+    org_unit_name = models.CharField(max_length=64)
     quota_limit = models.IntegerField(null=True)
 
     @property
