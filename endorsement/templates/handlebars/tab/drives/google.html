@@ -54,7 +54,8 @@
         </span>
         <p>{{#if (or drive.drive_quota.is_subsidized subscription) }}Renew{{else}}Select quota{{/if}} by {{expiration_date}}{{#if (lte expiration_days 90)}}<br />({{expiration_from_now}}){{/if}}</p>
       </td>
-      <td class="shared-drive-est-usage">{{drive.drive_usage}}GB</td>
+      <td class="shared-drive-est-usage">
+        {{#if drive.drive_usage}}{{drive.drive_usage}}GB{{else}}N/A{{/if}}
       </td>
       <td class="shared-drive-quota">{{drive.drive_quota.quota_limit}}GB
 {{#if in_flight}}
