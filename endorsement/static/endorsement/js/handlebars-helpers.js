@@ -21,18 +21,6 @@ $(window.document).ready(function() {
 
             return plural;
         },
-        'equals': function(a, b, options) {
-            return (a == b) ? options.fn(this) : options.inverse(this);
-        },
-        'gt': function(a, b, options) {
-            return (a > b) ? options.fn(this) : options.inverse(this);
-        },
-        'lte': function(a, b, options) {
-            return (a <= b) ? options.fn(this) : options.inverse(this);
-        },
-        'even': function(n, options) {
-            return ((n % 2) === 0) ? options.fn(this) : options.inverse(this);
-        },
         'slice': function(a, start, end, options) {
             if(!a || a.length == 0)
                 return options.inverse(this);
@@ -43,14 +31,12 @@ $(window.document).ready(function() {
 
             return result.join('');
         },
-        'or': function(a, b, options) {
-            return (a || b) ? options.fn(this) : options.inverse(this);
-        },
-        'ifAndNot': function(a, b, options) {
-            return (a && !b) ? options.fn(this) : options.inverse(this);
-        },
-        'ifNotAndNot': function(a, b, options) {
-            return (!a && !b) ? options.fn(this) : options.inverse(this);
-        }
+        'even': function(n) { return ((n % 2) === 0); },
+        'eq': function(a, b) { return (a === b); },
+        'gt': function(a, b) { return (a > b); },
+        'lte': function(a, b) { return (a <= b); },
+        'and': function(a, b) { return (a && b); },
+        'or': function(a, b) { return (a || b); },
+        'not': function(a) { return (!a); }
     });
 });

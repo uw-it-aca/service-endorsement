@@ -52,7 +52,7 @@ def initiate_subscription(shared_drive_record):
     return None
 
 
-def refresh_subscription(member_netid, drive_id):
+def update_itbill_subscription(member_netid, drive_id):
     record = SharedDriveRecord.objects.get_member_drives(
         member_netid, drive_id
     ).get()

@@ -8,9 +8,10 @@ from endorsement.services import (
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
-from endorsement.policy import endorsements_to_warn
+from endorsement.policy.endorsement import EndorsementPolicy
 from endorsement.util.email import uw_email_address
 from endorsement.util.string import listed_list
+from endorsement.exceptions import EmailFailureException
 from django.template import loader, Template, Context
 from django.utils import timezone
 import re
@@ -18,36 +19,6 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-
-
-# This function is a monument to technical debt and intended
-# to blow up tests as soon as the first endorsemnnt service lifecycle
-# definition strays from current common set of values
-def confirm_common_lifecyle_values():
-    lifetime = None
-    warnings = None
-
-    for service in endorsement_services():
-        if lifetime is None:
-            lifetime = service.endorsement_lifetime
-        else:
-            if lifetime != service.endorsement_lifetime:
-                raise Exception(
-                    "Messaging does not support mixed service lifetimes")
-
-        if warnings is None:
-            warnings = [
-                service.endorsement_expiration_warning(1),
-                service.endorsement_expiration_warning(2),
-                service.endorsement_expiration_warning(3),
-                service.endorsement_expiration_warning(4),
-            ]
-        elif (warnings[0] != service.endorsement_expiration_warning(1) or
-                warnings[1] != service.endorsement_expiration_warning(2) or
-                warnings[2] != service.endorsement_expiration_warning(3) or
-                warnings[3] != service.endorsement_expiration_warning(4)):
-            raise Exception(
-                "Messaging does not support mismatched service warning spans")
 
 
 def _email_template(template_name):
@@ -125,7 +96,8 @@ def notify_endorsees():
             (subject, text_body, html_body) = _create_endorsee_message(
                 endorsers)
             try:
-                send_notification([email], subject, text_body, html_body, "Endorsee")
+                send_notification(
+                    [email], subject, text_body, html_body, "Endorsee")
                 for service, data in endorsers['services'].items():
                     EndorsementRecord.objects.emailed(data['id'])
             except EmailFailureException as ex:
@@ -268,14 +240,13 @@ def notify_invalid_endorser(invalid_endorsements):
         pass
 
 
-def _create_expire_notice_message(notice_level, lifetime, endorsed):
+def _create_expire_notice_message(notice_level, endorsed, policy):
     category_codes = list(set([e.category_code for e in endorsed]))
     services = [get_endorsement_service(c) for c in category_codes]
     context = {
         'endorser': endorsed[0].endorser,
-        'lifetime': lifetime,
-        'notice_time': services[0].endorsement_expiration_warning(
-            notice_level),
+        'lifetime': policy.lifetime,
+        'notice_time': policy.days_till_expiration(notice_level),
         'expiring': endorsed,
         'expiring_count': len(set(e.endorsee.netid for e in endorsed)),
         'impacts': []
@@ -318,14 +289,11 @@ def _create_expire_notice_message(notice_level, lifetime, endorsed):
             loader.render_to_string(html_template, context))
 
 
-def warn_endorsers(notice_level):
-    confirm_common_lifecyle_values()
+def endorser_lifecycle_warning(notice_level):
+    policy = EndorsementPolicy()
+    endorsements = policy.records_to_warn(notice_level)
 
-    endorsements = endorsements_to_warn(notice_level)
-
-    lifetime = endorsement_services()[0].endorsement_lifetime
-
-    if len(endorsements):
+    if endorsements.count():
         endorsers = {}
         for e in endorsements:
             endorsers[e.endorser.id] = 1
@@ -340,7 +308,7 @@ def warn_endorsers(notice_level):
                 (subject,
                  text_body,
                  html_body) = _create_expire_notice_message(
-                    notice_level, lifetime, endorsed)
+                     notice_level, endorsed, policy)
                 send_notification(
                     [email], subject, text_body, html_body, "Invalid endorser")
 
@@ -357,12 +325,11 @@ def warn_new_shared_netid_owner(new_owner, endorsements):
     if not (endorsements and len(endorsements) > 0):
         return
 
-    confirm_common_lifecyle_values()
-
+    policy = EndorsementPolicy()
     sent_date = timezone.now()
     email = uw_email_address(new_owner.netid)
     (subject, text_body, html_body) = _create_warn_shared_owner_message(
-        new_owner, endorsements)
+        new_owner, endorsements, policy)
 
     send_notification(
         [email], subject, text_body, html_body,
@@ -373,12 +340,12 @@ def warn_new_shared_netid_owner(new_owner, endorsements):
         endorsement.save()
 
 
-def _create_warn_shared_owner_message(owner_netid, endorsements):
+def _create_warn_shared_owner_message(owner_netid, endorsements, policy):
     service = get_endorsement_service(endorsements[0].category_code)
     context = {
         'endorser': owner_netid,
-        'lifetime': service.endorsement_lifetime,
-        'notice_time': service.endorsement_expiration_warning(1),
+        'lifetime': policy.lifetime,
+        'notice_time': policy.days_till_expiration(1),
         'expiring': endorsements,
         'expiring_count': len(endorsements)
     }
@@ -392,4 +359,3 @@ def _create_warn_shared_owner_message(owner_netid, endorsements):
     return (subject,
             loader.render_to_string(text_template, context),
             loader.render_to_string(html_template, context))
-

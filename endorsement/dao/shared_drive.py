@@ -22,6 +22,7 @@ from endorsement.dao.itbill import (
 from endorsement.exceptions import (
     ITBillSubscriptionNotFound,
     SharedDriveNonPrivilegedMember,
+    SharedDriveRecordNotFound,
 )
 from endorsement.models.itbill import (
     ITBillSubscription,
@@ -40,6 +41,30 @@ logger = logging.getLogger(__name__)
 netid_regex = re.compile(
     r"^(?P<netid>[^@]+)@(uw|(u\.)?washington)\.edu$", re.I
 )
+
+
+def sync_quota_from_subscription(drive_id):
+    """
+    apply SharedDriveQuota value to MSCA SharedDrive drive_id
+    """
+    try:
+        record = SharedDriveRecord.objects.get_record_by_drive_id(drive_id)
+        #
+        #
+        #
+        # TODO: all msca restclient to update shared drive
+        #
+        #
+        #
+    except SharedDriveRecord.DoesNotExist:
+        raise SharedDriveRecordNotFound(drive_id)
+
+
+def shared_drive_lifecycle_expired(drive_record):
+    """
+    Set lifecycle to expired for shared drive
+    """
+    logger.info(f"Shared drive {drive_record} lifecycle expired")
 
 
 def load_shared_drives(google_drive_states):

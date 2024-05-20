@@ -18,7 +18,7 @@
                  {{/if}}
                {{/if}}
              {{/if}}
-           {{/if}}{{#if new_netid}} new_netid{{/if}} endorsement_row_{{#equals endorsement_index 0}}first top-border{{else}}following hidden-names{{/equals}} endorsee_row_{{#even endorsee_index}}even{{else}}odd{{/even}}" data-netid="{{ netid }}"
+           {{/if}}{{#if new_netid}} new_netid{{/if}} endorsement_row_{{#if (eq endorsement_index 0) }}first top-border{{else}}following hidden-names{{/if}} endorsee_row_{{#if (even endorsee_index)}}even{{else}}odd{{/if}}" data-netid="{{ netid }}"
     data-netid-name="{{ name }}"
     data-netid-initial-email="{{ email }}"
     data-service="{{ svc }}"
@@ -60,12 +60,12 @@
   {{#if endorsement.error }}
     <td class="endorsed-error" colspan="3">
       <span>Problem Accessing Provision Status</span>
-      {{#equals endorsement.error 'INACTIVE_NETID' }}
+      {{#if (eq endorsement.error 'INACTIVE_NETID') }}
       UW NetID <b>{{netid}}</b> is currently <a href="https://itconnect.uw.edu/wares/msinf/design/users/inactive-users/" target="_blank">marked as inactive</a>.<br />
       Change <a href="https://identity.uw.edu/account/resetpassword/" target="_blank">UW NetID password</a>, wait 4 hours, and try again.
       {{else}}
       {{{endorsement.error}}}
-      {{/equals}}
+      {{/if}}
     </td>
   {{else}}
 

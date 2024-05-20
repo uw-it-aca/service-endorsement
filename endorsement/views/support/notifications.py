@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 from uw_saml.decorators import group_required
 from endorsement.views.support import set_admin_wrapper_template
+from endorsement.policy.endorsement import EndorsementPolicy
 from endorsement.services import endorsement_services
 
 
@@ -22,14 +23,11 @@ class EndorseeNotifications(TemplateView):
         context['services'] = dict([(s.service_name, {
             'name': s.category_name
         }) for s in endorsement_services()])
-        context['warning_1'] = endorsement_services()[
-            0].endorsement_expiration_warning(1)
-        context['warning_2'] = endorsement_services()[
-            0].endorsement_expiration_warning(2)
-        context['warning_3'] = endorsement_services()[
-            0].endorsement_expiration_warning(3)
-        context['warning_4'] = endorsement_services()[
-            0].endorsement_expiration_warning(4)
+        policy = EndorsementPolicy()
+        context['warning_1'] = policy.days_till_expiration(1)
+        context['warning_2'] = policy.days_till_expiration(2)
+        context['warning_3'] = policy.days_till_expiration(3)
+        context['warning_4'] = policy.days_till_expiration(4)
 
         set_admin_wrapper_template(context)
         return context

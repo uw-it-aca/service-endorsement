@@ -64,7 +64,7 @@ var ManageSharedNetids = (function () {
 
             _endorseSharedUWNetIDs(shared);
         }).on('focus', 'div.shared-netids-table', function(e) {
-            console.log("focus shared");
+            // console.log("focus shared");
         }).on('endorse:UWNetIDsEndorseSuccess', function (e, data) {
             Endorse.updateEndorsementRows(data.endorsed.endorsed);
             _enableSharedEndorsability();

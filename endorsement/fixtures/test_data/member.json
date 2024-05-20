@@ -2,54 +2,54 @@
     "model": "endorsement.member",
     "pk": 1,
     "fields": {
-      "name": "javerage"}},
+      "netid": "javerage"}},
  {
    "model": "endorsement.member",
    "pk": 2,
    "fields": {
-     "name": "endorsee7"}},
+     "netid": "endorsee7"}},
  {
    "model": "endorsement.member",
    "pk": 3,
    "fields": {
-     "name": "yahoodood@yahoo.com"}},
+     "netid": "yahoodood@yahoo.com"}},
  {
    "model": "endorsement.member",
    "pk": 4,
    "fields": {
-     "name": "endorsee6"}},
+     "netid": "endorsee6"}},
  {
    "model": "endorsement.member",
    "pk": 5,
    "fields": {
-     "name": "jstaff"}},
+     "netid": "jstaff"}},
  {
    "model": "endorsement.member",
    "pk": 6,
    "fields": {
-     "name": "jinter"}},
+     "netid": "jinter"}},
  {
    "model": "endorsement.member",
    "pk": 7,
    "fields": {
-     "name": "endorsee5"}},
+     "netid": "endorsee5"}},
  {
    "model": "endorsement.member",
    "pk": 8,
    "fields": {
-     "name": "endorsee4"}},
+     "netid": "endorsee4"}},
  {
    "model": "endorsement.member",
    "pk": 9,
    "fields": {
-     "name": "endorsee3"}},
+     "netid": "endorsee3"}},
  {
    "model": "endorsement.member",
    "pk": 10,
    "fields": {
-     "name": "endorsee2"}},
+     "netid": "endorsee2"}},
  {
    "model": "endorsement.member",
    "pk": 11,
    "fields": {
-     "name": "endorsee1"}}]
+     "netid": "endorsee1"}}]

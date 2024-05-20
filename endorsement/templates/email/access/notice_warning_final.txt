@@ -1,0 +1,20 @@
+Hello {{access.accessee.display_name}} ({{access.accessee.netid}}),
+
+You are receiving this message because you used the Provisioning Request
+Tool (PRT) to provision access to a UW Office 365 Exchange Online mailbox
+for another UW NetID.
+
+Access to the mailbox lasts for {{lifetime}} days and must be renewed or
+revoked within that time.
+
+Mailbox       NetID/Group with Access       Date Provisioned   Access Type
+{{access.accessee.netid|ljust:"14"}}{{access.accessor.name|ljust:"30"}}{{access.datetime_granted|date:"M d, Y"|ljust:"19"}}{{access.access_right.display_name}}
+
+To log in to the Provisioning Request Tool (PRT) and renew access visit:
+
+https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/#prt
+
+If you have any questions, please contact help@uw.edu or 206-221-5000.
+
+Thank you,
+UW-IT

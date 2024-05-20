@@ -2,9 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from endorsement.models import AccessRecord
+from endorsement.policy.access import AccessPolicy
+from endorsement.util.email import uw_email_address
 from endorsement.dao.notification import send_notification
 from endorsement.dao.accessors import get_accessor_email
+from endorsement.exceptions import EmailFailureException
 from django.template import loader, Template, Context
+from django.utils import timezone
 import logging
 
 
@@ -55,3 +59,45 @@ def _create_accessor_message(access_record, emails):
             loader.render_to_string(html_template, params))
 
 
+def _create_accessee_expiration_notice(notice_level, access, policy):
+    context = {
+        'access': access,
+        'lifetime': policy.lifetime,
+        'notice_time': policy.days_till_expiration(notice_level)
+    }
+
+    if notice_level < 4:
+        subject = ("Action Required: Office 365 Shared Mailbox "
+                   "service will expire soon")
+        text_template = _email_template("notice_warning.txt")
+        html_template = _email_template("notice_warning.html")
+    else:
+        subject = "Action Required: Shared Drive services have expired"
+        text_template = _email_template("notice_warning_final.txt")
+        html_template = _email_template("notice_warning_final.html")
+
+    return (subject,
+            loader.render_to_string(text_template, context),
+            loader.render_to_string(html_template, context))
+
+
+def accessee_lifecycle_warning(notice_level):
+    policy = AccessPolicy()
+    drives = policy.records_to_warn(notice_level)
+
+    for drive in drives:
+        try:
+            email = [uw_email_address(drive.accessee.netid)]
+            (subject,
+             text_body,
+             html_body) = _create_accessee_expiration_notice(
+                 notice_level, drive, policy)
+            send_notification(
+                email, subject, text_body, html_body,
+                "Mailbox Access Warning")
+
+            setattr(drive, 'datetime_notice_{}_emailed'.format(notice_level),
+                    timezone.now())
+            drive.save()
+        except EmailFailureException as ex:
+            pass

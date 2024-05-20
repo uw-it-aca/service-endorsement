@@ -126,7 +126,8 @@ class ITBillProvision(
             self.set_quantity(quantity)
 
     def get_quantities(self):
-        return ITBillQuantity.objects.filter(provision=self)
+        return ITBillQuantity.objects.filter(
+            provision=self).order_by('-start_date', '-end_date')
 
     def set_quantity(self, quantity):
         quantity_obj = ITBillQuantity.objects.create(provision=self)

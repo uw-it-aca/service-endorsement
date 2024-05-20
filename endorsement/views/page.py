@@ -1,6 +1,7 @@
 # Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -38,7 +39,9 @@ def index(request):
             },
             'services': json.dumps(service_contexts()),
             'override_user': user_service.get_override_user(),
-            'support_override_user': is_only_support_user(request)
+            'support_override_user': is_only_support_user(request),
+            'provisioning': getattr(
+                settings, 'ENDORSEMENT_PROVISIONING', ['*'])
         }
 
         if not (is_valid_endorser(netid) and can_view_endorsements(request)):

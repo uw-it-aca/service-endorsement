@@ -6,6 +6,9 @@ from .base_settings import *
 ENDORSEMENT_SERVICES = [s.strip() for s in os.getenv(
     'ENDORSEMENT_SERVICES', '*').split(',')]
 
+ENDORSEMENT_PROVISIONING = [s.strip() for s in os.getenv(
+    'ENDORSEMENT_PROVISIONING', '*').split(',')]
+
 ALLOWED_HOSTS = ['*']
 
 CACHES = {
@@ -83,7 +86,7 @@ else:
         "MSCA_TIMEOUT", RESTCLIENTS_DEFAULT_TIMEOUT)
     RESTCLIENTS_MSCA_SUBSCRIPTION_KEY = os.getenv('MSCA_SUBSCRIPTION_KEY', '')
 
-    RESTCLIENTS_ITBILL_DAO_CLASS = Live
+    RESTCLIENTS_ITBILL_DAO_CLASS = 'Live'
     RESTCLIENTS_ITBILL_HOST=os.getenv('ITBILL_HOST')
     RESTCLIENTS_ITBILL_BASIC_AUTH=os.getenv('ITBILL_BASIC_AUTH')
 

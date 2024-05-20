@@ -83,8 +83,13 @@ img {
 
 h1, h2, h3, h4 { font-family: 'Encode Sans Compressed', 'Open Sans Condensed', Helvetica, arial, san-serif; font-weight: bold; /*color: $uwpurple;*/ }
 
+h1 {font-size: 1.8em;
+  margin: 2.5rem 0 0 0;}
+
 .container h2 {
-    margin-top: 16px;
+  font-size: 1.2rem;
+  margin-top: 16px;
+  margin-bottom: 0;
 }
 
 h3 {
@@ -111,7 +116,7 @@ h4 {
 
 /* Hyperlink style:*/
 a {
-	color:#0077c2;
+	color:#2F68CB;
 	&:focus, &:hover {
         color: $link_focus;
 	}
@@ -301,7 +306,7 @@ a {
 
   thead { background-color: #eee;
      label { margin-bottom: 0; }
-     span { font-weight: 200; font-size: .9em; }
+     span { font-weight: 400; }
   }
   tr.new_netid,
   tr.new_access .access-delegate-id,
@@ -345,7 +350,7 @@ a {
 
 .prt-data-popover {
     cursor: pointer;
-    color: #007bff!important;
+    color: #2F68CB !important;
 }
 
 .popover {
@@ -379,24 +384,32 @@ label.accept_responsibility {
     overflow: hidden;
 }
 
+.table th {
+  white-space: nowrap;
+}
+
+.shared-drive-row .table th, #office_access_row_partial .table th, #office_conflict_row_partial .table th {
+  white-space: normal;
+}
+
 #shared-uwnetids {
   button#shared_update {
     margin-top: 10px;
   }
 }
 
-.panel-toggle { color:#0077c2; display: inline-block; margin-bottom: 10px; }
+.panel-toggle { display: inline-block; margin-bottom: 10px; }
 
 .netid-panel { margin-bottom: 40px; }
 .shared-drive-panel { margin-bottom: 40px; }
 
 #provision { margin-bottom: 38px; }
 
-#office_access { padding-top: 2em;
+#office_access { padding-top: .5em;
     .access-header { font-size: 1.1em; font-weight: 800; }
 }
 
-#shared_drives { padding-top: 2em;
+#shared_drives { padding-top: .5em;
     .shared-drive-header { font-size: 1.1em; font-weight: 800; }
 }
 
@@ -676,12 +689,12 @@ td.error, tr.error {
             margin-right: 1.75em;
             float: left;
             padding-bottom: 2px;
-            span {
+            a.tab-link {
+                text-decoration: none;
                 text-transform: uppercase;
-                font-weight: bold;
-            }
-            span:hover {
-                cursor: pointer;
+                font-size: 1.1em;
+                font-weight: 800;
+                color: #333;
             }
         }
         li.active {
@@ -706,6 +719,13 @@ td.error, tr.error {
     top: -3.5em;
     select {
     }
+}
+
+.notify {
+    display: block;
+    position: absolute;
+    padding: 6px;
+    border-radius: 3px;
 }
 
 /* may not be needed once Bootstrap is in use */

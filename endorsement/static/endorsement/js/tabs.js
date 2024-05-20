@@ -4,12 +4,11 @@ import { History } from "./history.js";
 
 var MainTabs = (function () {
     var _registerEvents = function () {
-        $(".tabs .tabs-list li span").click(function(e){
-            e.preventDefault();
-        });
+        $(".tabs .tabs-list .tab-link").click(function(e){
+            var $this = $(this),
+                $li = $this.parent();
 
-        $(".tabs .tabs-list li span").click(function(){
-            var $li = $(this).parent();
+            e.preventDefault();
 
             if (! $li.hasClass('active')) {
                 var tab = $li.attr("data-tab"),
@@ -18,6 +17,7 @@ var MainTabs = (function () {
                 $(".tabs-list li, .tabs div.tab").removeClass("active");
                 $li.addClass("active");
                 $tab.addClass("active");
+                $(document).attr('title', 'Provisioning Request Tool - ' + $('a', $li).text());
                 $tab.trigger('endorse:' + tab + 'TabExposed');
 
                 $(document).trigger('endorse:TabChange', [tab]);

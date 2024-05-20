@@ -12,7 +12,7 @@
   {{#if unique}}
   <div class="shared-acceptance container-fluid">
     <div class="row">
-      You are about to provision access to UW-IT services for {{#gt unique.length 1}}{{unique.length}} {{/gt}}UW NetID{{plural unique.length '' 's'}}{{#gt unique.length 1}}{{else}}&nbsp;<ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/gt}}.
+    You are about to provision access to UW-IT services for {{#if (gt unique.length 1)}}{{unique.length}} {{/if}}UW NetID{{plural unique.length '' 's'}}{{#if (gt unique.length 1)}}{{else}}&nbsp;<ul class="comma-list">{{#each unique}}<li style="font-weight: bold;">{{this}}</li>{{/each}}</ul>{{/if}}.
     </div>
     <div class="row">
       As the UW NetID owner, you are responsible for proper use, account maintenance, and file privileges.

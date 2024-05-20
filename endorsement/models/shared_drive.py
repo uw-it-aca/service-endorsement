@@ -8,13 +8,15 @@ from django.conf import settings
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 
+from endorsement.models.base import RecordManagerBase
 from endorsement.models.itbill import ITBillSubscription
 from endorsement.util.date import datetime_to_str
+from endorsement.util.itbill.shared_drive import shared_drive_subsidized_quota
 
 
 class MemberManager(models.Manager):
-    def get_member(self, name):
-        member, _ = self.get_or_create(name=name)
+    def get_member(self, netid):
+        member, _ = self.get_or_create(netid=netid)
         return member
 
 
@@ -23,10 +25,10 @@ class Member(ExportModelOperationsMixin("member"), models.Model):
     Member represents user associated with a shared drive
     """
 
-    name = models.CharField(max_length=128)
+    netid = models.CharField(max_length=128)
 
     def json_data(self):
-        return self.name
+        return self.netid
 
     objects = MemberManager()
 
@@ -71,7 +73,7 @@ class SharedDriveMember(
 
     def json_data(self):
         return {
-            "name": self.member.json_data(),
+            "netid": self.member.json_data(),
             "role": self.role.json_data(),
         }
 
@@ -96,9 +98,7 @@ class SharedDriveQuota(
 
     @property
     def is_subsidized(self):
-        return self.quota_limit <= getattr(
-            settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA"
-        )
+        return self.quota_limit <= shared_drive_subsidized_quota()
 
     def json_data(self):
         return {
@@ -107,6 +107,9 @@ class SharedDriveQuota(
             "quota_limit": self.quota_limit,
             "is_subsidized": self.is_subsidized,
         }
+
+    def __str__(self):
+        return json.dumps(self.json_data())
 
 
 class SharedDrive(ExportModelOperationsMixin("shared_drive"), models.Model):
@@ -120,9 +123,12 @@ class SharedDrive(ExportModelOperationsMixin("shared_drive"), models.Model):
     drive_name = models.CharField(max_length=128)
     drive_quota = models.ForeignKey(SharedDriveQuota, on_delete=models.PROTECT)
     drive_usage = models.IntegerField(null=True)
-    members = models.ManyToManyField(SharedDriveMember)
+    members = models.ManyToManyField(SharedDriveMember, blank=True)
     query_date = models.DateTimeField(null=True)
     is_deleted = models.BooleanField(null=True)
+
+    def get_members(self):
+        return [m.member.netid for m in self.members.all()]
 
     def json_data(self):
         return {
@@ -137,40 +143,10 @@ class SharedDrive(ExportModelOperationsMixin("shared_drive"), models.Model):
         return json.dumps(self.json_data())
 
 
-class SharedDriveAcceptance(
-    ExportModelOperationsMixin("shared_drive_acceptance"), models.Model
-):
-    """
-    SharedDriveAcceptance model records each instance of a shared drive
-    record being accepted or revoked by a shared drive manager.
-    """
-
-    ACCEPT = 0
-    REVOKE = 1
-
-    ACCEPTANCE_ACTION_CHOICES = ((ACCEPT, "Accept"), (REVOKE, "Revoke"))
-
-    member = models.ForeignKey(Member, on_delete=models.PROTECT)
-    action = models.SmallIntegerField(
-        default=ACCEPT, choices=ACCEPTANCE_ACTION_CHOICES
-    )
-    datetime_accepted = models.DateTimeField(auto_now_add=True)
-
-    def json_data(self):
-        return {
-            "member": self.member.json_data(),
-            "action": self.ACCEPTANCE_ACTION_CHOICES[self.action][1],
-            "datetime_accepted": datetime_to_str(self.datetime_accepted),
-        }
-
-    def __str__(self):
-        return json.dumps(self.json_data())
-
-
-class SharedDriveRecordManager(models.Manager):
+class SharedDriveRecordManager(RecordManagerBase):
     def get_member_drives(self, member_netid, drive_id=None):
         parms = {
-            "shared_drive__members__member__name": member_netid,
+            "shared_drive__members__member__netid": member_netid,
             "is_deleted__isnull": True,
         }
 
@@ -182,6 +158,15 @@ class SharedDriveRecordManager(models.Manager):
     def get_record_by_drive_id(self, drive_id):
         return self.get(
             shared_drive__drive_id=drive_id, is_deleted__isnull=True
+        )
+
+    def get_over_quota_non_subscribed(self):
+        quota = shared_drive_subsidized_quota()
+        return self.filter(
+            datetime_over_quota_emailed__isnull=True,
+            shared_drive__drive_quota__quota_limit__gt=quota,
+            subscription__isnull=True,
+            is_deleted__isnull=True,
         )
 
 
@@ -206,9 +191,9 @@ class SharedDriveRecord(
     datetime_notice_2_emailed = models.DateTimeField(null=True)
     datetime_notice_3_emailed = models.DateTimeField(null=True)
     datetime_notice_4_emailed = models.DateTimeField(null=True)
+    datetime_over_quota_emailed = models.DateTimeField(null=True)
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
-    acceptance = models.ManyToManyField(SharedDriveAcceptance, blank=True)
     is_deleted = models.BooleanField(null=True)
 
     objects = SharedDriveRecordManager()
@@ -250,6 +235,22 @@ class SharedDriveRecord(
             f"&shared_drive={self.shared_drive.drive_name}"
         )
 
+    @property
+    def acceptor(self):
+        if not self.datetime_accepted:
+            return None
+
+        try:
+            return SharedDriveAcceptance.objects.get(
+                shared_drive_record=self,
+                datetime_accepted=self.datetime_accepted,
+            )
+        except SharedDriveAcceptance.DoesNotExist:
+            return None
+
+    def get_acceptance(self):
+        return SharedDriveAcceptance.objects.filter(shared_drive_record=self)
+
     def set_acceptance(self, member_netid, accept=True):
         member = Member.objects.get_member(member_netid)
         action = (
@@ -259,15 +260,13 @@ class SharedDriveRecord(
         )
 
         acceptance = SharedDriveAcceptance.objects.create(
-            member=member, action=action
+            shared_drive_record=self, member=member, action=action
         )
-        self.acceptance.add(acceptance)
 
         if accept:
             self.datetime_accepted = acceptance.datetime_accepted
         else:
             self.datetime_expired = acceptance.datetime_accepted
-            self.is_deleted = True
 
         self.save()
 
@@ -301,10 +300,44 @@ class SharedDriveRecord(
                 self.datetime_notice_4_emailed
             ),
             "datetime_accepted": datetime_to_str(self.datetime_accepted),
+            "acceptance": [a.json_data() for a in self.get_acceptance()],
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired),
             "datetime_expiration": datetime_to_str(self.expiration_date),
             "is_deleted": self.is_deleted,
+        }
+
+    def __str__(self):
+        return json.dumps(self.json_data())
+
+
+class SharedDriveAcceptance(
+    ExportModelOperationsMixin("shared_drive_acceptance"), models.Model
+):
+    """
+    SharedDriveAcceptance model records each instance of a shared drive
+    record being accepted or revoked by a shared drive manager.
+    """
+
+    ACCEPT = 0
+    REVOKE = 1
+
+    ACCEPTANCE_ACTION_CHOICES = ((ACCEPT, "Accept"), (REVOKE, "Revoke"))
+
+    shared_drive_record = models.ForeignKey(
+        SharedDriveRecord, on_delete=models.PROTECT
+    )
+    member = models.ForeignKey(Member, on_delete=models.PROTECT)
+    action = models.SmallIntegerField(
+        default=ACCEPT, choices=ACCEPTANCE_ACTION_CHOICES
+    )
+    datetime_accepted = models.DateTimeField(auto_now_add=True)
+
+    def json_data(self):
+        return {
+            "member": self.member.json_data(),
+            "action": self.ACCEPTANCE_ACTION_CHOICES[self.action][1],
+            "datetime_accepted": datetime_to_str(self.datetime_accepted),
         }
 
     def __str__(self):

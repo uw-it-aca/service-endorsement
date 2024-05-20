@@ -105,6 +105,8 @@ environmentVariables:
     value: https://provision.uw.edu/sso/
   - name: CLUSTER_CNAME
     value: provision.uw.edu
+  - name: ENDORSEMENT_PROVISIONING
+    value: services
 externalSecrets:
   enabled: true
   secrets:
