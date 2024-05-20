@@ -559,7 +559,7 @@ class TestReconciler_reconcile_existing_drives(BaseReconcilerTest):
         """
         sd = SharedDrive.objects.get(drive_id="exists")
         self.assertEqual(
-            set(sd.members.values_list("member__name", flat=True)),
+            set(sd.members.values_list("member__netid", flat=True)),
             {"bob"},
         )
 
@@ -572,6 +572,6 @@ class TestReconciler_reconcile_existing_drives(BaseReconcilerTest):
         instance.reconcile()
 
         self.assertEqual(
-            set(sd.members.values_list("member__name", flat=True)),
+            set(sd.members.values_list("member__netid", flat=True)),
             {"pam", "sam"},
         )

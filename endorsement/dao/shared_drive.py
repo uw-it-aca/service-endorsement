@@ -163,10 +163,10 @@ def get_member(a: GoogleDriveState):
     """
     return a member model, bare netid or non-uw email
     """
-    netid = netid_regex.match(a.member)
-    name = netid.group("netid") if netid else a.member
+    netid_match = netid_regex.match(a.member)
+    netid = netid_match.group("netid") if netid_match else a.member
 
-    return Member.objects.get_member(name=name)
+    return Member.objects.get_member(netid=netid)
 
 
 def get_role(a: GoogleDriveState):
