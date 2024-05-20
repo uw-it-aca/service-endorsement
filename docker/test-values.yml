@@ -173,7 +173,7 @@ environmentVariablesSecrets:
     secretName: test.provision.uw.edu-secrets
     secretKey: django-secret
   ITBillHost:
-    name: ITBILL_HOST:
+    name: ITBILL_HOST
     secretName: test.provision.uw.edu-secrets
     secretKey: itbill-host
   ITBillBasicAuth:
