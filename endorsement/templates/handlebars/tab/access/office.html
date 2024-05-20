@@ -67,7 +67,7 @@ endorsement_row_{{#if (eq access_index 0) }}first {{else}}following {{/if}} endo
 {{#if delegate}}
     <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
     <td class="access-status">{{#if date_granted}}<i class="fa fa-check" style="color: green;"></i> Provisioned<p>Renew by {{date_renewal}}<br />({{date_renewal_relative}})</p>{{else}}Not Provisioned{{/if}}</td>
-      <td class="access-type"><label for="accesstype" class="visually-hidden">Access type</label><select id="accesstype" class="office-access-types" data-access-right-id="{{ right_id }}"></select></td>
+      <td class="access-type"><label for="accesstype" class="visually-hidden">Access type</label><select id="accesstype" class="office-access-types" data-access-right-id="{{ right_id }}" aria-label="Select access type for {{ delegate }} to {{mailbox}}'s mailbox"></select></td>
       <td class="access-action">{{#if date_granted}}<button type="button" class="btn btn-primary" id="access_update" data-loading-text="Updating" style="display: none;">Update</button><button type="button" class="btn btn-primary" id="access_renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="access_provision" disabled="disabled" data-loading-text="Provisioning">Provision Access</button>{{/if}}</td>
 {{else}}
       <td class="text-center" colspan="4"><span class="fw-lighter">No elevated access provisioned</span></td>

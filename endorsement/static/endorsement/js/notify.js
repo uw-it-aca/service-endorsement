@@ -34,7 +34,10 @@ var Notify = (function () {
             var $notify,
                 msg,
                 div_class,
-                fade;
+                fade,
+                src = $('#notify_template').html(),
+                template = Handlebars.compile(src),
+                html = template({message: msg, notify_class: div_class});
 
             if (_queue.length) {
                 msg = _queue[0].msg;
@@ -44,17 +47,10 @@ var Notify = (function () {
                 return;
             }
 
-            $notify = $('<div></div>')
-                .html(msg)
-                .addClass(div_class)
-                .appendTo($('body'));
-
+            $notify = $(html);
+            $notify.appendTo($('body'));
             $notify
-                .css('display', 'block')
-                .css('position', 'absolute')
-                .css('padding', '6px')
-                .css('border-radius', '3px')
-                .css('top', $(document).scrollTop())
+                .css('top', $('.tab.active').offset().top + 'px')
                 .css('left', (($(document).width() - $notify.width())/2) + 'px')
                 .fadeOut(fade || 3500, function () {
                     $(this).remove();

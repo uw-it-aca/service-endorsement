@@ -4,14 +4,15 @@
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from endorsement.dao.shared_drive import load_shared_drives_from_csv
+from endorsement.dao.shared_drive import (
+    load_shared_drives,
+    get_google_drive_states,
+)
 
 
 class Command(BaseCommand):
-    help = "load shared drive data from csv file."
-
-    def add_arguments(self, parser):
-        parser.add_argument('csv_file')
+    help = "load shared drive data from MSCA report."
 
     def handle(self, *args, **options):
-        load_shared_drives_from_csv(options['csv_file'])
+        google_drive_states = get_google_drive_states()
+        load_shared_drives(google_drive_states)

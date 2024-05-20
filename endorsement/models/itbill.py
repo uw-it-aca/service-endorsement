@@ -10,7 +10,8 @@ import json
 
 
 class ITBillSubscription(
-        ExportModelOperationsMixin('itbill_subscription'), models.Model):
+    ExportModelOperationsMixin("itbill_subscription"), models.Model
+):
     MANAGER_ROLE = "organizer"
 
     SUBSCRIPTION_DRAFT = 0
@@ -25,32 +26,38 @@ class ITBillSubscription(
         (SUBSCRIPTION_DEPLOYED, "deployed"),
         (SUBSCRIPTION_DEPROVISION, "deprovision"),
         (SUBSCRIPTION_CLOSED, "closed"),
-        (SUBSCRIPTION_CANCELLED, "cancelled")
+        (SUBSCRIPTION_CANCELLED, "cancelled"),
     )
 
     PRIORITY_NONE = 0
     PRIORITY_DEFAULT = 1
     PRIORITY_HIGH = 2
     PRIORITY_CHOICES = (
-        (PRIORITY_NONE, 'none'),
-        (PRIORITY_DEFAULT, 'normal'),
-        (PRIORITY_HIGH, 'high')
+        (PRIORITY_NONE, "none"),
+        (PRIORITY_DEFAULT, "normal"),
+        (PRIORITY_HIGH, "high"),
     )
 
-    key_remote = models.SlugField(max_length=32, default=key_remote)
+    # We have a high character limit, but we don't recommend a name too long
+    #   (<30 is good). - ITBill Questions document
+    key_remote = models.SlugField(max_length=32)
     state = models.SmallIntegerField(
-        default=SUBSCRIPTION_DRAFT, choices=SUBSCRIPTION_STATE_CHOICES)
+        default=SUBSCRIPTION_DRAFT, choices=SUBSCRIPTION_STATE_CHOICES
+    )
     query_priority = models.SmallIntegerField(
-        default=PRIORITY_DEFAULT, choices=PRIORITY_CHOICES)
+        default=PRIORITY_DEFAULT, choices=PRIORITY_CHOICES
+    )
     query_datetime = models.DateTimeField(null=True)
 
     def from_json(self, itbill):
         """
         (re)load subscription from itbill data
         """
-        self.state = next(
-            filter(lambda x: x[1] == itbill.lifecycle_state,
-                   ITBillSubscription.SUBSCRIPTION_STATE_CHOICES))[0]
+        (self.state,) = (
+            value
+            for value, label in ITBillSubscription.SUBSCRIPTION_STATE_CHOICES
+            if label == itbill.lifecycle_state
+        )
         self.query_priority = ITBillSubscription.PRIORITY_DEFAULT
         self.update_provisions(itbill.provisions)
 
@@ -59,7 +66,8 @@ class ITBillSubscription(
 
     def create_provision(self, provision):
         provision_obj = ITBillProvision.objects.create(
-            subscription=self, current_quantity=provision.current_quantity)
+            subscription=self, current_quantity=provision.current_quantity
+        )
 
         provision_obj.from_json(provision)
         print(f"saving provision {provision_obj}")
@@ -69,7 +77,8 @@ class ITBillSubscription(
         self.clear_provisions()
 
         product_sys_id = getattr(
-            settings, 'ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID')
+            settings, "ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID"
+        )
         for provision in provisions:
             if provision.product.sys_id == product_sys_id:
                 self.create_provision(provision)
@@ -86,10 +95,8 @@ class ITBillSubscription(
             "key_remote": self.key_remote,
             "provisions": [p.json_data() for p in self.get_provisions()],
             "state": self.SUBSCRIPTION_STATE_CHOICES[self.state][1],
-            "query_priority": self.PRIORITY_CHOICES[
-                self.query_priority][1],
-            "query_datetime": datetime_to_str(
-                self.query_datetime)
+            "query_priority": self.PRIORITY_CHOICES[self.query_priority][1],
+            "query_datetime": datetime_to_str(self.query_datetime),
         }
 
     def __str__(self):
@@ -97,13 +104,22 @@ class ITBillSubscription(
 
 
 class ITBillProvision(
-        ExportModelOperationsMixin('itbill_provision'), models.Model):
+    ExportModelOperationsMixin("itbill_provision"), models.Model
+):
     """
     ITBillProvision model represents the provisioning of a shared drive
     """
+
     subscription = models.ForeignKey(
-        ITBillSubscription, on_delete=models.PROTECT)
+        ITBillSubscription, on_delete=models.PROTECT
+    )
     current_quantity = models.IntegerField()
+
+    @property
+    def current_quantity_gigabytes(self):
+        return (self.current_quantity * 100) + getattr(
+            settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA"
+        )
 
     def from_json(self, provision):
         for quantity in provision.quantities:
@@ -126,7 +142,7 @@ class ITBillProvision(
     def json_data(self):
         return {
             "quantities": [q.json_data() for q in self.get_quantities()],
-            "current_quantity": self.current_quantity
+            "current_quantity": self.current_quantity,
         }
 
     def __str__(self):
@@ -134,12 +150,16 @@ class ITBillProvision(
 
 
 class ITBillQuantity(
-        ExportModelOperationsMixin('itbill_quantity'), models.Model):
+    ExportModelOperationsMixin("itbill_quantity"), models.Model
+):
     """
     ITBillQuantity quanity is billable units of 100GB each
+
+    ITBillProvision tracks the current quantity; this tracks the historical
+    changes to that quantity, including the current quantity.
     """
-    provision = models.ForeignKey(
-        ITBillProvision, on_delete=models.PROTECT)
+
+    provision = models.ForeignKey(ITBillProvision, on_delete=models.PROTECT)
     quantity = models.IntegerField(null=True)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
@@ -148,7 +168,8 @@ class ITBillQuantity(
     @property
     def quantity_gigabytes(self):
         return (self.quantity * 100) + getattr(
-            settings, 'ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA')
+            settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA"
+        )
 
     def from_json(self, quantity):
         self.quantity = int(quantity.quantity)
@@ -162,7 +183,7 @@ class ITBillQuantity(
             "quota_limit": self.quantity_gigabytes,
             "start_date": date_to_str(self.start_date),
             "end_date": date_to_str(self.end_date),
-            "stage": self.stage
+            "stage": self.stage,
         }
 
     def __str__(self):

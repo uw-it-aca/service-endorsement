@@ -113,7 +113,7 @@ environmentVariables:
   - name: CLUSTER_CNAME
     value: test.provision.uw.edu
   - name: ENDORSEMENT_PROVISIONING
-    value: services,mailbox_access
+    value: services,mailbox_access,shared_drives
 externalSecrets:
   enabled: true
   secrets:
@@ -122,6 +122,24 @@ externalSecrets:
       data:
         - name: django-secret
           property: django-secret
+        - name: itbill-host
+          property: itbill-host
+        - name: itbill-basic-auth
+          property: itbill-basic-auth
+        - name: itbill-shared-drive-product-sys-id
+          property: itbill-shared-drive-product-sys-id
+        - name: itbill-form-url-base-id
+          property: itbill-form-url-base-id
+        - name: itbill-form-url-sys-id
+          property: itbill-form-url-sys-id
+        - name: msca-oauth-token-url
+          property: msca-oauth-token-url
+        - name: msca-report-scope
+          property: msca-report-scope
+        - name: msca-client-id
+          property: msca-client-id
+        - name: msca-client-secret
+          property: msca-client-secret
         - name: email-host
           property: email-host
         - name: msca-subscription-key
@@ -154,6 +172,42 @@ environmentVariablesSecrets:
     name: DJANGO_SECRET
     secretName: test.provision.uw.edu-secrets
     secretKey: django-secret
+  ITBillHost:
+    name: ITBILL_HOST:
+    secretName: test.provision.uw.edu-secrets
+    secretKey: itbill-host
+  ITBillBasicAuth:
+    name: ITBILL_BASIC_AUTH
+    secretName: test.provision.uw.edu-secrets
+    secretKey: itbill-basic-auth
+  ITBillSharedDriveProductSYSID:
+    name: ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID
+    secretName: test.provision.uw.edu-secrets
+    secretKey: itbill-shared-drive-product-sys-id
+  ITBillFormURLBaseID:
+    name: ITBILL_FORM_URL_BASE_ID
+    secretName: test.provision.uw.edu-secrets
+    secretKey: itbill-form-url-base-id
+  ITBillFormURLSYSID:
+    name: ITBILL_FORM_URL_SYS_ID
+    secretName: test.provision.uw.edu-secrets
+    secretKey: itbill-form-url-sys-id
+  MSCA_OAUTH_TOKEN_URL:
+    name: MSCA_OAUTH_TOKEN_URL
+    secretName: test.provision.uw.edu-secrets
+    secretKey: msca-oauth-token-url
+  MSCAReportScope:
+    name: MSCA_REPORT_SCOPE
+    secretName: test.provision.uw.edu-secrets
+    secretKey: msca-report-scope
+  MSCAClientID:
+    name: MSCA_CLIENT_ID
+    secretName: test.provision.uw.edu-secrets
+    secretKey: msca-client-id
+  MSCAClientSecret:
+    name: MSCA_CLIENT_SECRET
+    secretName: test.provision.uw.edu-secrets
+    secretKey: msca-client-secret
   emailHost:
     name: EMAIL_HOST
     secretName: test.provision.uw.edu-secrets

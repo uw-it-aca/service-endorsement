@@ -17,6 +17,7 @@ var MainTabs = (function () {
                 $(".tabs-list li, .tabs div.tab").removeClass("active");
                 $li.addClass("active");
                 $tab.addClass("active");
+                $(document).attr('title', 'Provisioning Request Tool - ' + $('a', $li).text());
                 $tab.trigger('endorse:' + tab + 'TabExposed');
 
                 $(document).trigger('endorse:TabChange', [tab]);
