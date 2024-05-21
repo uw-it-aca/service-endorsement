@@ -228,7 +228,7 @@ class SharedDriveRecord(
         sys_id = getattr(settings, "ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID")
 
         return (
-            f"{url_base}?id={url_base_id}&sys_id={sys_id}"
+            f"{url_base}sp?id={url_base_id}&sys_id={sys_id}"
             f"&remote_key={self.subscription.key_remote}"
             f"&shared_drive={self.shared_drive.drive_name}"
         )
