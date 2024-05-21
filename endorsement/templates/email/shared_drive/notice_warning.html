@@ -1,7 +1,7 @@
 Hello,
 <p>
 You are receiving this email because you are identified as
-{%if drive.shared_drive.members.all.count > 0 %}one of {{ drive.shared_drive.members.all.count }}{% else %}the{% endif %} UW manager{{drive.shared_drive.members.all.count|pluralize}} of the Google Shared Drive named
+{%if drive.shared_drive.members.all.count > 1 %}one of {{ drive.shared_drive.members.all.count }}{% else %}the{% endif %} UW manager{{drive.shared_drive.members.all.count|pluralize}} of the Google Shared Drive named
 "{{drive.shared_drive.drive_name}}".
 </p>
 <p>
