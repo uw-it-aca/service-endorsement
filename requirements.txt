@@ -1,3 +1,3 @@
 -e .
 git+https://github.com/uw-it-aca/uw-restclients-msca@c54d54581794c813cac31b4582ef907091cad9a5#egg=uw-restclients-msca
-git+https://github.com/uw-it-aca/uw-restclients-itbill@e2d4c91d21bb4770b722a19640f59075ca4560e5#egg=uw-restclients-itbill
+git+https://github.com/uw-it-aca/uw-restclients-itbill@cb744c849dd87ed4fed4f7d38cb7700d78eae1cb#egg=uw-restclients-itbill
