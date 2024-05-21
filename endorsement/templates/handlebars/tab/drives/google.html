@@ -37,22 +37,28 @@
 <script id="shared_drives_row_partial" type="text/x-handlebars-template">
     <tr class="shared-drive-row" data-drive-id="{{drive.drive_id}}">
       <td scope="row" class="shared-drive-name"><span class="significant">{{ drive.drive_name }}</span></td>
-      <td class="shared-drive-status-icon">{{#if (lte expiration_days 90)}}<i class="fa {{#if (lte expiration_days 7)}}fa-exclamation-circle text-danger{{else}}fa-exclamation-triangle text-warning{{/if}}"></i>{{/if}}</td>
+      <td class="shared-drive-status-icon">
+        {{#if requires_subscription }}
+        <i class="fa fa-exclamation-circle text-danger"></i>
+        {{else}}
+          {{#if (lte expiration_days 90)}}<i class="fa {{#if (lte expiration_days 7)}}fa-exclamation-circle text-danger{{else}}fa-exclamation-triangle text-warning{{/if}}"></i>{{/if}}
+        {{/if}}
+      </td>
       <td class="shared-drive-status">
         <span class="significant">
-        {{#if (or drive.drive_quota.is_subsidized valid_subscription) }}
-          {{#if (lte expiration_days 90)}}
-          Provision Expiring
-          {{else}}
-          Provisioned
-          {{/if}}
-        {{else}}
-          {{#unless subscription}}
+        {{#if requires_subscription }}
           Quota selection required
-          {{/unless}}
+        {{else}}
+          Provision{{#if (lte expiration_days 90)}} Expiring{{else}}ed{{/if}}
         {{/if}}
         </span>
-        <p>{{#if (or drive.drive_quota.is_subsidized subscription) }}Renew{{else}}Select quota{{/if}} by {{expiration_date}}{{#if (lte expiration_days 90)}}<br />({{expiration_from_now}}){{/if}}</p>
+        <p>
+        {{#if requires_subscription }}
+          Select quota by {{subscription_deadline_date}}<br />({{subscription_deadline_from_now}})
+        {{else}}
+          Renew by {{expiration_date}}{{#if (lte expiration_days 90)}}<br />({{expiration_from_now}}){{/if}}
+        {{/if}}
+        </p>
       </td>
       <td class="shared-drive-est-usage">
         {{#if drive.drive_usage}}{{drive.drive_usage}}GB{{else}}N/A{{/if}}
