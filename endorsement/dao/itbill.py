@@ -34,7 +34,7 @@ def initiate_subscription(shared_drive_record):
             "start_date": "",
             "contact": user_service.get_user(),
             "contacts_additional": ",".join(
-                [member.member.name for member in membership]
+                [member.member.netid for member in membership]
             ),
             "lifecycle_state": ITBillSubscription.SUBSCRIPTION_STATE_CHOICES[
                 ITBillSubscription.SUBSCRIPTION_DRAFT
