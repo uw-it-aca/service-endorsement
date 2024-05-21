@@ -168,7 +168,7 @@ var ManageSharedDrives = (function () {
             drive.subscription_deadline_date = deadline.format('M/D/YYYY');
             drive.subscription_deadline_from_now = deadline.from(now);
 
-            drive.in_flight = (drive.subscription && drive.subscription.query_priority === 'high');
+            //drive.in_flight = (drive.subscription && drive.subscription.query_priority === 'high');
             drive.valid_subscription = (drive.subscription && !['draft', 'closed', 'cancelled'].includes(drive.subscription.state));
             drive.requires_subscription = !(drive.drive.drive_quota.is_subsidized || drive.valid_subscription);
             drive.quota_notes = [{
@@ -295,7 +295,11 @@ var ManageSharedDrives = (function () {
         _ITBillFormModal = function (drive) {
             _displayModal('#shared-drive-itbill-form-modal', {
                 drive: drive
-            }, 'modal-xl');
+            }, {
+                modal_size: 'modal-xl',
+                backdrop: 'static',
+                keyboard: false
+            });
         },
         _sharedDriveAcceptModal = function (drive_id, itbill_url) {
             _displayModal('#shared-drive-acceptance', {
@@ -314,24 +318,29 @@ var ManageSharedDrives = (function () {
                 drive_id: drive_id,
             });
         },
-        _displayModal = function (template_id, context, modal_size) {
+        _displayModal = function (template_id, context, options) {
             var source = $(template_id).html(),
-                template = Handlebars.compile(source);
+                template = Handlebars.compile(source),
+                $modal = $('#shared_drive_modal'),
+                $dialog = $('div.modal-dialog', $dialog),
+                modal_options = options || {};
 
-            if (modal_size) {
-                $('#shared_drive_modal div.modal-dialog').addClass(modal_size);
-            } else {
-                $('#shared_drive_modal div.modal-dialog').removeClass('modal-sm modal-lg modal-xl');
+            // reset options
+            $dialog.removeClass('modal-sm modal-lg modal-xl');
+            if (options.hasOwnProperty('modal_size')) {
+                $dialog.addClass(options.modal_size);
             }
 
             $('#shared_drive_modal .modal-content', $content).html(template(context));
-            _modalShow();
-        },
-        _modalShow = function () {
-            $('#shared_drive_modal', $content).modal('show');
+
+            modal_options.show = true;
+            $('#shared_drive_modal', $content).modal(modal_options);
         },
         _modalHide = function () {
-            $('#shared_drive_modal', $content).modal('hide');
+            var $modal = $('#shared_drive_modal', $content);
+
+            $modal.modal('hide');
+            $modal.data('bs.modal', null);
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
         };
