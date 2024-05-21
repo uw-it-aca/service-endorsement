@@ -40,6 +40,8 @@ $(window.document).ready(function() {
                   ManageOfficeAccess,
                   ManageSharedDrives];
         loadTools(panels);
+
+        setTabFromPath();
     }
     catch (err) {
         if (err.name !== 'ReferenceError') {
@@ -63,5 +65,20 @@ var loadTools = function (tools) {
     // sets up events and so forth...
     $.each(tools, function () {
         this.load.apply(this);
+    });
+};
+
+var setTabFromPath = function () {
+    var tabs = [
+        {path: '/', tab: 'services'},
+        {path: '/access', tab: 'access'},
+        {path: '/drives', tab: 'drives'}
+    ], tab;
+
+    $.each(tabs, function () {
+        if (window.location.pathname === this.path) {
+            MainTabs.openTab(this.tab);
+            return false;
+        }
     });
 };
