@@ -92,7 +92,7 @@ class SharedDriveQuota(
 
     org_unit_id = models.CharField(max_length=32)
     org_unit_name = models.CharField(max_length=64)
-    quota_limit = models.IntegerField(null=True)
+    quota_limit = models.IntegerField(default=0)
 
     @property
     def is_subsidized(self):
