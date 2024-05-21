@@ -191,37 +191,27 @@ var displayReasonStats = function (stats) {
 
 
 var displaySharedDriveStats = function (stats) {
-    var $container = $('#shared_drive_container');
+    var $container = $('#shared_drive_container'),
+        quota_stats = {
+            total: stats.total_drives,
+            data: {
+                'Subsizized': stats.total_subsidized,
+                'Not Subscribed': stats.total_drives - stats.total_subsidized
+            }
+        },
+        subscribed_stats = {
+            total: stats.total_over_subsidized_subscribed + stats.total_over_subsidized_not_subscribed,
+            data: {
+                'Subscribed': stats.total_over_subsidized_subscribed,
+                'Not Subscribed': stats.total_over_subsidized_not_subscribed
+            }
+        };
 
-    $("#shared_drive #shared-drive-total").text(stats.total_drives)
-    $("#shared_drive #shared-drive-member-total").text(stats.total_members)
-
-    var quota_stats = {
-        total: stats.total_drives,
-        data: {
-            'Subsizized': stats.total_subsidized,
-            'Not Subscribed': stats.total_drives - stats.total_subsidized
-        }
-    };
+    $("#shared_drive #shared-drive-total").text(stats.total_drives);
+    $("#shared_drive #shared-drive-member-total").text(stats.total_members);
 
     pieChartFromStats('shared_drive_quota', 'Subsizied Quota Proportion', 'Quota', quota_stats);
-
-
-    var subscribed_stats = {
-        total: stats.total_over_subsidized_subscribed + stats.total_over_subsidized_not_subscribed,
-        data: {
-            'Subscribed': stats.total_over_subsidized_subscribed,
-            'Not Subscribed': stats.total_over_subsidized_not_subscribed
-        }
-    };
     pieChartFromStats('shared_drive_subscribed', 'Over Quota Subscribed Proportion', 'Quota', subscribed_stats);
-
-
-//    $container.html('total shared drives: ' + stats.total_drives + '<br>'
-//                    + 'total subsized: ' + stats.total_subsidized + '<br>'
-//                    + 'total shared drive members: ' +  + '<br>'
-//                    + 'total over subsidized quota, subscribed: ' + stats.total_over_subsidized_subscribed + '<br>'
-//                    + 'total over subsidized quota, not subscribed: ' + stats.total_over_subsidized_not_subscribed + '<br>');
 };
 
 
