@@ -165,6 +165,7 @@ var ManageSharedDrives = (function () {
             drive.expiration_days = expiration.diff(now, 'days');
             drive.expiration_from_now = expiration.from(now);
             drive.in_flight = (drive.subscription && drive.subscription.query_priority === 'high');
+            drive.valid_subscription = (drive.subscription && !['draft', 'closed', 'cancelled'].includes(drive.subscription.state));
             drive.quota_notes = [{
                 is_capped: drive.drive.drive_usage > drive.drive.drive_quota.quota_limit
             }];

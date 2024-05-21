@@ -40,7 +40,7 @@
       <td class="shared-drive-status-icon">{{#if (lte expiration_days 90)}}<i class="fa {{#if (lte expiration_days 7)}}fa-exclamation-circle text-danger{{else}}fa-exclamation-triangle text-warning{{/if}}"></i>{{/if}}</td>
       <td class="shared-drive-status">
         <span class="significant">
-        {{#if (or drive.drive_quota.is_subsidized subscription) }}
+        {{#if (or drive.drive_quota.is_subsidized valid_subscription) }}
           {{#if (lte expiration_days 90)}}
           Provision Expiring
           {{else}}
