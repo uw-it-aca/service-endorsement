@@ -10,6 +10,7 @@ from endorsement.util.itbill.shared_drive import (
 from endorsement.exceptions import ITBillSubscriptionNotFound
 from restclients_core.exceptions import DataFailureException
 from uw_itbill.subscription import Subscription
+import json
 import logging
 
 
@@ -42,7 +43,7 @@ def initiate_subscription(shared_drive_record):
             "work_notes": "Subscription initiated by Provision Request Tool",
         }
 
-        Subscription().create_subscription(data)
+        Subscription().create_subscription(json.dumps(data))
         itbill_subscription.save()
         shared_drive_record.subscription = itbill_subscription
         shared_drive_record.save()
