@@ -11,7 +11,8 @@ from django_prometheus.models import ExportModelOperationsMixin
 from endorsement.models.base import RecordManagerBase
 from endorsement.models.itbill import ITBillSubscription
 from endorsement.util.date import datetime_to_str
-from endorsement.util.itbill.shared_drive import shared_drive_subsidized_quota
+from endorsement.util.itbill.shared_drive import (
+    shared_drive_subsidized_quota, shared_drive_subscription_deadline)
 
 
 class MemberManager(models.Manager):
@@ -302,6 +303,8 @@ class SharedDriveRecord(
             "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired),
             "datetime_expiration": datetime_to_str(self.expiration_date),
+            "datetime_subscription_deadline": datetime_to_str(
+                shared_drive_subscription_deadline()),
             "is_deleted": self.is_deleted,
         }
 

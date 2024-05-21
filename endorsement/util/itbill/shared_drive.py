@@ -3,6 +3,7 @@
 
 
 from django.conf import settings
+from datetime import datetime
 
 
 def subscription_name(shared_drive_record):
@@ -16,3 +17,8 @@ def product_sys_id():
 
 def shared_drive_subsidized_quota():
     return getattr(settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA")
+
+
+def shared_drive_subscription_deadline():
+    deadline = getattr(settings, "ITBILL_SUBSCRIPTION_DEADLINE")
+    return datetime.strptime(deadline, "%m/%d/%Y") if deadline else None
