@@ -43,7 +43,13 @@ def initiate_subscription(shared_drive_record):
             "work_notes": "Subscription initiated by Provision Request Tool",
         }
 
-        Subscription().create_subscription(json.dumps(data))
+        try:
+            Subscription().create_subscription(json.dumps(data))
+        except DataFailureException as ex:
+            if ex.status != 409:
+                raise
+            # else subscription already exists
+
         itbill_subscription.save()
         shared_drive_record.subscription = itbill_subscription
         shared_drive_record.save()
