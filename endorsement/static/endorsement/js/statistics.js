@@ -1,15 +1,18 @@
 // javascript for service endorsement manager
 /* jshint esversion: 6 */
+import { MainTabs } from "./tabs.js";
 import { DateTime } from "./datetime.js";
 
 $(window.document).ready(function() {
     registerEvents();
+    MainTabs.load.apply(this);
     getEndorsementServiceStats();
     getEndorsementSharedStats();
     getEndorsementPendingStats();
     getEndorsementEndorsersStats();
     getEndorsementRateStats($('select#daily-rate option:selected').val());
     getEndorsementReasonStats();
+    getEndorsementSharedDriveStats();
 });
 
 var registerEvents = function() {
@@ -25,6 +28,8 @@ var registerEvents = function() {
         displayRateStats(stats.rate);
     }).on('endorse:EndorsementStatsReasonsResult', function (e, stats) {
         displayReasonStats(stats.reasons);
+    }).on('endorse:EndorsementStatsSharedDriveResult', function (e, stats) {
+        displaySharedDriveStats(stats.reasons);
     }).on('change', 'select#daily-rate', function (e) {
         var period = $('option:selected', $(this)).val();
 
@@ -185,6 +190,31 @@ var displayReasonStats = function (stats) {
 };
 
 
+var displaySharedDriveStats = function (stats) {
+    var $container = $('#shared_drive_container'),
+        quota_stats = {
+            total: stats.total_drives,
+            data: {
+                'Subsizized': stats.total_subsidized,
+                'Not Subscribed': stats.total_drives - stats.total_subsidized
+            }
+        },
+        subscribed_stats = {
+            total: stats.total_over_subsidized_subscribed + stats.total_over_subsidized_not_subscribed,
+            data: {
+                'Subscribed': stats.total_over_subsidized_subscribed,
+                'Not Subscribed': stats.total_over_subsidized_not_subscribed
+            }
+        };
+
+    $("#shared_drive #shared-drive-total").text(stats.total_drives);
+    $("#shared_drive #shared-drive-member-total").text(stats.total_members);
+
+    pieChartFromStats('shared_drive_quota', 'Subsizied Quota Proportion', 'Quota', quota_stats);
+    pieChartFromStats('shared_drive_subscribed', 'Over Quota Subscribed Proportion', 'Quota', subscribed_stats);
+};
+
+
 var displayStatsReasonsError = function (json) {
     $('#reasons_container').html('ERROR: ' + JSON.stringify(json));
 };
@@ -203,6 +233,29 @@ var getEndorsementReasonStats = function () {
         },
         success: function(results) {
             $(document).trigger('endorse:EndorsementStatsReasonsResult', [{
+                reasons: results
+            }]);
+        },
+        error: function(xhr, status, error) {
+            displayStatsReasonsError(xhr.responseJSON);
+        }
+    });
+};
+
+
+var getEndorsementSharedDriveStats = function () {
+    var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
+
+    $.ajax({
+        url: "/api/v1/stats/shared_drive",
+        dataType: "JSON",
+        type: "GET",
+        accepts: {html: "application/json"},
+        headers: {
+            "X-CSRFToken": csrf_token
+        },
+        success: function(results) {
+            $(document).trigger('endorse:EndorsementStatsSharedDriveResult', [{
                 reasons: results
             }]);
         },

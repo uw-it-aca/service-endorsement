@@ -3,11 +3,13 @@
 
 import logging
 from django.utils import timezone
-from endorsement.models import EndorsementRecord
+from endorsement.models import (
+    EndorsementRecord, SharedDriveRecord, Member)
 from endorsement.util.log import log_data_error_response
 from endorsement.views.rest_dispatch import RESTDispatch
 from datetime import date, time, datetime, timedelta
 from endorsement.util.auth import SupportGroupAuthentication
+from endorsement.util.itbill.shared_drive import shared_drive_subsidized_quota
 import re
 
 
@@ -103,6 +105,26 @@ class Statistics(RESTDispatch):
                 stats = {
                     'total': len(data),
                     'data': data
+                }
+            elif self.kwargs['type'] == 'shared_drive':
+                quota = shared_drive_subsidized_quota()
+                stats = {
+                    'total_drives': SharedDriveRecord.objects.filter(
+                        is_deleted__isnull=True).count(),
+                    'total_subsidized': SharedDriveRecord.objects.filter(
+                        shared_drive__drive_quota__quota_limit__lte=quota,
+                        is_deleted__isnull=True).count(),
+                    'total_members': Member.objects.all().count(),
+                    'total_over_subsidized_not_subscribed':
+                    SharedDriveRecord.objects.filter(
+                        shared_drive__drive_quota__quota_limit__gt=quota,
+                        subscription__isnull=True,
+                        is_deleted__isnull=True).count(),
+                    'total_over_subsidized_subscribed':
+                    SharedDriveRecord.objects.filter(
+                        shared_drive__drive_quota__quota_limit__gt=quota,
+                        subscription__isnull=False,
+                        is_deleted__isnull=True).count()
                 }
             else:
                 m = re.match(r'^rate\/([0-9]+)$', self.kwargs['type'])

@@ -12,7 +12,8 @@ from endorsement.models.base import RecordManagerBase
 from endorsement.models.itbill import ITBillSubscription
 from endorsement.util.date import datetime_to_str
 from endorsement.util.itbill.shared_drive import (
-    shared_drive_subsidized_quota, shared_drive_subscription_deadline)
+    itbill_form_url, shared_drive_subsidized_quota,
+    shared_drive_subscription_deadline)
 
 
 class MemberManager(models.Manager):
@@ -224,15 +225,9 @@ class SharedDriveRecord(
 
     @property
     def itbill_form_url(self):
-        url_base = getattr(settings, "ITBILL_FORM_URL_BASE")
-        url_base_id = getattr(settings, "ITBILL_FORM_URL_BASE_ID")
-        sys_id = getattr(settings, "ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID")
-
-        return (
-            f"{url_base}sp?id={url_base_id}&sys_id={sys_id}"
-            f"&remote_key={self.subscription.key_remote}"
-            f"&shared_drive={self.shared_drive.drive_name}"
-        )
+        return itbill_form_url(
+            self.subscription.key_remote, self.shared_drive.drive_name) if (
+                self.subscription) else None
 
     @property
     def acceptor(self):
@@ -280,9 +275,7 @@ class SharedDriveRecord(
             "subscription": (
                 self.subscription.json_data() if (self.subscription) else None
             ),
-            "itbill_form_url": (
-                self.itbill_form_url if (self.subscription) else None
-            ),
+            "itbill_form_url": self.itbill_form_url,
             "acted_as": self.acted_as,
             "datetime_created": datetime_to_str(self.datetime_created),
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
