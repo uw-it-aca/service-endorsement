@@ -115,12 +115,12 @@ class Statistics(RESTDispatch):
                         shared_drive__drive_quota__quota_limit__lte=quota,
                         is_deleted__isnull=True).count(),
                     'total_members': Member.objects.all().count(),
-                    'total_over_subsidized_not_subscribed': \
+                    'total_over_subsidized_not_subscribed':
                     SharedDriveRecord.objects.filter(
                         shared_drive__drive_quota__quota_limit__gt=quota,
                         subscription__isnull=True,
                         is_deleted__isnull=True).count(),
-                    'total_over_subsidized_subscribed': \
+                    'total_over_subsidized_subscribed':
                     SharedDriveRecord.objects.filter(
                         shared_drive__drive_quota__quota_limit__gt=quota,
                         subscription__isnull=False,
