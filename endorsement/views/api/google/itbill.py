@@ -25,8 +25,9 @@ class SharedDriveITBillURL(RESTDispatch):
         """
         try:
             netid, acted_as = self._validate_user(request)
+            acting_netid = acted_as if acted_as else netid
             drive_id = self.kwargs.get('drive_id')
-            drive = self._get_drive(netid, drive_id)
+            drive = self._get_drive(acting_netid, drive_id)
 
             if not drive.subscription:
                 initiate_subscription(drive)
@@ -36,7 +37,8 @@ class SharedDriveITBillURL(RESTDispatch):
             drive.subscription.save()
 
             return self.json_response({
-                'drives': [self._get_drive(netid, drive_id).json_data()],
+                'drives': [self._get_drive(
+                    acting_netid, drive_id).json_data()],
                 'messages': get_persistent_messages()
             })
 

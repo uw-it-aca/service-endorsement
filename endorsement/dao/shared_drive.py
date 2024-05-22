@@ -96,14 +96,25 @@ def load_shared_drives(google_drive_states):
 def load_shared_drive_record(a: GoogleDriveState, is_seen):
     """
     ensure shared drive record is created
+    Note: first time we see a record is implicit acceptance
+          as the external process of creating the drive
+          already lead the manager past terms click thru
     """
+    now = dt.datetime.now(dt.timezone.utc)
     shared_drive = upsert_shared_drive(a, is_seen)
     shared_drive_record, _ = SharedDriveRecord.objects.get_or_create(
         shared_drive=shared_drive,
         defaults={
-            "datetime_created": dt.datetime.now(dt.timezone.utc),
-        },
+            "datetime_accepted": now,
+            "datetime_created": now
+        }
     )
+
+    # backfill if missed
+    if not shared_drive_record.datetime_accepted:
+        shared_drive_record.datetime_accepted = now
+        shared_drive_record.save()
+
     return shared_drive_record
 
 
@@ -119,6 +130,7 @@ def upsert_shared_drive(a: GoogleDriveState, is_seen):
         defaults={
             "drive_name": a.drive_name,
             "drive_quota": drive_quota,
+            "drive_usage": a.size_gigabytes
         },
     )
 
