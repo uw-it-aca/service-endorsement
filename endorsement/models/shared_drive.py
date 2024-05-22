@@ -4,13 +4,13 @@
 import json
 
 from django.db import models
-from django.conf import settings
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 
 from endorsement.models.base import RecordManagerBase
 from endorsement.models.itbill import ITBillSubscription
 from endorsement.util.date import datetime_to_str
+from endorsement.policy import DEFAULT_LIFETIME
 from endorsement.util.itbill.shared_drive import (
     itbill_form_url, shared_drive_subsidized_quota,
     shared_drive_subscription_deadline)
@@ -153,7 +153,7 @@ class SharedDriveRecordManager(RecordManagerBase):
         if drive_id:
             parms["shared_drive__drive_id"] = drive_id
 
-        return self.filter(**parms)
+        return self.filter(**parms).order_by('shared_drive__drive_name')
 
     def get_record_by_drive_id(self, drive_id):
         return self.get(
@@ -183,7 +183,6 @@ class SharedDriveRecord(
     subscription = models.ForeignKey(
         ITBillSubscription, on_delete=models.PROTECT, null=True
     )
-    acted_as = models.SlugField(max_length=32, null=True)
     datetime_created = models.DateTimeField(null=True)
     datetime_accepted = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
@@ -192,7 +191,6 @@ class SharedDriveRecord(
     datetime_notice_3_emailed = models.DateTimeField(null=True)
     datetime_notice_4_emailed = models.DateTimeField(null=True)
     datetime_over_quota_emailed = models.DateTimeField(null=True)
-    datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
     is_deleted = models.BooleanField(null=True)
 
@@ -200,15 +198,16 @@ class SharedDriveRecord(
 
     @property
     def expiration_date(self):
-        lifespan = getattr(settings, "SHARED_DRIVE_LIFESPAN_DAYS", 365)
-        claim_span = getattr(settings, "SHARED_DRIVE_CLAIM_DAYS", 30)
-        initial_date = self.datetime_renewed or self.datetime_accepted
         return (
             self.datetime_expired
-            or (initial_date + timezone.timedelta(days=lifespan))
-            if (initial_date)
+            or (self.datetime_accepted + timezone.timedelta(
+                days=DEFAULT_LIFETIME
+            ))
+            if (self.datetime_accepted)
             else (
-                (self.datetime_created + timezone.timedelta(claim_span))
+                (self.datetime_created + timezone.timedelta(
+                    DEFAULT_LIFETIME
+                ))
                 if (self.datetime_created)
                 else None
             )
@@ -237,7 +236,7 @@ class SharedDriveRecord(
         try:
             return SharedDriveAcceptance.objects.get(
                 shared_drive_record=self,
-                datetime_accepted=self.datetime_accepted,
+                datetime_created=self.datetime_accepted,
             )
         except SharedDriveAcceptance.DoesNotExist:
             return None
@@ -245,8 +244,10 @@ class SharedDriveRecord(
     def get_acceptance(self):
         return SharedDriveAcceptance.objects.filter(shared_drive_record=self)
 
-    def set_acceptance(self, member_netid, accept=True):
+    def set_acceptance(self, member_netid, accept=True, acted_as=None):
         member = Member.objects.get_member(member_netid)
+        acted_as_member = Member.objects.get_member(
+            acted_as) if acted_as else None
         action = (
             SharedDriveAcceptance.ACCEPT
             if (accept)
@@ -254,7 +255,8 @@ class SharedDriveRecord(
         )
 
         acceptance = SharedDriveAcceptance.objects.create(
-            shared_drive_record=self, member=member, action=action
+            shared_drive_record=self, action=action,
+            member=member, acted_as=acted_as_member
         )
 
         if accept:
@@ -276,7 +278,6 @@ class SharedDriveRecord(
                 self.subscription.json_data() if (self.subscription) else None
             ),
             "itbill_form_url": self.itbill_form_url,
-            "acted_as": self.acted_as,
             "datetime_created": datetime_to_str(self.datetime_created),
             "datetime_emailed": datetime_to_str(self.datetime_emailed),
             "datetime_notice_1_emailed": datetime_to_str(
@@ -293,7 +294,6 @@ class SharedDriveRecord(
             ),
             "datetime_accepted": datetime_to_str(self.datetime_accepted),
             "acceptance": [a.json_data() for a in self.get_acceptance()],
-            "datetime_renewed": datetime_to_str(self.datetime_renewed),
             "datetime_expired": datetime_to_str(self.datetime_expired),
             "datetime_expiration": datetime_to_str(self.expiration_date),
             "datetime_subscription_deadline": datetime_to_str(
@@ -321,17 +321,21 @@ class SharedDriveAcceptance(
     shared_drive_record = models.ForeignKey(
         SharedDriveRecord, on_delete=models.PROTECT
     )
-    member = models.ForeignKey(Member, on_delete=models.PROTECT)
+    member = models.ForeignKey(
+        Member, on_delete=models.PROTECT, related_name='member')
+    acted_as = models.ForeignKey(
+        Member, on_delete=models.PROTECT, null=True, related_name='acted_as')
     action = models.SmallIntegerField(
         default=ACCEPT, choices=ACCEPTANCE_ACTION_CHOICES
     )
-    datetime_accepted = models.DateTimeField(auto_now_add=True)
+    datetime_created = models.DateTimeField(auto_now_add=True)
 
     def json_data(self):
         return {
             "member": self.member.json_data(),
+            "acted_as": self.acted_as.json_data(),
             "action": self.ACCEPTANCE_ACTION_CHOICES[self.action][1],
-            "datetime_accepted": datetime_to_str(self.datetime_accepted),
+            "datetime_created": datetime_to_str(self.datetime_createted),
         }
 
     def __str__(self):

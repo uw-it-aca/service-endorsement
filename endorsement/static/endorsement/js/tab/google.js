@@ -46,9 +46,13 @@ var ManageSharedDrives = (function () {
             }).delegate('#confirm_itbill_visit', 'click', function (e) {
                 _getITBill_URL($(this).attr('data-drive-id'));
             }).delegate('#confirm_itbill_form_finished', 'click', function (e) {
+                var $this = $(this),
+                    drive_id = $this.attr('data-drive-id'),
+                    drive_name = $this.attr('data-drive-name');
+
                 _modalHide();
-                _refreshSharedDrive($(this).attr('data-drive-id'));
-                Notify.success('Quota updated!', 10000);
+                _refreshSharedDrive(drive_id);
+                Notify.success('"' + drive_name + '" updated', 10000);
             }).delegate('#confirm_shared_drive_acceptance', 'click', function (e) {
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), true);
             }).delegate('#confirm_shared_drive_revoke', 'click', function (e) {
@@ -130,12 +134,12 @@ var ManageSharedDrives = (function () {
         },
         _updateSharedDrivesDiplay = function (record) {
             var source = $("#shared_drives_row_partial").html(),
-                template = Handlebars.compile(source),
-                $row = $('tr.shared-drive-row[data-drive-id="' + record.drive.drive_id + '"]');
+                template = Handlebars.compile(source);
 
             _prepSharedDriveContext(record);
 
-            $row.replaceWith(template(record));
+            $('tr.shared-drive-row[data-drive-id="' + record.drive.drive_id + '"]').replaceWith(template(record));
+            $('tr.shared-drive-row[data-drive-id="' + record.drive.drive_id + '"]').addClass('itbill_updated');
         },
         _displaySharedDrives = function (drives) {
             var source = $("#shared_drives_panel").html(),
@@ -327,8 +331,8 @@ var ManageSharedDrives = (function () {
 
             // reset options
             $dialog.removeClass('modal-sm modal-lg modal-xl');
-            if (options.hasOwnProperty('modal_size')) {
-                $dialog.addClass(options.modal_size);
+            if (modal_options.hasOwnProperty('modal_size')) {
+                $dialog.addClass(modal_options.modal_size);
             }
 
             $('#shared_drive_modal .modal-content', $content).html(template(context));
