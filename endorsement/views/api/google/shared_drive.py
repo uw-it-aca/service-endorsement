@@ -25,7 +25,6 @@ class SharedDrive(RESTDispatch):
         """
         try:
             netid, acted_as = self._validate_user(request)
-            acting_netid = acted_as if acted_as else netid
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -36,18 +35,17 @@ class SharedDrive(RESTDispatch):
 
         try:
             if drive_id and refresh:
-                update_itbill_subscription(acting_netid, drive_id)
+                update_itbill_subscription(netid, drive_id)
                 sync_quota_from_subscription(drive_id)
         except Exception as ex:
             logger.exception("refresh_subscription: {}".format(ex))
             return data_error(logger, ex)
 
-        return self.json_response(self._drive_list(acting_netid, drive_id))
+        return self.json_response(self._drive_list(netid, drive_id))
 
     def put(self, request, *args, **kwargs):
         try:
             netid, acted_as = self._validate_user(request)
-            acting_netid = acted_as if acted_as else netid
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -56,11 +54,11 @@ class SharedDrive(RESTDispatch):
         try:
             drive_id = self.kwargs['drive_id']
             drive = SharedDriveRecord.objects.get_member_drives(
-                acting_netid, drive_id).get()
+                netid, drive_id).get()
 
             accept = request.data.get('accept')
             if isinstance(accept, bool):
-                drive.set_acceptance(acting_netid, accept)
+                drive.set_acceptance(netid, accept, acted_as)
             else:
                 return bad_request(logger)
 
@@ -69,7 +67,7 @@ class SharedDrive(RESTDispatch):
         except KeyError:
             return bad_request(logger, "Missing accept parameter")
 
-        return self.json_response(self._drive_list(acting_netid, drive_id))
+        return self.json_response(self._drive_list(netid, drive_id))
 
     def _drive_list(self, netid, drive_id=None):
         drives = SharedDriveRecord.objects.get_member_drives(netid, drive_id)
