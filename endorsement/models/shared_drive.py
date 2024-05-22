@@ -236,7 +236,7 @@ class SharedDriveRecord(
         try:
             return SharedDriveAcceptance.objects.get(
                 shared_drive_record=self,
-                datetime_accepted=self.datetime_accepted,
+                datetime_created=self.datetime_accepted,
             )
         except SharedDriveAcceptance.DoesNotExist:
             return None
@@ -335,7 +335,7 @@ class SharedDriveAcceptance(
             "member": self.member.json_data(),
             "acted_as": self.acted_as.json_data(),
             "action": self.ACCEPTANCE_ACTION_CHOICES[self.action][1],
-            "datetime_accepted": datetime_to_str(self.datetime_accepted),
+            "datetime_created": datetime_to_str(self.datetime_createted),
         }
 
     def __str__(self):

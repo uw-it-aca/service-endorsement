@@ -161,6 +161,7 @@ def GDS(drive_id, member, **kwargs):
         "drive_name": "testdrive_" + drive_id,
         "org_unit_id": "org_100gb",
         "org_unit_name": "100GB",
+        "size": 12345,
     }
     defaults.update(drive_id=drive_id, member=member, **kwargs)
     return GoogleDriveState(**defaults)
