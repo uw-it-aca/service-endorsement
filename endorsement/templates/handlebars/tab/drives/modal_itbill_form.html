@@ -1,13 +1,13 @@
 {% verbatim %}
 <script id="shared-drive-itbill-form-modal" type="text/x-handlebars-template">
 <div class="modal-header">
-    <span class="significant">Manage Quota for {{drive.drive.drive_name}}</span>
+    <span class="significant">Update Quota / Funding for {{drive.drive.drive_name}}</span>
 </div>
 <div class="modal-body">
     <iframe id="itbill_form" src="{{drive.itbill_form_url}}" width="100%" height="800" frameborder="0" scrolling="no"></iframe>
 </div>
 <div class="modal-footer">
-  <button type="button" id="confirm_itbill_form_finished" class="btn btn-primary accept-button" data-drive-id="{{drive.drive.drive_id}}">Done!</button>
+  <button type="button" id="confirm_itbill_form_finished" class="btn btn-primary accept-button" data-drive-id="{{drive.drive.drive_id}}">Next</button>
 </div>
 </script>
 {% endverbatim %}
