@@ -49,7 +49,7 @@
         {{#if requires_subscription }}
           Quota selection required
         {{else}}
-          Provision{{#if (lte expiration_days 90)}} Expiring{{else}}ed{{/if}}
+          {{#if (lte expiration_days 90)}}Expiring{{else}}Active{{/if}}
         {{/if}}
         </span>
         <p>
@@ -63,7 +63,7 @@
       <td class="shared-drive-est-usage">
         {{#if drive.drive_usage}}{{drive.drive_usage}}GB{{else}}N/A{{/if}}
       </td>
-      <td class="shared-drive-quota" data-quota-limit="{{drive.drive_quota.quota_limit}}">{{drive.drive_quota.org_unit_name}}
+      <td class="shared-drive-quota" data-org-unit-name="{{drive.drive_quota.org_unit_name}}">{{#driveQuota drive.drive_quota.quota_limit}}{{/driveQuota}}
 {{#if in_flight}}
   <div><div><a id="refresh_drive" data-drive-id={{drive.drive_id}} href="/drives"><i class="fa fa-sync text-primary"></i></a></div><div class="text-primary">We noticed an attempted quota update - confirmed changes will appear here shortly.</div></div>
 {{else}}
@@ -104,15 +104,19 @@ view&nbsp;all</span>
        <select id="shared_drive_action" data-drive-id={{drive.drive_id}} class="custom-select" data-itbill-url="{{#if subscription}}{{ itbill_form_url }}{{/if}}" aria-label="Select action for {{ drive.drive_name }}">
          <option value="select">Select action...</option>
          {{#if drive.drive_quota.is_subsidized}}
-           <option value="shared_drive_change">Increase quota</option>
-           <option value="shared_drive_accept">Renew provision</option>
+            {{#if requires_subscription }}
+              <option value="shared_drive_change">Select quota</option>
+            {{else}}
+              <option value="shared_drive_change">Increase quota</option>
+            {{/if}}
+            <option value="shared_drive_accept">Renew</option>
          {{else}}
-           <option value="shared_drive_change">Update quota or worktags</option>
+           <option value="shared_drive_change">Update quota or funding</option>
            {{#if subscription}}
-             <option value="shared_drive_accept">Renew provision</option>
+             <option value="shared_drive_accept">Renew</option>
            {{/if}}
          {{/if}}
-         <option value="shared_drive_revoke">Revoke provision</option>
+         <option value="shared_drive_revoke">Remove</option>
        </select>
 {{/if}}
      </td>
