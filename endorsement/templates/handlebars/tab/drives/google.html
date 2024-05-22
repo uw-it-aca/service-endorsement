@@ -63,7 +63,7 @@
       <td class="shared-drive-est-usage">
         {{#if drive.drive_usage}}{{drive.drive_usage}}GB{{else}}N/A{{/if}}
       </td>
-      <td class="shared-drive-quota" data-quota-limit="{{drive.drive_quota.quota_limit}}">{{drive.drive_quota.org_unit_name}}
+      <td class="shared-drive-quota" data-org-unit-name="{{drive.drive_quota.org_unit_name}}">{{#driveQuota drive.drive_quota.quota_limit}}{{/driveQuota}}
 {{#if in_flight}}
   <div><div><a id="refresh_drive" data-drive-id={{drive.drive_id}} href="/drives"><i class="fa fa-sync text-primary"></i></a></div><div class="text-primary">We noticed an attempted quota update - confirmed changes will appear here shortly.</div></div>
 {{else}}

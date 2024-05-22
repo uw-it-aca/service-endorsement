@@ -37,6 +37,8 @@ $(window.document).ready(function() {
         'lte': function(a, b) { return (a <= b); },
         'and': function(a, b) { return (a && b); },
         'or': function(a, b) { return (a || b); },
-        'not': function(a) { return (!a); }
+        'not': function(a) { return (!a); },
+        'numberFormat': function(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); },
+        'driveQuota': function(n) { return (n > 1000) ? (n/1000) + 'TB' : n + 'GB'; }
     });
 });
