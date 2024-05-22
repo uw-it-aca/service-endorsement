@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from django.http import HttpResponse
 from userservice.user import UserService
 from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
+from endorsement.util.auth import is_only_support_user
 import json
 import sys
 from restclients_core.exceptions import DataFailureException,\
