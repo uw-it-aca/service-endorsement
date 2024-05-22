@@ -333,7 +333,7 @@ class SharedDriveAcceptance(
     def json_data(self):
         return {
             "member": self.member.json_data(),
-            "acted_as": self.acted_as.json_data() if acted_as else None,
+            "acted_as": self.acted_as.json_data() if self.acted_as else None,
             "action": self.ACCEPTANCE_ACTION_CHOICES[self.action][1],
             "datetime_created": datetime_to_str(self.datetime_createted),
         }
