@@ -312,7 +312,8 @@ a {
   tr.new_access .access-delegate-id,
   tr.new_access .access-status,
   tr.new_access .access-type,
-  tr.new_access .access-action  { background: #efffef !important; }
+  tr.new_access .access-action,
+  tr.itbill_updated { background: #efffef !important; }
   .shared-drive-action { width: 16em !important; }
   .shared-drive-est-usage { width: 7em; }
   .access-status p { padding-left: 1.2em; }

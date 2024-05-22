@@ -37,7 +37,7 @@ var Notify = (function () {
                 fade,
                 src = $('#notify_template').html(),
                 template = Handlebars.compile(src),
-                html = template({message: msg, notify_class: div_class});
+                html;
 
             if (_queue.length) {
                 msg = _queue[0].msg;
@@ -47,6 +47,7 @@ var Notify = (function () {
                 return;
             }
 
+            html = template({message: msg, notify_class: div_class});
             $notify = $(html);
             $notify.appendTo($('body'));
             $notify
