@@ -176,7 +176,7 @@ var ManageSharedDrives = (function () {
             drive.valid_subscription = (drive.subscription && !['draft', 'closed', 'cancelled'].includes(drive.subscription.state));
             drive.requires_subscription = !(drive.drive.drive_quota.is_subsidized || drive.valid_subscription);
             drive.quota_notes = [{
-                is_capped: drive.drive.drive_usage > drive.drive.drive_quota.quota_limit
+                is_capped: (drive.drive.drive_quota.org_unit_name != "uw.edu" && drive.drive.drive_usage > drive.drive.drive_quota.quota_limit)
             }];
 
             if (drive.subscription) {
