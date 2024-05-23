@@ -182,7 +182,7 @@ var ManageSharedDrives = (function () {
             drive.valid_subscription = (drive.subscription && !['draft', 'closed', 'cancelled'].includes(drive.subscription.state));
             drive.requires_subscription = !(drive.drive.drive_quota.is_subsidized || drive.valid_subscription);
             drive.quota_notes = [{
-                is_capped: (!["uw.edu", "None"].includes(drive.drive.drive_quota.org_unit_name) < 0 && drive.drive.drive_usage > drive.drive.drive_quota.quota_limit)
+                is_capped: (!["uw.edu", "None"].includes(drive.drive.drive_quota.org_unit_name) && drive.drive.drive_usage > drive.drive.drive_quota.quota_limit)
             }];
 
             if (drive.subscription) {
