@@ -61,7 +61,11 @@
         </p>
       </td>
       <td class="shared-drive-est-usage">
-        {{#if drive.drive_usage}}{{drive.drive_usage}}GB{{else}}N/A{{/if}}
+        {{#if drive.drive_usage}}
+          {{#driveCapacity drive.drive_usage}}{{/driveCapacity}}
+        {{else}}
+          N/A
+        {{/if}}
       </td>
       <td class="shared-drive-quota" data-org-unit-name="{{drive.drive_quota.org_unit_name}}">
       {{#if (eq drive.drive_quota.org_unit_name "None")}}
@@ -70,7 +74,7 @@
         {{#if (eq drive.drive_quota.org_unit_name "uw.edu")}}
          100GB
         {{else}}
-         {{#driveQuota drive.drive_quota.quota_limit}}{{/driveQuota}}
+         {{#driveCapacity drive.drive_quota.quota_limit}}{{/driveCapacity}}
         {{/if}}
       {{/if}}
       {{#if in_flight}}
