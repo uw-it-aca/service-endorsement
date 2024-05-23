@@ -117,11 +117,7 @@ view&nbsp;all</span>
        <select id="shared_drive_action" data-drive-id={{drive.drive_id}} class="custom-select" data-itbill-url="{{#if subscription}}{{ itbill_form_url }}{{/if}}" aria-label="Select action for {{ drive.drive_name }}">
          <option value="select">Select action...</option>
          {{#if drive.drive_quota.is_subsidized}}
-            {{#if requires_subscription }}
-              <option value="shared_drive_change">Select quota</option>
-            {{else}}
-              <option value="shared_drive_change">Increase quota</option>
-            {{/if}}
+            <option value="shared_drive_change">Increase quota</option>
             <option value="shared_drive_accept">Renew</option>
          {{else}}
            <option value="shared_drive_change">Update quota or funding</option>
