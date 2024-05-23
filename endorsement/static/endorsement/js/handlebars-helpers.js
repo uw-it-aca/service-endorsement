@@ -39,6 +39,6 @@ $(window.document).ready(function() {
         'or': function(a, b) { return (a || b); },
         'not': function(a) { return (!a); },
         'numberFormat': function(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); },
-        'driveCapacity': function(n) { return (n < 1) ? Math.round(n * 1000) + 'MB' : (n > 1000) ? (n/1000) + 'TB' : n + 'GB'; },
+        'driveCapacity': function(n) { return (n < 1) ? Math.round(n * 1000).toString().substring(0,3) + 'MB' : (n > 1000) ? (n/1000) + 'TB' : ((n < 100) ? n.toString().substring(0, (n < 10) ? 4 : 3) : n) + 'GB'; },
     });
 });
