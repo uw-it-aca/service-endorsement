@@ -129,21 +129,25 @@ def upsert_shared_drive(a: GoogleDriveState, is_seen):
     return a shared drive model for given DriveId, allowing for
     name, quota and membership changes
     """
-    drive_quota = get_drive_quota(a)
+    if is_seen:
+        shared_drive = SharedDrive.objects.update_or_create(
+            drive_id=a.drive_id)
+    else:
+        drive_quota = get_drive_quota(a)
+        shared_drive, created = SharedDrive.objects.update_or_create(
+            drive_id=a.drive_id,
+            defaults={
+                "drive_name": a.drive_name,
+                "drive_quota": drive_quota,
+                "drive_usage": a.size_gigabytes
+            },
+        )
+
+        if not created:
+            # clear e.g., yesterday's membership and re-add
+            shared_drive.members.clear()
+
     shared_drive_member = get_shared_drive_member(a)
-    shared_drive, created = SharedDrive.objects.update_or_create(
-        drive_id=a.drive_id,
-        defaults={
-            "drive_name": a.drive_name,
-            "drive_quota": drive_quota,
-            "drive_usage": a.size_gigabytes
-        },
-    )
-
-    if not created and not is_seen:
-        # clear e.g., yesterday's membership and re-add
-        shared_drive.members.clear()
-
     shared_drive.members.add(shared_drive_member)
     return shared_drive
 
