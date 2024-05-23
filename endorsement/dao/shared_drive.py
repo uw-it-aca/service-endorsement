@@ -23,6 +23,7 @@ from endorsement.exceptions import (
     ITBillSubscriptionNotFound,
     SharedDriveNonPrivilegedMember,
     SharedDriveRecordNotFound,
+    UnrecognizedUWNetid,
 )
 from endorsement.models.itbill import (
     ITBillSubscription,
@@ -39,7 +40,7 @@ from endorsement.models.shared_drive import (
 
 logger = logging.getLogger(__name__)
 netid_regex = re.compile(
-    r"^(?P<netid>[^@]+)@(uw|(u\.)?washington)\.edu$", re.I
+    r"^(?P<netid>[^@]+)(@(uw|(u\.)?washington)\.edu)?$", re.I
 )
 
 
@@ -89,7 +90,7 @@ def load_shared_drives(google_drive_states):
                 gds,
                 is_seen=gds.drive_id in seen_drive_ids,
             )
-        except SharedDriveNonPrivilegedMember as e:
+        except (SharedDriveNonPrivilegedMember, UnrecognizedUWNetid) as e:
             logger.info(f"{e}")
         except Exception as e:
             logger.error(f"shared drive record: {gds}: {e}")
@@ -130,8 +131,7 @@ def upsert_shared_drive(a: GoogleDriveState, is_seen):
     name, quota and membership changes
     """
     if is_seen:
-        shared_drive = SharedDrive.objects.update_or_create(
-            drive_id=a.drive_id)
+        shared_drive = SharedDrive.objects.get(drive_id=a.drive_id)
     else:
         drive_quota = get_drive_quota(a)
         shared_drive, created = SharedDrive.objects.update_or_create(
@@ -183,12 +183,15 @@ def get_shared_drive_member(a: GoogleDriveState):
 
 def get_member(a: GoogleDriveState):
     """
-    return a member model, bare netid or non-uw email
+    return a member model, bare netid
     """
     netid_match = netid_regex.match(a.member)
-    netid = netid_match.group("netid") if netid_match else a.member
-
-    return Member.objects.get_member(netid=netid)
+    if netid_match:
+        netid = netid_match.group("netid")
+        return Member.objects.get_member(netid=netid)
+    else:
+        msg = "Non-NetID member {} excluded from member list"
+        raise UnrecognizedUWNetid(msg.format(a.member))
 
 
 def get_role(a: GoogleDriveState):

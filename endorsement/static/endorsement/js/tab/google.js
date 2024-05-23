@@ -46,13 +46,7 @@ var ManageSharedDrives = (function () {
             }).delegate('#confirm_itbill_visit', 'click', function (e) {
                 _getITBill_URL($(this).attr('data-drive-id'));
             }).delegate('#confirm_itbill_form_finished', 'click', function (e) {
-                var $this = $(this),
-                    drive_id = $this.attr('data-drive-id'),
-                    drive_name = $this.attr('data-drive-name');
-
                 _modalHide();
-                _refreshSharedDrive(drive_id);
-                Notify.success('"' + drive_name + '" updated', 10000);
             }).delegate('#confirm_shared_drive_acceptance', 'click', function (e) {
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), true);
             }).delegate('#confirm_shared_drive_revoke', 'click', function (e) {
@@ -61,7 +55,7 @@ var ManageSharedDrives = (function () {
                 e.preventDefault();
                 _refreshSharedDrive($(this).attr('data-drive-id'));
             }).on('endorse:SharedDriveRefresh', function (e, data) {
-                _updateSharedDrivesDiplay(data.drives[0]);
+                _updateSharedDrivesDisplay(data.drives[0]);
             }).on('endorse:SharedDriveRefreshError', function (e, error) {
                 Notify.error('Sorry, but subscription information unavailable at this time: ' + error);
             }).on('endorse:SharedDriveResponsibilityAccepted', function (e, data) {
@@ -73,7 +67,7 @@ var ManageSharedDrives = (function () {
                 }
 
                 _modalHide();
-                _updateSharedDrivesDiplay(drive);
+                _updateSharedDrivesDisplay(drive);
                 Notify.success('Shared drive "' + drive.drive.drive_name + '" provision renewed.', 10000);
             }).on('endorse:SharedDriveResponsibilityAcceptedError', function (e, error) {
                 Notify.error('Sorry, but we cannot accept responsibility at this time: ' + error);
@@ -93,6 +87,15 @@ var ManageSharedDrives = (function () {
                 } else {
                     $accept_button.attr('disabled', 'disabled');
                 }
+            }).on('hide.bs.modal', function () {
+                var $modal_body = $('.modal-body.itbill-form-modal');
+
+                if ($modal_body.length) {
+                    var drive_id = $modal_body.attr('data-drive-id'),
+                        drive_name = $modal_body.attr('data-drive-name');
+
+                    _refreshSharedDrive(drive_id);
+                }
             }).on('hidden.bs.modal', function () {
                 $('select[data-drive-id]', $content).val('select');
             }).on('endorse:SharedDrivesSuccess', function (e, data) {
@@ -102,8 +105,6 @@ var ManageSharedDrives = (function () {
             }).on('endorse:SharedDrivesITBIllURLSuccess', function (e, data) {
                 var url = (data.hasOwnProperty('drives') && data.drives.length == 1) ? data.drives[0].itbill_form_url : null;
 
-                _modalHide();
-                _updateSharedDrivesDiplay(data.drives[0]);
                 if (url) {
                     _ITBillFormModal(data.drives[0]);
                 } else {
@@ -132,14 +133,19 @@ var ManageSharedDrives = (function () {
 
             $content.html(template());
         },
-        _updateSharedDrivesDiplay = function (record) {
+        _updateSharedDrivesDisplay = function (record) {
             var source = $("#shared_drives_row_partial").html(),
                 template = Handlebars.compile(source);
+
+            if ($('tr[data-drive-id="' + record.drive.drive_id + '"]').attr('data-thumb-print') == record.thumb_print) {
+                return;
+            }
 
             _prepSharedDriveContext(record);
 
             $('tr.shared-drive-row[data-drive-id="' + record.drive.drive_id + '"]').replaceWith(template(record));
             $('tr.shared-drive-row[data-drive-id="' + record.drive.drive_id + '"]').addClass('itbill_updated');
+            Notify.success('"' + record.drive.drive_name + '" updated', 10000);
         },
         _displaySharedDrives = function (drives) {
             var source = $("#shared_drives_panel").html(),
@@ -176,7 +182,7 @@ var ManageSharedDrives = (function () {
             drive.valid_subscription = (drive.subscription && !['draft', 'closed', 'cancelled'].includes(drive.subscription.state));
             drive.requires_subscription = !(drive.drive.drive_quota.is_subsidized || drive.valid_subscription);
             drive.quota_notes = [{
-                is_capped: (drive.drive.drive_quota.org_unit_name != "uw.edu" && drive.drive.drive_usage > drive.drive.drive_quota.quota_limit)
+                is_capped: (!["uw.edu", "None"].includes(drive.drive.drive_quota.org_unit_name) && drive.drive.drive_usage > drive.drive.drive_quota.quota_limit)
             }];
 
             if (drive.subscription) {

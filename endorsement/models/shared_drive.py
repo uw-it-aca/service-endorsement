@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+import hashlib
 
 from django.db import models
 from django.utils import timezone
@@ -272,7 +273,7 @@ class SharedDriveRecord(
         self.save()
 
     def json_data(self):
-        return {
+        data = {
             "drive": self.shared_drive.json_data(),
             "subscription": (
                 self.subscription.json_data() if (self.subscription) else None
@@ -298,8 +299,14 @@ class SharedDriveRecord(
             "datetime_expiration": datetime_to_str(self.expiration_date),
             "datetime_subscription_deadline": datetime_to_str(
                 shared_drive_subscription_deadline()),
-            "is_deleted": self.is_deleted,
+            "is_deleted": self.is_deleted
         }
+
+        data['thumb_print'] = self.thumb_print(data)
+        return data
+
+    def thumb_print(self, data):
+        return hashlib.sha256(json.dumps(data).encode('utf-8')).hexdigest()
 
     def __str__(self):
         return json.dumps(self.json_data())
