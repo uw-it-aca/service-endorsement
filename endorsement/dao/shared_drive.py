@@ -49,10 +49,16 @@ def sync_quota_from_subscription(drive_id):
     """
     try:
         record = SharedDriveRecord.objects.get_record_by_drive_id(drive_id)
+        if record.subscription is None:
+            raise ITBillSubscriptionNotFound(drive_id)
+
+        state = record.subscription.state
+        if state == ITBillSubscription.SUBSCRIPTION_DEPLOYED:
+            return
         #
         #
         #
-        # TODO: all msca restclient to update shared drive
+        # TODO: work with msca restclient to update shared drive
         #
         #
         #

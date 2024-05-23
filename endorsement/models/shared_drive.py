@@ -122,7 +122,7 @@ class SharedDrive(ExportModelOperationsMixin("shared_drive"), models.Model):
     drive_id = models.SlugField(max_length=25)
     drive_name = models.CharField(max_length=128)
     drive_quota = models.ForeignKey(SharedDriveQuota, on_delete=models.PROTECT)
-    drive_usage = models.IntegerField(null=True)
+    drive_usage = models.FloatField(null=True)
     members = models.ManyToManyField(SharedDriveMember, blank=True)
     query_date = models.DateTimeField(null=True)
     is_deleted = models.BooleanField(null=True)
