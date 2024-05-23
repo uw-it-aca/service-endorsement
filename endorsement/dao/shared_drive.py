@@ -76,12 +76,16 @@ def shared_drive_lifecycle_expired(drive_record):
 def load_shared_drives(google_drive_states):
     """
     Populate SharedDriveRecord models as reported by uw_mwsa.
+
+    Returns the final SharedDriveRecord created.
     """
     seen_drive_ids = set()
 
+    retval = None
+
     for gds in google_drive_states:
         try:
-            load_shared_drive_record(
+            retval: SharedDriveRecord = load_shared_drive_record(
                 gds,
                 is_seen=gds.drive_id in seen_drive_ids,
             )
@@ -92,6 +96,8 @@ def load_shared_drives(google_drive_states):
         else:
             seen_drive_ids.add(gds.drive_id)
 
+    return retval
+
 
 def load_shared_drive_record(a: GoogleDriveState, is_seen):
     """
@@ -100,22 +106,22 @@ def load_shared_drive_record(a: GoogleDriveState, is_seen):
           as the external process of creating the drive
           already lead the manager past terms click thru
     """
+    now = dt.datetime.now(dt.timezone.utc)
     shared_drive = upsert_shared_drive(a, is_seen)
-    if not is_seen:
-        # spare a get() since record is already created
-        now = dt.datetime.now(dt.timezone.utc)
-        shared_drive_record, _ = SharedDriveRecord.objects.get_or_create(
-            shared_drive=shared_drive,
-            defaults={
-                "datetime_accepted": now,
-                "datetime_created": now
-            }
-        )
+    shared_drive_record, _ = SharedDriveRecord.objects.get_or_create(
+        shared_drive=shared_drive,
+        defaults={
+            "datetime_accepted": now,
+            "datetime_created": now
+        }
+    )
 
-        # backfill if missed
-        if not shared_drive_record.datetime_accepted:
-            shared_drive_record.datetime_accepted = now
-            shared_drive_record.save()
+    # backfill if missed
+    if not shared_drive_record.datetime_accepted:
+        shared_drive_record.datetime_accepted = now
+        shared_drive_record.save()
+
+    return shared_drive_record
 
 
 def upsert_shared_drive(a: GoogleDriveState, is_seen):
@@ -124,14 +130,15 @@ def upsert_shared_drive(a: GoogleDriveState, is_seen):
     name, quota and membership changes
     """
     if is_seen:
-        shared_drive = SharedDrive.objects.get(drive_id=a.drive_id)
+        shared_drive = SharedDrive.objects.update_or_create(
+            drive_id=a.drive_id)
     else:
-        # spare a save() since defaults should NOT change per CSV row
+        drive_quota = get_drive_quota(a)
         shared_drive, created = SharedDrive.objects.update_or_create(
             drive_id=a.drive_id,
             defaults={
                 "drive_name": a.drive_name,
-                "drive_quota": get_drive_quota(a),
+                "drive_quota": drive_quota,
                 "drive_usage": a.size_gigabytes
             },
         )
