@@ -29,5 +29,5 @@ class Member(RESTDispatch):
             log_data_error_response(logger, "{}".format(ex))
             return RESTDispatch().error_response(
                 543, """
-Data not available due to an error. 
+Data not available due to an error.
 """)

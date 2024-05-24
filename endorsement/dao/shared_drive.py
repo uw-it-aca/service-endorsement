@@ -476,4 +476,3 @@ class Reconciler:
 
 def get_shared_drives_for_member(member):
     return SharedDriveRecord.objects.get_member_drives(member)
-
