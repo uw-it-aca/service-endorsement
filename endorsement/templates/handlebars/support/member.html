@@ -1,0 +1,48 @@
+{% verbatim %}
+
+<script id="admin-member-search-result-member" type="text/x-handlebars-template">
+  {{#each drive.members}}{{netid}},{{/each}}
+</script>
+
+<script id="admin-member-search-result-card" type="text/x-handlebars-template">
+  <div class="card">
+    <div class="card-header" id="heading{{index}}">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{index}}" aria-expanded="true" aria-controls="collapse{{index}}">
+          <span style="font-size: large;">{{drive.drive.drive_name}}</span>
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapse{{index}}" class="collapse" aria-labelledby="heading{{index}}" data-parent="#accordionExample">
+      <div class="card-body">
+        {{content}}
+      </div>
+    </div>
+  </div>
+</script>
+
+<script id="admin-member-search-result-member-datetime-accepted" type="text/x-handlebars-template">
+        {{#if datetime_accepted}}
+        {{datetime_accepted}}
+        {{else}}
+        None
+        {{/if}}
+</script>
+
+<script id="admin-member-search-result" type="text/x-handlebars-template">
+  <h4>Shared Drive Records managed by {{member}}</h4>
+</script>
+
+<script id="admin-member-search-error" type="text/x-handlebars-template">
+  <div>
+    Error searching for Shared Drive Records<br />{{error}}
+  </div>
+</script>
+
+<script id="admin-member-empty-search-result" type="text/x-handlebars-template">
+  <div>
+    <h4>No Shared Drives Found for member {{member}}</h4>
+  </div>
+</script>
+{% endverbatim %}

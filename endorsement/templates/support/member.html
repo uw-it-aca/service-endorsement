@@ -1,0 +1,36 @@
+{% extends wrapper_template %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<style>
+.current_message { background-color: #fbfbe3; }
+h4 {font-weight: 900;}
+</style>
+<div class="container" style="max-width: 100%;">
+<h2>Shared Drive Member Search</h2>
+<h5 style="margin-bottom: 28px;">
+Use this page to look up shared drive member netids.
+</h5>
+
+<form>
+  {% csrf_token %}
+  <div class="form-inline">
+    <label for="member">Member NetID:</label>
+    <input type="text" class="form-control" id="member" size="20" value="{{ netid }}">
+    <button type="button" name="SearchMember" id="search_member" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search</button>
+  </div>
+</form>
+
+<div id="members">
+<div class="member-notice"></div>
+<div class="accordion" id="member_search_accordion">
+</div>
+</div>
+
+{% include "handlebars/support/member.html" %}
+{% endblock %}
+
+{% block extra_js%}
+{% render_bundle 'member' 'js' %}
+
+{% endblock %}

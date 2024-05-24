@@ -51,7 +51,7 @@ def drive_member_lifecycle_warning(notice_level):
     for drive in drives:
         try:
             members = [uw_email_address(netid) for (
-                netid) in drive.shared_drive.get_members()]
+                netid) in drive.shared_drive.get_member_netids()]
             (subject,
              text_body,
              html_body) = _create_notification_expiration_notice(
@@ -91,7 +91,7 @@ def notify_over_quota_non_subsidized_expired():
     for drive in SharedDriveRecord.objects.get_over_quota_non_subscribed():
         try:
             members = [uw_email_address(netid) for (
-                netid) in drive.shared_drive.get_members()]
+                netid) in drive.shared_drive.get_member_netids()]
             (subject,
              text_body,
              html_body) = _create_notification_over_quota_non_subsidized(drive)
