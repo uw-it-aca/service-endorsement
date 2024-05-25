@@ -43,7 +43,7 @@ var displaySharedDrives = function(drives) {
         card_source = $("#admin-member-search-result-card").html(),
         card_template = Handlebars.compile(card_source),
         result_source = $("#admin-member-search-result").html(),
-        result_template = Handlebars.compile(result_source);;
+        result_template = Handlebars.compile(result_source);
 
     $accordion.empty();
     if (drives.drives.drives.length) {
@@ -55,7 +55,7 @@ var displaySharedDrives = function(drives) {
 
         window.history.pushState({}, '', window.location.pathname + '?netid=' + $('input#member').val());
     } else {
-        result_source = $("#admin-member-empty-search-result").html(),
+        result_source = $("#admin-member-empty-search-result").html();
         result_template = Handlebars.compile(source);
 
         $('#members .member-notice').html(result_template(drives));
@@ -71,7 +71,7 @@ var displaySharedDrivesError = function(json_data) {
         };
 
     $('#members .member-notice').html(template(context));
-    $('#members .accordion').empty()
+    $('#members .accordion').empty();
 };
 
 
