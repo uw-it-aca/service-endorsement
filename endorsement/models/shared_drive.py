@@ -264,7 +264,7 @@ class SharedDriveRecord(
         )
 
         if accept:
-            self.datetime_accepted = acceptance.datetime_accepted
+            self.datetime_accepted = acceptance.datetime_created
         else:
             self.datetime_expired = acceptance.datetime_accepted
 
