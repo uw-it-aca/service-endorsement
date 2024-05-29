@@ -16,13 +16,13 @@ var ManageSharedDrives = (function () {
         _registerEvents = function () {
             var $tab = $('.tabs div#drives');
 
-
             $(window).on('message', function(e) {
-                console.log('message received: e: ' + e);
-                console.log('message received: e.data: ' + e.data);
-                console.log('message received: e.originalEvent.data: ' + e.originalEvent.data);
-                console.log('message received: e.originalEvent.origin: ' + e.originalEvent.origin);
-            }, false);
+                var data = JSON.parse(e.originalEvent.data);
+
+                if (data.event === 'itbill.submit') {
+                    $('#confirm_itbill_form_finished').removeClass('visually-hidden');
+                }
+            });
 
             $tab.on('endorse:drivesTabExposed', function (e) {
                 if ($content.is(':empty')) {
