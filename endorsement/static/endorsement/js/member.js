@@ -50,13 +50,13 @@ var displaySharedDrives = function(drives) {
         $('#members .member-notice').html(result_template({member: $('input#member').val()}));
 
         $.each(drives.drives.drives, function (i) {
-            $accordion.append(card_template({index: i, drive: this, content: JSON.stringify(this)}));
+            $accordion.append(card_template({index: i, drive: this, content: this}));
         });
 
         window.history.pushState({}, '', window.location.pathname + '?netid=' + $('input#member').val());
     } else {
         result_source = $("#admin-member-empty-search-result").html();
-        result_template = Handlebars.compile(source);
+        result_template = Handlebars.compile(result_source);
 
         $('#members .member-notice').html(result_template(drives));
     }
