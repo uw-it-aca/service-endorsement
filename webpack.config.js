@@ -17,6 +17,7 @@ module.exports = {
         accept: ['./endorsement/static/endorsement/js/accept.js'],
         endorsee: ['./endorsement/static/endorsement/js/endorsee.js'],
         endorser: ['./endorsement/static/endorsement/js/endorser.js'],
+        member: ['./endorsement/static/endorsement/js/member.js'],
         notifications: ['./endorsement/static/endorsement/js/notifications.js'],
         statistics: ['./endorsement/static/endorsement/js/statistics.js'],
         shared_proxy: ['./endorsement/static/endorsement/js/shared_proxy.js']

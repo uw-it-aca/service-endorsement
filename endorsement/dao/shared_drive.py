@@ -472,3 +472,7 @@ class Reconciler:
             result[gds.drive_id].append(gds)
 
         return result
+
+
+def get_shared_drives_for_member(member):
+    return SharedDriveRecord.objects.get_member_drives(member)

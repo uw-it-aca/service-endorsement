@@ -129,7 +129,10 @@ class SharedDrive(ExportModelOperationsMixin("shared_drive"), models.Model):
     is_deleted = models.BooleanField(null=True)
 
     def get_members(self):
-        return [m.member.netid for m in self.members.all()]
+        return self.members.all().order_by('member__netid')
+
+    def get_member_netids(self):
+        return [m.member.netid for m in self.get_members()]
 
     def json_data(self):
         return {
@@ -137,7 +140,7 @@ class SharedDrive(ExportModelOperationsMixin("shared_drive"), models.Model):
             "drive_name": self.drive_name,
             "drive_usage": self.drive_usage,
             "drive_quota": self.drive_quota.json_data(),
-            "members": [m.json_data() for m in self.members.all()],
+            "members": [m.json_data() for m in self.get_members()],
         }
 
     def __str__(self):
@@ -261,7 +264,7 @@ class SharedDriveRecord(
         )
 
         if accept:
-            self.datetime_accepted = acceptance.datetime_accepted
+            self.datetime_accepted = acceptance.datetime_created
         else:
             self.datetime_expired = acceptance.datetime_accepted
 

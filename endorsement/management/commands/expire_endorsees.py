@@ -4,7 +4,7 @@
 from django.core.management.base import BaseCommand
 from django.core.mail import mail_managers
 from django.template import loader
-from endorsement.policy.endorsement import endorsements_to_expire
+from endorsement.policy.endorsement import EndorsementPolicy
 from endorsement.dao.endorse import clear_endorsement
 import logging
 import urllib3
@@ -19,7 +19,7 @@ class Command(BaseCommand):
     # actual expiration happens after one year
     def handle(self, *args, **options):
         urllib3.disable_warnings()
-        endorsements = endorsements_to_expire()
+        endorsements = EndorsementPolicy().records_to_expire()
 
         if len(endorsements):
             for e in endorsements:

@@ -1,0 +1,104 @@
+{% verbatim %}
+
+<script id="admin-member-search-result-member" type="text/x-handlebars-template">
+  {{#each drive.members}}{{netid}},{{/each}}
+</script>
+
+<script id="admin-member-search-result-card" type="text/x-handlebars-template">
+  <div class="card">
+    <div class="card-header" id="heading{{index}}">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse{{index}}" aria-expanded="false" aria-controls="collapse{{index}}">
+          <span style="font-size: large;">{{drive.drive.drive_name}}</span>
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapse{{index}}" class="collapse" aria-labelledby="heading{{index}}" data-parent="#member_search_accordion">
+      <div class="card-body">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-3">
+              <strong>Drive ID:</strong> {{content.drive.drive_id}}</br >
+              <strong>Quota Limit:</strong> {{content.drive.drive_quota.quota_limit}} GB</br >
+              <strong>Quota Unit Name:</strong> {{content.drive.drive_quota.org_unit_name}}</br >
+              <strong>Quota Unit ID:</strong> {{content.drive.drive_quota.org_unit_id}}</br >
+              <strong>Used:</strong> {{content.drive.drive_usage}} MB</br >
+              <strong>Members:</strong></br >
+              <div style="margin-left: 8px;">
+                {{#each content.drive.members}}
+                  {{netid}}{{#unless @last}},{{/unless}}
+                {{/each}}
+              </div>
+            </div>
+            <div class="col-md-3" style="border-left: 1px solid grey; height: 100%;">
+              {{#if content.subscription}}
+              <strong>Key Remote:</strong> {{content.subscription.key_remote}}</br >
+              <strong>Subscription:</strong></br >
+              <div style="margin-left: 8px;">
+              <strong>State:</strong> {{content.subscription.state}}</br >
+              {{#each content.subscription.provisions}}
+                {{#each quantities}}
+                  <strong>Quantity:</strong> {{quantity}}</br >
+                  <div style="margin-left: 10px;">
+                    Quota Limit: {{quota_limit}} GB</br >
+                    Start date: {{#if start_date}}{{start_date}}{{else}}None{{/if}}</br >
+                    End date: {{#if end_date}}{{end_date}}{{else}}None{{/if}}</br >
+                    Stage: {{#if stage}}{{stage}}{{else}}None{{/if}}
+                  </div>
+                {{/each}}
+               {{/each}}
+              </div>
+              {{else}}
+                  No subscription
+              {{/if}}
+            </div>
+            <div class="col-md-3" style="border-left: 1px solid grey; height: 100%;">
+              Acceptance:
+              <div style="margin-left: 10px;">
+              {{#each content.acceptance}}
+                  <strong>{{member}}</strong> {{action}} on {{datetime_created}}
+              {{/each}}
+              </div>
+            </div>
+            <div class="col-md-3" style="border-left: 1px solid grey; height: 100%;">
+              <strong>Created:</strong> {{content.datetime_created}}</br >
+              <strong>Emailed:</strong> {{content.datetime_emailed}}</br >
+              <strong>Expiration:</strong> {{content.datetime_expiration}}</br >
+              <strong>Expired:</strong> {{content.datetime_expired}}</br >
+              <strong>Warning 1:</strong> {{content.datetime_notice_1_emailed}}</br >
+              <strong>Warning 2:</strong> {{content.datetime_notice_2_emailed}}</br >
+              <strong>Warning 3:</strong> {{content.datetime_notice_3_emailed}}</br >
+              <strong>Final Warning:</strong> {{content.datetime_notice_4_emailed}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script id="admin-member-search-result-member-datetime-accepted" type="text/x-handlebars-template">
+        {{#if datetime_accepted}}
+        {{datetime_accepted}}
+        {{else}}
+        None
+        {{/if}}
+</script>
+
+<script id="admin-member-search-result" type="text/x-handlebars-template">
+  <h4>Shared Drive Records managed by {{member}}</h4>
+</script>
+
+<script id="admin-member-search-error" type="text/x-handlebars-template">
+  <div>
+    Error searching for Shared Drive Records<br />{{error}}
+  </div>
+</script>
+
+<script id="admin-member-empty-search-result" type="text/x-handlebars-template">
+  <div>
+    <h4>No Shared Drives Found for member {{member}}</h4>
+  </div>
+</script>
+{% endverbatim %}

@@ -16,6 +16,14 @@ var ManageSharedDrives = (function () {
         _registerEvents = function () {
             var $tab = $('.tabs div#drives');
 
+            $(window).on('message', function(e) {
+                var data = JSON.parse(e.originalEvent.data);
+
+                if (data.event === 'itbill.submit') {
+                    $('#confirm_itbill_form_finished').removeClass('visually-hidden');
+                }
+            });
+
             $tab.on('endorse:drivesTabExposed', function (e) {
                 if ($content.is(':empty')) {
                     _getSharedDrives();
