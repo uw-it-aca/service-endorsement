@@ -49,6 +49,8 @@ var ManageSharedDrives = (function () {
                 } else if (action === 'shared_drive_revoke') {
                     _sharedDriveRevokeModal(drive_id);
                 }
+
+                $this.val('select');
             }).delegate('#shared_drive_accept', 'click', function (e) {
                 _displayModal('#shared-drive-acceptance', {
                     drive_id: $(this).attr('data-drive-id')});
