@@ -46,5 +46,3 @@ class TestITBill(TestCase):
         now = datetime.strptime('2024-12-30', '%Y-%m-%d').date()
         quota = record.subscription.get_quota_on_date(now)
         self.assertEqual(quota, None)
-
-
