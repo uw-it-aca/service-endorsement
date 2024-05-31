@@ -4,7 +4,7 @@ services:
   app:
     environment:
       ENV: localdev
-      PORT: 8000
+      PORT: 8080
       AUTH: SAML_MOCK
       # ENDORSEMENT_SERVICES: "google, office365"
       ITBILL_HOST: https://uwdev.service-now.com/
@@ -22,7 +22,7 @@ services:
     volumes:
       - ./endorsement:/app/endorsement
     ports:
-      - "8000:8000"
+      - "8080:8080"
   devtools:
     restart: always
     container_name: devtools

@@ -20,7 +20,10 @@ var ManageSharedDrives = (function () {
                 var data = JSON.parse(e.originalEvent.data);
 
                 if (data.event === 'itbill.submit') {
-                    $('#confirm_itbill_form_finished').removeClass('visually-hidden');
+                    var key_remote = data['itbill.key_remote'],
+                        drive_id = $('tr[data-key-remote="' + key_remote + '"]').attr('data-drive-id');
+
+                    _refreshSharedDrive(drive_id);
                 }
             });
 
@@ -41,13 +44,13 @@ var ManageSharedDrives = (function () {
                 } else if (action === 'shared_drive_change') {
                     // below will indirect to itbill thru "you are leaving" modal
                     // _sharedDriveChangeModal(drive_id, itbill_url);
-                    // below will request the url directly
+                    // below gets the url and marks the record for inspection
                     _getITBill_URL($(this).attr('data-drive-id'));
-                    // below opens a simple window
-                    //window.open(itbill_url, 'ITBill', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=800,height=800');
                 } else if (action === 'shared_drive_revoke') {
                     _sharedDriveRevokeModal(drive_id);
                 }
+
+                $this.val('select');
             }).delegate('#shared_drive_accept', 'click', function (e) {
                 _displayModal('#shared-drive-acceptance', {
                     drive_id: $(this).attr('data-drive-id')});
@@ -111,10 +114,15 @@ var ManageSharedDrives = (function () {
             }).on('endorse:SharedDrivesFailure', function (e, data) {
                 _displaySharedDrivesFailure(data);
             }).on('endorse:SharedDrivesITBIllURLSuccess', function (e, data) {
-                var url = (data.hasOwnProperty('drives') && data.drives.length == 1) ? data.drives[0].itbill_form_url : null;
+                var drive = (data.hasOwnProperty('drives') && data.drives.length == 1) ? data.drives[0] : null,
+                    url = (drive) ? drive.itbill_form_url : null,
+                    drive_id = (drive) ? drive.drive.drive_id : null,
+                    key_remote = (drive) ? drive.subscription.key_remote : null;
 
                 if (url) {
-                    _ITBillFormModal(data.drives[0]);
+                    // stash key_remote so posted message can map it back to drive_id
+                    $('tr[data-drive-id="' + drive_id + '"]').attr('data-key-remote', key_remote);
+                    window.open(url, 'ITBill', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=800,height=800');
                 } else {
                     Notify.error('Sorry, but we cannot retrieve the ITBill Form URL at this time.');
                 }
@@ -145,15 +153,12 @@ var ManageSharedDrives = (function () {
             var source = $("#shared_drives_row_partial").html(),
                 template = Handlebars.compile(source);
 
-            if ($('tr[data-drive-id="' + record.drive.drive_id + '"]').attr('data-thumb-print') == record.thumb_print) {
-                return;
-            }
-
             _prepSharedDriveContext(record);
-
             $('tr.shared-drive-row[data-drive-id="' + record.drive.drive_id + '"]').replaceWith(template(record));
-            $('tr.shared-drive-row[data-drive-id="' + record.drive.drive_id + '"]').addClass('itbill_updated');
-            Notify.success('"' + record.drive.drive_name + '" updated', 10000);
+            if ($('tr[data-drive-id="' + record.drive.drive_id + '"]').attr('data-thumb-print') !== record.thumb_print) {
+                $('tr.shared-drive-row[data-drive-id="' + record.drive.drive_id + '"]').addClass('itbill_updated');
+                Notify.success('"' + record.drive.drive_name + '" updated', 10000);
+            }
         },
         _displaySharedDrives = function (drives) {
             var source = $("#shared_drives_panel").html(),

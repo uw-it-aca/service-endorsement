@@ -3,6 +3,7 @@
 
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 from endorsement.util.date import datetime_to_str, date_to_str
 from endorsement.util.key_remote import key_remote
@@ -70,7 +71,6 @@ class ITBillSubscription(
         )
 
         provision_obj.from_json(provision)
-        print(f"saving provision {provision_obj}")
         provision_obj.save()
 
     def update_provisions(self, provisions):
@@ -89,6 +89,21 @@ class ITBillSubscription(
             provision.clear_quantities()
 
         provisions.delete()
+
+    @property
+    def current_quota(self):
+        return self.get_quota_on_date(timezone.now().date())
+
+    def get_quota_on_date(self, now):
+        if self.state == self.SUBSCRIPTION_DEPLOYED:
+            for provision in self.get_provisions():
+                for quantity in provision.get_quantities():
+                    if quantity.start_date <= now:
+                        if (quantity.end_date is None
+                                or quantity.end_date >= now):
+                            return quantity.quantity_gigabytes
+
+        return None
 
     def json_data(self):
         return {
@@ -132,7 +147,6 @@ class ITBillProvision(
     def set_quantity(self, quantity):
         quantity_obj = ITBillQuantity.objects.create(provision=self)
         quantity_obj.from_json(quantity)
-        print(f"saving quantity {quantity_obj}")
         quantity_obj.save()
 
     def clear_quantities(self):
