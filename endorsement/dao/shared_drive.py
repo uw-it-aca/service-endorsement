@@ -288,6 +288,7 @@ def get_expected_shared_drive_record_quota(
     else:
         return sub.current_quota
 
+
 def reconcile_drive_quota(sdr: SharedDriveRecord, *, no_subscription_quota):
     drive_quota = sdr.shared_drive.drive_quota
 
