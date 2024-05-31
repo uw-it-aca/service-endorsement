@@ -8,6 +8,8 @@ import re
 ONE_MINUTE = 60
 HALF_HOUR = 60 * 30
 ONE_HOUR = 60 * 60
+ONE_DAY = 60 * 60 * 24
+ONE_WEEK = 60 * 60 * 24 * 7
 
 
 class RestClientsCache(RestclientPymemcacheClient):
@@ -35,3 +37,11 @@ class RestClientsCache(RestclientPymemcacheClient):
 
             if nws_category.match(url):
                 return ONE_HOUR
+
+        if "msca" == service:
+            re_google_base = (r"^/google/v\d/drive/")
+            google_default_ou = re.compile(
+                r"{}/defaultou".format(re_google_base))
+
+            if google_default_ou.match(url):
+                return ONE_DAY
