@@ -100,7 +100,7 @@ class ITBillSubscription(
                 for quantity in provision.get_quantities():
                     if quantity.start_date <= now:
                         if (quantity.end_date is None
-                            or quantity.end_date >= now):
+                                or quantity.end_date >= now):
                             return quantity.quantity_gigabytes
 
         return None
