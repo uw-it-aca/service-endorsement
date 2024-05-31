@@ -56,13 +56,10 @@ def sync_quota_from_subscription(drive_id):
         state = record.subscription.state
         if state == ITBillSubscription.SUBSCRIPTION_DEPLOYED:
             return
-        #
-        #
-        #
-        # TODO: work with msca restclient to update shared drive
-        #
-        #
-        #
+
+        default_quota = get_default_quota()
+        reconcile_drive_quota(record, no_subscription_quota=default_quota)
+
     except SharedDriveRecord.DoesNotExist:
         raise SharedDriveRecordNotFound(drive_id)
 
@@ -70,6 +67,12 @@ def sync_quota_from_subscription(drive_id):
 def shared_drive_lifecycle_expired(drive_record):
     """
     Set lifecycle to expired for shared drive
+
+    TODO Actions:
+       - set shared_drive quota to 0 (org_unit_name "None"? pending delete?)
+       - set subscription to ITBillSubscription.SUBSCRIPTION_CANCELLED?
+       - set SharedDriveRecord to is_deleted
+           - clean up members and subscription?
     """
     logger.info(f"Shared drive {drive_record} lifecycle expired")
 
@@ -283,13 +286,7 @@ def get_expected_shared_drive_record_quota(
     if sub is None:
         return no_subscription_quota
     else:
-        # WARNING: implies there is only 1 provision
-        # should we pin this down more? currently ITBillProvision
-        # does not maintain enough data to differentiate between
-        # a shared drive provision and anything else
-        shared_drive_provision = sub.get_provisions().get()
-        return shared_drive_provision.current_quantity_gigabytes
-
+        return sub.current_quota
 
 def reconcile_drive_quota(sdr: SharedDriveRecord, *, no_subscription_quota):
     drive_quota = sdr.shared_drive.drive_quota
