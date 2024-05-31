@@ -4,7 +4,8 @@
 from endorsement.models import SharedDriveRecord
 from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.itbill import update_itbill_subscription
-from endorsement.dao.shared_drive import sync_quota_from_subscription
+from endorsement.dao.shared_drive import (
+    sync_quota_from_subscription, shared_drive_lifecycle_expired)
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, data_not_found,
     invalid_endorser, bad_request, data_error)
@@ -59,6 +60,8 @@ class SharedDrive(RESTDispatch):
             accept = request.data.get('accept')
             if isinstance(accept, bool):
                 drive.set_acceptance(netid, accept, acted_as)
+                if not accept:
+                    shared_drive_lifecycle_expired(self)
             else:
                 return bad_request(logger)
 

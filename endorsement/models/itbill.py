@@ -95,6 +95,10 @@ class ITBillSubscription(
         return self.get_quota_on_date(timezone.now().date())
 
     def get_quota_on_date(self, now):
+        """
+        Walks Provisions list to return the subscribed quota
+        associated with the given date
+        """
         if self.state == self.SUBSCRIPTION_DEPLOYED:
             for provision in self.get_provisions():
                 for quantity in provision.get_quantities():
