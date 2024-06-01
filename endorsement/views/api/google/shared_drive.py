@@ -6,10 +6,12 @@ from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.itbill import update_itbill_subscription
 from endorsement.dao.shared_drive import (
     sync_quota_from_subscription, shared_drive_lifecycle_expired)
+from endorsement.dao.pws import get_person
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, data_not_found,
     invalid_endorser, bad_request, data_error)
 from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
+from restclients_core.exceptions import DataFailureException
 import logging
 
 
@@ -74,8 +76,17 @@ class SharedDrive(RESTDispatch):
 
     def _drive_list(self, netid, drive_id=None):
         drives = SharedDriveRecord.objects.get_member_drives(netid, drive_id)
+        json_data = [d.json_data() for d in drives]
+
+        # add display_name for member netids
+        for drive in json_data:
+            for m in drive['drive']['members']:
+                try:
+                    m['display_name'] = get_person(m['netid']).display_name
+                except DataFailureException as ex:
+                    m['display_name'] = None
 
         return {
-            'drives': [d.json_data() for d in drives],
+            'drives': json_data,
             'messages': get_persistent_messages()
         }

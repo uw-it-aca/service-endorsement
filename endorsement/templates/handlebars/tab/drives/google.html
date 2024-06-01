@@ -106,7 +106,7 @@
 view&nbsp;all</span>
            {{else}}
              {{#each drive.members}}
-               <li>{{netid}}</li>
+               <li>{{#if display_name}}{{display_name}}{{else}}{{netid}}{{/if}}</li>
              {{/each}}
            {{/if}}
         </ul>
@@ -126,7 +126,7 @@ view&nbsp;all</span>
              <option value="shared_drive_accept">Renew</option>
            {{/if}}
          {{/if}}
-         <option value="shared_drive_revoke">Remove</option>
+         <!-- <option value="shared_drive_revoke">Remove</option> -->
        </select>
 {{/if}}
      </td>
