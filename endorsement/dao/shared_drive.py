@@ -18,6 +18,7 @@ from endorsement.dao.gws import is_group_member
 from endorsement.dao.itbill import (
     get_subscription_by_key_remote,
     load_itbill_subscription,
+    expire_subscription,
 )
 from endorsement.exceptions import (
     ITBillSubscriptionNotFound,
@@ -51,10 +52,13 @@ def sync_quota_from_subscription(drive_id):
     try:
         record = SharedDriveRecord.objects.get_record_by_drive_id(drive_id)
         if record.subscription is None:
+            logger.info(f"sync: Shared drive {drive_id} has no subscription")
             raise ITBillSubscriptionNotFound(drive_id)
 
         state = record.subscription.state
         if state == ITBillSubscription.SUBSCRIPTION_DEPLOYED:
+            logger.info(f"sync: Shared drive {drive_id}"
+                        f" subscription not deployed: {state}")
             return
 
         default_quota = get_default_quota()
@@ -68,11 +72,10 @@ def shared_drive_lifecycle_expired(drive_record):
     """
     Set lifecycle to expired for shared drive
 
-    TODO Actions:
+    Actions:
        - set shared_drive quota to 0 (org_unit_name "None"? pending delete?)
-       - set subscription to ITBillSubscription.SUBSCRIPTION_CANCELLED?
-       - set SharedDriveRecord to is_deleted
-           - clean up members and subscription?
+       - set subscription end_date to today using:
+            - expire_subscription(drive_record)
     """
     logger.info(f"Shared drive {drive_record} lifecycle expired")
 
@@ -298,12 +301,17 @@ def reconcile_drive_quota(sdr: SharedDriveRecord, *, no_subscription_quota):
     )
 
     if quota_actual != quota_correct:
+        logger.info(f"reconcile: set drive {sdr.shared_drive.drive_id} "
+                    f"quota from {quota_actual} to {quota_correct} GB")
         # TODO: error handling!
         set_drive_quota(
             drive_id=sdr.shared_drive.drive_id, quota=quota_correct
         )
         drive_quota.quota_limit = quota_correct
         drive_quota.save()
+    else:
+        logger.debug(f"reconcile: drive {sdr.shared_drive.drive_id} "
+                     f"unchanged quota {quota_actual} GB")
 
 
 class Reconciler:
