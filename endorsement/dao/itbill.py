@@ -1,6 +1,7 @@
 # Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from django.utils import timezone
 from userservice.user import UserService
 from endorsement.models import SharedDriveRecord, ITBillSubscription
 from endorsement.util.itbill.shared_drive import (
@@ -47,16 +48,52 @@ def initiate_subscription(shared_drive_record):
             Subscription().create_subscription(json.dumps(data))
         except DataFailureException as ex:
             if ex.status != 409:
+                logger.error(
+                    "Subscription creation for {} failed: {}".format(
+                        data.key_remote, ex))
                 raise
             # else subscription already exists
 
         itbill_subscription.save()
         shared_drive_record.subscription = itbill_subscription
         shared_drive_record.save()
+        logger.info(
+            "Created subscription: key_remote = {}".format(data.key_remote))
     except Exception as ex:
         raise ex
 
     return None
+
+
+def expire_subscription(shared_drive_record):
+    if not shared_drive_record.subscription:
+        return
+
+    try:
+        itbill_subscription = shared_drive_record.subscription
+        now = timezone.now().date()
+
+        data = {
+            "end_date": now
+        }
+
+        try:
+            Subscription().update_subscription_by_key_remote(
+                itbill_subscription.key_remote, json.dumps(data))
+        except DataFailureException as ex:
+            logger.error(
+                "Subscription expiration for {} failed: {}".format(
+                    itbill_subscription.key_remote, ex))
+            raise
+
+        # mark subscription inactive
+        itbill_subscription.state = ITBillSubscription.SUBSCRIPTION_CANCELLED
+        itbill_subscription.queue_priority = ITBillSubscription.PRIORITY_NONE
+        itbill_subscription.save()
+        logger.info("Expired subscription: key_remote = {}".format(
+            itbill_subscription.key_remote))
+    except Exception as ex:
+        raise ex
 
 
 def update_itbill_subscription(member_netid, drive_id):
