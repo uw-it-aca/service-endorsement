@@ -314,7 +314,6 @@ def reconcile_drive_quota(sdr: SharedDriveRecord, *, no_subscription_quota):
                      f"unchanged quota {quota_actual} GB")
 
 
-
 class Reconciler:
     """
     Reconciles Shared Drives.
