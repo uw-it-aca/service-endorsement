@@ -102,7 +102,7 @@
             {{#slice drive.members 0 4}}
               {{netid}},
            {{/slice}}
-           <span class="prt-data-popover manager-list" aria-hidden="true" tabindex="0" data-placement="right" data-html="true" title data-content="<div class='manager-list'>{{#each drive.members}}{{netid}}<br />{{/each}}</div>" data-original-title="All Eligibile Managers">
+           <span class="prt-data-popover manager-list" aria-hidden="true" tabindex="0" data-placement="right" data-html="true" title data-content="<div class='manager-list'>{{#each drive.members}}{{#if display_name}}{{display_name}}{{else}}{{netid}}{{/if}}<br />{{/each}}</div>" data-original-title="All Eligibile Managers">
 view&nbsp;all</span>
            {{else}}
              {{#each drive.members}}
