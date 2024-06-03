@@ -28,7 +28,7 @@
       <caption class="visually-hidden">NetIDs with access to your Outlook mailboxes</caption>
       <thead class="thead-light">
         <tr>
-          <th scope="col" class="endorsed-netid">UW NetID's Mailbox<span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="right" data-content="If you’re not seeing a UWNetID that you’d expect, make sure that UW Office 365 is provisioned under the SERVICES tab." data-original-title="UW NetID"><i class="fa fa-question-circle"></i></span></th>
+          <th scope="col" class="endorsed-netid">UW NetID's Mailbox <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="right" data-content="If you’re not seeing a UWNetID that you’d expect, make sure that UW Office 365 is provisioned under the SERVICES tab." data-original-title="UW NetID"><i class="fa fa-question-circle"></i></span></th>
           <th scope="col" >Name</th>
           <th scope="col" class="access-delegate">UW NetID/Group</th>
           <th scope="col" class="access-status">Status</th>
@@ -67,7 +67,7 @@ endorsement_row_{{#if (eq access_index 0) }}first {{else}}following {{/if}} endo
 {{#if delegate}}
     <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
     <td class="access-status">{{#if date_granted}}<i class="fa fa-check" style="color: green;"></i> Provisioned<p>Renew by {{date_renewal}}<br />({{date_renewal_relative}})</p>{{else}}Not Provisioned{{/if}}</td>
-      <td class="access-type"><label for="accesstype" class="visually-hidden">Access type</label><select id="accesstype" class="office-access-types" data-access-right-id="{{ right_id }}" aria-label="Select access type for {{ delegate }} to {{mailbox}}'s mailbox"></select></td>
+      <td class="access-type"><label for="accesstype" class="visually-hidden">Access type</label><select id="accesstype" class="office-access-types custom-select" data-access-right-id="{{ right_id }}" aria-label="Select access type for {{ delegate }} to {{mailbox}}'s mailbox"></select></td>
       <td class="access-action">{{#if date_granted}}<button type="button" class="btn btn-primary" id="access_update" data-loading-text="Updating" style="display: none;">Update</button><button type="button" class="btn btn-primary" id="access_renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="access_provision" disabled="disabled" data-loading-text="Provisioning">Provision Access</button>{{/if}}</td>
 {{else}}
       <td class="text-center" colspan="4"><span class="fw-lighter">No elevated access provisioned</span></td>
