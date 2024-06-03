@@ -122,7 +122,12 @@ var ManageSharedDrives = (function () {
                 if (url) {
                     // stash key_remote so posted message can map it back to drive_id
                     $('tr[data-drive-id="' + drive_id + '"]').attr('data-key-remote', key_remote);
-                    window.open(url, 'ITBill', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=800,height=800');
+                    var open_window = window.open(url, 'ITBill', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=800,height=800');
+                    if (open_window) {
+                        open_window.focus();
+                    } else {
+                        _ITBillFormFailModal(drive);
+                    }
                 } else {
                     Notify.error('Sorry, but we cannot retrieve the ITBill Form URL at this time.');
                 }
@@ -322,6 +327,11 @@ var ManageSharedDrives = (function () {
                 modal_size: 'modal-xl',
                 backdrop: 'static',
                 keyboard: false
+            });
+        },
+        _ITBillFormFailModal = function (drive) {
+            _displayModal('#shared-drive-visit-itbill-fail', {
+                drive: drive
             });
         },
         _sharedDriveAcceptModal = function (drive_id, itbill_url) {
