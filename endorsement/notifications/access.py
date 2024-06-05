@@ -43,8 +43,8 @@ def notify_accessors():
 
 
 def _create_accessor_message(access_record, emails):
-    subject = "Delegated Mailbox Access to {}".format(
-        access_record.accessee.netid)
+    subject = ("Your new permissions to a UW Office 365 "
+               "Exchange Online email account")
 
     params = {
         'record': access_record,
