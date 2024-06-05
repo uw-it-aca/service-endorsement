@@ -1,36 +1,49 @@
 Hello {{ email.display_name }},
 
-You are receiving this email because {{ record.accessee.display_name }} ({{ record.accessee.netid }}) has given
-{% if record.accessor.is_group %}the group you administrate{% elif record.accessor.is_shared_netid %}the shared netid{% else %}you{% endif %} {{ record.access_right.display_name }} permissions to their Outlook mailbox.
+The UW employee {{ record.accessee.display_name }} ({{ record.accessee.netid }}) has given {% if record.accessor.is_group %}the group "{{record.accessor.name}}" you administrate{% elif record.accessor.is_shared_netid %}the shared netid "{{record.accessor.name}}"{% else %}you{% endif %} “{{ record.access_right.display_name }}”
+mailbox permissions to the UW Office 365 Exchange Online mailbox
+(aka, email account) for “{{record.accessee.netid}}”.
 
-Access to this mailbox lasts for 365 days and must renewed by {{ record.accessee.display_name }}.
+Access to this UW Exchange Online mailbox lasts for 365 days and must be
+renewed annually by {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
 
-With "{{ record.access_right.display_name }}" {% if record.accessor.is_group %}group members{% else %}you{% endif %} will be able to:
+With "{{ record.access_right.display_name }}" permissions {% if record.accessor.is_group %}group members{% elif record.accessor.is_shared_netid %}the shared netid{% else %}you{% endif %} can:
 {% if record.access_right.name == 'FullAccessandSendAs' %}
-   -  Open the mailbox
    -  View, add and remove the contents of the mailbox
-   -  Send messages as if they came directly from the mailbox
+   -  Send email as the mailbox
 {% elif record.access_right.name == 'FullAccess' %}
-   -  Open the mailbox
    -  View, add and remove the contents of the mailbox
 {% elif record.access_right.name == 'SendAs' %}
-   -  Send messages as if they came directly from the mailbox
+   -  Send email as the mailbox
 {% elif record.access_right.name == 'SendOnBehalf' %}
-   -  Allows the delegate to send messages from the mailbox or group
-      The From address of these messages clearly shows that the message was
-      sent by the delegate (&quot; &lt;Delegate&gt; on behalf of &lt;MailboxOrGroup&gt;&quot;)
+   -  Send email on behalf of the mailbox
+   -  Note: For calendaring to work correctly with “Send on Behalf”
+            permissions, you must join this UW Group at:
+
+          https://groups.uw.edu/group/u_msca_enable_uw-forwarding-bypass
 {% else %}
-   -  Some additional access.
-  {% endif %}
-To begin accessing this mailbox, join this group:
+   -  Some additional access
+{% endif %}
+Now that you have access to another mailbox, learn how to add the mailbox to a
+supported Outlook email client (e.g. Outlook on the web, Outlook for desktop,
+Outlook for iOS/Android) at:
 
-    https://groups.uw.edu/group/u_msca_enable_uw-forwarding-bypass
+    https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/add-mailbox-permissions/#access
 
-and go to your email platform to add the new mailbox…..??????? (need help filling this in)
+Additional resources:
 
-(links to IT Connect article)
+   -  Learn about UW Office 365 Exchange Online at:
 
-Is there a delay that folks need to be aware about?
+      https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online
+
+   -  Learn about mailbox permissions in UW Exchange Online at:
+
+      https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/add-mailbox-permissions/
+
+   -  Learn about provisioning services and resources using the
+      Provisioning Request Tool (PRT) at:
+
+      https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/
 
 If you have any questions, please contact help@uw.edu or 206-221-5000.
 
