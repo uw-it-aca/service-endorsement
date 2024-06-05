@@ -1,19 +1,17 @@
 Hello,
 <p>
 You are receiving this email because you are identified as
-{%if drive.shared_drive.members.all.count > 1 %}one of {{ drive.shared_drive.members.all.count }}{% else %}the{% endif %} UW manager{{drive.shared_drive.members.all.count|pluralize}} of the Google Shared Drive named
-"{{drive.shared_drive.drive_name}}".
+{%if drive.shared_drive.members.all.count > 1 %}
+one of {{ drive.shared_drive.members.all.count }}
+{% else %}
+the
+{% endif %}
+UW manager{{drive.shared_drive.members.all.count|pluralize}} of the Google Shared Drive named "{{drive.shared_drive.drive_name}}".
 </p>
 <p>
-To maintain service, Google Shared Drive use must be actively acknowledged
-every {{lifetime}} days.  {%if notice_time < 8%}<strong>{%endif%}The drive "{{drive.shared_drive.drive_name}}"{%if acceptor %}, last acknowledged by
-the netid {{acceptor.member.netid}} on {{acceptor.datetime_accepted|date:"M j, Y"}},{% endif %} is now within {{notice_time}} days of its required renewal.{%if notice_time < 8%}</strong>{%endif%}
-</p>
-<p>
-To log in to the Provisioning Request Tool (PRT) and renew the expiring shared drive visit:
-<p>
-<p>
-<a href="https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/#prt" target="_blank">Click here to log in to the Provisioning Request Tool (PRT) to renew expiring services.</a>
+<a href="https://provision.uw.edu/drives" target="_blank">To maintain service, renew this shared drive within {{notice_time}} days</a> in the Provisioning Request Tool (PRT).<br />
+Google Shared Drives services last for {{lifetime}} days and must be renewed annually or removed.
+{%if notice_time <= 31 %}Non-renewed (expired) drives will be deleted. Managers are responsible for retaining a copy of any material subject to any applicable record retention schedules prior to deletion.{%endif%}
 </p>
 <p>
 If you have any questions, please contact <a href="mailto:help@uw.edu" target="_blank">help@uw.edu</a> or 206-221-5000.

@@ -37,6 +37,7 @@ var ManageSharedDrives = (function () {
                 var $this = $(this),
                     action = $(this).val(),
                     drive_id = $this.attr('data-drive-id'),
+                    drive_name = $this.attr('data-drive-name'),
                     itbill_url = $this.attr('data-itbill-url');
 
                 if (action === 'shared_drive_accept') {
@@ -47,7 +48,7 @@ var ManageSharedDrives = (function () {
                     // below gets the url and marks the record for inspection
                     _getITBill_URL($(this).attr('data-drive-id'));
                 } else if (action === 'shared_drive_revoke') {
-                    _sharedDriveRevokeModal(drive_id);
+                    _sharedDriveRevokeModal(drive_id, drive_name);
                 }
 
                 $this.val('select');
@@ -346,9 +347,10 @@ var ManageSharedDrives = (function () {
                 itbill_url: itbill_url
             });
         },
-        _sharedDriveRevokeModal = function (drive_id) {
+        _sharedDriveRevokeModal = function (drive_id, drive_name) {
             _displayModal('#shared-drive-revoke', {
                 drive_id: drive_id,
+                drive_name: drive_name,
             });
         },
         _displayModal = function (template_id, context, options) {
