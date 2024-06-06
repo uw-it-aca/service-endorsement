@@ -24,6 +24,11 @@ def notify_accessors():
         try:
             emails = get_accessor_email(ar)
 
+            if not emails:
+                logger.error("No email address found for accessor: {}".format(
+                    ar.accessor))
+                return
+
             (subject, text_body, html_body) = _create_accessor_message(
                 ar, emails)
 
