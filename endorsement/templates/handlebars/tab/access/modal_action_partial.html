@@ -2,7 +2,7 @@
 <script id="modal_action_partial_template" type="text/x-handlebars-template">
   <div class="row"><div class="col-md-12">
   You are about to {{action}} access to the UW Office 365 Exchange Online mailbox belonging
-  to "UW NetID {{mailbox}}"{{#if (eq action "provision")}} to another account: "UW NetID {{delegate}}"{{/if}}.
+  to UW NetID "{{mailbox}}"{{#if (eq action "provision")}} to another account: UW NetID "{{delegate}}"{{/if}}.
   </div></div>
   <div class="row"><div class="col-md-12">
    With <span class="significant">{{access_type_name}}</span> permissions UW NetID "{{delegate}}" will be able to:
