@@ -82,6 +82,10 @@ cronjob:
       schedule: "1 6 * * 3,6"
       command: ["/scripts/management_command.sh"]
       args: ["reconcile_access"]
+    - name: reconcile-shared-drives
+      schedule: "5 5 * * 1-5"
+      command: ["/scripts/management_command.sh"]
+      args: ["reconcile_shared_drives"]
 daemon:
   enabled: true
   daemons:
