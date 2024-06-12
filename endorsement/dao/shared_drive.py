@@ -408,7 +408,11 @@ class Reconciler:
             for gds in google_drive_states:
                 try:
                     member = get_shared_drive_member(gds)
-                except SharedDriveNonPrivilegedMember:
+                except (
+                        SharedDriveNonPrivilegedMember,
+                        UnrecognizedUWNetid
+                ) as ex:
+                    logger.info(f"skip member: {ex}")
                     pass
                 else:
                     result.append(member)
