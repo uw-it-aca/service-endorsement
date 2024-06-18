@@ -291,7 +291,9 @@ def get_expected_shared_drive_record_quota(
         return sub.current_quota
 
 
-def reconcile_drive_quota(sdr: SharedDriveRecord, *, no_subscription_quota):
+def reconcile_drive_quota(
+    sdr: SharedDriveRecord, *, no_subscription_quota, no_move_drive=False
+):
     drive_quota = sdr.shared_drive.drive_quota
 
     quota_actual = drive_quota.quota_limit
@@ -300,6 +302,13 @@ def reconcile_drive_quota(sdr: SharedDriveRecord, *, no_subscription_quota):
     )
 
     if quota_actual != quota_correct:
+        if no_move_drive:
+            logger.info(
+                f"reconcile: SKIP set drive {sdr.shared_drive.drive_id} "
+                f"from {quota_actual} to {quota_correct}"
+            )
+            return
+
         logger.info(
             f"reconcile: set drive {sdr.shared_drive.drive_id} "
             f"quota from {quota_actual} to {quota_correct} GB"
@@ -321,6 +330,9 @@ class Reconciler:
     """
     Reconciles Shared Drives.
     """
+
+    def __init__(self, no_move_drive):
+        self.no_move_drive = no_move_drive
 
     def reconcile(self):
         id_GoogleDriveState = self.GoogleDriveState_by_drive_id()
@@ -375,7 +387,11 @@ class Reconciler:
                 # TODO: confirm with dsnorton this should be silently ignored
                 continue
 
-            reconcile_drive_quota(sdr, no_subscription_quota=default_quota)
+            reconcile_drive_quota(
+                sdr,
+                no_subscription_quota=default_quota,
+                no_move_drive=self.no_move_drive,
+            )
 
             # TODO: handle lack of provisioning status.
             #   case 1: drive has managers - do we alert them?
@@ -445,7 +461,11 @@ class Reconciler:
 
             # confirm drive and subscription match
             sdr = SharedDriveRecord.objects.get_record_by_drive_id(drive_id)
-            reconcile_drive_quota(sdr, no_subscription_quota=subsidized_quota)
+            reconcile_drive_quota(
+                sdr,
+                no_subscription_quota=subsidized_quota,
+                no_move_drive=self.no_move_drive,
+            )
 
             # confirm drive still has a provision with current manager list
             # TODO: what do we do if they do not?
