@@ -57,8 +57,10 @@ def sync_quota_from_subscription(drive_id):
 
         state = record.subscription.state
         if state == ITBillSubscription.SUBSCRIPTION_DEPLOYED:
-            logger.info(f"sync: Shared drive {drive_id}"
-                        f" subscription not deployed: {state}")
+            logger.info(
+                f"sync: Shared drive {drive_id}"
+                f" subscription not deployed: {state}"
+            )
             return
 
         default_quota = get_default_quota()
@@ -117,10 +119,7 @@ def load_shared_drive_record(a: GoogleDriveState, is_seen):
     shared_drive = upsert_shared_drive(a, is_seen)
     shared_drive_record, _ = SharedDriveRecord.objects.get_or_create(
         shared_drive=shared_drive,
-        defaults={
-            "datetime_accepted": now,
-            "datetime_created": now
-        }
+        defaults={"datetime_accepted": now, "datetime_created": now},
     )
 
     # backfill if missed
@@ -145,7 +144,7 @@ def upsert_shared_drive(a: GoogleDriveState, is_seen):
             defaults={
                 "drive_name": a.drive_name,
                 "drive_quota": drive_quota,
-                "drive_usage": a.size_gigabytes
+                "drive_usage": a.size_gigabytes,
             },
         )
 
@@ -301,8 +300,10 @@ def reconcile_drive_quota(sdr: SharedDriveRecord, *, no_subscription_quota):
     )
 
     if quota_actual != quota_correct:
-        logger.info(f"reconcile: set drive {sdr.shared_drive.drive_id} "
-                    f"quota from {quota_actual} to {quota_correct} GB")
+        logger.info(
+            f"reconcile: set drive {sdr.shared_drive.drive_id} "
+            f"quota from {quota_actual} to {quota_correct} GB"
+        )
         # TODO: error handling!
         set_drive_quota(
             drive_id=sdr.shared_drive.drive_id, quota=quota_correct
@@ -310,8 +311,10 @@ def reconcile_drive_quota(sdr: SharedDriveRecord, *, no_subscription_quota):
         drive_quota.quota_limit = quota_correct
         drive_quota.save()
     else:
-        logger.debug(f"reconcile: drive {sdr.shared_drive.drive_id} "
-                     f"unchanged quota {quota_actual} GB")
+        logger.debug(
+            f"reconcile: drive {sdr.shared_drive.drive_id} "
+            f"unchanged quota {quota_actual} GB"
+        )
 
 
 class Reconciler:
@@ -409,8 +412,8 @@ class Reconciler:
                 try:
                     member = get_shared_drive_member(gds)
                 except (
-                        SharedDriveNonPrivilegedMember,
-                        UnrecognizedUWNetid
+                    SharedDriveNonPrivilegedMember,
+                    UnrecognizedUWNetid,
                 ) as ex:
                     logger.info(f"skip member: {ex}")
                     pass
