@@ -10,6 +10,14 @@ from endorsement.dao.shared_drive import Reconciler
 class Command(BaseCommand):
     help = "Loop over all shared drives verifying lifecycle and subscriptions"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--no-move-drive',
+            action='store_true',
+            default=False,
+            help="If provided no drives will be moved.",
+        )
+
     def handle(self, *args, **options):
         logging.getLogger().setLevel(logging.INFO)
-        Reconciler().reconcile()
+        Reconciler(options['no_move_drive']).reconcile()

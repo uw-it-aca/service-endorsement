@@ -139,7 +139,7 @@ class BaseReconcilerTest(TestDao):
         In addition one can specify the methods to do something else. See
         https://docs.python.org/3/library/unittest.mock.html#order-of-precedence-of-side-effect-return-value-and-wraps
         """
-        instance = Reconciler()
+        instance = Reconciler(no_move_drive=False)
 
         # wrap all methods
         to_wrap = inspect.getmembers(instance, predicate=inspect.ismethod)

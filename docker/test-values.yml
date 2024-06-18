@@ -85,7 +85,7 @@ cronjob:
     - name: reconcile-shared-drives
       schedule: "5 9 * * *"
       command: ["/scripts/management_command.sh"]
-      args: ["reconcile_shared_drives"]
+      args: ["reconcile_shared_drives", "--no-move-drive"]
 daemon:
   enabled: true
   daemons:
