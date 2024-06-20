@@ -314,7 +314,8 @@ a {
   tr.new_access .access-type,
   tr.new_access .access-action,
   tr.itbill_updated { background: #efffef !important; }
-  .shared-drive-action { width: 16em !important; }
+  .shared-drive-action {width: 15.6em !important; white-space: nowrap; display:flex; justify-content: space-between; }
+  .shared-drive-action a {font-size: 95%; text-decoration: underline;}
   .shared-drive-est-usage { width: 7em; }
   .access-status p { padding-left: 1.2em; }
   .endorsed-netid, .access-mailbox { border-top: none; }
@@ -340,7 +341,7 @@ a {
     }
   }
   .endorsed-reason { width: 13rem; }
-  .endorsed-action, .shared-drive-action { width: 12rem; white-space: nowrap; }
+  .endorsed-action { width: 12rem; white-space: nowrap; }
   .aggregate_action { margin-right: 10px; }
   .endorsed-error {
       width: 51rem;

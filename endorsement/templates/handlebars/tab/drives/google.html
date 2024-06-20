@@ -112,22 +112,22 @@ view&nbsp;all</span>
         </ul>
      </td>
      <td class="shared-drive-action">
-{{#if in_flight}}
-      <button type="button" class="btn btn-primary" id="refresh_drive" data-drive-id={{drive.drive_id}} data-loading-text="Adding NetID">Done Creating Subscription</button>
+{{#if in_flight}}    
+        <button type="button" class="btn btn-primary" id="refresh_drive" data-drive-id={{drive.drive_id}} data-loading-text="Adding NetID">Done Creating Subscription</button>
 {{else}}
-       <select id="shared_drive_action" data-drive-id={{drive.drive_id}} data-drive-name="{{drive.drive_name}}" class="custom-select" data-itbill-url="{{#if subscription}}{{ itbill_form_url }}{{/if}}" aria-label="Select action for {{ drive.drive_name }}">
-         <option value="select">Select action...</option>
-         {{#if drive.drive_quota.is_subsidized}}
-            <option value="shared_drive_change">Increase quota</option>
-            <option value="shared_drive_accept">Renew</option>
-         {{else}}
-           <option value="shared_drive_change">Update quota or funding</option>
-           {{#if subscription}}
-             <option value="shared_drive_accept">Renew</option>
-           {{/if}}
-         {{/if}}
-         <!-- <option value="shared_drive_revoke">Remove</option> -->
-       </select>
+    <!-- id="shared_drive_action" data-drive-id={{drive.drive_id}} data-drive-name="{{drive.drive_name}}" data-itbill-url="{{#if subscription}}{{ itbill_form_url }}{{/if}}" -->
+      {{#if drive.drive_quota.is_subsidized}}
+        <div><a target="_blank" aria-label="Increase quota for {{ drive.drive_name }} (opens in new window)" href="shared_drive_change">Increase quota</a></div>
+        <div><a aria-label="Renew {{ drive.drive_name }}" href="shared_drive_accept">Renew</a></div>
+      {{else}}
+        <div><a target="_blank" aria-label="Update quota for {{ drive.drive_name }} (opens in new window)" href="shared_drive_change">Update quota</a></div>
+        {{#if subscription}}
+        <div><a aria-label="Renew {{ drive.drive_name }}" href="shared_drive_accept">Renew</a></div>
+        {{else}}
+        <div></div>
+        {{/if}}
+      {{/if}}
+      <div><a aria-label="Remove {{ drive.drive_name }}" href="shared_drive_revoke">Remove</a></div>
 {{/if}}
      </td>
   </tr>
