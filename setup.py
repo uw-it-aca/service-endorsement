@@ -27,6 +27,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'Django~=3.2',
+        'djangorestframework==3.15.1',
         'ordereddict',
         'simplejson',
         'django-webpack-loader>=1.0,<2.0',
@@ -47,7 +48,6 @@ setup(
         'UW-RestClients-MSCA~=0.1',
         'Django-Safe-EmailBackend~=1.2',
         'UW-Django-SAML2>=1.3.8,<2.0',
-        'djangorestframework~=3.12',
         'django-pyscss',
         'Django-SupportTools~=3.5',
         'Django-Persistent-Message',
