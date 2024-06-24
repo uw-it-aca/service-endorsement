@@ -33,28 +33,28 @@ var ManageSharedDrives = (function () {
                 }
             });
 
-            $panel.on('change', 'select#shared_drive_action', function (e) {
+            $panel.delegate('a#shared_drive_quota', 'click', function (e) {
                 var $this = $(this),
-                    action = $(this).val(),
-                    drive_id = $this.attr('data-drive-id'),
-                    drive_name = $this.attr('data-drive-name'),
-                    itbill_url = $this.attr('data-itbill-url');
+                    $td = $this.closest('td.shared-drive-action'),
+                    drive_id = $td.attr('data-drive-id');
 
-                if (action === 'shared_drive_accept') {
-                    _sharedDriveAcceptModal(drive_id, itbill_url);
-                } else if (action === 'shared_drive_change') {
-                    // below will indirect to itbill thru "you are leaving" modal
-                    // _sharedDriveChangeModal(drive_id, itbill_url);
-                    // below gets the url and marks the record for inspection
-                    _getITBill_URL($(this).attr('data-drive-id'));
-                } else if (action === 'shared_drive_revoke') {
-                    _sharedDriveRevokeModal(drive_id, drive_name);
-                }
+                e.preventDefault();
+                _getITBill_URL(drive_id);
+            }).delegate('a#shared_drive_accept', 'click', function (e) {
+                var $this = $(this),
+                    $td = $this.closest('td.shared-drive-action'),
+                    drive_id = $td.attr('data-drive-id');
 
-                $this.val('select');
-            }).delegate('#shared_drive_accept', 'click', function (e) {
-                _displayModal('#shared-drive-acceptance', {
-                    drive_id: $(this).attr('data-drive-id')});
+                e.preventDefault();
+                _sharedDriveAcceptModal(drive_id);
+            }).delegate('a#shared_drive_revoke', 'click', function (e) {
+                var $this = $(this),
+                    $td = $this.closest('td.shared-drive-action'),
+                    drive_id = $td.attr('data-drive-id'),
+                    drive_name = $td.attr('data-drive-name');
+
+                e.preventDefault();
+                _sharedDriveRevokeModal(drive_id, drive_name);
             }).delegate('#confirm_itbill_visit', 'click', function (e) {
                 _getITBill_URL($(this).attr('data-drive-id'));
             }).delegate('#confirm_itbill_form_finished', 'click', function (e) {
@@ -335,10 +335,9 @@ var ManageSharedDrives = (function () {
                 drive: drive
             });
         },
-        _sharedDriveAcceptModal = function (drive_id, itbill_url) {
+        _sharedDriveAcceptModal = function (drive_id) {
             _displayModal('#shared-drive-acceptance', {
-                drive_id: drive_id,
-                itbill_url: itbill_url
+                drive_id: drive_id
             });
         },
         _sharedDriveChangeModal = function (drive_id, itbill_url) {

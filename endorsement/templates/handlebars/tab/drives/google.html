@@ -111,24 +111,23 @@ view&nbsp;all</span>
            {{/if}}
         </ul>
      </td>
-     <td class="shared-drive-action">
-{{#if in_flight}}
-      <button type="button" class="btn btn-primary" id="refresh_drive" data-drive-id={{drive.drive_id}} data-loading-text="Adding NetID">Done Creating Subscription</button>
-{{else}}
-       <select id="shared_drive_action" data-drive-id={{drive.drive_id}} data-drive-name="{{drive.drive_name}}" class="custom-select" data-itbill-url="{{#if subscription}}{{ itbill_form_url }}{{/if}}" aria-label="Select action for {{ drive.drive_name }}">
-         <option value="select">Select action...</option>
-         {{#if drive.drive_quota.is_subsidized}}
-            <option value="shared_drive_change">Increase quota</option>
-            <option value="shared_drive_accept">Renew</option>
-         {{else}}
-           <option value="shared_drive_change">Update quota or funding</option>
-           {{#if subscription}}
-             <option value="shared_drive_accept">Renew</option>
-           {{/if}}
-         {{/if}}
-         <!-- <option value="shared_drive_revoke">Remove</option> -->
-       </select>
-{{/if}}
+     <td class="shared-drive-action" data-drive-id="{{drive.drive_id}}" data-drive-name="{{drive.drive_name}}">
+       <div>
+         <a
+             id="shared_drive_quota"
+             aria-label="{{#if drive.drive_quota.is_subsidized}}Increase{{else}}{{#if subscription}}Update{{else}}Select{{/if}}{{/if}} quota for {{ drive.drive_name }} (opens in new window)"
+             href="/drives">
+           {{#if drive.drive_quota.is_subsidized}}Increase{{else}}{{#if subscription}}Update{{else}}Select{{/if}}{{/if}} quota
+         </a>
+       </div>
+       <div>
+         <a id="shared_drive_accept" aria-label="Renew {{ drive.drive_name }}" href="/drives">Renew</a>
+       </div>
+       <!-- drive revoke/remove is not currently supported in the MSCA API
+       <div>
+         <a id="shared_drive_revoke" aria-label="Remove {{ drive.drive_name }}" href="/drives">Remove</a>
+       </div>
+       -->
      </td>
   </tr>
 </script>
