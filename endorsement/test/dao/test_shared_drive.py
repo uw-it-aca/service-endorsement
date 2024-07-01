@@ -91,7 +91,9 @@ def mock_get_subscription_by_key_remote():
 
 
 @override_settings(
-    ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID="7078586b2f6cb076cad75ae9aab3ea05"
+    ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID="7078586b2f6cb076cad75ae9aab3ea05",
+    # unless otherwise overridden there are no exceptions for the deadline
+    ITBILL_SUBSCRIPTION_DEADLINE="08/27/2000",
 )
 class BaseReconcilerTest(TestDao):
     abstract = True
@@ -271,9 +273,38 @@ class TestReconciler_base_cases(BaseReconcilerTest):
             set(), {}, DQ
         )
 
-    def test_reconcile_calls(self):
-        "Test reconcile() inner calls drive_id values."
-        # TODO
+
+@override_settings(
+    # for this test we will be in the grace period
+    ITBILL_SUBSCRIPTION_DEADLINE="09/09/9999",
+)
+class TestReconciler_handles_grace(BaseReconcilerTest):
+    """
+    Test Reconciler honors the "grace period" associated with ITBill sign-up.
+    """
+
+    def setUp(self):
+        super().setUp()
+        # drive exists in non-subsidized OU with no subscription
+        self.mocks['get_google_drive_states'].return_value = [
+            GDS(drive_id='grace1', member='Al', org_unit_name='200G'),
+        ]
+
+    def test(self):
+        instance = self.get_instance()
+
+        with self.assertLogs(level='INFO') as captured_logs:
+            instance.reconcile()
+
+        self.mocks["set_drive_quota"].assert_not_called()
+
+        assert len(captured_logs) >= 1
+        expected_msg = (
+            "reconcile: skip set drive for grace1 as there is no active "
+            "subscription and we are in grace period"
+        )
+        # expect to find our message in at least 1 log line
+        assert any(expected_msg in log for log in captured_logs.output)
 
 
 # TODO: is this really necessary?
