@@ -306,8 +306,7 @@ def reconcile_drive_quota(
         in_grace_period = (
             dt.datetime.now() < shared_drive_subscription_deadline()
         )
-        # important! this will count a subscription in ANY STATE not just DEPLOYED
-        has_no_subscription = load_or_update_subscription(sdr) is None
+        has_no_subscription = get_or_load_active_subscription(sdr) is None
         if in_grace_period and has_no_subscription:
             logger.info(
                 f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
