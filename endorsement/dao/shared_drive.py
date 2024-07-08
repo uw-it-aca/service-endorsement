@@ -59,7 +59,7 @@ def sync_quota_from_subscription(drive_id):
             raise ITBillSubscriptionNotFound(drive_id)
 
         state = record.subscription.state
-        if state == ITBillSubscription.SUBSCRIPTION_DEPLOYED:
+        if state != ITBillSubscription.SUBSCRIPTION_DEPLOYED:
             logger.info(
                 f"sync: Shared drive {drive_id}"
                 f" subscription not deployed: {state}"
