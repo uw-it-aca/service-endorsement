@@ -49,17 +49,20 @@ def initiate_subscription(shared_drive_record):
         except DataFailureException as ex:
             if ex.status != 409:
                 logger.error(
-                    "Subscription creation for {} failed: {}".format(
-                        data.key_remote, ex))
-                raise
+                    "ITBill Subscription creation for {} failed: {}".format(
+                        data.get('key_remote'), ex))
+                raise ex
             # else subscription already exists
 
         itbill_subscription.save()
         shared_drive_record.subscription = itbill_subscription
         shared_drive_record.save()
         logger.info(
-            "Created subscription: key_remote = {}".format(data.key_remote))
+            "Created subscription: key_remote = {}".format(
+                shared_drive_record.subscription.key_remote))
     except Exception as ex:
+        logger.error("initiate_subscription: {}".format(ex),
+                     stack_info=True, exc_info=True)
         raise ex
 
     return None
@@ -93,6 +96,8 @@ def expire_subscription(shared_drive_record):
         logger.info("Expired subscription: key_remote = {}".format(
             itbill_subscription.key_remote))
     except Exception as ex:
+        logger.error("expire_subscription: {}".format(ex),
+                     stack_info=True, exc_info=True)
         raise ex
 
 
@@ -111,7 +116,7 @@ def get_subscription_by_key_remote(key_remote):
         if ex.status == 404:
             raise ITBillSubscriptionNotFound(key_remote)
 
-        raise
+        raise ex
 
 
 def load_itbill_subscription(record):
