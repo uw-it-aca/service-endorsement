@@ -59,7 +59,7 @@ def initiate_subscription(shared_drive_record):
         shared_drive_record.save()
         logger.info(
             "Created subscription: key_remote = {}".format(
-                data.get('key_remote'))
+                shared_drive_record.subscription.key_remote))
     except Exception as ex:
         logger.error("initiate_subscription: {}".format(ex),
                      stack_info=True, exc_info=True)
