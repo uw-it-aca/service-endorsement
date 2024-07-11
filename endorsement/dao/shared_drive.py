@@ -479,7 +479,8 @@ class Reconciler:
                     shared_drive.drive_name = drive_state.drive_name
                     shared_drive.save()
             except Exception as ex:
-                logger.error(f"drive ({drive_id}) name update: {ex}")
+                logger.error(f"drive ({drive_id}) "
+                             f"name ({drive_state.drive_name}) update: {ex}")
 
             # confirm drive and subscription match
             sdr = SharedDriveRecord.objects.get_record_by_drive_id(drive_id)

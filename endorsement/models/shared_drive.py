@@ -121,7 +121,7 @@ class SharedDrive(ExportModelOperationsMixin("shared_drive"), models.Model):
 
     # NOTE: maximum observed is 19 characters (2024-05-16)
     drive_id = models.SlugField(max_length=25)
-    drive_name = models.CharField(max_length=128)
+    drive_name = models.TextField()
     drive_quota = models.ForeignKey(SharedDriveQuota, on_delete=models.PROTECT)
     drive_usage = models.FloatField(null=True)
     members = models.ManyToManyField(SharedDriveMember, blank=True)
