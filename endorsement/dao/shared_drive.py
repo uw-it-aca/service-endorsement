@@ -467,13 +467,19 @@ class Reconciler:
             # TODO: wrap below in a transaction?
 
             # update drive manager list
-            managers = managers_for_shared_drive(drive_states)
-            shared_drive.members.set(managers)
+            try:
+                managers = managers_for_shared_drive(drive_states)
+                shared_drive.members.set(managers)
+            except Exception as ex:
+                logger.error(f"drive ({drive_id}) manager update: {ex}")
 
-            # update drive name
-            if shared_drive.drive_name != drive_state.drive_name:
-                shared_drive.drive_name = drive_state.drive_name
-                shared_drive.save()
+            try:
+                # update drive name
+                if shared_drive.drive_name != drive_state.drive_name:
+                    shared_drive.drive_name = drive_state.drive_name
+                    shared_drive.save()
+            except Exception as ex:
+                logger.error(f"drive ({drive_id}) name update: {ex}")
 
             # confirm drive and subscription match
             sdr = SharedDriveRecord.objects.get_record_by_drive_id(drive_id)
