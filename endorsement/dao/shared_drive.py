@@ -182,9 +182,8 @@ def get_drive_quota_by_quota_limit(quota_limit):
     return a shared drive quota model for given quota_limit
     """
     defaults = {
-        "org_unit_name": "None",
-        "org_unit_id": 0,
-        "is_subsidized": False
+        "org_unit_name": f"Local-{quota_limit}GB}",
+        "org_unit_id": ""
     }
 
     drive_quota, _ = SharedDriveQuota.objects.get_or_create(
