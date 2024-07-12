@@ -177,6 +177,21 @@ def get_drive_quota(a):
     return drive_quota
 
 
+def get_drive_quota_by_quota_limit(quota_limit):
+    """
+    return a shared drive quota model for given quota_limit
+    """
+    defaults = {
+        "org_unit_name": f"PRT-{quota_limit}GB",
+        "org_unit_id": "PRT-{quota_limit}",
+    }
+
+    drive_quota, _ = SharedDriveQuota.objects.get_or_create(
+        quota_limit=quota_limit, defaults=defaults)
+
+    return drive_quota
+
+
 def get_shared_drive_member(a: GoogleDriveState):
     """
     return a shared drive member model from Member and Role
@@ -297,9 +312,9 @@ def get_expected_shared_drive_record_quota(
 def reconcile_drive_quota(
     sdr: SharedDriveRecord, *, no_subscription_quota, no_move_drive=False
 ):
-    drive_quota = sdr.shared_drive.drive_quota
+    current_drive_quota = sdr.shared_drive.drive_quota
 
-    quota_actual = drive_quota.quota_limit
+    quota_actual = current_drive_quota.quota_limit
     quota_correct = get_expected_shared_drive_record_quota(
         sdr, no_subscription_quota=no_subscription_quota
     )
@@ -333,8 +348,11 @@ def reconcile_drive_quota(
         set_drive_quota(
             drive_id=sdr.shared_drive.drive_id, quota=quota_correct
         )
-        drive_quota.quota_limit = quota_correct
-        drive_quota.save()
+
+        # udpate sdr.shared_drive.drive_quota
+        drive_quota = get_drive_quota_by_quota_limit(quota_correct)
+        sdr.shared_drive.drive_quota = drive_quota
+        sdr.shared_drive.save()
     else:
         logger.debug(
             f"reconcile: drive {sdr.shared_drive.drive_id} "
