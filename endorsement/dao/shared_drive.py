@@ -46,6 +46,7 @@ logger = logging.getLogger(__name__)
 netid_regex = re.compile(
     r"^(?P<netid>[^@]+)(@(uw|(u\.)?washington)\.edu)?$", re.I
 )
+MISSING_DRIVE_THRESHOLD = 50
 
 
 def sync_quota_from_subscription(drive_id):
@@ -130,6 +131,10 @@ def load_shared_drive_record(a: GoogleDriveState, is_seen):
         shared_drive_record.datetime_accepted = now
         shared_drive_record.save()
 
+    # resurrect if drive previously marked as deleted
+    if shared_drive_record.is_deleted:
+        shared_drive_record.resurrect()
+
     return shared_drive_record
 
 
@@ -148,6 +153,7 @@ def upsert_shared_drive(a: GoogleDriveState, is_seen):
                 "drive_name": a.drive_name,
                 "drive_quota": drive_quota,
                 "drive_usage": a.size_gigabytes,
+                "is_deleted": None,
             },
         )
 
@@ -365,8 +371,11 @@ class Reconciler:
     Reconciles Shared Drives.
     """
 
-    def __init__(self, no_move_drive):
-        self.no_move_drive = no_move_drive
+    def __init__(self, *args, **kwargs):
+        self.no_move_drive = kwargs.get(
+            'no_move_drive', False)
+        self.missing_drive_threshold = kwargs.get(
+            'missing_drive_threshold', MISSING_DRIVE_THRESHOLD)
 
     def reconcile(self):
         id_GoogleDriveState = self.GoogleDriveState_by_drive_id()
@@ -437,17 +446,36 @@ class Reconciler:
 
         This means the drive no longer exists or no longer has managers.
 
-        If deleted it is expected the related SharedDriveRecord would have
-        is_deleted set to True.
+        If deleted it may be the case the related SharedDriveRecord is
+        deleted as well (datetime_deleted set).
 
         The last manager departing would happen out of band.
         """
-        # TODO: should we be logging this or performing any other actions?
-        records = SharedDrive.objects.filter(drive_id__in=missing_drive_ids)
-        for record in records:
-            record.is_deleted = True
+        missing_drive_count = len(missing_drive_ids)
+        now = dt.datetime.now(dt.timezone.utc)
 
-        SharedDrive.objects.bulk_update(records, fields=["is_deleted"])
+        logger.info(
+            f"reconcile: {missing_drive_count} missing drives")
+
+        # failsafe for potentially truncated shared drive report
+        if missing_drive_count > self.missing_drive_threshold:
+            # TODO: more visible alerting
+            logger.error(
+                f"missing drive count exceeds threshold: "
+                f"{missing_drive_count} > {self.missing_drive_threshold}"
+            )
+            return
+
+        for sdr in SharedDriveRecord.objects.filter(
+                shared_drive__drive_id__in=missing_drive_ids
+        ):
+            key_remote = f"key_remote: {sdr.subscription.key_remote}" if (
+                sdr.subscription) else "no subscription"
+            logger.info(f"delete record for drive {sdr.shared_drive.drive_id}"
+                        f" with {key_remote}")
+
+            # TODO: should we be performing any other actions?
+            sdr.delete()
 
     def reconcile_existing_drives(
         self, drives, id_GoogleDriveState, subsidized_quota
