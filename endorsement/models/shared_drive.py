@@ -196,6 +196,7 @@ class SharedDriveRecord(
     datetime_notice_4_emailed = models.DateTimeField(null=True)
     datetime_over_quota_emailed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
+    datetime_deleted = models.DateTimeField(null=True)
     is_deleted = models.BooleanField(null=True)
 
     objects = SharedDriveRecordManager()
@@ -275,6 +276,21 @@ class SharedDriveRecord(
         self.subscription.save()
         self.save()
 
+    def delete(self):
+        self.is_deleted = True
+        self.datetime_deleted = timezone.now()
+        self.save()
+        self.shared_drive.is_deleted = True
+        self.shared_drive.save()
+
+    def resurrect(self):
+        self.is_deleted = None
+        self.datetime_deleted = None
+        self.save()
+        if self.shared_drive.is_deleted:
+            self.shared_drive.is_deleted = None
+            self.shared_drive.save()
+
     def json_data(self):
         data = {
             "drive": self.shared_drive.json_data(),
@@ -302,6 +318,7 @@ class SharedDriveRecord(
             "datetime_expiration": datetime_to_str(self.expiration_date),
             "datetime_subscription_deadline": datetime_to_str(
                 shared_drive_subscription_deadline()),
+            "datetime_deleted": datetime_to_str(self.datetime_deleted),
             "is_deleted": self.is_deleted
         }
 

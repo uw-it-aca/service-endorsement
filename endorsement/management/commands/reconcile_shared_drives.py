@@ -17,7 +17,18 @@ class Command(BaseCommand):
             default=False,
             help="If provided no drives will be moved.",
         )
+        parser.add_argument(
+            '--missing-drive-threshold',
+            type=int,
+            default=50,
+            help="Skip missing drive deletion if missing drive count greater.",
+        )
 
     def handle(self, *args, **options):
         logging.getLogger().setLevel(logging.INFO)
-        Reconciler(options['no_move_drive']).reconcile()
+        params = {
+            'no_move_drive': options['no_move_drive'],
+            'missing_drive_threshold': options['missing_drive_threshold'],
+        }
+
+        Reconciler(**params).reconcile()
