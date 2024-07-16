@@ -36,7 +36,7 @@
 
 <script id="shared_drives_row_partial" type="text/x-handlebars-template">
     <tr class="shared-drive-row" data-drive-id="{{drive.drive_id}}" data-thumb-print="{{thumb_print}}">
-      <td scope="row" class="shared-drive-name"><span class="significant"><a href="https://drive.google.com/drive/u/0/folders/{{drive.drive_id}}" target="_blank">{{ drive.drive_name }} &nbsp;<i class="fas fa-external-link-alt"></i><a></span></td>
+      <td scope="row" class="shared-drive-name"><span class="significant"><a href="https://drive.google.com/drive/u/0/folders/{{drive.drive_id}}" target="_blank" title="Go to {{ drive.drive_name }} (opens in a new window)">{{ drive.drive_name }} &nbsp;<i class="fas fa-external-link-alt"></i><a></span></td>
       <td class="shared-drive-status-icon">
         {{#if requires_subscription }}
         <i class="fa fa-exclamation-circle text-danger"></i>
