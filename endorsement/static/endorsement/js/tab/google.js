@@ -68,6 +68,7 @@ var ManageSharedDrives = (function () {
                 _refreshSharedDrive($(this).attr('data-drive-id'));
             }).on('endorse:SharedDriveRefresh', function (e, data) {
                 _updateSharedDrivesDisplay(data.drives[0]);
+                Notify.success('Shared drive quota updated.', 10000);
             }).on('endorse:SharedDriveRefreshError', function (e, error) {
                 Notify.error('Sorry, but subscription information unavailable at this time: ' + error);
             }).on('endorse:SharedDriveResponsibilityAccepted', function (e, data) {
@@ -197,12 +198,14 @@ var ManageSharedDrives = (function () {
             drive.subscription_deadline_date = deadline.format('M/D/YYYY');
             drive.subscription_deadline_from_now = deadline.from(now);
 
-            //drive.in_flight = (drive.subscription && drive.subscription.query_priority === 'high');
             drive.valid_subscription = (drive.subscription && !['draft', 'closed', 'cancelled'].includes(drive.subscription.state));
             drive.requires_subscription = !(drive.drive.drive_quota.is_subsidized || drive.valid_subscription);
             drive.quota_notes = [{
                 is_capped: (!["uw.edu", "None"].includes(drive.drive.drive_quota.org_unit_name) && drive.drive.drive_usage > drive.drive.drive_quota.quota_limit)
             }];
+
+            drive.notable_status = (drive.expiration_days === 365)
+            drive.notable_quota = false;
 
             if (drive.subscription) {
                 $.each(drive.subscription.provisions, function () {
@@ -214,6 +217,10 @@ var ManageSharedDrives = (function () {
                             is_increasing = this.quota_limit > drive.drive.drive_quota.quota_limit,
                             is_decreasing = this.quota_limit < drive.drive.drive_quota.quota_limit,
                             is_changing = (is_future || is_ending);
+
+                        if (!drive.notable_quota) {
+                            drive.notable_quota = (starting && Math.abs(starting.diff(now, 'days')) < 1);
+                        }
 
                         drive.quota_notes.push({
                             is_future: is_future,
