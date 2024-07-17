@@ -335,6 +335,7 @@ a {
       p { font-size: smaller; width: 10rem; margin-bottom: 0px; }
   }
   .shared-drive-quota { padding-left: 24px; width: 12rem;
+    i.quota-decoration { margin-left: -1.5rem; }
     div { position: relative; width: 14rem; left: -.85rem;
           div:first-child { clear: left; float: left; width: 1.65rem; }
           div:last-child { font-size: smaller; float: left; width: 10rem; }

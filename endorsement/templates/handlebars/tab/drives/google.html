@@ -36,13 +36,13 @@
 
 <script id="shared_drives_row_partial" type="text/x-handlebars-template">
     <tr class="shared-drive-row" data-drive-id="{{drive.drive_id}}" data-thumb-print="{{thumb_print}}">
-      <td scope="row" class="shared-drive-name"><span class="significant"><a href="https://drive.google.com/drive/u/0/folders/{{drive.drive_id}}" target="_blank">{{ drive.drive_name }} &nbsp;<i class="fas fa-external-link-alt"></i><a></span></td>
+      <td scope="row" class="shared-drive-name"><span class="significant"><a href="https://drive.google.com/drive/u/0/folders/{{drive.drive_id}}" target="_blank" title="Go to {{ drive.drive_name }} (opens in a new window)">{{ drive.drive_name }} &nbsp;<i class="fas fa-external-link-alt"></i><a></span></td>
       <td class="shared-drive-status-icon">
         {{#if requires_subscription }}
         <i class="fa fa-exclamation-circle text-danger"></i>
         {{else}}
           {{#if (lte expiration_days 90)}}<i class="fa {{#if (lte expiration_days 7)}}fa-exclamation-circle text-danger{{else}}fa-exclamation-triangle text-warning{{/if}}"></i>{{/if}}
-          {{#if (eq expiration_days 365)}}<i class="fa fa-check text-success"></i>{{/if}}
+          {{#if notable_status}}<i class="fa fa-check text-success"></i>{{/if}}
         {{/if}}
       </td>
       <td class="shared-drive-status">
@@ -72,29 +72,26 @@
       {{#if (eq drive.drive_quota.org_unit_name "None")}}
        <span class="text-danger">Pending Delete</span>
       {{else}}
+        {{#if notable_quota}}<i class="fa fa-check text-success quota-decoration"></i>{{/if}}
         {{#if (eq drive.drive_quota.org_unit_name "uw.edu")}}
          100GB
         {{else}}
          {{#driveCapacity drive.drive_quota.quota_limit}}{{/driveCapacity}}
         {{/if}}
       {{/if}}
-      {{#if in_flight}}
-        <div><div><a id="refresh_drive" data-drive-id={{drive.drive_id}} href="/drives"><i class="fa fa-sync text-primary"></i></a></div><div class="text-primary">We noticed an attempted quota update - confirmed changes will appear here shortly.</div></div>
+      {{#each quota_notes}}
+      {{#if is_capped}}
+         <div><div><i class="fa fa-exclamation-circle text-danger"></i></div><div class="text-danger">Drive capped: usage is greater than current quota. Delete data or increase quota to resolve.</div></div>
       {{else}}
-        {{#each quota_notes}}
-        {{#if is_capped}}
-           <div><div><i class="fa fa-exclamation-circle text-danger"></i></div><div class="text-danger">Drive capped: usage is greater than current quota. Delete data or increase quota to resolve.</div></div>
+        {{#if is_ending}}
+         <div><div>&nbsp;</div><div>Ending on {{end_date}}</div></div>
         {{else}}
-          {{#if is_ending}}
-           <div><div>&nbsp;</div><div>Ending on {{end_date}}</div></div>
-          {{else}}
-           {{#if (or is_increasing is_decreasing) }}
-             <div><div>&nbsp;</div><div>{{#if is_increasing}}In{{else}}De{{/if}}creasing to {{quota_limit}}GB on {{start_date}}</div></div>
-           {{/if}}
-          {{/if}}
+         {{#if (or is_increasing is_decreasing) }}
+           <div><div>&nbsp;</div><div>{{#if is_increasing}}In{{else}}De{{/if}}creasing to {{quota_limit}}GB on {{start_date}}</div></div>
+         {{/if}}
         {{/if}}
-        {{/each}}
       {{/if}}
+      {{/each}}
       </td>
       <td class="shared-drive-members">
         <ul class="comma-list">
