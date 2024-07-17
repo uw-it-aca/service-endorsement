@@ -204,7 +204,7 @@ var ManageSharedDrives = (function () {
                 is_capped: (!["uw.edu", "None"].includes(drive.drive.drive_quota.org_unit_name) && drive.drive.drive_usage > drive.drive.drive_quota.quota_limit)
             }];
 
-            drive.notable_status = (drive.expiration_days === 365)
+            drive.notable_status = (drive.expiration_days === 365);
             drive.notable_quota = false;
 
             if (drive.subscription) {
