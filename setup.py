@@ -27,7 +27,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'Django~=3.2',
-        'djangorestframework==3.15.1',
+        'djangorestframework==3.15.2',
         'ordereddict',
         'simplejson',
         'django-webpack-loader>=1.0,<2.0',
