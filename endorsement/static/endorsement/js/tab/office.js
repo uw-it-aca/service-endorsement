@@ -152,6 +152,10 @@ var ManageOfficeAccess = (function () {
                 _displayOfficeAccessTypes();
             }).on('endorse:OfficeAccessTypesFailure', function (e, data) {
                 alert('Cannot determine Access Types: ' + data);
+            }).popover({
+                selector: 'span.prt-data-popover',
+                trigger: 'focus',
+                html: true
             });
 
             $(document).on('endorse:TabChange', function (e, data) {
@@ -249,7 +253,6 @@ var ManageOfficeAccess = (function () {
 
             $content.html(template(context));
             Scroll.init('.office-access-table');
-            $('[data-toggle="popover"]').popover();
         },
         _getOfficeAccessUWNetIDs = function() {
             var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
@@ -490,12 +493,12 @@ var ManageOfficeAccess = (function () {
                 date_granted: DateTime.utc2localdate(context.datetime_granted),
                 date_renewal: _renewalDateFormat(renewal_date),
                 date_renewal_relative: renewal_date.fromNow(),
-                right_id: context.right_id,
+                right_id: context.access_right.name,
                 accessee_index: $row.hasClass('endorsee_row_even') ? 0 : 1,
                 access_index: $row.hasClass('endorsement_row_first') ? 0 : 1});
             $row.replaceWith(html);
             $row = _accessTableRow(context.accessee.netid, context.accessor.name);
-            _loadOfficeAccessTypeOptions(context.right_id,
+            _loadOfficeAccessTypeOptions(context.access_right.name,
                                          $('.office-access-types', $row));
         },
         _renewalDate = function (datetime) {

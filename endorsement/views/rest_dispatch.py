@@ -3,15 +3,17 @@
 
 from rest_framework.views import APIView
 from django.http import HttpResponse
+from userservice.user import UserService
+from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
+from endorsement.util.auth import is_only_support_user
 import json
 import sys
 from restclients_core.exceptions import DataFailureException,\
     InvalidNetID, InvalidRegID
-
-
-from endorsement.util.log import log_exception,\
-    log_data_not_found_response, log_data_error_response,\
-    log_invalid_netid_response, log_invalid_endorser_response
+from endorsement.util.log import (
+    log_exception, log_data_not_found_response, log_data_error_response,
+    log_invalid_netid_response, log_invalid_endorser_response,
+    log_bad_request_response)
 
 
 class RESTDispatch(APIView):
@@ -25,6 +27,19 @@ class RESTDispatch(APIView):
         return HttpResponse(json.dumps(content, sort_keys=True),
                             status=status,
                             content_type='application/json')
+
+    def _validate_user(self, request):
+        user_service = UserService()
+        netid = user_service.get_user()
+        if not netid:
+            raise UnrecognizedUWNetid()
+
+        original_user = user_service.get_original_user()
+        acted_as = None if (netid == original_user) else original_user
+        if acted_as and is_only_support_user(request):
+            raise InvalidNetID()
+
+        return netid, acted_as
 
 
 def handle_exception(logger, message, stack_trace):
@@ -56,6 +71,11 @@ def invalid_endorser(logger):
 def data_not_found(logger):
     log_data_not_found_response(logger)
     return RESTDispatch().error_response(404, "Data not found")
+
+
+def bad_request(logger, msg="Bad request"):
+    log_bad_request_response(logger)
+    return RESTDispatch().error_response(400, msg)
 
 
 def data_error(logger, msg):

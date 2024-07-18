@@ -6,9 +6,9 @@ from django.utils import timezone
 from django.core import mail
 from endorsement.models import Accessor, Accessee, AccessRight, AccessRecord
 from endorsement.util.string import listed_list
-from endorsement.dao.notification import notify_accessors
+from endorsement.notifications.access import notify_accessors
 from endorsement.services import endorsement_services
-from endorsement.dao.notification import (
+from endorsement.notifications.endorsement import (
     notify_endorsees, notify_endorsers,
     get_unendorsed_unnotified, get_endorsed_unnotified,
     notify_invalid_endorser)

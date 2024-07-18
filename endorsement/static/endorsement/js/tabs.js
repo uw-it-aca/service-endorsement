@@ -4,24 +4,9 @@ import { History } from "./history.js";
 
 var MainTabs = (function () {
     var _registerEvents = function () {
-        $(".tabs .tabs-list li span").click(function(e){
+        $(".tabs .tabs-list .tab-link").click(function(e){
             e.preventDefault();
-        });
-
-        $(".tabs .tabs-list li span").click(function(){
-            var $li = $(this).parent();
-
-            if (! $li.hasClass('active')) {
-                var tab = $li.attr("data-tab"),
-                    $tab = $('.tabs div#' + tab);
-
-                $(".tabs-list li, .tabs div.tab").removeClass("active");
-                $li.addClass("active");
-                $tab.addClass("active");
-                $tab.trigger('endorse:' + tab + 'TabExposed');
-
-                $(document).trigger('endorse:TabChange', [tab]);
-            }
+            _openTab($(this).parent().attr("data-tab"));
         });
 
         $(window).on('popstate', function(event) {
@@ -32,10 +17,26 @@ var MainTabs = (function () {
     // Exported functions
     var load = function () {
         _registerEvents();
+    },
+    _openTab = function (tab) {
+        var $li = $(".tabs-list li[data-tab='" + tab + "']");
+
+        if (! $li.hasClass('active')) {
+            var $tab = $('.tabs div#' + tab);
+
+            $(".tabs-list li, .tabs div.tab").removeClass("active");
+            $li.addClass("active");
+            $tab.addClass("active");
+            $(document).attr('title', 'Provisioning Request Tool - ' + $('a', $li).text());
+            $tab.trigger('endorse:' + tab + 'TabExposed');
+
+            $(document).trigger('endorse:TabChange', [tab]);
+        }
     };
 
     return {
         load: load,
+        openTab: _openTab
     };
 }());
 

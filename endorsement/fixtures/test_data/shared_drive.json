@@ -1,0 +1,68 @@
+[
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 1,
+    "fields": {
+      "drive_id": "ABC_0123-DE45FF5789",
+      "drive_name": "Subsidized quota",
+      "drive_usage": 39,
+      "drive_quota": 1,
+      "members": [1, 2, 4, 5, 10]
+    }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 2,
+    "fields": {
+      "drive_id": "1KsIl1coIylwR0FQ",
+      "drive_name": "Subsidized, expiring",
+      "drive_usage": 1.854431,
+      "drive_quota": 1,
+      "members": [5, 8, 10]
+    }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 3,
+    "fields": {
+      "drive_id": "IRDXB54TWF3OY8MVC9J",
+      "drive_name": "Lg quota, expiring soon",
+      "drive_usage": 218,
+      "drive_quota": 3,
+      "members": [5]
+    }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 4,
+    "fields": {
+      "drive_id": "rBQ11YNswxAz2p2yGyE",
+      "drive_name": "Lg quota, day zero",
+      "drive_usage": 99,
+      "drive_quota": 2,
+      "members": [1, 3, 5]
+    }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 5,
+    "fields": {
+      "drive_id": "9F97529B38CF46F336C7408",
+      "drive_name": "Lg quota with subscription (mock)",
+      "drive_usage": 283,
+      "drive_quota": 4,
+      "members": [1, 2, 4, 5, 7, 8, 9, 10, 11]
+    }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 6,
+    "fields": {
+      "drive_id": "g2ns3fxmo2x8wo6j7e5gloet",
+      "drive_name": "UX Design Team Drive",
+      "drive_usage": 359,
+      "drive_quota": 3,
+      "members": [1, 4, 5, 7, 10, 11]
+    }
+  }
+]

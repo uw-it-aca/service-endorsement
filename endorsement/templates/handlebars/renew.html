@@ -28,7 +28,7 @@
         {{#each services}}
         {{#if this.count}}<li class="significant">{{this.name}}</li>{{/if}}
         {{/each}}
-      </ul> for {{#gt unique.length 1}}{{unique.length}} {{/gt}}UW NetID{{plural unique.length '' 's'}}{{#gt unique.length 1}}{{else}} <ul class="comma-list">{{#each unique}}<li class="significant">{{this}}</li>{{/each}}</ul>{{/gt}}.
+      </ul> for {{#if (gt unique.length 1)}}{{unique.length}} {{/if}}UW NetID{{plural unique.length '' 's'}}{{#if (gt unique.length 1)}}{{else}} <ul class="comma-list">{{#each unique}}<li class="significant">{{this}}</li>{{/each}}</ul>{{/if}}.
     </div>
     <div class="row">
       As the provisioner, you are responsible for the proper use, account maintenance, and file privileges of the provision.

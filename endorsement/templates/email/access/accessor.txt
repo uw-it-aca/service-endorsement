@@ -1,0 +1,51 @@
+Hello {{ email.display_name }},
+
+The UW employee {{ record.accessee.display_name }} ({{ record.accessee.netid }}) has given {% if record.accessor.is_group %}the group "{{record.accessor.name}}" you administrate{% elif record.accessor.is_shared_netid %}the shared netid "{{record.accessor.name}}"{% else %}you{% endif %} “{{ record.access_right.display_name }}”
+mailbox permissions to the UW Office 365 Exchange Online mailbox
+(aka, email account) for “{{record.accessee.netid}}”.
+
+Access to this UW Exchange Online mailbox lasts for 365 days and must be
+renewed annually by {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
+
+With "{{ record.access_right.display_name }}" permissions {% if record.accessor.is_group %}group members{% elif record.accessor.is_shared_netid %}the shared netid{% else %}you{% endif %} can:
+{% if record.access_right.name == 'FullAccessandSendAs' %}
+   -  View, add and remove the contents of the mailbox
+   -  Send email as the mailbox
+{% elif record.access_right.name == 'FullAccess' %}
+   -  View, add and remove the contents of the mailbox
+{% elif record.access_right.name == 'SendAs' %}
+   -  Send email as the mailbox
+{% elif record.access_right.name == 'SendOnBehalf' %}
+   -  Send email on behalf of the mailbox
+   -  Note: For calendaring to work correctly with “Send on Behalf”
+            permissions, you must join this UW Group at:
+
+          https://groups.uw.edu/group/u_msca_enable_uw-forwarding-bypass
+{% else %}
+   -  Some additional access
+{% endif %}
+Now that you have access to another mailbox, learn how to add the mailbox to a
+supported Outlook email client (e.g. Outlook on the web, Outlook for desktop,
+Outlook for iOS/Android) at:
+
+    https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/add-mailbox-permissions/#access
+
+Additional resources:
+
+   -  Learn about UW Office 365 Exchange Online at:
+
+      https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online
+
+   -  Learn about mailbox permissions in UW Exchange Online at:
+
+      https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/add-mailbox-permissions/
+
+   -  Learn about provisioning services and resources using the
+      Provisioning Request Tool (PRT) at:
+
+      https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/
+
+If you have any questions, please contact help@uw.edu or 206-221-5000.
+
+Thank you,
+UW-IT

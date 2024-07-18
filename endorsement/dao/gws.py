@@ -71,6 +71,12 @@ def get_group_admin_emails(group_id):
                 'email': admin.name,
                 'display_name': admin.display_name})
         elif admin.is_group():
-            emails += get_group_admin_emails(admin.name)
+            for member in gws.get_effective_members(admin.name):
+                if member.is_uwnetid():
+                    emails.append({
+                        'email': uw_email_address(member.name),
+                        'display_name': member.display_name})
+                elif member.is_group():
+                    emails += get_group_admin_emails(member.name)
 
     return emails

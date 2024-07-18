@@ -4,7 +4,7 @@
     <div class="alert endorsement-persistent-message-alert alert-{{ message_level }} hidden-print" role="alert">
       {{#each messages }}
     <div class="endorsement-persistent-message" {{#unless @last}}xstyle="margin-bottom:10px;{{/unless}}" data-message-hash="{{hash}}">
-          <div class="message-icon"><i class="fa fa-{{#equals ../message_level 'success'}}check-circle{{/equals}}{{#equals ../message_level 'info'}}exclamation-circle{{/equals}}{{#equals ../message_level 'warning'}}exclamation-triangle{{/equals}}{{#equals ../message_level 'danger'}}minus-circle{{/equals}} fa-lg"></i></div>
+          <div class="message-icon"><i class="fa fa-{{#if (eq ../message_level 'success')}}check-circle{{/if}}{{#if (eq ../message_level 'info')}}exclamation-circle{{/if}}{{#if (eq ../message_level 'warning')}}exclamation-triangle{{/if}}{{#if (eq ../message_level 'danger')}}minus-circle{{/if}} fa-lg"></i></div>
           <div class="message-text">{{{message}}}</div>
         </div>
       {{/each}}

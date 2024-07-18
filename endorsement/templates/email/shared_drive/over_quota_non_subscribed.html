@@ -1,0 +1,14 @@
+Hello,
+<p>
+You are receiving this email because you are identified as {%if drive.shared_drive.members.all.count > 1 %}one of {{ drive.shared_drive.members.all.count }}{% else %}the{% endif %} UW manager{{drive.shared_drive.members.all.count|pluralize}}
+of the Google Shared Drive named "{{drive.shared_drive.drive_name}}".
+</p>
+<p>
+This Google Shared Drive's data usage is over the subsidized quota of 100GB and has been restricted – it is now read-only. You can <a href="https://provision.uw.edu/drives" target="_blank">provide funding information to increase the drive quota</a> in the Provision Request Tool.
+</p>
+<p>
+If you have any further questions, please contact <a href="mailto:help@uw.edu" target="_blank">help@uw.edu</a> or 206-221-5000.
+</p>
+Thank you,<br />
+UW-IT<br />
+

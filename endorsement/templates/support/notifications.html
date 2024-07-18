@@ -15,7 +15,7 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
 .tabs {  margin-top: 2em; }
 .tabs .tabs-list { position: relative; top: 1px; z-index: 100; list-style: none; margin: 0px; padding: 0px; }
 .tabs .tabs-list li { margin-right: 1.75em; float: left; padding-bottom: 2px;}
-.tabs .tabs-list li span { text-transform: uppercase; font-weight: bold; }
+.tabs .tabs-list li .tab-link { text-transform: uppercase; font-weight: bold; color: #333; text-decoration: none; }
 .tabs .tabs-list li span:hover { cursor: pointer; }
 .tabs .tabs-list li.active { border-bottom: 3px solid black; }
 .tabs .tab { position: relative; clear: both; top: -2px; border-top: 3px solid lightgray; display: none; padding-top: 20px; }
@@ -27,8 +27,9 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
 
 <div class="tabs">
  <ul class="tabs-list">
-   <li class="active" data-tab="service"><span>Services</span></li>
-   <li data-tab="access"><span>Elevated Access</span></li>
+   <li class="active" data-tab="service"><a class="tab-link" href="/support/notifications">Services for NetIDs</a></li>
+   <li data-tab="shared_drive"><a class="tab-link" href="/support/notifications">Google Shared Drives</a></li>
+   <li data-tab="access"><a class="tab-link" href="/support/notifications">Outlook Mailbox Permissions</a></li>
  </ul>
  <div id="service" class="tab active">
 
@@ -95,6 +96,46 @@ span.endorsee { display: inline-block; padding-bottom: 8px; font-size: larger; f
             <button type="button" name="GenerateNotification" id="generate_notification" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Generating">Show Notification</button>
     </div> -->
   </form>
+ </div>
+ <div id="shared_drive" class="tab">
+  <p>
+    Choose a notification type to see the email contents that will be sent.  Notification email is sent as multipart messages containing a text and html representation.
+  </p>
+
+  <form>
+    {% csrf_token %}
+    <div class="form-group">
+      <h4>Notification Message Type</h4>
+      <div class="form-group">
+        <select class="form-control" id="notification">
+          <option value="">Select Notification Type...</option>
+          <option value="phase_0_expiration">Over Quota, No Subscription on Deadline Day</option>
+          <option value="warning_1">Initial Renewal Notice</option>
+          <option value="warning_2">Penultimate Renewal Notice</option>
+          <option value="warning_3">Final Renewal Notice</option>
+          <option value="warning_4">Provision Expiration</option>
+        </select>
+      </div>
+    </div>
+
+
+    <div class="form-group info" id="info_phase_0_expiration">
+      Sent on the expiration day for shared drives that are over quota with no subscription.
+    </div>
+    <div class="form-group info" id="info_warning_1">
+      First renewal notice sent to provisioner {{ warning_1 }} days prior to service expiration.
+    </div>
+    <div class="form-group info" id="info_warning_2">
+      Second renewal notice sent to provisioner {{ warning_2 }} days prior to service expiration.
+    </div>
+    <div class="form-group info" id="info_warning_3">
+      Third and final renewal notice sent to provisioner {{ warning_3 }} days before expiration.
+    </div>
+    <div class="form-group info" id="info_warning_4">
+      Notice that provisioned services have expired sent to the provisioner on expiration day.
+    </div>
+  </form>
+
  </div>
  <div id="access" class="tab">
   <p>

@@ -4,9 +4,16 @@ services:
   app:
     environment:
       ENV: localdev
-      PORT: 8000
+      PORT: 8080
       AUTH: SAML_MOCK
       # ENDORSEMENT_SERVICES: "google, office365"
+      ITBILL_HOST: https://uwdev.service-now.com/
+      ITBILL_FORM_URL_BASE_ID: sc_cat_item
+      ITBILL_FORM_URL_SYS_ID: abcdef123abcdef123abcdef01345
+      ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID: 7078586b2f6cb076cad75ae9aab3ea05
+      # ENDORSEMENT_PROVISIONING: "services, shared_drives"
+      # ENDORSEMENT_PROVISIONING: services,mailbox_access
+      # ENDORSEMENT_PROVISIONING: services
     restart: always
     container_name: app-provision
     build:
@@ -15,7 +22,7 @@ services:
     volumes:
       - ./endorsement:/app/endorsement
     ports:
-      - "8000:8000"
+      - "8080:8080"
   devtools:
     restart: always
     container_name: devtools

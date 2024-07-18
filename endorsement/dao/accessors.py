@@ -3,6 +3,7 @@
 
 from endorsement.dao.gws import get_group_admin_emails
 from endorsement.util.email import uw_email_address
+from endorsement.exceptions import UnrecognizedGroupID
 import logging
 
 
@@ -17,7 +18,13 @@ def get_accessor_email(access_record):
     accessor = access_record.accessor
     if accessor.is_group:
         # group accessor email goes to group admins
-        return get_group_admin_emails(accessor.name)
+        try:
+            return get_group_admin_emails(accessor.name)
+        except UnrecognizedGroupID:
+            logger.error(
+                "get_accessor_email: unrecognized group: {}".format(
+                    accessor.name))
+            return []
 
     return [{
         'email': uw_email_address(accessor.name),

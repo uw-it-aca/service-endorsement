@@ -1,0 +1,36 @@
+[
+  {
+    "model": "endorsement.shareddrivequota",
+    "pk": 1,
+    "fields": {
+      "org_unit_id": "T72MWH9HA4WUVIU",
+      "org_unit_name": "100GB",
+      "quota_limit": 100
+    }
+  },
+  {
+    "model": "endorsement.shareddrivequota",
+    "pk": 2,
+    "fields": {
+      "org_unit_id": "WbliZ9HlrRXkszf",
+      "org_unit_name": "200GB",
+      "quota_limit": 200
+    }
+  },
+  {"model": "endorsement.shareddrivequota",
+   "pk": 3,
+   "fields": {
+     "org_unit_id": "HlhssOVDbv1dgHV",
+     "org_unit_name": "300GB",
+     "quota_limit": 300
+   }
+  },
+  {"model": "endorsement.shareddrivequota",
+   "pk": 4,
+   "fields": {
+     "org_unit_id": "gS8XJwJMfxYDCkle",
+     "org_unit_name": "400GB",
+     "quota_limit": 400
+   }
+  }
+]

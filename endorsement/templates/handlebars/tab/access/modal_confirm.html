@@ -11,12 +11,12 @@
     {{> modal_action_partial}}
     <div class="row">
       <div class="col-md-12">
-    As the owner of “UW NetID {{ mailbox }}”, you are responsible for proper use, account maintenance, and access privileges to its mailbox.
+    As the owner of UW NetID "{{ mailbox }}”, you are responsible for proper use, account maintenance, and access privileges to its mailbox.
       </div>
     </div>
     <div class="row">
       <div class="col-md-12">
-    The use of the mailbox by any individual acting as the UW NetID is bound by UW-IT's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures.For more information, visit <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">UW-IT's Appropriate Use</a> page.
+    The use of the mailbox by any individual acting as the UW NetID is bound by UW-IT's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures. For more information, visit <a href="http://itconnect.uw.edu/work/appropriate-use/" target="_blank">UW-IT's Appropriate Use</a> page.
       </div>
     </div>
     <div class="row">
@@ -30,7 +30,7 @@
       </div>
       <div class="col-md-11">
         <label for="access_accept_responsibility" class="accept_responsibility">
-           I agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to my use of UW computing resources, including provisioning {{ access_type_name }} access to the mailbox of “UW NetID {{ mailbox }}” to another UW NetID.
+           I agree to comply with all relevant state and federal laws, and with all UW policies and procedures, relating to my use of UW computing resources, including provisioning {{ access_type_name }} access to the mailbox of UW NetID "{{ mailbox }}” to another UW NetID.
         </label>
       </div>
     </div>
@@ -44,7 +44,7 @@
 
 <script id="granted_netid_modal_content" type="text/x-handlebars-template">
 <div class="modal-header">
-  <span class="significant">Access to Provisioned Services</span>
+  <span class="significant">Access to Outlook mailbox</span>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
@@ -53,7 +53,7 @@
   <div class="endorsed-acceptance container">
     <div class="row">
       <div class="col-md-12">
-    You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. “UW NetID {{ accessor.name }}” now has {{ right_name }} access to the UW Office 365 Exchange Online mailbox belonging to “UW NetID {{ accessee.netid }}”.
+    You have agreed to comply with all relevant state and federal laws, and with all UW policies and procedures. UW NetID "{{ accessor.name }}” now has {{ right_name }} access to the UW Office 365 Exchange Online mailbox belonging to UW NetID "{{ accessee.netid }}”.
       </div>
     </div>
 </div>

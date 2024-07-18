@@ -1,0 +1,50 @@
+Hello {{ email.display_name }},
+<p>
+  The UW employee {{ record.accessee.display_name }} ({{ record.accessee.netid }}) has given
+{% if record.accessor.is_group %}
+  the group "{{record.accessor.name}}" you administrate
+{% elif record.accessor.is_shared_netid %}
+  the shared netid "{{record.accessor.name}}"
+{% else %}
+  you
+{% endif %}
+  “{{ record.access_right.display_name }}” mailbox permissions to the <a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/" target="_blank">UW Office 365 Exchange Online</a> mailbox (aka email account) for “{{record.accessee.netid}}”.
+</p>
+<p>
+Access to this UW Exchange Online mailbox lasts for 365 days and must be renewed annually by {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
+</p>
+<p>
+With &quot;{{ record.access_right.display_name }}&quot; permissions {% if record.accessor.is_group %}group members{% elif record.accessor.is_shared_netid %}the shared netid{% else %}you{% endif %} can:
+<ul>
+  {% if record.access_right.name == 'FullAccessandSendAs' %}
+    <li>View, add and remove the contents of the mailbox</li>
+    <li>Send email as the mailbox</li>
+  {% elif record.access_right.name == 'FullAccess' %}
+    <li>View, add and remove the contents of the mailbox</li>
+  {% elif record.access_right.name == 'SendAs' %}
+    <li>Send email as the mailbox</li>
+  {% elif record.access_right.name == 'SendOnBehalf' %}
+    <li>Send email on behalf of the mailbox</li>
+    <li>Note: For calendaring to work correctly with “Send on Behalf” permissions, you must <a href="https://groups.uw.edu/group/u_msca_enable_uw-forwarding-bypass" target="_blank">join this UW Group</a></li>
+  {% else %}
+    <li>Some additional access.</li>
+  {% endif %}
+</ul>
+</p>
+<p>
+Now that you have access to another mailbox, <a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/add-mailbox-permissions/#access" target="_blank">learn how to add the mailbox to a supported Outlook email client (e.g. Outlook on the web, Outlook for desktop, Outlook for iOS/Android)</a>.
+</p>
+<p>
+Additional resources:
+<ul>
+<li><a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/add-mailbox-permissions/" target="_blank">Learn about mailbox permissions in UW Exchange Online</a></li>
+<li><a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/provisioning-request-tool/" target="_blank">Learn about provisioning services and resources using the Provisioning Request Tool (PRT)</a></li>
+</ul>
+</p>
+<p>
+If you have any questions, please contact help@uw.edu or 206-221-5000.
+</p>
+<p>
+Thank you,<br />
+UW-IT
+</p>

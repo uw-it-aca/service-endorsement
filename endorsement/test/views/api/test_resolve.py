@@ -3,7 +3,6 @@
 
 
 from django.urls import reverse
-from django.core.management import call_command
 from django.test import Client
 from userservice.user import get_original_user
 from endorsement.test.views import require_url, TestViewApi
@@ -13,15 +12,10 @@ from endorsement.models import (
 
 @require_url('access_right_resolve_api', 'access urls not configured')
 class TestResolve(TestViewApi):
-
-    def setUp(self):
-        super(TestResolve, self).setUp()
-
-        # seed db
-        call_command('loaddata', 'test_data/accessright.json')
-        call_command('loaddata', 'test_data/accessee.json')
-        call_command('loaddata', 'test_data/accessor.json')
-        call_command('loaddata', 'test_data/accessrecordconflict.json')
+    fixtures = ['test_data/accessright.json',
+                'test_data/accessee.json',
+                'test_data/accessor.json',
+                'test_data/accessrecordconflict.json']
 
     def test_resolve_api(self):
         test_request = {

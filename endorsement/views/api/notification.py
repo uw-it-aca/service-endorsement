@@ -5,15 +5,23 @@ import logging
 from endorsement.views.rest_dispatch import RESTDispatch
 from endorsement.models import (
     Endorser, Endorsee, EndorsementRecord,
-    Accessor, Accessee, AccessRight, AccessRecord)
+    Accessor, Accessee, AccessRight, AccessRecord,
+    Member, Role, SharedDriveMember, SharedDrive,
+    SharedDriveQuota, SharedDriveRecord, SharedDriveRecord)
 from endorsement.services import endorsement_services, get_endorsement_service
+from endorsement.policy.endorsement import EndorsementPolicy
+from endorsement.policy.shared_drive import SharedDrivePolicy
+from endorsement.policy.access import AccessPolicy
 from endorsement.util.auth import SupportGroupAuthentication
-from endorsement.dao.notification import (
-    _get_endorsed_unnotified,
-    _create_expire_notice_message,
+from endorsement.notifications.endorsement import (
+    _get_endorsed_unnotified, _create_expire_notice_message,
     _create_endorsee_message, _create_endorser_message,
-    _create_warn_shared_owner_message,
-    _create_accessor_message)
+    _create_warn_shared_owner_message)
+from endorsement.notifications.access import (
+    _create_accessor_message, _create_accessee_expiration_notice)
+from endorsement.notifications.shared_drive import (
+    _create_notification_expiration_notice,
+    _create_notification_over_quota_non_subsidized)
 from endorsement.dao.accessors import get_accessor_email
 from datetime import datetime, timedelta
 import re
@@ -38,6 +46,8 @@ class Notification(RESTDispatch):
             return self._service_notification(request)
         elif notice_type == 'access':
             return self._access_notification(request)
+        elif notice_type == 'shared_drive':
+            return self._shared_drive_notification(request)
 
         return self.error_response(400, "Incomplete or unknown notification.")
 
@@ -93,7 +103,7 @@ class Notification(RESTDispatch):
         try:
             if warning_level:
                 subject, text, html = _create_expire_notice_message(
-                    warning_level, 365, endorsed)
+                    warning_level, endorsed, EndorsementPolicy())
             elif notification == 'endorsee':
                 unendorsed = _get_unendorsed_unnotified(endorsed)
                 for email, endorsers in unendorsed.items():
@@ -108,7 +118,7 @@ class Notification(RESTDispatch):
                     break
             elif notification == 'new_shared':
                 subject, text, html = _create_warn_shared_owner_message(
-                    endorser, endorsed)
+                    endorser, endorsed, EndorsementPolicy())
             else:
                 return self.error_response(
                     405, "unknown notification: {}".format(notification))
@@ -147,11 +157,19 @@ class Notification(RESTDispatch):
             return self.error_response(400, "Unknown access right.")
 
         ar = AccessRecord(
-            accessee=accessee, accessor=accessor, access_right=access_right)
+            accessee=accessee, accessor=accessor,
+            access_right=access_right, datetime_granted=datetime.now())
+
+        warnings = ['warning_1', 'warning_2', 'warning_3', 'warning_4']
 
         if notification == 'delegate':
             (subject, text_body, html_body) = _create_accessor_message(
                 ar, get_accessor_email(ar))
+        elif notification in warnings:
+            (subject,
+             text_body,
+             html_body) = _create_accessee_expiration_notice(
+                 warnings.index(notification) + 1, ar, AccessPolicy())
         else:
             return self.error_response(400, "Unknown notification.")
 
@@ -159,6 +177,33 @@ class Notification(RESTDispatch):
             'subject': subject,
             'text': text_body,
             'html': html_body
+        })
+
+    def _shared_drive_notification(self, request):
+        notification = request.data.get('notification', None)
+
+        record = SharedDriveRecord.objects.filter(
+            is_deleted__isnull=True).first()
+
+        warning_level = None
+        m = re.match(r'^warning_([1-4])$', notification)
+        if m:
+            warning_level = int(m.group(1))
+            if warning_level:
+                subject, text, html = _create_notification_expiration_notice(
+                    warning_level, record, SharedDrivePolicy())
+            else:
+                return self.error_response(400, "Unknown notification.")
+        elif notification == 'phase_0_expiration':
+            subject, text, html = \
+                _create_notification_over_quota_non_subsidized(record)
+        else:
+            return self.error_response(400, "Unknown notification.")
+
+        return self.json_response({
+            'subject': subject,
+            'text': text,
+            'html': html
         })
 
 

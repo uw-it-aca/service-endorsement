@@ -14,6 +14,7 @@ import { HandlebarsHelpers } from "./handlebars-helpers.js";
 import { ManageProvisionedServices } from "./tab/endorsed.js";
 import { ManageSharedNetids } from "./tab/shared.js";
 import { ManageOfficeAccess } from "./tab/office.js";
+import { ManageSharedDrives } from "./tab/google.js";
 
 $(window.document).ready(function() {
     var common_tools,
@@ -36,8 +37,11 @@ $(window.document).ready(function() {
         panels = [MainTabs,
                   ManageProvisionedServices,
                   ManageSharedNetids,
-                  ManageOfficeAccess];
+                  ManageOfficeAccess,
+                  ManageSharedDrives];
         loadTools(panels);
+
+        setTabFromPath();
     }
     catch (err) {
         if (err.name !== 'ReferenceError') {
@@ -61,5 +65,20 @@ var loadTools = function (tools) {
     // sets up events and so forth...
     $.each(tools, function () {
         this.load.apply(this);
+    });
+};
+
+var setTabFromPath = function () {
+    var tabs = [
+        {path: '/', tab: 'services'},
+        {path: '/access', tab: 'access'},
+        {path: '/drives', tab: 'drives'}
+    ], tab;
+
+    $.each(tabs, function () {
+        if (window.location.pathname === this.path) {
+            MainTabs.openTab(this.tab);
+            return false;
+        }
     });
 };

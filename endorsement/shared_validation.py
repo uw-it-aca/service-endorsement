@@ -6,7 +6,7 @@ from endorsement.dao.endorse import clear_endorsement
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.user import get_endorser_model
 from endorsement.dao.uwnetid_admin import get_owner_for_shared_netid
-from endorsement.dao.notification import warn_new_shared_netid_owner
+from endorsement.notifications.endorsement import warn_new_shared_netid_owner
 import logging
 
 

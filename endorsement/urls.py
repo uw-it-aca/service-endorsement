@@ -7,6 +7,7 @@ from endorsement.views import page
 from endorsement.views.accept import accept
 from endorsement.views.support.endorser_search import EndorserSearch
 from endorsement.views.support.endorsee_search import EndorseeSearch
+from endorsement.views.support.member_search import MemberSearch
 from endorsement.views.support.notifications import EndorseeNotifications
 from endorsement.views.support.shared_proxy import SharedProxy
 from endorsement.views.support.persistent_messages import PersistentMessages
@@ -22,11 +23,14 @@ from endorsement.views.api.endorsements import Endorsements
 from endorsement.views.api.shared import Shared
 from endorsement.views.api.shared_owner import SharedOwner
 from endorsement.views.api.shared_proxy import SharedProxyEndorse
+from endorsement.views.api.member import Member
 from endorsement.views.api.statistics import Statistics
 from endorsement.views.api.office.access import (
     Access as OfficeAccess, AccessRights as OfficeAccessRights)
 from endorsement.views.api.office.resolve import ResolveRightsConflict
 from endorsement.views.api.office.validate import Validate as OfficeValidate
+from endorsement.views.api.google.shared_drive import SharedDrive
+from endorsement.views.api.google.itbill import SharedDriveITBillURL
 from endorsement.views.api.notification import Notification
 
 
@@ -40,6 +44,8 @@ urlpatterns = [
             name='endorsee_search'),
     re_path(r'^support/provisioner/?', EndorserSearch.as_view(),
             name='endorser_search'),
+    re_path(r'^support/member/?', MemberSearch.as_view(),
+            name='member_search'),
     re_path(r'^support/notifications/?', EndorseeNotifications.as_view(),
             name='endorsee_notifications'),
     re_path(r'^support/override/?', SupportView.as_view(),
@@ -65,6 +71,8 @@ urlpatterns = [
             SharedProxyEndorse.as_view(), name='shared_proxy_endorse_api'),
     re_path(r'^api/v1/shared', Shared.as_view(), name='shared_api'),
     re_path(r'^api/v1/accept', Accept.as_view(), name='accept_api'),
+    re_path(r'^api/v1/member/(?P<member>.+)$',
+            Member.as_view(), name='member_api'),
     re_path(r'^api/v1/notification', Notification.as_view(),
             name='notification_api'),
     re_path(r'^office/v1/access/rights',
@@ -74,5 +82,9 @@ urlpatterns = [
     re_path(r'^office/v1/access', OfficeAccess.as_view(), name='access_api'),
     re_path(r'^office/v1/validate', OfficeValidate.as_view(),
             name='office_validate_api'),
+    re_path(r'^google/v1/shared_drive/(?P<drive_id>[\S^/]+)/itbill_url',
+            SharedDriveITBillURL.as_view(), name='shared_drive_itbill_url'),
+    re_path(r'^google/v1/shared_drive/(?P<drive_id>[^\s\/]+)?',
+            SharedDrive.as_view(), name='shared_drive_api'),
     re_path(r'.*', page.index, name='home'),
 ]
