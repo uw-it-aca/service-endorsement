@@ -171,43 +171,43 @@ environmentVariablesSecrets:
     secretKey: email-host
   ITBillHost:
     name: ITBILL_HOST
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: itbill-host
   ITBillBasicAuth:
     name: ITBILL_BASIC_AUTH
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: itbill-basic-auth
   ITBillSharedDriveProductSYSID:
     name: ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: itbill-shared-drive-product-sys-id
   ITBillFormURLBaseID:
     name: ITBILL_FORM_URL_BASE_ID
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: itbill-form-url-base-id
   ITBillFormURLSYSID:
     name: ITBILL_FORM_URL_SYS_ID
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: itbill-form-url-sys-id
   MSCA_OAUTH_TOKEN_URL:
     name: MSCA_OAUTH_TOKEN_URL
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: msca-oauth-token-url
   MSCAReportScope:
     name: MSCA_REPORT_SCOPE
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: msca-report-scope
   MSCAClientID:
     name: MSCA_CLIENT_ID
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: msca-client-id
   MSCAClientSecret:
     name: MSCA_CLIENT_SECRET
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: msca-client-secret
   MSCASubscriptionKey:
     name: MSCA_SUBSCRIPTION_KEY
-    secretName: test.provision.uw.edu-secrets
+    secretName: provision.uw.edu-secrets
     secretKey: msca-subscription-key
   SAMLServiceProviderCert:
     name: SP_CERT
