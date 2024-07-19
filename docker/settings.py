@@ -78,7 +78,7 @@ STATICFILES_FINDERS = (
 if os.getenv("ENV") == "localdev":
     DEBUG = True
 else:
-    RESTCLIENTS_PRT_HOST = 'https://staff.washington.edu'
+    RESTCLIENTS_PRT_HOST = 'https://depts.washington.edu'
     RESTCLIENTS_PRT_DAO_CLASS = 'Live'
     RESTCLIENTS_MSCA_HOST = 'https://pplat-apimgmt.azure-api.net'
     RESTCLIENTS_MSCA_DAO_CLASS = 'Live'
