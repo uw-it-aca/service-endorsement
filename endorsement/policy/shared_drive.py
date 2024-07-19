@@ -11,7 +11,6 @@ Basic notions:
 
 from endorsement.models import SharedDriveRecord
 from endorsement.policy import PolicyBase
-from endorsement.dao.shared_drive import shared_drive_lifecycle_expired
 
 
 class SharedDrivePolicy(PolicyBase):
@@ -22,10 +21,3 @@ class SharedDrivePolicy(PolicyBase):
     @property
     def datetime_provisioned_key(self):
         return "datetime_accepted"
-
-
-def expire_shared_drives(gracetime, lifetime):
-    """
-    """
-    for drive in shared_drives_to_expire(gracetime, lifetime):
-        shared_drive_lifecycle_expired(drive)
