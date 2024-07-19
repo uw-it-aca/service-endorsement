@@ -1,13 +1,15 @@
 # Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.dao.notification import send_notification
+from endorsement.dao.notification import (
+    send_notification, send_admin_notification)
 from endorsement.models import SharedDriveRecord
 from endorsement.dao.user import get_endorsee_email_model
 from endorsement.dao import display_datetime
 from endorsement.policy.shared_drive import SharedDrivePolicy
 from endorsement.util.email import uw_email_address
 from endorsement.util.itbill.shared_drive import shared_drive_subsidized_quota
+from endorsement.exceptions import EmailFailureException
 from django.template import loader, Template, Context
 from django.utils import timezone
 import re
@@ -103,3 +105,14 @@ def notify_over_quota_non_subsidized_expired():
             drive.save()
         except EmailFailureException as ex:
             pass
+
+
+def notify_admin_missing_drive_count_exceeded(**kwargs):
+    subject = "URGENT: Share Drive Reconcile has too many missing drives"
+    text_template = _email_template("missing_drives.txt")
+    text_message = loader.render_to_string(text_template, kwargs)
+
+    try:
+        send_admin_notification(subject, text_message)
+    except EmailFailureException as ex:
+        pass

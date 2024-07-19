@@ -20,6 +20,9 @@ from endorsement.dao.itbill import (
     load_itbill_subscription,
     expire_subscription,
 )
+from endorsement.notifications.shared_drive import (
+    notify_admin_missing_drive_count_exceeded
+)
 from endorsement.util.itbill.shared_drive import (
     shared_drive_subscription_deadline
 )
@@ -74,6 +77,14 @@ def sync_quota_from_subscription(drive_id):
         raise SharedDriveRecordNotFound(drive_id)
 
 
+def expire_shared_drives(gracetime, lifetime):
+    """
+    Expire shared drives that have exceeded their lifetime.
+    """
+    for drive in shared_drives_to_expire(gracetime, lifetime):
+        shared_drive_lifecycle_expired(drive)
+
+
 def shared_drive_lifecycle_expired(drive_record):
     """
     Set lifecycle to expired for shared drive
@@ -83,7 +94,8 @@ def shared_drive_lifecycle_expired(drive_record):
        - set subscription end_date to today using:
             - expire_subscription(drive_record)
     """
-    logger.info(f"Shared drive {drive_record} lifecycle expired")
+    logger.error(
+        f"Shared drive {drive_record} lifecycle expired: not implemented")
 
 
 def load_shared_drives(google_drive_states):
@@ -459,7 +471,9 @@ class Reconciler:
 
         # failsafe for potentially truncated shared drive report
         if missing_drive_count > self.missing_drive_threshold:
-            # TODO: more visible alerting
+            notify_admin_missing_drive_count_exceeded(
+                missing_drive_count=missing_drive_count,
+                missing_drive_threshold=missing_drive_threshold)
             logger.error(
                 f"missing drive count exceeds threshold: "
                 f"{missing_drive_count} > {self.missing_drive_threshold}"
@@ -508,38 +522,50 @@ class Reconciler:
             # notably excepting "member" and "role"
             drive_state = drive_states[0]
 
-            shared_drive = SharedDrive.objects.get(drive_id=drive_id)
-
-            # TODO: wrap below in a transaction?
-
-            # update drive manager list
             try:
-                managers = managers_for_shared_drive(drive_states)
-                shared_drive.members.set(managers)
-            except Exception as ex:
-                logger.error(f"drive ({drive_id}) manager update: {ex}")
+                shared_drive = SharedDrive.objects.get(drive_id=drive_id)
 
-            try:
+                # TODO: wrap below in a transaction?
+
+                # update drive manager list
+                try:
+                    managers = managers_for_shared_drive(drive_states)
+                    shared_drive.members.set(managers)
+                except Exception as ex:
+                    logger.error(
+                        f"existing drive ({drive_id}): manage update: {ex}")
+
                 # update drive name
-                if shared_drive.drive_name != drive_state.drive_name:
-                    shared_drive.drive_name = drive_state.drive_name
-                    shared_drive.save()
-            except Exception as ex:
-                logger.error(f"drive ({drive_id}) "
-                             f"name ({drive_state.drive_name}) update: {ex}")
+                try:
+                    if shared_drive.drive_name != drive_state.drive_name:
+                        shared_drive.drive_name = drive_state.drive_name
+                        shared_drive.save()
+                except Exception as ex:
+                    logger.error(
+                        f"existing drive ({drive_id}) "
+                        f"name ({drive_state.drive_name}) update: {ex}")
 
-            # confirm drive and subscription match
-            sdr = SharedDriveRecord.objects.get_record_by_drive_id(drive_id)
-            reconcile_drive_quota(
-                sdr,
-                no_subscription_quota=subsidized_quota,
-                no_move_drive=self.no_move_drive,
-            )
+                # confirm drive and subscription match
+                sdr = SharedDriveRecord.objects.get_record_by_drive_id(
+                    drive_id)
+                reconcile_drive_quota(
+                    sdr,
+                    no_subscription_quota=subsidized_quota,
+                    no_move_drive=self.no_move_drive,
+                )
 
-            # confirm drive still has a provision with current manager list
-            # TODO: what do we do if they do not?
-            #   case 1: drive still has managers - do we alert them?
-            #   case 2: drive has no mangers - ???
+                # confirm drive still has a provision with
+                # current manager list
+                # TODO: what do we do if they do not?
+                #   case 1: drive still has managers - do we alert them?
+                #   case 2: drive has no mangers - ???
+
+            except SharedDrive.DoesNotExist:
+                logger.error(f"existing drive ({drive_id}): "
+                             f"SharedDrive not found")
+            except SharedDriveRecord.DoesNotExist:
+                logger.error(f"existing drive ({drive_id}): "
+                             f"SharedDriveRecord not found")
 
     def get_prt_drive_ids(self):
         """

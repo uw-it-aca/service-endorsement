@@ -7,6 +7,9 @@ from django.core.management.base import BaseCommand
 from endorsement.dao.shared_drive import Reconciler
 
 
+logger = logging.getLogger(__name__)
+
+
 class Command(BaseCommand):
     help = "Loop over all shared drives verifying lifecycle and subscriptions"
 
@@ -25,10 +28,15 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logging.getLogger().setLevel(logging.INFO)
+        logger.setLevel(logging.INFO)
         params = {
             'no_move_drive': options['no_move_drive'],
             'missing_drive_threshold': options['missing_drive_threshold'],
         }
 
-        Reconciler(**params).reconcile()
+        try:
+            Reconciler(**params).reconcile()
+        except Exception as ex:
+            logger.error(
+                "Reconcile shared drives failed: {}".format(ex),
+                exc_info=True, stack_info=True)
