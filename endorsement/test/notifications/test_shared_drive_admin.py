@@ -15,6 +15,7 @@ class TestSharedDriveAdminNotices(NotificationsTestCase):
             missing_drive_threshold=99)
 
         self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox[0].to), 1)
         self.assertTrue("jstaff@uw.edu" in mail.outbox[0].to)
         self.assertTrue("99" in mail.outbox[0].body)
         self.assertTrue("101" in mail.outbox[0].body)
