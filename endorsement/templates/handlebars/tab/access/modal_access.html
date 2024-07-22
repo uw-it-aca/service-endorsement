@@ -1,0 +1,45 @@
+{% verbatim %}
+<script id="select_access_modal_content" type="text/x-handlebars-template">
+<div class="modal-header">
+  <span>Select permissions level for {{mailbox}}</span>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="access-type-selector">
+    <label for="accesstype">Select permission level</label>
+    <select id="accesstype" class="office-access-types custom-select" data-access-right-id="{{ access_type }}" aria-label="Select access type for {{ delegate }} to {{mailbox}}'s mailbox"></select>
+  </div>
+  <div class="access-type-detail">
+    <span>Permission level details</span> <a>Hide permission details</a>
+  </div>
+  <div class="access-types-explained">
+    <span>Full Access and Send As</span>
+    <ul>
+      <li>Open the mailbox</li>
+      <li>View, add and remove the contents of the mailbox</li>
+      <li>Send messages as if they came directly from the mailbox</li>
+    </ul>
+    <span>Full Access</span>
+    <ul>
+      <li>Open the mailbox</li>
+      <li>View, add and remove the contents of the mailbox</li>
+    </ul>
+    <span>Send As</span>
+    <ul>
+      <li>Send messages as if they came directly from the mailbox</li>
+    </ul>
+    <span>Send on Behalf</span>
+    <ul>
+    <li>Alows the delegate to send messages from the mailbox or group</li>
+    <li>Send messages on behalf of the mailbox (the “from” address clearly shows the message was sent by a delegate)</li>
+   </ul>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
+  <button type="button" id="select_netid_access" class="btn btn-primary" disabled="disabled">Next</button>
+</div>
+</script>
+{% endverbatim %}

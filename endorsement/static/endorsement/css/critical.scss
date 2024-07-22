@@ -308,6 +308,14 @@ a {
      label { margin-bottom: 0; }
      span { font-weight: 400; }
   }
+  .access-delegate-id { font-weight: 800; }
+  .access-action { border-left: 1px solid #ddd;
+      a { color: #2F68CB; cursor: pointer; }
+  }
+  .access-type {
+      a { font-weight: 800; color: #2F68CB; cursor: pointer; }
+      div { font-style: italic; }
+  }
   tr.new_netid,
   tr.new_access .access-delegate-id,
   tr.new_access .access-status,
@@ -410,6 +418,11 @@ label.accept_responsibility {
 
 #office_access { padding-top: .5em;
     .access-header { font-size: 1.1em; font-weight: 800; }
+    .mailbox-selector { padding-bottom: 1.5em; width: 100%;
+        label { font-weight: bold; }
+        select { float: left; width: 40%; }
+        button { float: left; margin-left: 1em; }
+    }
 }
 
 #shared_drives { padding-top: .5em;
@@ -509,6 +522,25 @@ ul.email-list { list-style: none; padding: 0; }
 
 #endorse_modal {
   h4 { font-size:1.1em; margin-top: 0; padding-top: 0; }
+}
+
+#access_netids_modal {
+    .access-type-selector {
+        margin-bottom: 1.5em;
+        label { font-weight: 800; }
+    }
+    .access-type-detail {
+        span { font-weight: 800; }
+        a { cursor: pointer; color: #2F68CB; }
+    }
+    .access-types-explained {
+        padding-top: 1em;
+        padding-left: .5em;
+    }
+}
+
+.modal-header {
+  span { font-weight: 700; }
 }
 
 .modal-content {

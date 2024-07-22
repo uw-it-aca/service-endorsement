@@ -37,19 +37,22 @@ var ManageOfficeAccess = (function () {
                 _enableCheckEligibility($(this));
             }).on('change', 'select.inbox-netids', function () {
                 _scrollNetIDIntoView(this.value);
-            }).on('change', 'select.office-access-types', function () {
-                _setRenewUpdate($(this), this.value);
             }).on('click', '#validate_netids_access', function (e) {
                 var mailbox = $('.validate-netid-list textarea').attr('data-mailbox'),
                     delegates = _getNetidList();
 
                 Button.loading($('#' + this.id, $content));
                 _validateOfficeAccessUWNetIDs(mailbox, delegates);
-            }).on('click', '#access_provision', function (e) {
-                var $button = $(this),
-                    $row = $button.closest('tr');
+            }).on('click', '#select_access_type', function (e) {
+                var $action = $(this),
+                    $row = $action.closest('tr');
 
-                _confirmNetidAccessModal($row);
+                _selectNetidAccessModal($row);
+            }).on('click', '#access_update', function (e) {
+                var $action = $(this),
+                    $row = $action.closest('tr');
+
+                _selectNetidAccessModal($row);
             }).on('click', '#access_revoke', function (e) {
                 var $button = $(this),
                     $row = $button.closest('tr');
@@ -60,11 +63,11 @@ var ManageOfficeAccess = (function () {
                     $row = $button.closest('tr');
 
                 _confirmNetidRenewModal($row);
-            }).on('click', '#access_update', function (e) {
-                var $button = $(this),
-                    $row = $button.closest('tr');
-
-                _confirmNetidUpdateModal($row);
+///            }).on('click', '#access_update', function (e) {
+//                var $button = $(this),
+//                    $row = $button.closest('tr');
+//
+//                _confirmNetidUpdateModal($row);
             }).on('click', 'input.access-conflict', function (e) {
                 var $this = $(this),
                     $button = $this.closest('div.row').find('button#access_resolve');
@@ -85,7 +88,7 @@ var ManageOfficeAccess = (function () {
                 $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
                     var $row = _accessTableRow(context.mailbox, context.delegate);
 
-                    Button.loading($('#access_provision', $row));
+                    //Button.loading($('#access_provision', $row));
                     _setAccessForDelegate(context);
                 });
                 _modalHide();
@@ -110,7 +113,7 @@ var ManageOfficeAccess = (function () {
                 $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
                     var $row = _accessTableRow(context.mailbox, context.delegate);
 
-                    Button.loading($('#access_update', $row));
+                    //Button.loading($('#access_update', $row));
                     _updateAccessForDelegate(context);
                 });
                 _modalHide();
@@ -133,7 +136,7 @@ var ManageOfficeAccess = (function () {
                 var $row = _accessTableRow(accessee.mailbox, accessee.delegate);
 
                 Notify.error('Access error: ' + error);
-                Button.reset($('#access_provision', $row));
+                //Button.reset($('#access_provision', $row));
             }).on('endorse:OfficeDelegateRevokeSuccess', function (e, context) {
                 _deleteOfficeAccessDisplay(context);
                 _revokedNetidAccessModal(context);
@@ -161,6 +164,16 @@ var ManageOfficeAccess = (function () {
             $(document).on('endorse:TabChange', function (e, data) {
                 if (data == 'access') {
                     _adjustTabLocation();
+                }
+            }).on('change', '#access_netids_modal select', function () {
+                var $modal = $(this).closest('#access_netids_modal'),
+                    $selected = $('option:selected', this),
+                    $select_button = $('button#select_netid_access', $modal);
+
+                if ($selected.val()) {
+                    $select_button.removeAttr('disabled');
+                } else {
+                    $select_button.attr('disabled', 'disabled');
                 }
             }).on('change', '#access_netids_modal input', function () {
                 var $modal = $(this).closest('#access_netids_modal'),
@@ -231,6 +244,7 @@ var ManageOfficeAccess = (function () {
                             date_granted: DateTime.utc2localdate(d.datetime_granted),
                             date_renewal: _renewalDateFormat(renewal_date),
                             date_renewal_relative: renewal_date.fromNow(),
+                            right_name: d.access_right.display_name,
                             right_id: d.access_right.name,
                             accessee_index: accessee_index,
                             access_index: i
@@ -320,13 +334,16 @@ var ManageOfficeAccess = (function () {
                     delegate = this.name,
                     $rows = $('.office-access-table tr[data-mailbox="' + v.mailbox + '"]');
 
+                if ($('tr[data-mailbox="' + mailbox  + '"][data-delegate="' + delegate + '"]').length > 0) {
+                    Notify.warning('Access for ' + delegate + ' already provided.', 10000);
+                    return true;
+                }
+
                 $rows.each(function (i) {
                     var $this_row = $(this),
                         row_delegate = $this_row.attr('data-delegate');
-                    if (v.name == row_delegate) {
-                        Notify.warning('Access for ' + row_delegate + ' already provided.');
-                        return false;
-                    } else if (v.name < row_delegate || i === $rows.length - 1) {
+
+                    if (v.name < row_delegate || i === $rows.length - 1) {
                         html = template({
                             new_delegate: true,
                             is_valid: v.is_valid,
@@ -366,14 +383,58 @@ var ManageOfficeAccess = (function () {
         _displayValidateNetIDsFailure = function (data) {
             alert('Cannot validate at this time: ' + data);
         },
-        _confirmNetidAccessModal = function ($row) {
-            var context = {
-                action: "provision",
-                mailbox: $row.attr('data-mailbox'),
-                delegate: $row.attr('data-delegate'),
-                access_type: $('.access-type select option:selected', $row).val(),
-                access_type_name: $('.access-type select option:selected', $row).text()
-            };
+        _selectNetidAccessModal = function ($row) {
+            var $access_select,
+                right_id = $row.attr('data-right-id'),
+                context = {
+                    mailbox: $row.attr('data-mailbox'),
+                    delegate: $row.attr('data-delegate'),
+                    access_type: right_id,
+                    access_type_name: _accessTypeName(right_id)
+                };
+
+            _displayModal("#select_access_modal_content", context);
+
+            $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
+                var $access_select = $('#access_netids_modal .modal-body .office-access-types');
+
+                _loadOfficeAccessTypeOptions(context.access_type, $access_select);
+
+                $('button#select_netid_access').one('click', function(e) {
+                    var new_access_type = $('option:selected', $access_select).val(),
+                        new_access_type_name = $('option:selected', $access_select).text();
+
+                    $panel.one('hidden.bs.modal', '#access_netids_modal', function(e) {
+                        if (context.access_type) {
+                            if (context.access_type !== new_access_type) {
+                                context.action = "update";
+                                context.previous_access_type = context.access_type;
+                                context.previous_access_type_name = context.access_type_name;
+                                context.access_type = new_access_type;
+                                context.access_type_name = new_access_type_name;
+                                context.access_type = new_access_type;
+                                context.access_type_name = new_access_type_name;
+
+                                _displayModal("#confirm_update_modal_content", context);
+                                $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
+                                    $('button#confirm_netid_update').one('click', function(e) {
+                                        $panel.trigger('endorse:OfficeDelegateUpdate', [context]);
+                                    });
+                                });
+                            }
+                        } else {
+                            context.access_type = new_access_type;
+                            context.access_type_name = new_access_type_name;
+                            _confirmNetidAccessModal(context);
+                        }
+                    });
+
+                    _modalHide();
+                });
+            });
+        },
+        _confirmNetidAccessModal = function (context) {
+            context.action = "provision";
 
             _displayModal("#confirm_netids_modal_content", context);
             $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
@@ -383,13 +444,14 @@ var ManageOfficeAccess = (function () {
             });
         },
         _confirmNetidRevokeModal = function ($row) {
-            var context = {
-                action: "revoke",
-                mailbox: $row.attr('data-mailbox'),
-                delegate: $row.attr('data-delegate'),
-                access_type: $('.access-type select option:selected', $row).val(),
-                access_type_name: $('.access-type select option:selected', $row).text()
-            };
+            var right_id = $row.attr('data-right-id'),
+                context = {
+                    action: "revoke",
+                    mailbox: $row.attr('data-mailbox'),
+                    delegate: $row.attr('data-delegate'),
+                    access_type: right_id,
+                    access_type_name: _accessTypeName(right_id)
+                };
 
             _displayModal("#confirm_revoke_modal_content", context);
             $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
@@ -414,7 +476,7 @@ var ManageOfficeAccess = (function () {
                 });
             });
         },
-        _confirmNetidUpdateModal = function ($row) {
+/*        _confirmNetidUpdateModal = function ($row) {
             var new_access_type = $('select.office-access-types option:selected', $row).val(),
                 current_access_type = $('.access-type select').attr('data-access-right-id'),
                 context = {
@@ -434,6 +496,7 @@ var ManageOfficeAccess = (function () {
                 });
             });
         },
+*/
         _accessTypeName = function (type_id) {
             return $('.access-type select option[value="' + type_id + '"]', $content).first().text();
         },
@@ -494,12 +557,10 @@ var ManageOfficeAccess = (function () {
                 date_renewal: _renewalDateFormat(renewal_date),
                 date_renewal_relative: renewal_date.fromNow(),
                 right_id: context.access_right.name,
+                right_name: context.access_right.display_name,
                 accessee_index: $row.hasClass('endorsee_row_even') ? 0 : 1,
                 access_index: $row.hasClass('endorsement_row_first') ? 0 : 1});
             $row.replaceWith(html);
-            $row = _accessTableRow(context.accessee.netid, context.accessor.name);
-            _loadOfficeAccessTypeOptions(context.access_right.name,
-                                         $('.office-access-types', $row));
         },
         _renewalDate = function (datetime) {
 
@@ -640,7 +701,7 @@ var ManageOfficeAccess = (function () {
         _loadOfficeAccessTypeOptions = function (right_id, $select) {
             if (!right_id) {
                 $('<option/>')
-                    .text('-- Select access type --')
+                    .text('-- Select --')
                     .val('')
                     .appendTo($select);
             }
@@ -706,31 +767,6 @@ var ManageOfficeAccess = (function () {
         },
         _scrollNetIDIntoView = function (netid) {
             Scroll.scrollToNetid(netid, '.office-access-table');
-        },
-        _setRenewUpdate = function ($select, new_right_id) {
-            var $row = $select.closest('tr'),
-                $buttons = $select.closest('td').next('td'),
-                right_id = $select.attr('data-access-right-id'),
-                $provision_button = $('button#access_provision', $buttons),
-                $renew_button = $('button#access_renew', $buttons),
-                $revoke_button = $('button#access_revoke', $buttons),
-                $update_button = $('button#access_update', $buttons);
-
-            if ($('option:first', $select).val().length === 0) {
-                if ($('option:selected', $select).val() !== 0) {
-                    Button.enable($provision_button);
-                } else {
-                    Button.disable($provision_button);
-                }
-            } else if (new_right_id === right_id) {
-                Button.show($renew_button);
-                Button.show($revoke_button);
-                Button.hide($update_button);
-            } else {
-                Button.hide($renew_button);
-                Button.hide($revoke_button);
-                Button.show($update_button);
-            }
         },
         _accessTableRow = function (netid, delegate) {
             var id = '.office-access-table tr[data-mailbox="' +
