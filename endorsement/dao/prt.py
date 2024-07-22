@@ -22,7 +22,7 @@ class PRT_DAO(DAO):
 
 
 def kerberos_inactive_url(category):
-    return "/krl/stats/prt/cat{}.csv".format(category)
+    return "/uwiam/stats/prt/cat{}.csv".format(category)
 
 
 def get_kerberos_inactive_netids():
