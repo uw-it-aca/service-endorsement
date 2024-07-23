@@ -63,11 +63,6 @@ var ManageOfficeAccess = (function () {
                     $row = $button.closest('tr');
 
                 _confirmNetidRenewModal($row);
-///            }).on('click', '#access_update', function (e) {
-//                var $button = $(this),
-//                    $row = $button.closest('tr');
-//
-//                _confirmNetidUpdateModal($row);
             }).on('click', 'input.access-conflict', function (e) {
                 var $this = $(this),
                     $button = $this.closest('div.row').find('button#access_resolve');
@@ -84,6 +79,9 @@ var ManageOfficeAccess = (function () {
             }).on('click', 'button#confirm_resolved_conflict', function (e) {
                 _modalHide();
                 $('.tabs div#access').trigger('endorse:accessTabExposed');
+            }).on('click', 'a#toggle_permission_details', function (e) {
+                $('.access-types-explained').toggle();
+                $(this).find('span').text($('.access-types-explained').is(':visible') ? 'Hide' : 'Show');
             }).on('endorse:OfficeDelegateConfirmation', function (e, context) {
                 $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
                     var $row = _accessTableRow(context.mailbox, context.delegate);
