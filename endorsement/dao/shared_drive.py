@@ -481,7 +481,7 @@ class Reconciler:
         if missing_drive_count > self.missing_drive_threshold:
             notify_admin_missing_drive_count_exceeded(
                 missing_drive_count=missing_drive_count,
-                missing_drive_threshold=missing_drive_threshold)
+                missing_drive_threshold=self.missing_drive_threshold)
             logger.error(
                 f"missing drive count exceeds threshold: "
                 f"{missing_drive_count} > {self.missing_drive_threshold}"

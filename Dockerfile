@@ -1,6 +1,6 @@
 ARG DJANGO_CONTAINER_VERSION=1.4.1
 
-FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-container:${DJANGO_CONTAINER_VERSION} as app-prewebpack-container
+FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-container:${DJANGO_CONTAINER_VERSION} AS app-prewebpack-container
 
 USER root
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
@@ -27,13 +27,13 @@ WORKDIR /app/
 RUN npm install .
 RUN npx webpack --mode=production
 
-FROM app-prewebpack-container as app-container
+FROM app-prewebpack-container AS app-container
 
 COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/endorsement/bundles/* /app/endorsement/static/endorsement/bundles/
 COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/ /static/
 COPY --chown=acait:acait --from=node-bundler /app/endorsement/static/webpack-stats.json /app/endorsement/static/webpack-stats.json
 
-FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-test-container:${DJANGO_CONTAINER_VERSION} as app-test-container
+FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-test-container:${DJANGO_CONTAINER_VERSION} AS app-test-container
 
 COPY --from=app-container /app/ /app/
 COPY --from=app-container /static/ /static/
