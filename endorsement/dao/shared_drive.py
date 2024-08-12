@@ -362,10 +362,18 @@ def reconcile_drive_quota(
             f"reconcile: set drive {sdr.shared_drive.drive_id} "
             f"quota from {quota_actual} to {quota_correct} GB"
         )
-        # TODO: error handling!
-        set_drive_quota(
-            drive_id=sdr.shared_drive.drive_id, quota=quota_correct
-        )
+
+        try:
+            set_drive_quota(
+                drive_id=sdr.shared_drive.drive_id, quota=quota_correct
+            )
+        except Exception as ex:
+            logger.error(
+                f"reconcile: set_drive_quota: "
+                f"drive: {sdr.shared_drive.drive_id} "
+                f"to {quota_correct} failed: {ex}"
+            )
+            return
 
         # udpate sdr.shared_drive.drive_quota
         drive_quota = get_drive_quota_by_quota_limit(quota_correct)
@@ -473,7 +481,7 @@ class Reconciler:
         if missing_drive_count > self.missing_drive_threshold:
             notify_admin_missing_drive_count_exceeded(
                 missing_drive_count=missing_drive_count,
-                missing_drive_threshold=missing_drive_threshold)
+                missing_drive_threshold=self.missing_drive_threshold)
             logger.error(
                 f"missing drive count exceeds threshold: "
                 f"{missing_drive_count} > {self.missing_drive_threshold}"
