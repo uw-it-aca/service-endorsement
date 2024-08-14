@@ -1,26 +1,23 @@
 {% verbatim %}
 <script id="office_access_panel" type="text/x-handlebars-template">
-<div class="row justify-content-end">
- <div class="col-sm-9">
-    <span class="access-header">UW Office 365 Outlook (Exchange Online) mailbox permissions</span>
-    <p><a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/add-mailbox-permissions/" target="_blank">Learn about UW Office 365 Exchange Online mailbox permissions</a>
 
- </div>
- <div class="col-sm-3">
-  <div class="input-group mb-3">
-    <label for="addnetid" class="visually-hidden">Select a mailbox to providing access to</label>
-    <select class="custom-select inbox-netids">
-      <option value="">Select a mailbox</option>
-      {{#each netids}}
-      <option value="{{this}}">{{this}}</option>
-      {{/each}}
-    </select>
-    <div class="input-group-append">
-      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="Adding NetID">Give access to...</button>
+
+<div class="container row">
+ <div class="mailbox-selector">
+    <div>
+      <label for="addnetid">Select a mailbox to give access to</label>
     </div>
-  </div>
- </div>
+    <div>
+      <select class="custom-select inbox-netids">
+        <option value="">Select a mailbox</option>
+        {{#each netids}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+      <button type="button" class="btn btn-primary" id="add_access" data-loading-text="Adding NetID">Next&hellip;</button>
+    </div>
 </div>
+
 
   <div class="form-group">
     <div class="office-access-table">
@@ -28,11 +25,11 @@
       <caption class="visually-hidden">NetIDs with access to your Outlook mailboxes</caption>
       <thead class="thead-light">
         <tr>
-          <th scope="col" class="endorsed-netid">UW NetID's Mailbox <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="right" data-content="If you’re not seeing a UWNetID that you’d expect, make sure that UW Office 365 is provisioned under the SERVICES FOR NETIDS tab." data-original-title="UW NetID"><i class="fa fa-question-circle"></i></span></th>
+          <th scope="col" class="endorsed-netid">UW NetID <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="right" data-content="If you’re not seeing a UWNetID that you’d expect, make sure that UW Office 365 is provisioned under the SERVICES FOR NETIDS tab." data-original-title="UW NetID"><i class="fa fa-question-circle"></i></span></th>
           <th scope="col" >Name</th>
-          <th scope="col" class="access-delegate">UW NetID/Group</th>
+          <th scope="col" class="access-delegate">Person/Group</th>
+          <th scope="col" class="access-type">Access Type</th>
           <th scope="col" class="access-status">Status</th>
-          <th scope="col" class="access-type">Permissions <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="left" data-content="<h6>Full Access and Send As</h6><ul><li>Open the mailbox</li><li>View, add and remove the contents of the mailbox</li><li>Send messages as if they came directly from the mailbox</li></ul><h6>Full Access</h6><ul><li>Open the mailbox</li><li>View, add and remove the contents of the mailbox</li></ul><h6>Send As</h6><ul><li>Send messages as if they came directly from the mailbox</li></ul><h6>Send on Behalf</h6><ul><li>Alows the delegate to send messages from the mailbox or group</li><li>Send messages on behalf of the mailbox (the “from” address clearly shows the message was sent by a delegate)</li></ul>" data-original-title="Permissions"><i class="fa fa-question-circle"></i></th>
           <th scope="col" class="access-action">Action</th>
         </tr>
       </thead>
@@ -60,17 +57,32 @@
 
 <script id="office_access_row_partial" type="text/x-handlebars-template">
     <tr class="
-endorsement_row_{{#if (eq access_index 0) }}first {{else}}following {{/if}} endorsee_row_{{#if (even accessee_index)}}even{{else}}odd{{/if}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}">
+endorsement_row_{{#if (eq access_index 0) }}first {{else}}following {{/if}} endorsee_row_{{#if (even accessee_index)}}even{{else}}odd{{/if}}{{#unless delegate}} no-delegates{{/unless}}{{#if new_delegate}} new_access{{/if}}" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}" data-right-id="{{right_id}}">
       <td scope="row" class="access-mailbox" data-mailbox="{{ mailbox }}">{{ mailbox }}</td>
     <td class="access-mailbox-name">{{ name }}</td>
 {{#if is_valid}}
 {{#if delegate}}
     <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
-    <td class="access-status">{{#if date_granted}}<i class="fa fa-check" style="color: green;"></i> Provisioned<p>Renew by {{date_renewal}}<br />({{date_renewal_relative}})</p>{{else}}Not Provisioned{{/if}}</td>
-      <td class="access-type"><label for="accesstype" class="visually-hidden">Permissions</label><select id="accesstype" class="office-access-types custom-select" data-access-right-id="{{ right_id }}" aria-label="Select permissions for {{ delegate }} to {{mailbox}}'s mailbox"></select></td>
-      <td class="access-action">{{#if date_granted}}<button type="button" class="btn btn-primary" id="access_update" data-loading-text="Updating" style="display: none;">Update</button><button type="button" class="btn btn-primary" id="access_renew" data-loading-text="Renewing">Renew</button> <button type="button" class="btn btn-secondary" id="access_revoke" data-loading-text="Revoking">Revoke</button>{{else}}<button type="button" class="btn btn-secondary" id="access_provision" disabled="disabled" data-loading-text="Provisioning">Provision Access</button>{{/if}}</td>
+    {{#if date_granted}}
+        <td class="access-type">{{right_name}}</td>
+        <td class="access-status">{{#if date_granted}}<i class="fa fa-check" style="color: green;"></i> Provisioned<p>Renew by {{date_renewal}}<br />({{date_renewal_relative}})</p>{{/if}}</td>
+    {{else}}
+        <td class="access-type" colspan="2">
+          <a id="select_access_type">Select permission level</a>
+          <div>
+          This UW NetID does not yet have mailbox access.
+          </div>
+        </td>
+    {{/if}}
+    <td class="access-action">
+    {{#if date_granted}}
+      <a id="access_update">Update</a>
+      <a id="access_renew">Renew</a>
+      <a id="access_revoke">Revoke</a>
+    {{/if}}
+    </td>
 {{else}}
-      <td class="text-center" colspan="4"><span class="fw-lighter">No mailbox permissions provisioned</span></td>
+      <td class="text-center" colspan="4"><span class="fw-lighter">No access type provisioned</span></td>
 {{/if}}
 {{else}}
     <td>{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
@@ -88,7 +100,7 @@ endorsement_row_{{#if (eq access_index 0) }}first {{else}}following {{/if}} endo
       <td class="access-delegate-id">{{#if delegate_link}}<a href="{{ delegate_link }}" target="_blank">{{/if}}{{ delegate }}{{#if delegate_link}}</a>{{/if}}</td>
       <td colspan="3">
        <p>
-         PRT policy allows only one permission, however, this {{#if is_group}}UW Group{{else}}{{#if is_shared_netid}}shared {{else}}{{/if}}UW NetID{{/if}} has multiple permissions assigned.  Please select one permission for this {{#if is_group}}UW Group{{else}}{{#if is_shared_netid}}shared {{else}}{{/if}}UW NetID{{/if}}.
+         PRT policy allows only one access type, however, this {{#if is_group}}UW Group{{else}}{{#if is_shared_netid}}shared {{else}}{{/if}}UW NetID{{/if}} has multiple access types assigned.  Please select one access type for this {{#if is_group}}UW Group{{else}}{{#if is_shared_netid}}shared {{else}}{{/if}}UW NetID{{/if}}.
        </p>
       <div class="row">
         <div class="col-md-8">
@@ -96,7 +108,7 @@ endorsement_row_{{#if (eq access_index 0) }}first {{else}}following {{/if}} endo
           <input type="radio" class="access-conflict" id="{{ name }}" value="{{name}}">
           <label for="{{ name }}"> {{ display_name }}</label><br />
         {{/each}}
-        <button type="button" class="btn btn-primary" id="access_resolve" data-loading-text="Setting Permissions" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}" disabled="disabled">Choose Permission</button>
+        <button type="button" class="btn btn-primary" id="access_resolve" data-loading-text="Setting Permissions" data-mailbox="{{ mailbox }}" data-delegate="{{ delegate }}" disabled="disabled">Choose Access Type</button>
        </div>
       </div>
       </td>
