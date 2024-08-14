@@ -5,18 +5,22 @@ are receiving this message because you are identified as a PRT administrator.
 
 PRT's most recent report of Google Share Drives excluded {{missing_drive_count}} previously
 report shared drives.
+{%if missing_drive_count > missing_drive_threshold %}
+PRT's reconcile process is limited to {{missing_drive_threshold}} shared drive deletions.
 
-PRT's reconcile process shared drive deletion limit is {{missing_drive_threshold}}.
+PRT has declined to remove any shared drives from its database.
 
-PRT has declined to remove any  shared drives from its database.
-
-This situation may be the result of a trunctated shared drive report. If so,
-the next report may .
+This situation may be the result of a trunctated shared drive report or other temporary
+processing error. If so, tomorrow's report may clear this all up.
 
 If the missing drive count is the expected result, either adjust PRT's
 configuration to account for the increase, or run the reconcile process
 (reconcile_share_drives) by hand.
-
+{%else%}
+This count is less than PRT's deletion limit ({{missing_drive_threshold}}), however it is large
+enough that PRT felt compelled to let you know that {{missing_drive_count}} share drives
+have been removed from PRT's database.
+{%endif%}
 Best Wishes,
 
-Provision Request Tool
+Provision Request Tool (provision.uw.edu)

@@ -108,11 +108,13 @@ def notify_over_quota_non_subsidized_expired():
 
 
 def notify_admin_missing_drive_count_exceeded(**kwargs):
-    subject = "URGENT: Share Drive Reconcile has too many missing drives"
+    subject_template = _email_template("missing_drives_subject.txt")
     text_template = _email_template("missing_drives.txt")
-    text_message = loader.render_to_string(text_template, kwargs)
 
     try:
-        send_admin_notification(subject, text_message)
+        send_admin_notification(
+            ''.join(loader.render_to_string(
+                subject_template, kwargs).split('\n')),
+            loader.render_to_string(text_template, kwargs))
     except EmailFailureException as ex:
         pass
