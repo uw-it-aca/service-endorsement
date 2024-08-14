@@ -49,7 +49,8 @@ logger = logging.getLogger(__name__)
 netid_regex = re.compile(
     r"^(?P<netid>[^@]+)(@(uw|(u\.)?washington)\.edu)?$", re.I
 )
-MISSING_DRIVE_THRESHOLD = 50
+MISSING_DRIVE_THRESHOLD = 500
+MISSING_DRIVE_NOTIFICATION = 150
 
 
 def sync_quota_from_subscription(drive_id):
@@ -396,6 +397,9 @@ class Reconciler:
             'no_move_drive', False)
         self.missing_drive_threshold = kwargs.get(
             'missing_drive_threshold', MISSING_DRIVE_THRESHOLD)
+        self.missing_drive_notification = kwargs.get(
+            'missing_drive_notification',
+            MISSING_DRIVE_NOTIFICATION)
 
     def reconcile(self):
         id_GoogleDriveState = self.GoogleDriveState_by_drive_id()
@@ -487,6 +491,11 @@ class Reconciler:
                 f"{missing_drive_count} > {self.missing_drive_threshold}"
             )
             return
+        elif missing_drive_count > self.missing_drive_notification:
+            notify_admin_missing_drive_count_exceeded(
+                missing_drive_count=missing_drive_count,
+                missing_drive_notification=self.missing_drive_notification,
+                missing_drive_threshold=self.missing_drive_threshold)
 
         for sdr in SharedDriveRecord.objects.filter(
                 shared_drive__drive_id__in=missing_drive_ids
