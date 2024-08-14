@@ -310,7 +310,8 @@ a {
   }
   .access-delegate-id { font-weight: 800; }
   .access-action { border-left: 1px solid #ddd;
-      a { color: #2F68CB; cursor: pointer; text-decoration: underline; }
+      a { color: #2F68CB; cursor: pointer; text-decoration: underline; padding-right: .5em;}
+      :last-child {padding-right:0}
   }
   .access-type {
       a { font-weight: 800; color: #2F68CB; cursor: pointer; }
@@ -531,8 +532,12 @@ ul.email-list { list-style: none; padding: 0; }
     }
     .access-type-detail {
         span { font-weight: 800; }
-        a { cursor: pointer; color: #2F68CB; }
-    }
+        #toggle_permission_details > span {font-weight: normal;}
+        a { 
+          cursor: pointer; color: #2F68CB;
+          padding-left: .5em; 
+        }
+      }
     .access-types-explained {
         padding-top: 1em;
         padding-left: .5em;
