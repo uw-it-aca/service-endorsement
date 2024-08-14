@@ -82,39 +82,6 @@ var ManageOfficeAccess = (function () {
             }).on('click', 'a#toggle_permission_details', function (e) {
                 $('.access-types-explained').toggle();
                 $(this).find('span').text($('.access-types-explained').is(':visible') ? 'Hide' : 'Show');
-            }).on('endorse:OfficeDelegateConfirmation', function (e, context) {
-                $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
-                    var $row = _accessTableRow(context.mailbox, context.delegate);
-
-                    //Button.loading($('#access_provision', $row));
-                    _setAccessForDelegate(context);
-                });
-                _modalHide();
-            }).on('endorse:OfficeDelegateRenew', function (e, context) {
-                $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
-                    var $row = _accessTableRow(context.mailbox, context.delegate);
-
-                    Button.loading($('#access_renew', $row));
-                    _setAccessForDelegate(context);
-                });
-                _modalHide();
-            }).on('endorse:OfficeDelegateRevoke', function (e, context) {
-                $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
-                    var $row = _accessTableRow(context.mailbox, context.delegate);
-
-                    Button.loading($('#access_revoke', $row));
-                    Button.disable($('#access_renew', $row));
-                    _revokeAccessForDelegate(context);
-                });
-                _modalHide();
-            }).on('endorse:OfficeDelegateUpdate', function (e, context) {
-                $panel.one('hidden.bs.modal', '#access_netids_modal', function() {
-                    var $row = _accessTableRow(context.mailbox, context.delegate);
-
-                    //Button.loading($('#access_update', $row));
-                    _updateAccessForDelegate(context);
-                });
-                _modalHide();
             }).on('endorse:OfficeDelegatableSuccess', function (e, data) {
                 _displayOfficeAccessDelegatable(data.netids);
                 _getOfficeAccessTypes($panel);
@@ -128,13 +95,14 @@ var ManageOfficeAccess = (function () {
                 _modalHide();
                 _displayValidateNetIDsFailure(data);
             }).on('endorse:OfficeDelegateAccessSuccess', function (e, context) {
+                _modalHide();
                 _updateOfficeAccessDisplay(context);
                 _grantedNetidAccessModal(context);
             }).on('endorse:OfficeDelegateAccessFailure', function (e, accessee, error) {
                 var $row = _accessTableRow(accessee.mailbox, accessee.delegate);
 
+                _modalHide();
                 Notify.error('Access error: ' + error);
-                //Button.reset($('#access_provision', $row));
             }).on('endorse:OfficeDelegateRevokeSuccess', function (e, context) {
                 _deleteOfficeAccessDisplay(context);
                 _revokedNetidAccessModal(context);
@@ -142,9 +110,6 @@ var ManageOfficeAccess = (function () {
                 var $row = _accessTableRow(context.mailbox, context.name);
 
                 Notify.error('Revoke error: ' + error);
-                Button.reset($('#access_revoke', $row));
-                Button.enable($('#access_renew', $row));
-
             }).on('endorse:OfficeAccessResolveSuccess', function (e, data) {
                 _resolvedAccessModal(data);
             }).on('endorse:OfficeAccessResolveFailure', function (e, data) {
@@ -219,6 +184,7 @@ var ManageOfficeAccess = (function () {
                             mailbox: d.accessee.netid,
                             name: d.accessee.display_name,
                             delegate: d.accessor.name,
+                            delegate_link: _getDelegateLink(d.accessor.name),
                             rights: d.rights,
                             accessee_index: accessee_index,
                             access_index: i
@@ -239,6 +205,7 @@ var ManageOfficeAccess = (function () {
                             mailbox: d.accessee.netid,
                             name: d.accessee.display_name,
                             delegate: d.accessor.name,
+                            delegate_link: _getDelegateLink(d.accessor.name),
                             date_granted: DateTime.utc2localdate(d.datetime_granted),
                             date_renewal: _renewalDateFormat(renewal_date),
                             date_renewal_relative: renewal_date.fromNow(),
@@ -416,7 +383,12 @@ var ManageOfficeAccess = (function () {
                                 _displayModal("#confirm_update_modal_content", context);
                                 $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
                                     $('button#confirm_netid_update').one('click', function(e) {
-                                        $panel.trigger('endorse:OfficeDelegateUpdate', [context]);
+                                        var $button = $(this),
+                                            $row = _accessTableRow(context.mailbox, context.delegate);
+
+                                        Button.loading($button);
+                                        _modalDisable();
+                                        _updateAccessForDelegate(context);
                                     });
                                 });
                             }
@@ -437,7 +409,12 @@ var ManageOfficeAccess = (function () {
             _displayModal("#confirm_netids_modal_content", context);
             $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
                 $('button#confirm_netid_access').one('click', function(e) {
-                    $panel.trigger('endorse:OfficeDelegateConfirmation', [context]);
+                    var $button = $(this),
+                        $row = _accessTableRow(context.mailbox, context.delegate);
+
+                    Button.loading($button);
+                    _modalDisable();
+                    _setAccessForDelegate(context);
                 });
             });
         },
@@ -454,7 +431,12 @@ var ManageOfficeAccess = (function () {
             _displayModal("#confirm_revoke_modal_content", context);
             $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
                 $('button#confirm_netid_revoke').one('click', function(e) {
-                    $panel.trigger('endorse:OfficeDelegateRevoke', [context]);
+                    var $button = $(this),
+                        $row = _accessTableRow(context.mailbox, context.delegate);
+
+                    Button.loading($button);
+                    _modalDisable();
+                    _revokeAccessForDelegate(context);
                 });
             });
         },
@@ -470,7 +452,12 @@ var ManageOfficeAccess = (function () {
             _displayModal("#confirm_renew_modal_content", context);
             $panel.one('shown.bs.modal', '#access_netids_modal', function(e) {
                 $('button#confirm_netid_renew').one('click', function(e) {
-                    $panel.trigger('endorse:OfficeDelegateRenew', [context]);
+                    var $button = $(this),
+                        $row = _accessTableRow(context.mailbox, context.delegate);
+
+                    Button.loading($button);
+                    _modalDisable();
+                    _setAccessForDelegate(context);
                 });
             });
         },
@@ -530,12 +517,24 @@ var ManageOfficeAccess = (function () {
             _modalShow();
         },
         _modalShow = function () {
-            $('#access_netids_modal', $content).modal('show');
+            var $modal = $('#access_netids_modal', $content);
+
+            $modal.modal('show');
+            $modal.data('bs.modal')._config.keyboard = true;
+            $modal.data('bs.modal')._config.backdrop = undefined;
         },
         _modalHide = function () {
             $('#access_netids_modal', $content).modal('hide');
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
+        },
+        _modalDisable = function () {
+            var $modal = $('#access_netids_modal', $content);
+
+            $modal.find("button[data-dismiss]").attr('disabled', 'disabled');
+
+            $modal.data('bs.modal')._config.keyboard = false;
+            $modal.data('bs.modal')._config.backdrop = 'static';
         },
         _updateOfficeAccessDisplay = function (context) {
             var $row = _accessTableRow(context.accessee.netid, context.accessor.name),
