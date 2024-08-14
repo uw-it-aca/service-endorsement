@@ -481,21 +481,22 @@ class Reconciler:
         logger.info(
             f"reconcile: {missing_drive_count} missing drives")
 
+        drive_context = {
+            'missing_drive_count': missing_drive_count,
+            'missing_drive_notification': self.missing_drive_notification,
+            'missing_drive_threshold': self.missing_drive_threshold
+        }
+
         # failsafe for potentially truncated shared drive report
         if missing_drive_count > self.missing_drive_threshold:
-            notify_admin_missing_drive_count_exceeded(
-                missing_drive_count=missing_drive_count,
-                missing_drive_threshold=self.missing_drive_threshold)
+            notify_admin_missing_drive_count_exceeded(**drive_context)
             logger.error(
                 f"missing drive count exceeds threshold: "
                 f"{missing_drive_count} > {self.missing_drive_threshold}"
             )
             return
         elif missing_drive_count > self.missing_drive_notification:
-            notify_admin_missing_drive_count_exceeded(
-                missing_drive_count=missing_drive_count,
-                missing_drive_notification=self.missing_drive_notification,
-                missing_drive_threshold=self.missing_drive_threshold)
+            notify_admin_missing_drive_count_exceeded(**drive_context)
 
         for sdr in SharedDriveRecord.objects.filter(
                 shared_drive__drive_id__in=missing_drive_ids
