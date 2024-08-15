@@ -23,7 +23,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--missing-drive-threshold',
             type=int,
-            default=50,
+            default=500,
             help="Skip missing drive deletion if missing drive count greater.",
         )
 
