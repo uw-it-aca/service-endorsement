@@ -104,11 +104,13 @@ var ManageOfficeAccess = (function () {
                 _modalHide();
                 Notify.error('Access error: ' + error);
             }).on('endorse:OfficeDelegateRevokeSuccess', function (e, context) {
+                _modalHide();
                 _deleteOfficeAccessDisplay(context);
                 _revokedNetidAccessModal(context);
             }).on('endorse:OfficeDelegateRevokeFailure', function (e, context, error) {
                 var $row = _accessTableRow(context.mailbox, context.name);
 
+                _modalHide();
                 Notify.error('Revoke error: ' + error);
             }).on('endorse:OfficeAccessResolveSuccess', function (e, data) {
                 _resolvedAccessModal(data);
