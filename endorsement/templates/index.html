@@ -52,6 +52,7 @@
  {% if '*' in provisioning or 'mailbox_access' in provisioning  %}
  <div id="access" class="tab">
   <h1>Manage access to your Outlook mailboxes</h1>
+  <p>Give UW NetIDs or groups access to your UW Office 365 Outlook (Exchange Online) mailbox.  <a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/add-mailbox-permissions/" target="_blank">Learn more.</a></p>
   <div id="office_access" class="netid-panel"></div>
  </div>
  {% endif %}
@@ -81,6 +82,7 @@
 {% include "handlebars/tab/access/modal_action_partial.html" %}
 {% include "handlebars/tab/access/modal_validate.html" %}
 {% include "handlebars/tab/access/modal_confirm.html" %}
+{% include "handlebars/tab/access/modal_access.html" %}
 {% include "handlebars/tab/access/modal_revoke.html" %}
 {% include "handlebars/tab/access/modal_resolved.html" %}
 {% include "handlebars/tab/access/modal_renew.html" %}

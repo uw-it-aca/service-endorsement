@@ -8,7 +8,10 @@
 </div>
 <div class="modal-body">
   <div class="endorsed-acceptance container">
-    {{> modal_action_partial}}
+    <div class="row"><div class="col-md-12">
+    You are about to renew access to the UW Office 365 Exchange Online mailbox belonging
+    to UW NetID "{{mailbox}}".
+    </div></div>
     <div class="row">
       <div class="col-md-12">
     As the provisioner, you are responsible for the proper use, account maintenance, and file privileges of the provision.
@@ -16,19 +19,14 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-    The use of UW Office 365 by any indivual is bound by UW's Appropriate Use policy, as well as being subject to state and federal law, and other UW policies and procedures. For more information, visit <a href="https://itconnect.uw.edu/work/appropriate-use/" target="_blank">UW's Appropriate Use</a> page.
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-    Lear more about provision renewal
+    To learn more about provision renewal visit the <a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/provisioning-request-tool/#annual-review" target="_blank">Provision Request Tool help page</a>.
       </div>
     </div>
   </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary button-link" data-dismiss="modal">Cancel</button>
-  <button type="button" id="confirm_netid_renew" class="btn btn-primary">OK</button>
+  <button type="button" id="confirm_netid_renew" class="btn btn-primary" data-loading-text="Renewing">OK</button>
 </div>
 </script>
 
