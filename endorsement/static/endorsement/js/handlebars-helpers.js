@@ -39,7 +39,11 @@ $(window.document).ready(function() {
         'or': function(a, b) { return (a || b); },
         'not': function(a) { return (!a); },
         'numberFormat': function(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); },
-        'driveCapacity': function(n) { return (n < 1) ? Math.round(n * 1000).toString().substring(0,3) + 'MB' : (n >= 1000) ? (n/1000) + 'TB' : ((n < 100) ? n.toString().substring(0, (n < 10) ? 4 : 3) : Math.round(n)) + 'GB'; }
-
+        'driveCapacity': function(n) {
+            return (n < 1) ? Math.round(n * 1000).toString().split('.')[0] + 'MB' :
+                (n < 100) ? Math.round(n).toString().substring(0,3) + 'GB' :
+                (n < 1000) ? Math.round(n).toString().split('.')[0] + 'GB' :
+                Math.round(n/1000).toString().split('.')[0] + 'TB';
+        }
     });
 });
