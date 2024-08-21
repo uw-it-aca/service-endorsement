@@ -40,10 +40,11 @@ $(window.document).ready(function() {
         'not': function(a) { return (!a); },
         'numberFormat': function(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); },
         'driveCapacity': function(n) {
-            return (n < 1) ? Math.round(n * 1000).toString().split('.')[0] + 'MB' :
-                (n < 100) ? Math.round(n).toString().substring(0,3) + 'GB' :
-                (n < 1000) ? Math.round(n).toString().split('.')[0] + 'GB' :
-                Math.round(n/1000).toString().split('.')[0] + 'TB';
+            return (n < 1) ? Math.round(n * 1000) + 'MB' :
+                (n < 10) ? n.toString().substring(0,3) + 'GB' :
+                (n < 1000) ? Math.round(n) + 'GB' :
+                (n < 10000) ? (n/1000).toString().substring(0,3) + 'TB' :
+                Math.round(n/1000) + 'TB';
         }
     });
 });
