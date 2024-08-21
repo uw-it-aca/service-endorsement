@@ -338,6 +338,13 @@ def reconcile_drive_quota(
         sdr, no_subscription_quota=no_subscription_quota
     )
 
+    if not quota_correct:
+        logger.info(
+            f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
+            "as the subscription contains no current quota"
+        )
+        return
+
     if quota_actual != quota_correct:
         # temporary check for prior to ITBill subscription deadline
         in_grace_period = (
