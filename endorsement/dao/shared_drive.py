@@ -563,12 +563,28 @@ class Reconciler:
                 # update drive name
                 try:
                     if shared_drive.drive_name != drive_state.drive_name:
+                        logger.info(f"name change: drive {drive_id} name "
+                                    f"{shared_drive.drive_name} to "
+                                    f"{drive_state.drive_name}")
                         shared_drive.drive_name = drive_state.drive_name
                         shared_drive.save()
                 except Exception as ex:
                     logger.error(
                         f"existing drive ({drive_id}) "
                         f"name ({drive_state.drive_name}) update: {ex}")
+
+                # update shared drive usage
+                try:
+                    if shared_drive.drive_usage != drive_state.size_gigabytes:
+                        logger.info(f"drive usage: drive ({drive_id}) "
+                                    f"usage {shared_drive.drive_usage} "
+                                    f"updated to {drive_state.drive_name}")
+                        shared_drive.drive_usage = drive_state.size_gigabytes
+                        shared_drive.save()
+                except Exception as ex:
+                    logger.error(
+                        f"existing drive ({drive_id}) "
+                        f"usage ({drive_state.drive_name}) update: {ex}")
 
                 # confirm drive and subscription match
                 sdr = SharedDriveRecord.objects.get_record_by_drive_id(
