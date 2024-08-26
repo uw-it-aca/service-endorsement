@@ -37,7 +37,7 @@ def validate_endorsees():
             if is_active_category(cat):
                 logger.info(
                     "Invalid Provisionee: clearing unstored {} for {}".format(
-                        e.category_code, netid))
+                        cat.category_code, netid))
                 try:
                     set_former_category(netid, cat.category_code)
                 except Exception as ex:

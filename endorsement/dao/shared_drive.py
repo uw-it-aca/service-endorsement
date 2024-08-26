@@ -578,7 +578,7 @@ class Reconciler:
                     if shared_drive.drive_usage != drive_state.size_gigabytes:
                         logger.info(f"drive usage: drive ({drive_id}) "
                                     f"usage {shared_drive.drive_usage} "
-                                    f"updated to {drive_state.drive_name}")
+                                    f"updated to {drive_state.size_gigabytes}")
                         shared_drive.drive_usage = drive_state.size_gigabytes
                         shared_drive.save()
                 except Exception as ex:
