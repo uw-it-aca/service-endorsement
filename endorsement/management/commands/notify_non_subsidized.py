@@ -32,7 +32,6 @@ class Command(BaseCommand):
         shared_drive_ids = [d.strip() for d in options[
             'shared_drive_ids'].split(',')]
 
-        
         for drive_id in shared_drive_ids:
             drive = SharedDriveRecord.objects.get(
                 shared_drive__drive_id=drive_id)
@@ -56,7 +55,7 @@ class Command(BaseCommand):
                     send_notification(
                         members, subject, text_body, html_body,
                         "OverSubsidizedQuota")
-    
+
                     setattr(
                         drive, 'datetime_over_quota_emailed', timezone.now())
                     drive.save()
