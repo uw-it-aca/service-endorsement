@@ -338,6 +338,13 @@ def reconcile_drive_quota(
         sdr, no_subscription_quota=no_subscription_quota
     )
 
+    if quota_actual == 0:
+        logger.info(
+            f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
+            "as the drive has {quota_actual} quota set"
+        )
+        return
+
     if not quota_correct:
         logger.info(
             f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
