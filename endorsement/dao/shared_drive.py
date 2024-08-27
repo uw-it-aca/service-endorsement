@@ -187,7 +187,7 @@ def get_drive_quota(a):
     try:
         defaults["quota_limit"] = a.quota_limit
     except ValueError:
-        "Drive has no quota set. Probably in invalid org unit."
+        logger.error(f"Drive has no quota set. Probably in invalid org unit.")
 
     drive_quota, _ = SharedDriveQuota.objects.update_or_create(
         org_unit_id=a.org_unit_id,
