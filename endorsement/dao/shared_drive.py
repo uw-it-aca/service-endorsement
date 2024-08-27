@@ -187,7 +187,7 @@ def get_drive_quota(a):
     try:
         defaults["quota_limit"] = a.quota_limit
     except ValueError:
-        "Drive has no quota set. Probably in invalid org unit."
+        logger.error(f"Drive has no quota set. Probably in invalid org unit.")
 
     drive_quota, _ = SharedDriveQuota.objects.update_or_create(
         org_unit_id=a.org_unit_id,
@@ -337,6 +337,13 @@ def reconcile_drive_quota(
     quota_correct = get_expected_shared_drive_record_quota(
         sdr, no_subscription_quota=no_subscription_quota
     )
+
+    if quota_actual == 0:
+        logger.info(
+            f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
+            "as the drive has {quota_actual} quota set"
+        )
+        return
 
     if not quota_correct:
         logger.info(

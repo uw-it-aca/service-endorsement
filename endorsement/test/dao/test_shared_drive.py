@@ -287,7 +287,7 @@ class TestReconciler_handles_grace(BaseReconcilerTest):
         super().setUp()
         # drive exists in non-subsidized OU with no subscription
         self.mocks['get_google_drive_states'].return_value = [
-            GDS(drive_id='grace1', member='Al', org_unit_name='200G'),
+            GDS(drive_id='grace1', member='Al', org_unit_name='200GB'),
         ]
 
     def test(self):
