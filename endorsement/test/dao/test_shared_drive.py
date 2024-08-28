@@ -274,13 +274,9 @@ class TestReconciler_base_cases(BaseReconcilerTest):
         )
 
 
-@override_settings(
-    # for this test we will be in the grace period
-    ITBILL_SUBSCRIPTION_DEADLINE="09/09/9999",
-)
-class TestReconciler_handles_grace(BaseReconcilerTest):
+class TestReconciler_handles_missing_subscription(BaseReconcilerTest):
     """
-    Test Reconciler honors the "grace period" associated with ITBill sign-up.
+    Test Reconciler missing subscription case
     """
 
     def setUp(self):
@@ -300,10 +296,11 @@ class TestReconciler_handles_grace(BaseReconcilerTest):
 
         assert len(captured_logs) >= 1
         expected_msg = (
-            "reconcile: skip set drive for grace1 as there is no active "
-            "subscription and we are in grace period"
+            "reconcile: skip set drive for grace1 as "
+            "there is no active subscription"
         )
         # expect to find our message in at least 1 log line
+        print(captured_logs.output)
         assert any(expected_msg in log for log in captured_logs.output)
 
 
@@ -394,15 +391,13 @@ class TestReconciler_new_drive_quota_checks(BaseReconcilerTest):
             )
 
         with self.subTest(msg="set_drive_quota call in reconcile"):
-            self.mocks["set_drive_quota"].assert_called_once_with(
-                drive_id="drive2", quota=100
-            )
+            self.mocks["set_drive_quota"].assert_not_called()
 
         with self.subTest(msg="Quota update inside reconcile"):
             sdr = SharedDriveRecord.objects.get_record_by_drive_id("drive2")
             self.assertEqual(
                 sdr.shared_drive.drive_quota.quota_limit,
-                DQ,
+                200,
                 (
                     "Quota for unsubsidized drive not set to subsidized level "
                     "due to lack of ITBill subscription"

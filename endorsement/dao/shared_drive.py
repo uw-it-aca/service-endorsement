@@ -21,7 +21,8 @@ from endorsement.dao.itbill import (
     expire_subscription,
 )
 from endorsement.notifications.shared_drive import (
-    notify_admin_missing_drive_count_exceeded
+    notify_admin_missing_drive_count_exceeded,
+    notify_admin_over_quota_missing_subscription
 )
 from endorsement.util.itbill.shared_drive import (
     shared_drive_subscription_deadline
@@ -232,7 +233,7 @@ def get_member(a: GoogleDriveState):
         netid = netid_match.group("netid")
         return Member.objects.get_member(netid=netid)
     else:
-        msg = "Non-NetID member {} excluded from member list"
+        msg = "Non-NetID {} excluded"
         raise UnrecognizedUWNetid(msg.format(a.member))
 
 
@@ -244,7 +245,7 @@ def get_role(a: GoogleDriveState):
     """
     # cull non-manager roles until others are interesting
     if a.role != Role.MANAGER_ROLE:
-        msg = "Shared drive member {} is not a manager ({!r}) and instead {!r}"
+        msg = "member {} is not a manager ({!r}) and instead {!r}"
         raise SharedDriveNonPrivilegedMember(
             msg.format(a.member, Role.MANAGER_ROLE, a.role),
         )
@@ -352,20 +353,21 @@ def reconcile_drive_quota(
         )
         return
 
-    if quota_actual != quota_correct:
-        # temporary check for prior to ITBill subscription deadline
-        in_grace_period = (
-            dt.datetime.now() < shared_drive_subscription_deadline()
-        )
-        has_no_subscription = get_or_load_active_subscription(sdr) is None
-        if in_grace_period and has_no_subscription:
-            logger.info(
-                f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
-                "as there is no active subscription and we are in grace period"
-            )
-            return
-        # end temporary check
+    # new drives are expected to have no subscription, but they are also
+    # expected to have the subsidized quota size
+    if (sdr.shared_drive.drive_quota.quota_limit > no_subscription_quota
+            and sdr.subscription is None):
+        notify_admin_over_quota_missing_subscription(
+            drive_name=sdr.shared_drive.drive_name,
+            drive_id=sdr.shared_drive.drive_id,
+            quota_correct=quota_correct)
+        logger.info(
+            f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
+            "as there is no active subscription")
 
+        return
+
+    if quota_actual != quota_correct:
         if no_move_drive:
             logger.info(
                 f"reconcile: SKIP set drive {sdr.shared_drive.drive_id} "
@@ -539,8 +541,8 @@ class Reconciler:
                     SharedDriveNonPrivilegedMember,
                     UnrecognizedUWNetid,
                 ) as ex:
-                    logger.info(f"skip member: {ex}")
-                    pass
+                    logger.info(
+                        f"skip member: drive_id {gds.drive_id}: {ex}")
                 else:
                     result.append(member)
 
