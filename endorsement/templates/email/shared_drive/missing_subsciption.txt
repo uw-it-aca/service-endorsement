@@ -1,0 +1,20 @@
+Hello,
+
+This message is from PRT's periodic shared drive reconcilation process.  You
+are receiving this message because you are identified as a PRT administrator.
+
+PRT's most recent report of Google Share Drives indictes a shared drive:
+
+    Name: {{drive_name}}
+    Id: {{drive_id}}
+
+requires a quota increase ({quota_correct}) beyond the subsidized limit,
+but has no corresponding ITBill subscription.
+
+PRT has declined to adjust the quota.
+
+Manual intervention is likely required.
+
+Best Wishes,
+
+Provision Request Tool (provision.uw.edu)

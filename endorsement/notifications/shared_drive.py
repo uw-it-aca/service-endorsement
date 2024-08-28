@@ -108,9 +108,20 @@ def notify_over_quota_non_subsidized_expired():
 
 
 def notify_admin_missing_drive_count_exceeded(**kwargs):
-    subject_template = _email_template("missing_drives_subject.txt")
-    text_template = _email_template("missing_drives.txt")
+    _admin_email(
+        _email_template("missing_drives_subject.txt"),
+        _email_template("missing_drives.txt"),
+        **kwargs)
 
+
+def notify_admin_over_quota_missing_subscription(**kwargs):
+    _admin_email(
+        _email_template("missing_subsciption_subject.txt"),
+        _email_template("missing_subsciption.txt"),
+        **kwargs)
+
+
+def _admin_email(subject_template, text_template, **kwargs):
     try:
         send_admin_notification(
             ''.join(loader.render_to_string(
