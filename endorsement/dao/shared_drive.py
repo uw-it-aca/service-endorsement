@@ -233,7 +233,7 @@ def get_member(a: GoogleDriveState):
         netid = netid_match.group("netid")
         return Member.objects.get_member(netid=netid)
     else:
-        msg = "Non-NetID member {} excluded from member list"
+        msg = "Non-NetID {} excluded"
         raise UnrecognizedUWNetid(msg.format(a.member))
 
 
@@ -245,7 +245,7 @@ def get_role(a: GoogleDriveState):
     """
     # cull non-manager roles until others are interesting
     if a.role != Role.MANAGER_ROLE:
-        msg = "Shared drive member {} is not a manager ({!r}) and instead {!r}"
+        msg = "member {} is not a manager ({!r}) and instead {!r}"
         raise SharedDriveNonPrivilegedMember(
             msg.format(a.member, Role.MANAGER_ROLE, a.role),
         )
@@ -541,8 +541,8 @@ class Reconciler:
                     SharedDriveNonPrivilegedMember,
                     UnrecognizedUWNetid,
                 ) as ex:
-                    logger.info(f"skip member: {ex}")
-                    pass
+                    logger.info(
+                        f"skip member: drive_id {gds.drive_id}: {ex}")
                 else:
                     result.append(member)
 
