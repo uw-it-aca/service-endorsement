@@ -276,7 +276,7 @@ class TestReconciler_base_cases(BaseReconcilerTest):
 
 class TestReconciler_handles_missing_subscription(BaseReconcilerTest):
     """
-    Test Reconciler missing missing subscription case
+    Test Reconciler missing subscription case
     """
 
     def setUp(self):
