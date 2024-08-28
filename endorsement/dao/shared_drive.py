@@ -21,7 +21,8 @@ from endorsement.dao.itbill import (
     expire_subscription,
 )
 from endorsement.notifications.shared_drive import (
-    notify_admin_missing_drive_count_exceeded
+    notify_admin_missing_drive_count_exceeded,
+    notify_admin_over_quota_missing_subscription
 )
 from endorsement.util.itbill.shared_drive import (
     shared_drive_subscription_deadline
@@ -352,20 +353,19 @@ def reconcile_drive_quota(
         )
         return
 
-    if quota_actual != quota_correct:
-        # temporary check for prior to ITBill subscription deadline
-        in_grace_period = (
-            dt.datetime.now() < shared_drive_subscription_deadline()
-        )
-        has_no_subscription = get_or_load_active_subscription(sdr) is None
-        if in_grace_period and has_no_subscription:
-            logger.info(
-                f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
-                "as there is no active subscription and we are in grace period"
-            )
-            return
-        # end temporary check
+    if (sdr.shared_drive.drive_quota.quota_limit > no_subscription_quota
+            and sdr.subscription is None):
+        notify_admin_over_quota_missing_subscription(
+            drive_name=sdr.shared_drive.drive_name,
+            drive_id=sdr.shared_drive.drive_id,
+            quota_correct=quota_correct)
+        logger.info(
+            f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
+            "as there is no active subscription")
 
+        return
+
+    if quota_actual != quota_correct:
         if no_move_drive:
             logger.info(
                 f"reconcile: SKIP set drive {sdr.shared_drive.drive_id} "
