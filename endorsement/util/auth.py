@@ -35,7 +35,10 @@ class SupportGroupAuthentication(GroupAuthentication):
         return settings.PROVISION_SUPPORT_GROUP
 
 
-def is_only_support_user(request):
+def is_admin_user(request):
     return (
-        is_member_of_group(request, settings.PROVISION_SUPPORT_GROUP)
-        and not is_member_of_group(request, settings.PROVISION_ADMIN_GROUP))
+        is_member_of_group(request, settings.PROVISION_ADMIN_GROUP))
+
+
+def is_support_user(request):
+    return is_member_of_group(request, settings.PROVISION_SUPPORT_GROUP)

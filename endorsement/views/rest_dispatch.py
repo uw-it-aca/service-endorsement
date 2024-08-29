@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from django.http import HttpResponse
 from userservice.user import UserService
 from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
-from endorsement.util.auth import is_only_support_user
+from endorsement.util.auth import is_admin_user
 import json
 import sys
 from restclients_core.exceptions import DataFailureException,\
@@ -28,7 +28,8 @@ class RESTDispatch(APIView):
                             status=status,
                             content_type='application/json')
 
-    def _validate_user(self, request):
+    def _validate_user(
+            self, request, valid_act_as=is_admin_user, logger=None):
         user_service = UserService()
         netid = user_service.get_user()
         if not netid:
@@ -36,8 +37,12 @@ class RESTDispatch(APIView):
 
         original_user = user_service.get_original_user()
         acted_as = None if (netid == original_user) else original_user
-        if acted_as and is_only_support_user(request):
-            raise InvalidNetID()
+        if acted_as:
+            if valid_act_as(request):
+                if logger:
+                    logger.info(f"User: {netid}, Acted as: {acted_as}")
+            else:
+                raise InvalidNetID()
 
         return netid, acted_as
 

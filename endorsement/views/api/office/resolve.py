@@ -10,7 +10,7 @@ from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser)
 from endorsement.exceptions import (
     UnrecognizedUWNetid, InvalidNetID, NoEndorsementException)
-from endorsement.util.auth import is_only_support_user
+from endorsement.util.auth import is_support_user
 from restclients_core.exceptions import DataFailureException
 import logging
 
@@ -25,7 +25,7 @@ class ResolveRightsConflict(RESTDispatch):
     """
     def post(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request)
+            netid, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -74,16 +74,3 @@ class ResolveRightsConflict(RESTDispatch):
             return self.error_response(ex.status, message=ex.msg)
 
         return self.json_response(access.json_data())
-
-    def _validate_user(self, request):
-        user_service = UserService()
-        netid = user_service.get_user()
-        if not netid:
-            raise UnrecognizedUWNetid()
-
-        original_user = user_service.get_original_user()
-        acted_as = None if (netid == original_user) else original_user
-        if acted_as and is_only_support_user(request):
-            raise InvalidNetID()
-
-        return netid, acted_as

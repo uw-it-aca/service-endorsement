@@ -11,7 +11,7 @@ from endorsement.dao.office import is_office_permitted, get_office_accessor
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser, data_error)
 from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
-from endorsement.util.auth import is_only_support_user
+from endorsement.util.auth import is_support_user
 from uw_msca.access_rights import get_access_rights
 from restclients_core.exceptions import DataFailureException
 import logging
@@ -26,7 +26,8 @@ class Access(RESTDispatch):
     """
     def get(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request)
+            netid, acted_as = self._validate_user(
+                request, valid_act_as=is_support_user, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -60,7 +61,7 @@ class Access(RESTDispatch):
 
     def post(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request)
+            netid, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -92,7 +93,7 @@ class Access(RESTDispatch):
 
     def patch(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request)
+            netid, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -120,7 +121,7 @@ class Access(RESTDispatch):
 
     def delete(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request)
+            netid, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
