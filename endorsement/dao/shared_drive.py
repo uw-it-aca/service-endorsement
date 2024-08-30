@@ -357,10 +357,12 @@ def reconcile_drive_quota(
     # expected to have the subsidized quota size
     if (sdr.shared_drive.drive_quota.quota_limit > no_subscription_quota
             and sdr.subscription is None):
-        notify_admin_over_quota_missing_subscription(
-            drive_name=sdr.shared_drive.drive_name,
-            drive_id=sdr.shared_drive.drive_id,
-            quota_correct=quota_correct)
+        if not self.no_move_drive:
+            notify_admin_over_quota_missing_subscription(
+                drive_name=sdr.shared_drive.drive_name,
+                drive_id=sdr.shared_drive.drive_id,
+                quota_correct=quota_correct)
+
         logger.info(
             f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
             "as there is no active subscription")
