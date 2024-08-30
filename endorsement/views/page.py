@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as django_logout
 from userservice.user import UserService
-from endorsement.util.auth import is_only_support_user
+from endorsement.util.auth import is_support_user
 from endorsement.services import service_contexts, is_valid_endorser
 from endorsement.provisioner_validation import can_view_endorsements
 from endorsement.views.session import log_session_key
@@ -39,7 +39,7 @@ def index(request):
             },
             'services': json.dumps(service_contexts()),
             'override_user': user_service.get_override_user(),
-            'support_override_user': is_only_support_user(request),
+            'support_override_user': is_support_user(request),
             'provisioning': getattr(
                 settings, 'ENDORSEMENT_PROVISIONING', ['*'])
         }

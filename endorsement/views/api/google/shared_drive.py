@@ -7,6 +7,7 @@ from endorsement.dao.itbill import update_itbill_subscription
 from endorsement.dao.shared_drive import (
     sync_quota_from_subscription, shared_drive_lifecycle_expired)
 from endorsement.dao.pws import get_person
+from endorsement.util.auth import is_support_user
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, data_not_found,
     invalid_endorser, bad_request, data_error)
@@ -27,7 +28,9 @@ class SharedDrive(RESTDispatch):
         Return SharedDriveRecords for provided netid, all or by drive_id
         """
         try:
-            netid, acted_as = self._validate_user(request)
+            netid, acted_as = self._validate_user(
+                request, valid_act_as=is_support_user, logger=logger)
+
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -48,7 +51,7 @@ class SharedDrive(RESTDispatch):
 
     def put(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request)
+            netid, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:

@@ -4,6 +4,7 @@
 from endorsement.models import SharedDriveRecord, ITBillSubscription
 from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.itbill import initiate_subscription
+from endorsement.util.auth import is_support_user
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, data_not_found,
     invalid_endorser, bad_request, data_error)
@@ -24,7 +25,8 @@ class SharedDriveITBillURL(RESTDispatch):
         Instantiate a subscription for the provided netid
         """
         try:
-            netid, acted_as = self._validate_user(request)
+            netid, acted_as = self._validate_user(
+                request, valid_act_as=is_support_user, logger=logger)
             drive_id = self.kwargs.get('drive_id')
             drive = self._get_drive(netid, drive_id)
 
