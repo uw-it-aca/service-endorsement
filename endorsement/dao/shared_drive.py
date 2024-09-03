@@ -302,7 +302,8 @@ def load_or_update_subscription(sdr: SharedDriveRecord):
         )
         return None  # just raise?
     else:
-        sub = ITBillSubscription()
+        logging.info(f"Update subscription: key_remote = {key_remote}")
+        sub = ITBillSubscription(key_remote=key_remote)
         sub.save()
         sdr.subscription = sub
         sdr.update_subscription(sub_json)
