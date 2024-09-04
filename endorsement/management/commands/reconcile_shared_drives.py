@@ -1,6 +1,7 @@
 # Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 import logging
+import sys
 
 from django.core.management.base import BaseCommand
 
@@ -40,3 +41,4 @@ class Command(BaseCommand):
             logger.error(
                 "Reconcile shared drives failed: {}".format(ex),
                 exc_info=True, stack_info=True)
+            sys.exit(1)
