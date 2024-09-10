@@ -106,6 +106,7 @@ RESTCLIENTS_MSCA_CLIENT_ID = os.getenv("MSCA_CLIENT_ID")
 RESTCLIENTS_MSCA_CLIENT_SECRET = os.getenv("MSCA_CLIENT_SECRET")
 
 
+VALID_ENDORSER_GROUP = 'u_pplat_provisioners'
 PROVISION_ADMIN_GROUP = 'u_acadev_provision_admin'
 PROVISION_SUPPORT_GROUP = 'u_acadev_provision_support'
 PROVISION_TEST_GROUP = 'u_acadev_provision_test'

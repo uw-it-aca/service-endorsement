@@ -23,7 +23,7 @@
 <div class="modal-body">
   <div class="shared-acceptance container col-md-12">
     <div class="row">
-x    You are about to revoke the provision for {{#if (gt unique.length 1)}}{{unique.length}} {{/if}}UW NetID{{plural unique.length '' 's'}}{{#if (gt unique.length 1)}}{{else}} <ul class="comma-list">{{#each unique}}<li class="significant">{{this}}</li>{{/each}}</ul>{{/if}} to
+    You are about to revoke the provision for {{#if (gt unique.length 1)}}{{unique.length}} {{/if}}UW NetID{{plural unique.length '' 's'}}&nbsp;{{#if (gt unique.length 1)}}{{else}} <ul class="comma-list">{{#each unique}}<li class="significant">{{this}}</li>{{/each}}</ul>{{/if}}&nbsp;to&nbsp;
       <ul class="comma-list">
         {{#each services}}
         {{#if this.count}}<li class="significant">{{this.name}}</li>{{/if}}
