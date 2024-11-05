@@ -110,7 +110,7 @@ environmentVariables:
   - name: CLUSTER_CNAME
     value: provision.uw.edu
   - name: ENDORSEMENT_PROVISIONING
-    value: services,shared_drives
+    value: services,mailbox_access,shared_drives
 externalSecrets:
   enabled: true
   secrets:
