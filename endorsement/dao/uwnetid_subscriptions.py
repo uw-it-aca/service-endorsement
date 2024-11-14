@@ -17,9 +17,12 @@ def active_subscriptions_for_netid(netid, subscription_codes):
     response = get_netid_subscriptions(netid, subscription_codes)
     for sub in response:
         if (sub.subscription_code in subscription_codes and
-                sub.status_code != Subscription.STATUS_UNPERMITTED):
-            subscription_codes.remove(sub.subscription_code)
-    return len(subscription_codes) == 0
+                sub.status_code in [
+                    Subscription.STATUS_ACTIVE,
+                    Subscription.STATUS_PENDING]):
+            return True
+
+    return False
 
 
 def activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
