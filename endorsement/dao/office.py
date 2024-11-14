@@ -19,17 +19,26 @@ logger = logging.getLogger(__name__)
 def is_office_permitted(netid):
     """
     test for office mailbox availability
+    NOTE: test both o365 and o365student services
     """
-    o365 = get_endorsement_service('o365')
     endorsee = get_endorsee_model(netid)
-    for er in EndorsementRecord.objects.get_endorsements_for_endorsee(
-            endorsee, o365.category_code):
+    o365 = get_endorsement_service('o365')
+    o365_student = get_endorsement_service('o365student')
+
+    records = EndorsementRecord.objects.get_endorsements_for_endorsee(
+        endorsee, o365.category_code) |\
+        EndorsementRecord.objects.get_endorsements_for_endorsee(
+        endorsee, o365_student.category_code)
+
+    for er in records:
         if er.datetime_endorsed and not er.datetime_expired:
             return True
 
     # if no endorsement record, check subscription_codes
     try:
-        return active_subscriptions_for_netid(netid, o365.subscription_codes)
+        subscription_codes = list(set(
+            o365.subscription_codes + o365_student.subscription_codes))
+        return active_subscriptions_for_netid(netid, subscription_codes)
     except Exception as ex:
         logger.error("is_office_permitted: {}: {}".format(netid, ex))
         pass
