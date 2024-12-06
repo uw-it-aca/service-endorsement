@@ -1,8 +1,8 @@
-Hello {{ email.display_name }},
+Hello{% if email.display_name %} {{ email.display_name }}{% endif %},
 
-The UW employee {{ record.accessee.display_name }} ({{ record.accessee.netid }}) has given {% if record.accessor.is_group %}the group "{{record.accessor.name}}" you administrate{% elif record.accessor.is_shared_netid %}the shared netid "{{record.accessor.name}}"{% else %}you{% endif %} “{{ record.access_right.display_name }}”
-mailbox permissions to the UW Office 365 Exchange Online mailbox
-(aka, email account) for “{{record.accessee.netid}}”.
+{% if record.accessor.is_group %}The group "{{record.accessor.name}}" you administrate has{% elif record.accessor.is_shared_netid %}The shared netid "{{record.accessor.name}}" has{% else %}You have{% endif %} been given “{{ record.access_right.display_name }}” mailbox permissions to
+the UW Office 365 Exchange Online mailbox (aka, email account) for
+“{{record.accessee.netid}}”.
 
 Access to this UW Exchange Online mailbox lasts for 365 days and must be
 renewed annually by {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
