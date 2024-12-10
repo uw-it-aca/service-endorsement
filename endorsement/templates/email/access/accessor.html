@@ -1,20 +1,17 @@
-Hello {{ email.display_name }},
+Hello{% if email.display_name %} {{ email.display_name }}{% endif %},
 <p>
-  The UW employee {{ record.accessee.display_name }} ({{ record.accessee.netid }}) has given
 {% if record.accessor.is_group %}
-  the group "{{record.accessor.name}}" you administrate
-{% elif record.accessor.is_shared_netid %}
-  the shared netid "{{record.accessor.name}}"
+  The group "{{record.accessor.name}}" you administrate has
 {% else %}
-  you
+  You have
 {% endif %}
-  “{{ record.access_right.display_name }}” mailbox permissions to the <a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/" target="_blank">UW Office 365 Exchange Online</a> mailbox (aka email account) for “{{record.accessee.netid}}”.
+  been given “{{ record.access_right.display_name }}” mailbox permissions to the <a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/" target="_blank">UW Office 365 Exchange Online</a> mailbox (aka email account) for “{{record.accessee.netid}}”.
 </p>
 <p>
 Access to this UW Exchange Online mailbox lasts for 365 days and must be renewed annually by {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
 </p>
 <p>
-With &quot;{{ record.access_right.display_name }}&quot; permissions {% if record.accessor.is_group %}group members{% elif record.accessor.is_shared_netid %}the shared netid{% else %}you{% endif %} can:
+With &quot;{{ record.access_right.display_name }}&quot; permissions {% if record.accessor.is_group %}group members{% else %}you{% endif %} can:
 <ul>
   {% if record.access_right.name == 'FullAccessandSendAs' %}
     <li>View, add and remove the contents of the mailbox</li>
