@@ -87,7 +87,6 @@ def reconcile_access(commit_changes=False):
                     logger.info(
                         "mailbox {} with {} to {} created".format(
                             netid, right, delegate))
-
                     if commit_changes:
                         try:
                             accessor = get_office_accessor(delegate)
