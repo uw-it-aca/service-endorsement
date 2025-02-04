@@ -6,6 +6,8 @@ from endorsement.policy.access import AccessPolicy
 from endorsement.util.email import uw_email_address
 from endorsement.dao.notification import send_notification
 from endorsement.dao.accessors import get_accessor_email
+from endorsement.dao.uwnetid_admin import get_owner_for_shared_netid
+from endorsement.dao.access import get_accessee_model
 from endorsement.exceptions import EmailFailureException
 from django.template import loader, Template, Context
 from django.utils import timezone
@@ -53,8 +55,18 @@ def _create_accessor_message(access_record, emails):
 
     params = {
         'record': access_record,
-        'emails': emails
+        'emails': emails,
+        'accessee_owner': None
     }
+
+    try:
+        accessee_owner_netid = get_owner_for_shared_netid(
+            access_record.accessee.netid)
+        if accessee_owner_netid:
+            params['accessee_owner'] = get_accessee_model(accessee_owner_netid)
+    except Exception as ex:
+        logger.error("Accessor notify: get owner of "
+                     f"{access_record.accessee.netid} failed: {ex}")
 
     text_template = _email_template("accessor.txt")
     html_template = _email_template("accessor.html")

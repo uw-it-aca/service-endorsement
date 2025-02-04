@@ -5,7 +5,7 @@ the UW Office 365 Exchange Online mailbox (aka, email account) for
 “{{record.accessee.netid}}”.
 
 Access to this UW Exchange Online mailbox lasts for 365 days and must be
-renewed annually by {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
+renewed annually by {% if accessee_owner %}{{ accessee_owner.display_name }} ({{ accessee_owner.netid }}), owner of shared netid {% endif %}{{ record.accessee.display_name }} ({{ record.accessee.netid }}).
 
 With "{{ record.access_right.display_name }}" permissions {% if record.accessor.is_group %}group members{% else %}you{% endif %} can:
 {% if record.access_right.name == 'FullAccessandSendAs' %}

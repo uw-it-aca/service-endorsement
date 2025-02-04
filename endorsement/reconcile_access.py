@@ -87,14 +87,14 @@ def reconcile_access(commit_changes=False):
                     logger.info(
                         "mailbox {} with {} to {} created".format(
                             netid, right, delegate))
-                    if commit_changes:
-                        try:
-                            accessor = get_office_accessor(delegate)
+                    try:
+                        accessor = get_office_accessor(delegate)
+                        if commit_changes:
                             store_access_record(
                                 accessee, accessor, right, is_reconcile=True)
-                        except (UnrecognizedUWNetid, UnrecognizedGroupID):
-                            logger.error(
-                                "Unknown netid or group: {}".format(delegate))
+                    except (UnrecognizedUWNetid, UnrecognizedGroupID):
+                        logger.error(
+                            "Unknown netid or group: {}".format(delegate))
             else:
                 logger.info("mailbox {} empty rights for {}".format(
                     netid, delegate))

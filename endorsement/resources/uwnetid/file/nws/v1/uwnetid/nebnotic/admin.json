@@ -1,0 +1,14 @@
+{
+  "uwNetID": "nebnotic",
+  "adminList": [
+    {
+      "name": "jstaff",
+      "role": "owner"
+    },
+    {
+      "name": "javerage",
+      "role": "administrator"
+    }
+  ],
+  "timeStamp": "Fri, 20 Feb 2015 16:11:18 -0800"
+}
