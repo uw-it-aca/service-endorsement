@@ -8,7 +8,7 @@ Hello{% if email.display_name %} {{ email.display_name }}{% endif %},
   been given “{{ record.access_right.display_name }}” mailbox permissions to the <a href="https://itconnect.uw.edu/tools-services-support/software-computers/productivity-platforms/microsoft-productivity-platform/exchange-online/" target="_blank">UW Office 365 Exchange Online</a> mailbox (aka email account) for “{{record.accessee.netid}}”.
 </p>
 <p>
-Access to this UW Exchange Online mailbox lasts for 365 days and must be renewed annually by {{ record.accessee.display_name }} ({{ record.accessee.netid }}).
+Access to this UW Exchange Online mailbox lasts for 365 days and must be renewed annually by {% if accessee_owner %}{{ accessee_owner.display_name }} ({{ accessee_owner.netid }}), owner of shared netid {% endif %}{{ record.accessee.display_name }} ({{ record.accessee.netid }}).
 </p>
 <p>
 With &quot;{{ record.access_right.display_name }}&quot; permissions {% if record.accessor.is_group %}group members{% else %}you{% endif %} can:

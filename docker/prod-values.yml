@@ -89,6 +89,10 @@ cronjob:
       schedule: "5 9 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["reconcile_shared_drives"]
+    - name: reconcile-mailbox-access
+      schedule: "5 10 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["reconcile_access"]
 certs:
   mounted: true
   certPath: /certs/provision.uw.edu.cert
