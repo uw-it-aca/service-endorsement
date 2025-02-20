@@ -106,6 +106,26 @@ def store_access_record(
     return ar
 
 
+def renew_access(accessee, accessor, acted_as=None):
+    now = timezone.now()
+    ar = AccessRecord.objects.get(accessee=accessee, accessor=accessor)
+
+    ar.datetime_granted = now
+    ar.acted_as = acted_as
+    ar.datetime_emailed = None
+    ar.datetime_notice_1_emailed = None
+    ar.datetime_notice_2_emailed = None
+    ar.datetime_notice_3_emailed = None
+    ar.datetime_notice_4_emailed = None
+    ar.datetime_renewed = now if ar.is_deleted else None
+    ar.datetime_expired = None
+    is_reconcile = None
+    ar.is_deleted = None
+    ar.save()
+
+    return ar
+
+
 def revoke_access(accessee, accessor, right_id, acted_as=None):
     remove_delegate(accessee.netid, accessor.name, right_id)
     return _revoke_access_model(accessee, accessor, right_id, acted_as)
