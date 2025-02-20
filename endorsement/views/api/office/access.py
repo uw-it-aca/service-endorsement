@@ -6,7 +6,8 @@ from endorsement.models import AccessRecord, AccessRecordConflict, AccessRight
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.access import (
-    get_accessee_model, store_access, update_access, revoke_access)
+    get_accessee_model, store_access, update_access,
+    revoke_access, renew_access)
 from endorsement.dao.office import is_office_permitted, get_office_accessor
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser, data_error)
@@ -99,6 +100,7 @@ class Access(RESTDispatch):
         except InvalidNetID:
             return invalid_endorser(logger)
 
+        action = request.data.get('action', None)
         mailbox = request.data.get('mailbox', None)
         delegate = request.data.get('delegate', None)
         access_type = request.data.get('access_type', None)
@@ -111,9 +113,17 @@ class Access(RESTDispatch):
         accessor = get_office_accessor(delegate)
 
         try:
-            access = update_access(
-                accessee, accessor, previous_access_type,
-                access_type, acted_as)
+            if action == 'renew':
+                access = renew_access(accessee, accessor, acted_as)
+                return self.json_response(access.json_data())
+            elif previous_access_type and access_type:
+                access = update_access(
+                    accessee, accessor, previous_access_type,
+                    access_type, acted_as)
+            else:
+                return self.error_response(404, message="Insufficient Data")
+        except AccessRecord.DoesNotExist:
+            return self.error_response(404, message="Unknown Access Record")
         except DataFailureException as ex:
             return self.error_response(ex.status, message=ex.msg)
 
