@@ -446,9 +446,7 @@ var ManageOfficeAccess = (function () {
             var context = {
                 action: "renew",
                 mailbox: $row.attr('data-mailbox'),
-                delegate: $row.attr('data-delegate'),
-                access_type: $('.access-type select option:selected', $row).val(),
-                access_type_name: $('.access-type select option:selected', $row).text()
+                delegate: $row.attr('data-delegate')
             };
 
             _displayModal("#confirm_renew_modal_content", context);
@@ -459,7 +457,7 @@ var ManageOfficeAccess = (function () {
 
                     Button.loading($button);
                     _modalDisable();
-                    _setAccessForDelegate(context);
+                    _updateAccessForDelegate(context);
                 });
             });
         },
