@@ -84,8 +84,8 @@ def _create_accessee_expiration_notice(notice_level, access, policy):
     }
 
     if notice_level < 4:
-        subject = ("Action Required: Office 365 Shared Mailbox "
-                   "service will expire soon")
+        subject = ("Action Required: Office 365 mailbox "
+                   "permissions expiring soon")
         text_template = _email_template("notice_warning.txt")
         html_template = _email_template("notice_warning.html")
     else:
@@ -104,7 +104,11 @@ def accessee_lifecycle_warning(notice_level):
 
     for drive in drives:
         try:
-            email = [uw_email_address(drive.accessee.netid)]
+            owner = get_owner_for_shared_netid(drive.accessee.netid)
+            if not owner:
+                owner = drive.accessee.netid
+
+            email = [uw_email_address(owner)]
             (subject,
              text_body,
              html_body) = _create_accessee_expiration_notice(

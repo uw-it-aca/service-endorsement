@@ -23,9 +23,9 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
         accessee2 = Accessee.objects.create(
             netid='accessee2', regid='eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
             display_name='Accessee Two')
-        accessee3 = Accessee.objects.create(
-            netid='accessee3', regid='ffffffffffffffffffffffffffffffff',
-            display_name='Accessee Three')
+        nebnotic = Accessee.objects.create(
+            netid='nebnotic', regid='ffffffffffffffffffffffffffffffff',
+            display_name='NebNotic Shared')
 
         accessor1 = Accessor.objects.create(
             name='accessor1', display_name='Accessor One')
@@ -46,7 +46,7 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
 
         # expire date tomorrow
         AccessRecord.objects.create(
-            accessor=accessor3, accessee=accessee3,
+            accessor=accessor3, accessee=nebnotic,
             datetime_granted=self.days_ago(self.policy.lifetime - 1))
 
     def test_expiration_and_notices(self):
@@ -72,6 +72,10 @@ class TestSharedDriveExpirationNotices(NotificationsTestCase):
     def test_expiration_and_notice_email(self):
         accessee_lifecycle_warning(1)
         self.assertEqual(len(mail.outbox), 3)
+
+        self.assertTrue('accessee1@uw.edu' in mail.outbox[0].to)
+        self.assertTrue('accessee2@uw.edu' in mail.outbox[1].to)
+        self.assertTrue('jstaff@uw.edu' in mail.outbox[2].to)
 
         AccessRecord.objects.filter(
             datetime_notice_1_emailed__isnull=False).update(
