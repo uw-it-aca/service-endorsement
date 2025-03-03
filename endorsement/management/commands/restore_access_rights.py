@@ -37,7 +37,6 @@ class Command(BaseCommand):
             type=str,
             help='CSV of accessor netid, accessor name, access right')
 
-
     def handle(self, *args, **options):
         self.commit_changes = options['commit']
         netid = options['netid']
@@ -49,7 +48,6 @@ class Command(BaseCommand):
                 self.restore_csv_access(csv_file)
         except Exception as ex:
             logger.error("restore_access_rights: Exception: {}".format(ex))
-
 
     def restore_netid_access(self, netid):
         accessee = get_accessee_model(netid)
@@ -74,7 +72,7 @@ class Command(BaseCommand):
                 user = delegations['User']
                 if not user:
                     continue
-    
+
                 rights = delegations['AccessRights']
                 delegates[user] = rights
             elif isinstance(delegations, list):
@@ -82,13 +80,14 @@ class Command(BaseCommand):
                     user = d['User']
                     if not user:
                         continue
-    
+
                     rights = d['AccessRights']
                     if isinstance(rights, list):
                         if len(rights) == 1:
                             delegates[user] = rights[0]
                         else:
-                            raise Exception(f"multiple rights for {user}: {rights}")
+                            raise Exception(f"multiple rights for "
+                                            f"{user}: {rights}")
                     elif isinstance(rights, str):
                         delegates[user] = rights
                     else:
@@ -121,8 +120,8 @@ class Command(BaseCommand):
                 f"{'' if self.commit_changes else 'WOULD '}ASSIGN: "
                 f"mailbox {ar.accessee.netid} "
                 f"delegate {ar.accessor.name} "
-                f"right '{ar.access_right.display_name if (self.commit_changes) else rr.display_name}'")
-
+                f"right '{ar.access_right.display_name if (
+                     self.commit_changes) else rr.display_name}'")
 
     def reconcile_csv_access(self, csv_file):
         delegations = {}
@@ -132,11 +131,11 @@ class Command(BaseCommand):
                 delegates = json.loads(line[1])
                 if not delegates or delegates == 'null':
                     continue
-    
+
                 netid = line[0]
                 if netid not in delegations:
                     delegations[netid] = {}
-    
+
                 if isinstance(delegates, dict):
                     user = delegates['User']
                     right = delegates['AccessRights']
@@ -146,7 +145,7 @@ class Command(BaseCommand):
                         user = d['User']
                         right = d['AccessRights']
                         delegations[netid][user] = right
-    
+
         with open('/tmp/blanks_remaining.csv', 'r') as f:
             blank_reader = csv.reader(f)
             for i, line in enumerate(blank_reader):
@@ -154,7 +153,7 @@ class Command(BaseCommand):
                 if netid not in delegations:
                     logger.info(f"mailbox {netid} has no delegates")
                     continue
-    
+
                 try:
                     accessee = get_accessee_model(netid)
                 except UnrecognizedUWNetid:
@@ -163,7 +162,7 @@ class Command(BaseCommand):
                 except Exception as ex:
                     logger.info(f"ERROR: get accessee {netid}: {ex}")
                     continue
-    
+
                 for delegate, right in delegations[netid].items():
                     try:
                         fix_access_record(accessee, delegate, right)

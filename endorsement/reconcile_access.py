@@ -120,11 +120,11 @@ def reconcile_access(commit_changes=False):
             if commit_changes:
                 assign_delegation(accessee, record)
             else:
-                logger.info(("MISSING DELEGATION: mailbox {} delegation {} ({})"
-                             " on {} not assigned in Outlook").format(
-                                 accessee.netid, record.accessor.name,
-                                 record.access_right.name,
-                                 record.datetime_granted))
+                logger.info(f"MISSING DELEGATION: mailbox {accessee.netid} "
+                            f"delegation {record.accessor.name} "
+                            f"({record.access_right.name})"
+                            f" on {record.datetime_granted} not "
+                            "assigned in Outlook")
 
 
 def get_access_right(right):
@@ -145,8 +145,8 @@ def new_access_record(accessee, delegate, right):
         store_access_record(
             accessee, accessor, right, is_reconcile=True)
 
-        logger.info("mailbox {} delegation {} ({}) record created".format(
-            accessee.netid, delegate, right))
+        logger.info(f"mailbox {accessee.netid} delegation {delegate} "
+                    f"({right}) record created")
     except (UnrecognizedUWNetid, UnrecognizedGroupID):
         logger.error(
             "Unknown netid or group: {}".format(delegate))
@@ -160,12 +160,13 @@ def assign_delegation(accessee, record):
     try:
         set_delegate(accessee.netid, record.accessor.name,
                      record.access_right.name)
-        logger.info("mailbox {} delegation {} ({}) assigned".format(
-            accessee.netid, record.accessor.name, record.access_right.name))
+        logger.info(f"mailbox {accessee.netid} delegation "
+                    f"{record.accessor.name} "
+                    f"({record.access_right.name}) assigned")
     except Exception as ex:
-        logger.error("set delegate {} ({}) on {} failed: {}".format(
-            record.accessor.name, record.access_right.name,
-            accessee.netid, ex))
+        logger.error("set delegate {record.accessor.name} "
+                     f"({record.access_right.name}) on "
+                     f"{accessee.netid} failed: {ex}")
 
 
 def revoke_record(record):
