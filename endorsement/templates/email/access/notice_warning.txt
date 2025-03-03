@@ -14,7 +14,7 @@ Mailbox       NetID/Group with Access       Date Provisioned   Access Type
 To log in to the Provisioning Request Tool (PRT) to renew expiring access to
 this mailbox visit:
 
-https://itconnect.uw.edu/connect/productivity-platforms/provisioning-request-tool/#prt
+https://uwconnect.uw.edu/it?id=kb_article_view&sysparm_article=KB0034391
 
 If you have any questions, please contact help@uw.edu or 206-221-5000.
 

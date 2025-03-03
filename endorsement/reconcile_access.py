@@ -55,16 +55,11 @@ def reconcile_access(commit_changes=False):
             #    3) delete records without a matching delegation
             if not delegate or delegate.lower() == 'null':
                 logger.info(
-                    "mailbox {} with null delegate has rights: {}".format(
-                        netid, rights))
+                    f"mailbox {netid} with null delegate has rights: {rights}")
                 continue
 
             record, i = get_accessor_record(records, delegate)
             if len(rights) > 1:
-                logger.info(
-                    "mailbox {} delegate {} has multiple rights: {}".format(
-                        netid, delegate, rights))
-
                 if record:
                     if commit_changes:
                         # stash existing access record
@@ -74,55 +69,62 @@ def reconcile_access(commit_changes=False):
 
                 if commit_changes:
                     save_conflict_record(accessee, record, delegate, rights)
+                else:
+                    logger.info(
+                        f"CONFLICT: mailbox {netid} delegate {delegate} "
+                        f"rights: {rights}")
+
             elif len(rights) == 1:
                 right = next(iter(rights))
+                right_record = get_access_right(right)
                 if record:
                     if record.access_right.name != right:
-                        logger.info(
-                            ("mailbox {} delegation {} ({})"
-                             " on {} updated to {}").format(
-                                 netid, delegate, record.access_right.name,
-                                 record.datetime_granted, right))
                         if commit_changes:
-                            assign_access_right(
-                                record, get_access_right(right))
+                            assign_access_right(record, right_record)
+                        else:
+                            logger.info(
+                                f"CHANGED mailbox {netid} delegate {delegate}"
+                                f" ({record.access_right.name}) to {right}")
                     # else delegate right and record match
 
                     records.remove(record)
                 else:
                     # create record for unrecognized delegate right
-                    logger.info(("mailbox {} delegation {} ({}) "
-                                 "not in PRT").format(
-                                     accessee.netid, delegate, right))
                     if commit_changes:
-                        new_access_record(accessee, delegate, right)
+                        new_access_record(accessee, delegate, right_record)
+                    else:
+                        logger.info(
+                            "MISSING ACCESS RECORD: "
+                            f"mailbox {accessee.netid} "
+                            f"delegate {delegate} ({right_record.name})")
             else:
-                logger.info("mailbox {} empty rights for {}".format(
-                    netid, delegate))
+                logger.info(f"EMPTY RIGHTS: mailbox {netid} "
+                            f"empty rights for {delegate}")
 
-        # at this point, records only contains stale delegations
         for record in records:
-            logger.info(("mailbox {} delegation {} ({}) on {}"
-                         "record not in delegate list").format(
-                             record.accessee.netid, record.accessor.name,
-                             record.access_right.name,
-                             record.datetime_granted))
+            # delegations that were reported, but for which we have no
+            # access record
             if commit_changes:
                 assign_delegation(accessee, record)
+            else:
+                logger.info("MISSING DELEGATION: "
+                            f"mailbox {record.accessee.netid} "
+                            f"delegation {record.accessor.name} "
+                            f"({record.access_right.name}) on "
+                            f"{record.datetime_granted}")
 
-    # after examining all reported delegated mailboxes, acccessee_mailboxes
-    # is a list of mailboxes for which prt expected at least one delegation,
-    # but none were reported
     for mailbox in accessee_mailboxes:
+        # access records for which no delegation was reported
         accessee = get_accessee_model(mailbox)
         for record in AccessRecord.objects.get_access_for_accessee(accessee):
-            logger.info(("mailbox {} delegation {} ({})"
-                         " on {} not assigned in Outlook").format(
-                             accessee.netid, record.accessor.name,
-                             record.access_right.name,
-                             record.datetime_granted))
             if commit_changes:
                 assign_delegation(accessee, record)
+            else:
+                logger.info(("MISSING DELEGATION: mailbox {} delegation {} ({})"
+                             " on {} not assigned in Outlook").format(
+                                 accessee.netid, record.accessor.name,
+                                 record.access_right.name,
+                                 record.datetime_granted))
 
 
 def get_access_right(right):
@@ -131,7 +133,11 @@ def get_access_right(right):
 
 
 def new_access_record(accessee, delegate, right):
-    logger.info('commit store access record')
+    logger.info(
+        f"CREATE mailbox {accessee.netid} "
+        f"delegate {delegate} ({right.name})")
+
+    logger.info("FAILSAFE HIT")
     return
 
     try:
@@ -163,18 +169,21 @@ def assign_delegation(accessee, record):
 
 
 def revoke_record(record):
-    logger.info("mailbox {} delegation {} ({}) revoked".format(
-        record.accessee.netid, record.accessor.name,
-        record.access_right))
+    logger.info("REVOKING mailbox {record.accessee.netid} "
+                f"delegation {record.accessor.name} ({record.access_right})")
 
-    logger.info('commit save record.revoke')
+    logger.info("FAILSAFE HIT")
     return
 
     record.revoke()
 
 
 def assign_access_right(record, right):
-    logger.info('commit save access right')
+    logger.info(f"UPDATE CHANGE: mailbox {record.accessee.netid} "
+                f"delegate {record.accessor.name} "
+                f"({record.access_right.name}) : {right.name}")
+
+    logger.info("FAILSAFE HIT")
     return
 
     record.access_right = right
@@ -182,14 +191,17 @@ def assign_access_right(record, right):
 
 
 def save_conflict_record(accessee, record, delegate, rights):
+    accessor = record.accessor if (
+        record) else get_office_accessor(delegate)
+    logger.info(f"UPDATE CONFLICT: mailbox {accessee.netid} "
+                f"delegate {accessor.name}: {rights}")
 
-    logger.info('commit save conflict')
+    logger.info("FAILSAFE HIT")
     return
 
     # create conflict record
     conflict, c = AccessRecordConflict.objects.get_or_create(
-        accessee=accessee, accessor=record.accessor if (
-            record) else get_office_accessor(delegate))
+        accessee=accessee, accessor=accessor)
     for right in rights:
         conflict.rights.add(get_access_right(right))
 
