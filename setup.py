@@ -45,7 +45,7 @@ setup(
         'UW-RestClients-UWNetID~=1.1.2',
         'UW-RestClients-Django-Utils~=2.1.5',
         'UW-RestClients-ITBill~=0.1',
-        'UW-RestClients-MSCA~=0.1',
+        'UW-RestClients-MSCA~=0.1.2',
         'Django-Safe-EmailBackend~=1.2',
         'UW-Django-SAML2>=1.3.8,<2.0',
         'django-pyscss',
