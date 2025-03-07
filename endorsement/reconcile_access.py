@@ -5,8 +5,12 @@ from endorsement.models import AccessRecord, AccessRight, AccessRecordConflict
 from endorsement.dao.access import (
     get_accessee_model, store_access_record, set_delegate)
 from endorsement.dao.office import get_office_accessor
-from endorsement.exceptions import UnrecognizedUWNetid, UnrecognizedGroupID
-from uw_msca.delegate import get_all_delegates
+from endorsement.exceptions import (
+    UnrecognizedUWNetid, UnrecognizedGroupID, NoAccessRecordException,
+    NullDelegateException, AccessRecordException, DeletedAccessRecordException,
+    TooManyRightsException, EmptyDelegateRightsException,
+    DelegateRightMismatchException)
+from uw_msca.delegate import get_delegates, get_all_delegates
 import json
 import csv
 import logging
@@ -14,6 +18,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+MISSING_DELEGATES_THRESHOLD = 1024
 
 
 def reconcile_access(commit_changes=False):
@@ -21,110 +26,127 @@ def reconcile_access(commit_changes=False):
     delegate_count = len(delegates)
     # make sure an empty response (likely an MSCA error condition) doesn't
     # cause all delegations to be deleted
-    if delegate_count < 1024:
+    if delegate_count < MISSING_DELEGATES_THRESHOLD:
         logger.error(
             "Possible malformed delegates response: {}".format(delegates))
         return
 
-    logger.info("Reconcile: {} delegates reported".format(delegate_count))
-
-    accessee_mailboxes = list(AccessRecord.objects.filter(
-        is_deleted__isnull=True).values(
-            'accessee__netid').distinct().values_list(
-                'accessee__netid', flat=True))
+    # all active record ids
+    record_ids = list(AccessRecord.objects.filter(
+        is_deleted__isnull=True).values_list('id', flat=True))
 
     for row in csv.reader(delegates, delimiter=","):
         if len(row) != 2:
-            logger.error("Reconcile: malformed row: {}".format(row))
+            logger.error(f"Reconcile: malformed row: {row}")
             continue
 
         netid = strip_domain(row[0])
         accessee = get_accessee_model(netid)
-        records = list(
-            AccessRecord.objects.get_access_for_accessee(accessee))
 
-        try:
-            accessee_mailboxes.remove(netid)
-        except ValueError:
-            pass
-
-        for delegate, rights in get_delegates(row[1]).items():
-            #  loop thru office mailbox delegates
-            #    1) catch dupes and record them
-            #    2) add records for delegations without one
-            #    3) delete records without a matching delegation
-            if not delegate or delegate.lower() == 'null':
+        for delegate, rights in get_delegations(row[1]).items():
+            try:
+                record = reconcile_delegation(accessee, delegate, rights)
+                clear_record_id(record_ids, record.id)
+            except NullDelegateException:
                 logger.info(
-                    f"mailbox {netid} with null delegate has rights: {rights}")
-                continue
+                    f"NULL DELEGATE: mailbox {netid} delegate null "
+                    f"with rights: {rights}")
+            except NoAccessRecordException:
+                logger.info(f"NO ACCESS RECORD FOR: mailbox {netid} "
+                            f"delegate {delegate} rights: {rights}")
+                if commit_changes:
+                    new_access_record(accessee, delegate, right_record)
+            except DeletedAccessRecordException as ex:
+                record = None
+                # try "live" query since report may have outdated data
+                for d in get_delegates(netid):
+                    if d.delegate == delegate:
+                        record = ex.record
+                        break
 
-            record, i = get_accessor_record(records, delegate)
-            if len(rights) > 1:
                 if record:
-                    if commit_changes:
-                        # stash existing access record
-                        revoke_record(record)
+                    logger.info(f"DELETED ACCESS RECORD: "
+                                f"mailbox {netid} delegate {delegate} "
+                                f"right: {record.access_right.name} on "
+                                f"{record.datetime_expired}")
 
-                    records.remove(record)
+                    if commit_changes:
+                        right = next(iter(rights))
+                        right_record = get_access_right(right)
+                        assign_access_right(record, right_record)
+            except EmptyDelegateRightsException as ex:
+                record = ex.record
+                logger.info(f"NO RIGHTS FOR DELEGATION: "
+                            f"mailbox {netid} delegate {delegate} BUT "
+                            f"record has right: {record.access_right.name}")
+                clear_record_id(record_ids, record.id)
+            except TooManyRightsException as ex:
+                logger.info(
+                    f"CONFLICT: mailbox {netid} delegate {delegate} "
+                    f"rights: {rights}")
+                record = ex.record
+                if commit_changes:
+                    revoke_record(record)
+                    save_conflict_record(accessee, record, delegate, rights)
+
+                clear_record_id(record_ids, record.id)
+            except DelegateRightMismatchException as ex:
+                record = ex.record
+                right = next(iter(rights))
+
+                logger.info(
+                    f"DELEGATION CHANGE: mailbox {netid} delegate {delegate}"
+                    f" ({record.access_right.name}) to {right}")
 
                 if commit_changes:
-                    save_conflict_record(accessee, record, delegate, rights)
-                else:
-                    logger.info(
-                        f"CONFLICT: mailbox {netid} delegate {delegate} "
-                        f"rights: {rights}")
+                    right_record = get_access_right(right)
+                    assign_access_right(record, right_record)
 
-            elif len(rights) == 1:
-                right = next(iter(rights))
-                right_record = get_access_right(right)
-                if record:
-                    if record.access_right.name != right:
-                        if commit_changes:
-                            assign_access_right(record, right_record)
-                        else:
-                            logger.info(
-                                f"CHANGED mailbox {netid} delegate {delegate}"
-                                f" ({record.access_right.name}) to {right}")
-                    # else delegate right and record match
+                clear_record_id(record_ids, record.id)
 
-                    records.remove(record)
-                else:
-                    # create record for unrecognized delegate right
-                    if commit_changes:
-                        new_access_record(accessee, delegate, right_record)
-                    else:
-                        logger.info(
-                            "MISSING ACCESS RECORD: "
-                            f"mailbox {accessee.netid} "
-                            f"delegate {delegate} ({right_record.name})")
-            else:
-                logger.info(f"EMPTY RIGHTS: mailbox {netid} "
-                            f"empty rights for {delegate}")
+    # access records for which no delegation was reported
+    for record in AccessRecord.objects.filter(id__in=record_ids):
+        if commit_changes:
+            assign_delegation(accessee, record)
+        else:
+            logger.info(f"MISSING DELEGATION: mailbox {accessee.netid} "
+                        f"delegate {record.accessor.name} "
+                        f"({record.access_right.name})"
+                        f" on {record.datetime_granted} not "
+                        "assigned in Outlook")
 
-        for record in records:
-            # delegations that were reported, but for which we have no
-            # access record
-            if commit_changes:
-                assign_delegation(accessee, record)
-            else:
-                logger.info("MISSING DELEGATION: "
-                            f"mailbox {record.accessee.netid} "
-                            f"delegation {record.accessor.name} "
-                            f"({record.access_right.name}) on "
-                            f"{record.datetime_granted}")
 
-    for mailbox in accessee_mailboxes:
-        # access records for which no delegation was reported
-        accessee = get_accessee_model(mailbox)
-        for record in AccessRecord.objects.get_access_for_accessee(accessee):
-            if commit_changes:
-                assign_delegation(accessee, record)
-            else:
-                logger.info(f"MISSING DELEGATION: mailbox {accessee.netid} "
-                            f"delegation {record.accessor.name} "
-                            f"({record.access_right.name})"
-                            f" on {record.datetime_granted} not "
-                            "assigned in Outlook")
+def clear_record_id(record_ids, record_id):
+    try:
+        record_ids.remove(record_id)
+    except ValueError:
+        pass
+
+
+def reconcile_delegation(accessee, delegate, rights):
+    if not delegate or delegate.lower() == 'null':
+        raise NullDelegateException()
+
+    try:
+        record = AccessRecord.objects.get(
+            accessee=accessee, accessor__name=delegate)
+    except AccessRecord.DoesNotExist:
+        raise NoAccessRecordException()
+
+    if len(rights) > 1:
+        raise TooManyRightsException(record=record)
+
+    if record.is_deleted:
+        raise DeletedAccessRecordException(record=record)
+
+    if len(rights) < 1:
+        raise EmptyDelegateRightsException(record=record)
+
+    right = next(iter(rights))
+    if record.access_right.name != right:
+        raise DelegateRightMismatchException(record=record)
+
+    return record
 
 
 def get_access_right(right):
@@ -134,7 +156,7 @@ def get_access_right(right):
 
 def new_access_record(accessee, delegate, right):
     logger.info(
-        f"CREATE mailbox {accessee.netid} "
+        f"CREATE RECORD: mailbox {accessee.netid} "
         f"delegate {delegate} ({right.name})")
 
     logger.info("FAILSAFE HIT")
@@ -153,20 +175,21 @@ def new_access_record(accessee, delegate, right):
 
 
 def assign_delegation(accessee, record):
-
     logger.info('commit set delegate ')
+
+    logger.info("FAILSAFE HIT")
     return
 
     try:
         set_delegate(accessee.netid, record.accessor.name,
                      record.access_right.name)
-        logger.info(f"mailbox {accessee.netid} delegation "
+        logger.info(f"SET DELGATION: mailbox {accessee.netid} delegation "
                     f"{record.accessor.name} "
-                    f"({record.access_right.name}) assigned")
+                    f"({record.access_right.name})")
     except Exception as ex:
-        logger.error("set delegate {record.accessor.name} "
+        logger.error("SET DELEGATE FAILED: {record.accessor.name} "
                      f"({record.access_right.name}) on "
-                     f"{accessee.netid} failed: {ex}")
+                     f"{accessee.netid} reason: {ex}")
 
 
 def revoke_record(record):
@@ -209,22 +232,16 @@ def save_conflict_record(accessee, record, delegate, rights):
     conflict.save()
 
 
-def get_accessor_record(records, delegate):
-    for i, record in enumerate(records):
-        if record.accessor.name == delegate:
-            return record, i
-
-    return None, -1
-
-
-def get_delegates(raw):
+def get_delegations(raw):
     delegates = {}
     cooked = json.loads(raw)
     for right in [cooked] if isinstance(cooked, dict) else cooked:
-        try:
-            delegates[right["User"]].append(right['AccessRights'])
-        except KeyError:
-            delegates[right["User"]] = [right['AccessRights']]
+        user = right["User"]
+        if user and user.lower() != 'null':
+            try:
+                delegates[user].append(right['AccessRights'])
+            except KeyError:
+                delegates[user] = [right['AccessRights']]
 
     return delegates
 
