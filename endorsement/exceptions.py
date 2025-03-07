@@ -57,3 +57,33 @@ class SharedDriveRecordNotFound(Exception):
 
 class ITBillSubscriptionNotFound(Exception):
     pass
+
+
+class NoAccessRecordException(Exception):
+    pass
+
+
+class NullDelegateException(Exception):
+    pass
+
+
+class AccessRecordException(Exception):
+    def __init__(self, *args, **kwargs):
+        self.record = kwargs.pop('record', None)
+        super().__init__(*args, **kwargs)
+
+
+class DeletedAccessRecordException(AccessRecordException):
+    pass
+
+
+class TooManyRightsException(AccessRecordException):
+    pass
+
+
+class EmptyDelegateRightsException(AccessRecordException):
+    pass
+
+
+class DelegateRightMismatchException(AccessRecordException):
+    pass
