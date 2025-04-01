@@ -32,12 +32,13 @@ def _create_notification_expiration_notice(notice_level, drive, policy):
     }
 
     if notice_level < 4:
-        subject = ("Action Required: Shared Drive "
-                   "service will expire soon")
+        subject = ("Action Required: Google Shared Drive(s) "
+                   "will be deleted soon")
         text_template = _email_template("notice_warning.txt")
         html_template = _email_template("notice_warning.html")
     else:
-        subject = "Action Required: Shared Drive services have expired"
+        subject = ("Action Required: Google Shared Drive(s) "
+                   "will be deleted")
         text_template = _email_template("notice_warning_final.txt")
         html_template = _email_template("notice_warning_final.html")
 

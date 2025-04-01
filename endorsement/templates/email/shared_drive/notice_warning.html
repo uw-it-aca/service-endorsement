@@ -1,17 +1,15 @@
 Hello,
 <p>
 You are receiving this email because you are identified as
-{%if drive.shared_drive.members.all.count > 1 %}
-one of {{ drive.shared_drive.members.all.count }}
-{% else %}
-the
-{% endif %}
-UW manager{{drive.shared_drive.members.all.count|pluralize}} of the Google Shared Drive named "{{drive.shared_drive.drive_name}}".
+{%if drive.shared_drive.members.all.count > 1 %}a {% else %}the {% endif %}
+UW manager of the Google Shared Drive named "{{drive.shared_drive.drive_name}}".
 </p>
 <p>
-<a href="https://provision.uw.edu/drives" target="_blank">To maintain service, renew this shared drive within {{notice_time}} days</a> in the Provisioning Request Tool (PRT).<br />
-Google Shared Drives services last for {{lifetime}} days and must be renewed annually or removed.
-{%if notice_time <= 31 %}Non-renewed (expired) drives will be deleted. Managers are responsible for retaining a copy of any material subject to any applicable record retention schedules prior to deletion.{%endif%}
+To maintain this Google Shared Drive, renew it within {{notice_time}} days using the Provisioning Request Tool (PRT) at:
+</p>
+<a href="https://provision.uw.edu/drives" target="_blank" style="padding-left: 4em;">https://provision.uw.edu/drives</a>
+<p>
+Google Shared Drives must be renewed once every {{lifetime}} days. If a Google Shared Drive is not renewed within {{lifetime}} days, the Google Shared Drive and all data contained within it will be permanently deleted.
 </p>
 <p>
 If you have any questions, please contact <a href="mailto:help@uw.edu" target="_blank">help@uw.edu</a> or 206-221-5000.
