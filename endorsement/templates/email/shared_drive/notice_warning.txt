@@ -1,19 +1,30 @@
 Hello,
 
-You are receiving this email because you are identified as {%if drive.shared_drive.members.all.count > 1 %}one of {{ drive.shared_drive.members.all.count }}{% else %}the{% endif %} UW manager{{drive.shared_drive.members.all.count|pluralize}}
+You are receiving this email because you are identified as {%if drive.shared_drive.members.all.count > 1 %}a{% else %}the{% endif %} UW manager
 of the Google Shared Drive named "{{drive.shared_drive.drive_name}}".
 
-To maintain service, renew this shared drive within {{notice_time}} days</a> in
-the Provisioning Request Tool (PRT) at:
+Google Shared Drives must be renewed once every {{lifetime}} days. If your Google
+Shared Drive is not renewed within {{notice_time}} days from the date of this notice,
+the Google Shared Drive and all data contained within it will be
+permanently deleted.
+
+To maintain this Google Shared Drive, at least one of the drive's managers
+must renew it within {{notice_time}} days using the Provisioning Request Tool (PRT) at:
 
     https://provision.uw.edu/drives
 
-Google Shared Drives services last for {{lifetime}} days and must be renewed
-annually or removed.  {%if notice_time <= 31 %}Non-renewed (expired) drives will be deleted.
-Managers are responsible for retaining a copy of any material subject to
-ny applicable record retention schedules prior to deletion.{%endif%}
+As long as at least one of the drive's managers completes the renewal, the
+Google Shared Drive will remain accessible for another {{lifetime}} days. If the above
+Google Shared Drive is managed by multiple UW managers but it is not in
+your list of drives up for renewal, another manager may have already
+completed it.
 
-If you have any questions, please contact help@uw.edu or 206-221-5000.
+If you have any questions, please visit our Knowledge Base article on Google Shared
+Drives
+
+    https://uwconnect.uw.edu/it?id=kb_article_view&sysparm_article=KB0034370
+
+for further help, contact help@uw.edu or 206-221-5000.
 
 Thank you,
 UW-IT
