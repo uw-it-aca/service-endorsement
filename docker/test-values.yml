@@ -60,7 +60,7 @@ cronjob:
       command: ["/scripts/management_command.sh"]
       args: ["expire_endorsees"]
     - name: expiration-notice-1
-      schedule: "10 8 * * 1-5"
+      schedule: "10 8 * * 1-4"
       command: ["/scripts/management_command.sh"]
       args: ["expiration_notice", "1"]
     - name: expiration-notice-2
