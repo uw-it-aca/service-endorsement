@@ -103,6 +103,10 @@ def reconcile_access(commit_changes=False):
                     assign_access_right(record, right_record)
 
                 clear_record_id(record_ids, record.id)
+            except Exception as ex:
+                logger.error(
+                    f"UNEXPECTED ERROR: mailbox {netid} delegate {delegate} "
+                    f"rights: {rights} error: {ex}")
 
     # access records for which no delegation was reported
     for record in AccessRecord.objects.filter(id__in=record_ids):
