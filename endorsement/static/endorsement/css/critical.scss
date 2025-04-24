@@ -292,15 +292,13 @@ a {
   font-weight: 600;
 }
 
-.shared-drive-table-tall {
+.shared-drive-table, .office-access-table {
   tbody { height: 600px !important; }
 }
 
 .endorsed-netids-table, .shared-netids-table, .office-access-table, .shared-drive-table { border: 1px solid #ddd;
-
-  table { display: flex; flex-flow: column; width: 100%; margin-bottom: 0; }
-  thead { flex: 0 0 auto; }
-  tbody { flex: 1 1 auto; display: block; overflow-y: scroll; overflow-x: hidden; height: 280px; }
+  table { min-width: 75rem; margin-bottom: 0; }
+  tbody { display: block; overflow-x: hidden; height: 280px; }
   tr { width: 100%; display: table; table-layout: fixed; }
   tr:last-child { border-bottom: 1px solid #ddd; }
 
@@ -323,8 +321,10 @@ a {
   tr.new_access .access-type,
   tr.new_access .access-action,
   tr.itbill_updated { background: #efffef !important; }
-  .shared-drive-action {width: 15.6em !important; white-space: nowrap; display:flex; justify-content: space-between; }
-  .shared-drive-action a {font-size: 95%; text-decoration: underline;}
+  .shared-drive-action {
+      a {font-size: 95%; white-space: nowrap; text-decoration: underline; margin-right: 2em; }
+      button { margin-left: 1em; }
+   }
   .shared-drive-est-usage { width: 7em; }
   .access-status p { padding-left: 1.2em; }
   .endorsed-netid, .access-mailbox { border-top: none; }
@@ -421,8 +421,7 @@ label.accept_responsibility {
     .access-header { font-size: 1.1em; font-weight: 800; }
     .mailbox-selector { padding-bottom: 1.5em; width: 100%;
         label { font-weight: bold; }
-        select { float: left; width: 40%; }
-        button { float: left; margin-left: 1em; }
+        select { width: 40%; }
     }
 }
 
