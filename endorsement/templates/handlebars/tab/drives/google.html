@@ -47,7 +47,7 @@
       </td>
       <td class="shared-drive-status">
         <span class="significant">
-        {{#if requires_subscription }}
+        {{#if (and requires_subscription (not valid_subscription)) }}
           Quota selection required
         {{else}}
           {{#if (lte expiration_days 90)}}Expiring{{else}}Active{{/if}}
@@ -115,7 +115,9 @@ view&nbsp;all</span>
              href="/drives">
            {{#if drive.drive_quota.is_subsidized}}Increase{{else}}{{#if subscription}}Update{{else}}Select{{/if}}{{/if}} quota
          </a>
+         {{#unless requires_subscription}}
          <a id="shared_drive_accept" aria-label="Renew {{ drive.drive_name }}" href="/drives">Renew</a>
+         {{/unless}}
        <!-- drive revoke/remove is not currently supported in the MSCA API
        <div>
          <a id="shared_drive_revoke" aria-label="Remove {{ drive.drive_name }}" href="/drives">Remove</a>

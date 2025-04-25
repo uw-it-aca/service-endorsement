@@ -81,7 +81,7 @@
               "quantity": "5",
               "start_date": "2024-01-01",
               "end_date": "",
-              "stage": "Curent",
+              "stage": "Current",
               "bill_comment": "",
               "last_bill_end_period": "",
               "next_bill_start": "2024-01-01"
