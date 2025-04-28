@@ -76,8 +76,9 @@ def _create_accessor_message(access_record, emails):
             loader.render_to_string(html_template, params))
 
 
-def _create_accessee_expiration_notice(notice_level, access, policy):
+def _create_accessee_expiration_notice(notice_level, owner, access, policy):
     context = {
+        'owner': owner,
         'access': access,
         'lifetime': policy.lifetime,
         'notice_time': policy.days_till_expiration(notice_level)
@@ -104,15 +105,17 @@ def accessee_lifecycle_warning(notice_level):
 
     for drive in drives:
         try:
-            owner = get_owner_for_shared_netid(drive.accessee.netid)
-            if not owner:
-                owner = drive.accessee.netid
+            owner_netid = get_owner_for_shared_netid(drive.accessee.netid)
+            if owner_netid:
+                owner = get_accessee_model(owner_netid)
+            else:
+                owner = drive.accessee
 
-            email = [uw_email_address(owner)]
+            email = [uw_email_address(owner.netid)]
             (subject,
              text_body,
              html_body) = _create_accessee_expiration_notice(
-                 notice_level, drive, policy)
+                 notice_level, owner, drive, policy)
             send_notification(
                 email, subject, text_body, html_body,
                 "Mailbox Access Warning")
