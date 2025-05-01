@@ -198,10 +198,10 @@ var ManageSharedDrives = (function () {
             drive.subscription_deadline_date = deadline.format('M/D/YYYY');
             drive.subscription_deadline_from_now = deadline.from(now);
 
-            drive.valid_subscription = (drive.subscription && !['draft', 'closed', 'cancelled'].includes(drive.subscription.state));
-            drive.requires_subscription = !(drive.drive.drive_quota.is_subsidized || drive.valid_subscription);
+            drive.valid_subscription = (drive.subscription && ['draft', 'provisioning', 'deployed'].includes(drive.subscription.state));
+            drive.requires_subscription = ((drive.drive.drive_usage > drive.drive.drive_quota.quota_limit) && !drive.active_subscription);
             drive.quota_notes = [{
-                is_capped: (!["uw.edu", "None"].includes(drive.drive.drive_quota.org_unit_name) && drive.drive.drive_usage > drive.drive.drive_quota.quota_limit)
+                is_capped: (drive.drive.drive_usage > drive.drive.drive_quota.quota_limit)
             }];
 
             drive.notable_status = (drive.expiration_days === 365);

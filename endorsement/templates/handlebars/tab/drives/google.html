@@ -4,8 +4,8 @@
  <div class="col-sm-12">
 
   <div class="form-group">
-    <div class="shared-drive-table shared-drive-table-tall">
-    <table class="table shared-drive-table">
+    <div class="shared-drive-table table-responsive-lg">
+    <table class="table">
       <caption class="visually-hidden">Google Shared Drives</caption>
       <thead class="thead-light">
         <tr>
@@ -13,7 +13,7 @@
           <th scope="col" class="shared-drive-status-icon"></th>
           <th scope="col" class="shared-drive-status">Status</th>
           <th scope="col" class="shared-drive-est-usage"><span>Est Usage</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Estimated usage for each drive is updated once a week and may not reflect exact usage." data-original-title="Estimated Usage (Est. Usage)"><i class="fa fa-question-circle"></i></span></th>
-          <th class="shared-drive-quota"><span>Quota</span></th>
+          <th scope="col" class="shared-drive-quota"><span>Quota</span></th>
           <th scope="col" class="shared-drive-members"><span>Managers</span> <span class="prt-data-popover" aria-hidden="true" tabindex="0" data-placement="top" data-content="Only UW employees who have manager permissions for this drive are listed here.  Management changes may take up to 48 hours to appear here." data-original-title="Managers"><i class="fa fa-question-circle"></i></span></th>
           <th scope="col" class="shared-drive-action"><span>Action</span></th>
         </tr>
@@ -47,7 +47,7 @@
       </td>
       <td class="shared-drive-status">
         <span class="significant">
-        {{#if requires_subscription }}
+        {{#if (and requires_subscription (not valid_subscription)) }}
           Quota selection required
         {{else}}
           {{#if (lte expiration_days 90)}}Expiring{{else}}Active{{/if}}
@@ -109,17 +109,15 @@ view&nbsp;all</span>
         </ul>
      </td>
      <td class="shared-drive-action" data-drive-id="{{drive.drive_id}}" data-drive-name="{{drive.drive_name}}">
-       <div>
          <a
              id="shared_drive_quota"
              aria-label="{{#if drive.drive_quota.is_subsidized}}Increase{{else}}{{#if subscription}}Update{{else}}Select{{/if}}{{/if}} quota for {{ drive.drive_name }} (opens in new window)"
              href="/drives">
            {{#if drive.drive_quota.is_subsidized}}Increase{{else}}{{#if subscription}}Update{{else}}Select{{/if}}{{/if}} quota
          </a>
-       </div>
-       <div>
+         {{#unless requires_subscription}}
          <a id="shared_drive_accept" aria-label="Renew {{ drive.drive_name }}" href="/drives">Renew</a>
-       </div>
+         {{/unless}}
        <!-- drive revoke/remove is not currently supported in the MSCA API
        <div>
          <a id="shared_drive_revoke" aria-label="Remove {{ drive.drive_name }}" href="/drives">Remove</a>
