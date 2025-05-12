@@ -25,4 +25,5 @@ class Command(BaseCommand):
         try:
             reconcile_access(commit_changes=commit_changes)
         except Exception as ex:
-            logger.error("reconcile_access: Exception: {}".format(ex))
+            logger.exception(
+                "reconcile_access: Exception: {}".format(ex), stack_info=True)
