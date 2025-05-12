@@ -34,6 +34,8 @@ externalService:
   servicePort: 5432
 repo: prt
 instance: test
+namespace:
+  enabled: true
 targetAverageUtilization: 95
 resources:
   limits:
