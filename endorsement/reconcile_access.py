@@ -107,8 +107,8 @@ def reconcile_access(commit_changes=False):
             except DelegateRightMismatchException as ex:
                 record = ex.record
                 logger.info(
-                    f"DELEGATION CHANGE: mailbox {netid} delegate {delegate}"
-                    f" ({record.access_right.name}) to {right}")
+                    f"DELEGATION CHANGE: mailbox {netid} delegate {delegate} "
+                    f"({record.access_right.name}) to {right}")
 
                 if commit_changes:
                     right_record = get_access_right(right)
@@ -118,14 +118,14 @@ def reconcile_access(commit_changes=False):
 
     # access records for which no delegation was reported
     for record in AccessRecord.objects.filter(id__in=record_ids):
-        if commit_changes:
+        logger.info(f"UNREPORTED DELEGATION: mailbox {accessee.netid} "
+                    f"delegate {record.accessor.name} "
+                    f"({record.access_right.name}) "
+                    f"on {record.datetime_granted} not "
+                    "assigned in Outlook")
+        # disable until policy is decided
+        if False and commit_changes:
             assign_delegation(accessee, record)
-        else:
-            logger.info(f"MISSING DELEGATION: mailbox {accessee.netid} "
-                        f"delegate {record.accessor.name} "
-                        f"({record.access_right.name})"
-                        f" on {record.datetime_granted} not "
-                        "assigned in Outlook")
 
 
 def clear_record_id(record_ids, record_id):
@@ -171,10 +171,6 @@ def get_access_right(right):
 
 
 def new_access_record(accessee, delegate, right):
-    logger.info(
-        f"CREATE RECORD: mailbox {accessee.netid} "
-        f"delegate {delegate} ({right.name})")
-
     logger.info("FAILSAFE HIT")
     return
 
@@ -183,11 +179,12 @@ def new_access_record(accessee, delegate, right):
         store_access_record(
             accessee, accessor, right, is_reconcile=True)
 
-        logger.info(f"mailbox {accessee.netid} delegation {delegate} "
-                    f"({right}) record created")
+        logger.info(
+            f"CREATEED RECORD: mailbox {accessee.netid} "
+            f"delegate {delegate} ({right.name})")
     except (UnrecognizedUWNetid, UnrecognizedGroupID):
         logger.error(
-            "Unknown netid or group: {}".format(delegate))
+            "CREATE RECORDE: Unknown netid or group: {}".format(delegate))
 
 
 def assign_delegation(accessee, record):
