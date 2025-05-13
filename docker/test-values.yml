@@ -33,9 +33,9 @@ externalService:
   serviceAddress: 172.18.1.16
   servicePort: 5432
 repo: prt
+instance: test
 namespace:
   enabled: true
-instance: test
 targetAverageUtilization: 95
 resources:
   limits:
