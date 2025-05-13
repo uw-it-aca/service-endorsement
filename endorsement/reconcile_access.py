@@ -118,14 +118,14 @@ def reconcile_access(commit_changes=False):
 
     # access records for which no delegation was reported
     for record in AccessRecord.objects.filter(id__in=record_ids):
-        logger.info(f"UNREPORTED DELEGATION: mailbox {accessee.netid} "
+        logger.info(f"UNREPORTED DELEGATION: mailbox {record.accessee.netid} "
                     f"delegate {record.accessor.name} "
                     f"({record.access_right.name}) "
                     f"on {record.datetime_granted} not "
                     "assigned in Outlook")
         # disable until policy is decided
         if False and commit_changes:
-            assign_delegation(accessee, record)
+            assign_delegation(record.accessee, record)
 
 
 def clear_record_id(record_ids, record_id):
@@ -256,13 +256,7 @@ def save_conflict_record(accessee, record, delegate, rights):
 def mailbox_delegations(column):
     rights = json.loads(column)
     for right in [rights] if isinstance(rights, dict) else rights:
-        user = right["User"]
-        if user and user.lower() != 'null':
-            yield user, right['AccessRights']
-        else:
-            logger.debug(
-                f"NULL RIGHT: mailbox {netid} delegate {delegate}"
-                f" right: {right}")
+        yield right["User"], right['AccessRights']
 
 
 def access_user(a):
