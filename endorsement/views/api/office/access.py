@@ -162,7 +162,7 @@ class Access(RESTDispatch):
     def _is_valid_accessor(self, supported):
         return (supported.is_owner() and (
             supported.is_shared_netid()
-            or supported.netid_type == 'administrator'))
+            or supported.netid_type in ['administrator', 'support'])
 
 
 class AccessRights(RESTDispatch):
