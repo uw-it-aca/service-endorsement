@@ -128,8 +128,6 @@ jobs:
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
           commit_hash: ${{ needs.context.outputs.commit_hash }}
           git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
-          registry_hostname: us-docker.pkg.dev
-          registry_path: containers
 
       - name: 'Surface context from executed build step'
         id: context
