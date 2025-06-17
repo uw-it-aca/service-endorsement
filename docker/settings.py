@@ -80,7 +80,7 @@ if os.getenv("ENV") == "localdev":
 else:
     RESTCLIENTS_PRT_HOST = 'https://depts.washington.edu'
     RESTCLIENTS_PRT_DAO_CLASS = 'Live'
-    RESTCLIENTS_MSCA_HOST = 'https://pplat-main-apim.azure-api.net'
+    RESTCLIENTS_MSCA_HOST = os.getenv("MSCA_HOST", '')
     RESTCLIENTS_MSCA_DAO_CLASS = 'Live'
     RESTCLIENTS_MSCA_TIMEOUT = os.getenv(
         "MSCA_TIMEOUT", RESTCLIENTS_DEFAULT_TIMEOUT)
