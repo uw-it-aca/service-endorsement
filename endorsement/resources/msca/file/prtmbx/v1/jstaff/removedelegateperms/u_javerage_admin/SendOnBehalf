@@ -1,7 +1,6 @@
 {
-    "TargetNetid": "jstaff",
-    "Delegates": [{
-        "User": "u_javerage_admin",
-        "AccessRights": "SendOnBehalf"
-    }]
+    "Netid": "jstaff",
+    "Delegate": "u_javerage_admin",
+    "AccessType": "SendOnBehalf",
+    "Message": "Access type AccessType removed for netid. Other access types may remain for delegate. Run GetDelegates to verify."
 }
