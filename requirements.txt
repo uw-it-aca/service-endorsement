@@ -1,2 +1,2 @@
 -e .
-uw_msca@git+https://github.com/uw-it-aca/uw-restclients-msca@9232e19
+uw_msca@git+https://github.com/uw-it-aca/uw-restclients-msca@5e72493
