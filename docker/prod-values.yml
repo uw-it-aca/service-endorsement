@@ -36,6 +36,8 @@ externalService:
   servicePort: 5432
 repo: prt
 instance: prod
+namespace:
+  enabled: true
 image:
   repository: IMAGE_REGISTRY
   tag: IMAGE_TAG
