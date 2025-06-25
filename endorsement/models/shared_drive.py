@@ -266,8 +266,16 @@ class SharedDriveRecord(
 
         if accept:
             self.datetime_accepted = acceptance.datetime_created
+            self.datetime_expired = None
         else:
             self.datetime_expired = acceptance.datetime_accepted
+
+        # clear notification schedule
+        self.datetime_emailed = None
+        self.datetime_notice_1_emailed = None
+        self.datetime_notice_2_emailed = None
+        self.datetime_notice_3_emailed = None
+        self.datetime_notice_4_emailed = None
 
         self.save()
 
