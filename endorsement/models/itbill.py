@@ -99,16 +99,15 @@ class ITBillSubscription(
         Walks Provisions list to return the subscribed quota
         associated with the given date
         """
-        current_quantity = 0
         if self.state == self.SUBSCRIPTION_DEPLOYED:
             for provision in self.get_provisions():
                 for quantity in provision.get_quantities():
-                    if (quantity.start_date <= now
-                        and (quantity.end_date is None
-                             or quantity.end_date >= now)):
-                        current_quantity += quantity.quantity_gigabytes
+                    if quantity.start_date <= now:
+                        if (quantity.end_date is None
+                                or quantity.end_date >= now):
+                            return quantity.quantity_gigabytes
 
-        return current_quantity if current_quantity else None
+        return None
 
     def json_data(self):
         return {
