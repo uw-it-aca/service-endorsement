@@ -24,25 +24,25 @@ class TestITBill(TestCase):
             shared_drive__drive_id='IRDXB54TWF3OY8MVC9J')
 
         now = datetime.strptime('2023-12-31', '%Y-%m-%d').date()
-        quota = record.subscription.get_quota_on_date(now)
-        self.assertEqual(quota, None)
+        quota = record.subscription.get_quantity_on_date(now)
+        self.assertEqual(quota, 0)
 
         now = datetime.strptime('2024-01-01', '%Y-%m-%d').date()
-        quota = record.subscription.get_quota_on_date(now)
-        self.assertEqual(quota, 300)
+        quota = record.subscription.get_quantity_on_date(now)
+        self.assertEqual(quota, 2)
 
         now = datetime.strptime('2024-01-02', '%Y-%m-%d').date()
-        quota = record.subscription.get_quota_on_date(now)
-        self.assertEqual(quota, 300)
+        quota = record.subscription.get_quantity_on_date(now)
+        self.assertEqual(quota, 2)
 
         now = datetime.strptime('2024-12-28', '%Y-%m-%d').date()
-        quota = record.subscription.get_quota_on_date(now)
-        self.assertEqual(quota, 300)
+        quota = record.subscription.get_quantity_on_date(now)
+        self.assertEqual(quota, 2)
 
         now = datetime.strptime('2024-12-29', '%Y-%m-%d').date()
-        quota = record.subscription.get_quota_on_date(now)
-        self.assertEqual(quota, 300)
+        quota = record.subscription.get_quantity_on_date(now)
+        self.assertEqual(quota, 2)
 
         now = datetime.strptime('2024-12-30', '%Y-%m-%d').date()
-        quota = record.subscription.get_quota_on_date(now)
-        self.assertEqual(quota, None)
+        quota = record.subscription.get_quantity_on_date(now)
+        self.assertEqual(quota, 0)
