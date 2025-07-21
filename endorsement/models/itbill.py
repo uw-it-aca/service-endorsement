@@ -92,9 +92,15 @@ class ITBillSubscription(
 
     @property
     def current_quota(self):
-        return self.get_quota_on_date(timezone.now().date())
+        return (self.current_quantity * 100) + getattr(
+            settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA"
+        )
 
-    def get_quota_on_date(self, now):
+    @property
+    def current_quantity(self):
+        return self.get_quantity_on_date(timezone.now().date())
+
+    def get_quantity_on_date(self, now):
         """
         Walks Provisions list to return the subscribed quota
         associated with the given date
@@ -106,9 +112,9 @@ class ITBillSubscription(
                     if (quantity.start_date <= now
                         and (quantity.end_date is None
                              or quantity.end_date >= now)):
-                        current_quantity += quantity.quantity_gigabytes
+                        current_quantity += quantity.quantity
 
-        return current_quantity if current_quantity else None
+        return current_quantity
 
     def json_data(self):
         return {
@@ -134,12 +140,6 @@ class ITBillProvision(
         ITBillSubscription, on_delete=models.PROTECT
     )
     current_quantity = models.IntegerField()
-
-    @property
-    def current_quantity_gigabytes(self):
-        return (self.current_quantity * 100) + getattr(
-            settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA"
-        )
 
     def from_json(self, provision):
         for quantity in provision.quantities:
