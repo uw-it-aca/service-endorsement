@@ -189,7 +189,9 @@ var ManageSharedDrives = (function () {
         _prepSharedDriveContext = function (drive) {
             var expiration = moment(drive.datetime_expiration),
                 deadline = moment(drive.datetime_subscription_deadline),
-                now = moment.utc();
+                now = moment.utc(),
+                billing_period_start = moment(((now.month() == 11) ? now.year() : now.year() - 1) + '-12-01'),
+                billing_period_end = moment(((now.month() == 11) ? now.year() + 1 : now.year()) + '-11-30');
 
             drive.expiration_date = expiration.format('M/D/YYYY');
             drive.expiration_days = expiration.diff(now, 'days');
@@ -212,8 +214,8 @@ var ManageSharedDrives = (function () {
                     $.each(this.quantities, function () {
                         var starting = this.start_date ? moment(this.start_date) : null,
                             ending = this.end_date ? moment(this.end_date): null,
-                            is_future = starting && starting.diff(now) > 0,
-                            is_ending = starting && ending && starting.diff(now) < 0 && ending.diff(now) > 0,
+                            is_future = starting && starting.diff(billing_period_end) > 0 && this.quota_limit != drive.drive.drive_quota.quota_limit,
+                            is_ending = ending && ending.diff(billing_period_end) < 0,
                             is_increasing = this.quota_limit > drive.drive.drive_quota.quota_limit,
                             is_decreasing = this.quota_limit < drive.drive.drive_quota.quota_limit,
                             is_changing = (is_future || is_ending);
