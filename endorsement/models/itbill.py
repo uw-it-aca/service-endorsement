@@ -7,6 +7,7 @@ from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 from endorsement.util.date import datetime_to_str, date_to_str
 from endorsement.util.key_remote import key_remote
+from datetime import date
 import json
 
 
@@ -102,16 +103,25 @@ class ITBillSubscription(
 
     def get_quantity_on_date(self, now):
         """
-        Walks Provisions list to return the subscribed quota
-        associated with the given date
+        Walks provision quantities to return the subscribed quota
+        associated with the given date.  Quantity dates must fall
+        within ITBill billing period, which is December 1st to
+        November 30th of the following year.
         """
+        billing_period_start_year = now.year if (
+            now.month == 12) else now.year - 1
+        billing_period_end_year = now.year if (
+            now.month < 12) else now.year + 1
+        billing_period_start_date = date(billing_period_start_year, 12, 1)
+        billing_period_end_date = date(billing_period_end_year, 11, 30)
+
         current_quantity = 0
         if self.state == self.SUBSCRIPTION_DEPLOYED:
             for provision in self.get_provisions():
                 for quantity in provision.get_quantities():
-                    if (quantity.start_date <= now
-                        and (quantity.end_date is None
-                             or quantity.end_date >= now)):
+                    if ((not quantity.end_date
+                            or quantity.end_date > billing_period_start_date)
+                            and quantity.start_date < billing_period_end_date):
                         current_quantity += quantity.quantity
 
         return current_quantity
