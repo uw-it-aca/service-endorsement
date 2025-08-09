@@ -215,7 +215,7 @@ var ManageSharedDrives = (function () {
                         var starting = this.start_date ? moment(this.start_date) : null,
                             ending = this.end_date ? moment(this.end_date): null,
                             is_future = starting && starting.diff(billing_period_end) > 0 && this.quota_limit != drive.drive.drive_quota.quota_limit,
-                            is_ending = ending && ending.diff(billing_period_end) < 0 && ending.diff(billing_period_start) > 0,
+                            is_ending = ending && ending.diff(billing_period_start) > 0 && ending.diff(billing_period_end) < 0 && ending.diff(now) > 0 && this.quota_limit != drive.drive.drive_quota.quota_limit,
                             is_increasing = this.quota_limit > drive.drive.drive_quota.quota_limit,
                             is_decreasing = this.quota_limit < drive.drive.drive_quota.quota_limit,
                             is_changing = (is_future || is_ending);
