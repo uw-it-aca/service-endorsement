@@ -51,20 +51,25 @@ def get_office_accessor(name):
 
 
 def validate_office_access(name):
-    try:
-        # get netid (personal/shared) data
-        uwregid, display_name, email, is_person = get_endorsee_data(name)
-        if is_person:
-            return display_name, False, False
-        elif '_' not in name:
-            return display_name, True, False
+    """
+    Validate uw netid or group
 
-        return validate_group(name, display_name)
+    Return tuple (display_name, is_shared_netid, is_group)
+    """
+    try:
+        # get netid (personal or shared) data
+        uwregid, display_name, email, is_person = get_endorsee_data(name)
+        return display_name, not is_person, False
     except UnrecognizedUWNetid:
         return validate_group(name, None)
 
 
 def validate_group(name, display_name):
+    """
+    Validate uw group
+
+    Return tuple (display_name, is_shared_netid, is_group)
+    """
     try:
         group = get_group_by_id(name)
         return group.name, False, True
