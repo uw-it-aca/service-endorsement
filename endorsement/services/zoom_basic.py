@@ -16,7 +16,7 @@ Shared netids are not allowed.
 
 from django.conf import settings
 from endorsement.services import EndorsementServiceBase
-from endorsement.models import EndorsementRecord
+from endorsement.models import EndorsementRecord, Endorsee
 from endorsement.dao.gws import is_group_member
 from endorsement.exceptions import NoEndorsementException
 from uw_uwnetid.models import Subscription
@@ -39,13 +39,6 @@ class EndorsementService(EndorsementServiceBase):
         return [Subscription.SUBS_CODE_ZOOM_BASIC_ACCESS]
 
     @property
-    def shared_params(self):
-        return {
-            'roles': ['owner', 'owner-admin'],
-            'types': ['shared', 'support']
-        }
-
-    @property
     def service_renewal_statement(self):
         return "Data accessible by UW Zoom accounts may be deleted."
 
@@ -53,6 +46,14 @@ class EndorsementService(EndorsementServiceBase):
     def service_link(self):
         return ("https://itconnect.uw.edu/connect/phones"
                 "/conferencing/zoom-video-conferencing/")
+
+    def valid_legacy_shared_netid(self, resource, endorser):
+        try:
+            endorsee = Endorsee.objects.get(netid=resource.name)
+            self.get_endorsement(endorser, endorsee)
+            return True
+        except (Endorsee.DoesNotExist, NoEndorsementException):
+            return False
 
     def is_permitted(self, endorser, endorsee):
         try:
