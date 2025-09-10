@@ -136,7 +136,19 @@ class Endorse(RESTDispatch):
                 try:
                     e = service.clear_endorsement(
                         endorser, endorsee)
-                    endorsements[service.service_name] = e.json_data()
+
+                    if (not endorsee.is_person
+                            and not service.supports_shared_netids):
+                        # legacy shared netid revoked
+                        endorsements[service.service_name] = {
+                            'endorser': endorser_json,
+                            'endorsee': endorsee.json_data(),
+                            'endorsed': False,
+                            'is_legacy': True
+                        }
+                    else:
+                        endorsements[service.service_name] = e.json_data()
+
                 except NoEndorsementException as ex:
                     endorsements[service.service_name] = {
                         'endorser': endorser_json,
