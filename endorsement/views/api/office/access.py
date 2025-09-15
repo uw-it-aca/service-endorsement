@@ -88,6 +88,7 @@ class Access(RESTDispatch):
             access = store_access(
                 accessee, accessor, access_type, acted_as)
         except DataFailureException as ex:
+            logger.error(f"set/revoke access error ({ex.status}): {ex.msg}")
             return self.error_response(ex.status, message=ex.msg)
 
         return self.json_response(access.json_data())
