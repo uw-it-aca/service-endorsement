@@ -132,7 +132,6 @@ class Access(RESTDispatch):
                 access = renew_access(accessee, accessor, acted_as)
                 return self.json_response(access.json_data())
             elif previous_access_type and access_type:
-                import pdb; pdb.set_trace()
                 access = update_access(
                     accessee, accessor, previous_access_type,
                     access_type, acted_as)

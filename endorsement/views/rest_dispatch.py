@@ -79,9 +79,6 @@ def data_not_found(logger):
 
 
 def bad_request(logger, msg="Bad request"):
-
-    import pdb; pdb.set_trace()
-
     log_bad_request_response(logger)
     return RESTDispatch().error_response(400, msg)
 
