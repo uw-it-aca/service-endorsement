@@ -87,3 +87,7 @@ class EmptyDelegateRightsException(AccessRecordException):
 
 class DelegateRightMismatchException(AccessRecordException):
     pass
+
+
+class DelegateParameterException(Exception):
+    pass

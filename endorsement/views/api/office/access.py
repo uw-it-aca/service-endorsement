@@ -11,7 +11,8 @@ from endorsement.dao.access import (
 from endorsement.dao.office import is_office_permitted, get_office_accessor
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, invalid_endorser, data_error)
-from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
+from endorsement.exceptions import (
+    UnrecognizedUWNetid, InvalidNetID, DelegateParameterException)
 from endorsement.util.auth import is_support_user
 from uw_msca.access_rights import get_access_rights
 from restclients_core.exceptions import DataFailureException
@@ -68,10 +69,16 @@ class Access(RESTDispatch):
         except InvalidNetID:
             return invalid_endorser(logger)
 
-        mailbox = request.data.get('mailbox', None)
-        delegate = request.data.get('delegate', None)
-        access_type = request.data.get('access_type', None)
-        previous_access_type = request.data.get('previous_access_type', None)
+        try:
+            mailbox = self._validate_param(request.data, 'mailbox')
+            delegate = self._validate_param(request.data, 'delegate')
+            access_type = self._validate_param(request.data, 'access_type')
+            previous_access_type = self._validate_param(
+                request.data, 'previous_access_type', True)
+        except DelegateParameterException as ex:
+            message = f"Access.post parameter: {ex}"
+            logger.error(message)
+            return self.error_response(400, message=message)
 
         if not is_office_permitted(mailbox):
             return invalid_endorser(logger)
@@ -89,7 +96,8 @@ class Access(RESTDispatch):
                 accessee, accessor, access_type, acted_as)
         except DataFailureException as ex:
             logger.error(
-                f"ERROR: set/revoke access {ex.url} ({ex.status}): {ex.msg}")
+                f"Access.post {ex.url} FAILURE data: {request.data} "
+                f"status: {ex.msg} ({ex.status})")
             return self.error_response(ex.status, message=ex.msg)
 
         return self.json_response(access.json_data())
@@ -102,11 +110,16 @@ class Access(RESTDispatch):
         except InvalidNetID:
             return invalid_endorser(logger)
 
-        action = request.data.get('action', None)
-        mailbox = request.data.get('mailbox', None)
-        delegate = request.data.get('delegate', None)
-        access_type = request.data.get('access_type', None)
-        previous_access_type = request.data.get('previous_access_type', None)
+        try:
+            action = self._validate_param(request.data, 'action', True)
+            mailbox = self._validate_param(request.data, 'mailbox')
+            delegate = self._validate_param(request.data, 'delegate')
+            access_type = self._validate_param(request.data, 'access_type')
+            previous_access_type = self._validate_param(
+                request.data, 'previous_access_type', True)
+        except DelegateParameterException as ex:
+            logger.error(f"Access.patch parameter: {ex}")
+            return self.error_response(400, message=str(ex))
 
         if not is_office_permitted(mailbox):
             return invalid_endorser(logger)
@@ -123,10 +136,16 @@ class Access(RESTDispatch):
                     accessee, accessor, previous_access_type,
                     access_type, acted_as)
             else:
+                logger.error(
+                    f"Access.patch missing parameter: {request.data}")
                 return self.error_response(404, message="Insufficient Data")
         except AccessRecord.DoesNotExist:
+            logger.error(
+                f"Access.patch missing access record: {request.data}")
             return self.error_response(404, message="Unknown Access Record")
         except DataFailureException as ex:
+            logger.error(
+                f"Access.patch request: '{ex.url}' ({ex.status}): {ex.msg}")
             return self.error_response(ex.status, message=ex.msg)
 
         return self.json_response(access.json_data())
@@ -149,9 +168,29 @@ class Access(RESTDispatch):
         try:
             access = revoke_access(accessee, accessor, access_type, acted_as)
         except DataFailureException as ex:
+            logger.error(
+                f"Access.delete request: {ex.url} ({ex.status}): {ex.msg}")
             return self.error_response(ex.status, message=ex.msg)
 
         return self.json_response(access.json_data())
+
+    def _validate_param(self, data, field, nullable=False):
+        try:
+            value = data[field].strip()
+            if not value and not nullable:
+                raise DelegateParameterException(f"Empty {field} field")
+
+            return value
+        except AttributeError as ex:
+            if nullable:
+                return None
+
+            raise DelegateParameterException(f"Null {field} field")
+        except KeyError as ex:
+            if nullable:
+                return None
+
+            raise DelegateParameterException(f"Missing {field} field")
 
     def _load_access_for_accessee(self, accessee):
         access = AccessRecord.objects.get_access_for_accessee(accessee)
