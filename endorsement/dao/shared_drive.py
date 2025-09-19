@@ -203,7 +203,7 @@ def get_drive_quota_by_quota_limit(quota_limit):
     """
     defaults = {
         "org_unit_name": f"PRT-{quota_limit}GB",
-        "org_unit_id": "PRT-{quota_limit}",
+        "org_unit_id": f"PRT-{quota_limit}",
     }
 
     drive_quota, _ = SharedDriveQuota.objects.get_or_create(
@@ -343,7 +343,7 @@ def reconcile_drive_quota(
     if quota_actual == 0:
         logger.info(
             f"reconcile: skip set drive for {sdr.shared_drive.drive_id} "
-            "as the drive has {quota_actual} quota set"
+            f"as the drive has {quota_actual} quota set"
         )
         return
 

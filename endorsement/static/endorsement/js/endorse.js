@@ -111,7 +111,7 @@ var Endorse = (function () {
             _loadContainer();
             _registerEvents();
         },
-        
+
         endorse = function (modal_content_id, $rows) {
             var $modal = $('#endorse_modal'),
                 template = Handlebars.compile($('#' + modal_content_id).html()),
@@ -227,6 +227,11 @@ var Endorse = (function () {
                         context;
 
                     if ($row.length === 0) {
+                        return true;
+                    }
+
+                    if (endorsement.endorsed === false && endorsement.is_legacy === true) {
+                        $row.remove();
                         return true;
                     }
 
