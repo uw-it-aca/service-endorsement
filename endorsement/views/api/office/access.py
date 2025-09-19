@@ -16,6 +16,7 @@ from endorsement.exceptions import (
 from endorsement.util.auth import is_support_user
 from uw_msca.access_rights import get_access_rights
 from restclients_core.exceptions import DataFailureException
+import json
 import logging
 
 
@@ -95,10 +96,7 @@ class Access(RESTDispatch):
             access = store_access(
                 accessee, accessor, access_type, acted_as)
         except DataFailureException as ex:
-            logger.error(
-                f"Access.post {ex.url} FAILURE data: {request.data} "
-                f"status: {ex.msg} ({ex.status})")
-            return self.error_response(ex.status, message=ex.msg)
+            return self._msca_dfe_response('Access.post', request.data, ex)
 
         return self.json_response(access.json_data())
 
@@ -138,15 +136,13 @@ class Access(RESTDispatch):
             else:
                 logger.error(
                     f"Access.patch missing parameter: {request.data}")
-                return self.error_response(404, message="Insufficient Data")
+                return self.error_response(400, message="Insufficient Data")
         except AccessRecord.DoesNotExist:
             logger.error(
                 f"Access.patch missing access record: {request.data}")
-            return self.error_response(404, message="Unknown Access Record")
+            return self.error_response(400, message="Unknown Access Record")
         except DataFailureException as ex:
-            logger.error(
-                f"Access.patch request: '{ex.url}' ({ex.status}): {ex.msg}")
-            return self.error_response(ex.status, message=ex.msg)
+            return self._msca_dfe_response('Access.patch', request.data, ex)
 
         return self.json_response(access.json_data())
 
@@ -168,9 +164,7 @@ class Access(RESTDispatch):
         try:
             access = revoke_access(accessee, accessor, access_type, acted_as)
         except DataFailureException as ex:
-            logger.error(
-                f"Access.delete request: {ex.url} ({ex.status}): {ex.msg}")
-            return self.error_response(ex.status, message=ex.msg)
+            return self._msca_dfe_response('Access.delete', request.data, ex)
 
         return self.json_response(access.json_data())
 
@@ -204,6 +198,21 @@ class Access(RESTDispatch):
         return (supported.is_owner() and (
             supported.is_shared_netid()
             or supported.netid_type in ['administrator', 'support']))
+
+    def _msca_dfe_response(self, method, request_data, ex):
+        logger.error(
+            f"{method} {ex.url} FAILURE data: {request_data} "
+            f"response: {ex.msg} ({ex.status})")
+
+        message = ex.msg
+        if type(message) == bytes:
+            try:
+                json_content = json.loads(message.decode('utf-8'))
+                message = json_content.get('msg', 'Server Error')
+            except Exception as e:
+                pass
+
+        return self.error_response(ex.status, message)
 
 
 class AccessRights(RESTDispatch):

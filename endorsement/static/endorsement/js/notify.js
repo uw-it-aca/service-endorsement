@@ -66,7 +66,7 @@ var Notify = (function () {
         },
 
         error: function (msg) {
-            _notify(msg, 'alert-danger', 7000);
+            _notify(msg, 'alert-danger', 10000);
         },
 
         warning: function (msg) {
