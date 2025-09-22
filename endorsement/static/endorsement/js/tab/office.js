@@ -65,12 +65,12 @@ var ManageOfficeAccess = (function () {
                 _confirmNetidRenewModal($row);
             }).on('click', 'input.access-conflict', function (e) {
                 var $this = $(this),
-                    $button = $this.closest('div.row').find('button#access_resolve');
+                    $button = $this.closest('td').find('button#access_resolve');
 
                 $button.prop('disabled', false);
             }).on('click', 'button#access_resolve', function (e) {
                 var $this = $(this),
-                    $checked = $this.closest('div.row').find('input.access-conflict:checked'),
+                    $checked = $this.closest('td').find('input.access-conflict:checked'),
                     mailbox = $this.attr('data-mailbox'),
                     delegate = $this.attr('data-delegate'),
                     right = $checked.val();
@@ -115,7 +115,7 @@ var ManageOfficeAccess = (function () {
             }).on('endorse:OfficeAccessResolveSuccess', function (e, data) {
                 _resolvedAccessModal(data);
             }).on('endorse:OfficeAccessResolveFailure', function (e, data) {
-                alert('Access Resolution failure: ' + data);
+                Notify.error('Access Resolve Error: ' + data);
             }).on('endorse:OfficeAccessTypesSuccess', function (e) {
                 _displayOfficeAccessTypes();
             }).on('endorse:OfficeAccessTypesFailure', function (e, data) {
@@ -252,7 +252,7 @@ var ManageOfficeAccess = (function () {
                     $panel.trigger('endorse:OfficeDelegatableSuccess', [results]);
                 },
                 error: function(xhr, status, error) {
-                    $panel.trigger('endorse:OfficeDelegatableFailure', [error]);
+                    $panel.trigger('endorse:OfficeDelegatableFailure', [_error_message(xhr)]);
                 }
             });
         },
@@ -286,7 +286,7 @@ var ManageOfficeAccess = (function () {
                     $panel.trigger('endorse:OfficeValidateNetIDsSuccess', [results]);
                 },
                 error: function(xhr, status, error) {
-                    $panel.trigger('endorse:OfficeValidateNetIDsFailure', [error]);
+                    $panel.trigger('endorse:OfficeValidateNetIDsFailure', [_error_message(xhr)]);
                 }
             });
         },
@@ -642,7 +642,7 @@ var ManageOfficeAccess = (function () {
                     $panel.trigger('endorse:OfficeDelegateAccessSuccess', [results]);
                 },
                 error: function(xhr, status, error) {
-                    $panel.trigger('endorse:OfficeDelegateAccessFailure', [context, error]);
+                    $panel.trigger('endorse:OfficeDelegateAccessFailure', [context, _error_message(xhr)]);
                 }
             });
         },
@@ -662,7 +662,7 @@ var ManageOfficeAccess = (function () {
                     $panel.trigger('endorse:OfficeDelegateRevokeSuccess', [results]);
                 },
                 error: function(xhr, status, error) {
-                    $panel.trigger('endorse:OfficeDelegateRevokeFailure', [context, error]);
+                    $panel.trigger('endorse:OfficeDelegateRevokeFailure', [context, _error_message(xhr)]);
                 }
             });
         },
@@ -733,7 +733,7 @@ var ManageOfficeAccess = (function () {
                     $event_panel.trigger('endorse:OfficeAccessTypesSuccess');
                 },
                 error: function(xhr, status, error) {
-                    $event_panel.trigger('endorse:OfficeAccessTypesFailure', [error]);
+                    $event_panel.trigger('endorse:OfficeAccessTypesFailure', [_error_message(xhr)]);
                 }
             });
         },
@@ -757,10 +757,31 @@ var ManageOfficeAccess = (function () {
                     $panel.trigger('endorse:OfficeAccessResolveSuccess', [results]);
                 },
                 error: function(xhr, status, error) {
-                    $panel.trigger('endorse:OfficeAccessResolveFailure', [error]);
+                    $panel.trigger('endorse:OfficeAccessResolveFailure', [_error_message(xhr)]);
                 }
             });
 
+        },
+        _error_message = function (xhr) {
+            var xhr_content_type = xhr.getResponseHeader('content-type');
+
+            if (xhr_content_type === 'application/json') {
+                if (xhr.responseJSON.hasOwnProperty('error')) {
+                    var error = xhr.responseJSON.error;
+
+                    if (typeof(error) === 'string') {
+                        return error;
+                    } else if (typeof(error) === 'object') {
+                        if (error.hasOwnProperty('error')) {
+                            return error.error;
+                        } else if (error.hasOwnProperty('msg')) {
+                            return error.msg;
+                        }
+                    }
+                }
+            }
+
+            return xhr.statusText;
         },
         _scrollNetIDIntoView = function (netid) {
             Scroll.scrollToNetid(netid, '.office-access-table');
