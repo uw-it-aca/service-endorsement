@@ -128,9 +128,9 @@ class EndorsementServiceBase(ABC):
         eligible for endorsement as well as associated categories that
         exclude otherwise eligible netids.
         """
-        return (self.supports_shared_netids
-                and (self.valid_shared_netid(resource)
-                     or self.valid_legacy_shared_netid(resource, endorser)))
+        return ((self.supports_shared_netids
+                 and self.valid_shared_netid(resource))
+                or self.valid_legacy_shared_netid(resource, endorser))
 
     def valid_shared_netid(self, resource):
         return (self.valid_supported_role(resource)
