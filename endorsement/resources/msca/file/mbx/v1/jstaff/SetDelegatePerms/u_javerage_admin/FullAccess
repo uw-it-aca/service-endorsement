@@ -1,7 +1,0 @@
-{
-    "TargetNetid": "jstaff",
-    "Delegates": [{
-        "User": "u_javerage_admin",
-        "AccessRights": "FullAccess"
-     }]
-}

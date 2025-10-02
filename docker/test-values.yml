@@ -136,6 +136,8 @@ externalSecrets:
           property: itbill-form-url-sys-id
         - name: email-host
           property: email-host
+        - name: msca-host
+          property: msca-host
         - name: msca-subscription-key
           property: msca-subscription-key
         - name: safe-email-recipient
@@ -190,6 +192,10 @@ environmentVariablesSecrets:
     name: EMAIL_HOST
     secretName: test.provision.uw.edu-secrets
     secretKey: email-host
+  MSCAHost:
+    name: MSCA_HOST
+    secretName: test.provision.uw.edu-secrets
+    secretKey: msca-host
   MSCASubscriptionKey:
     name: MSCA_SUBSCRIPTION_KEY
     secretName: test.provision.uw.edu-secrets
