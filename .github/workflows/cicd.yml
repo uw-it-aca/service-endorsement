@@ -7,9 +7,9 @@ env:
 
 on:
   push:
-    branches: [main, develop, task/authoritative-msca-delegation]
+    branches: [maing, develop]
   pull_request:
-    branches: [main, develop, task/authoritative-msca-delegation]
+    branches: [main, develop]
     types: [opened, reopened, synchronize]
 
 jobs:
@@ -120,7 +120,7 @@ jobs:
 
       - name: Deployment Pipeline
         if: >-
-          contains(fromJSON('["main", "develop", "task/authoritative-msca-delegation"]'),
+          contains(fromJSON('["main", "develop"]'),
             needs.context.outputs.git_repo_branch)
         uses: uw-it-aca/actions/cicd-deploy@main
         with:
