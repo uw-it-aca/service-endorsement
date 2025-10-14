@@ -65,8 +65,8 @@ var Notify = (function () {
             _notify(msg, 'alert-success', fade);
         },
 
-        error: function (msg) {
-            _notify(msg, 'alert-danger', 10000);
+        error: function (msg, fade=10000) {
+            _notify(msg, 'alert-danger', fade);
         },
 
         warning: function (msg) {

@@ -102,7 +102,7 @@ var ManageOfficeAccess = (function () {
                 var $row = _accessTableRow(accessee.mailbox, accessee.delegate);
 
                 _modalHide();
-                Notify.error('Access error: ' + error);
+                _access_error_notification('Access error' + ((error && error.length) ? ': ' + error : '.'));
             }).on('endorse:OfficeDelegateRevokeSuccess', function (e, context) {
                 _modalHide();
                 _deleteOfficeAccessDisplay(context);
@@ -111,11 +111,11 @@ var ManageOfficeAccess = (function () {
                 var $row = _accessTableRow(context.mailbox, context.name);
 
                 _modalHide();
-                Notify.error('Revoke error: ' + error);
+                _access_error_notification('Revoke error' + ((error && error.length) ? ': ' + error : '.'));
             }).on('endorse:OfficeAccessResolveSuccess', function (e, data) {
                 _resolvedAccessModal(data);
             }).on('endorse:OfficeAccessResolveFailure', function (e, data) {
-                Notify.error('Access Resolve Error: ' + data);
+                _access_error_notification('Resolve error' + ((data && data.length) ? ': ' + data : '.'));
             }).on('endorse:OfficeAccessTypesSuccess', function (e) {
                 _displayOfficeAccessTypes();
             }).on('endorse:OfficeAccessTypesFailure', function (e, data) {
@@ -781,7 +781,10 @@ var ManageOfficeAccess = (function () {
                 }
             }
 
-            return xhr.statusText;
+            return xhr.statusText || "";
+        },
+        _access_error_notification = function (message) {
+            Notify.error(message + '&nbsp; Please try again later.', 15000);
         },
         _scrollNetIDIntoView = function (netid) {
             Scroll.scrollToNetid(netid, '.office-access-table');
