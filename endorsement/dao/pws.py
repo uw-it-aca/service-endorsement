@@ -46,6 +46,8 @@ def get_endorsee_data(uwnetid):
     """
     Return uwregid, display_name and first email_addresses retrieved from
     PWS/Person for the given uwnetid.  Failing that, fetch entity
+
+    Return tuple (uwregid, display_name, email, is_person)
     """
     try:
         person = get_person(uwnetid)

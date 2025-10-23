@@ -129,6 +129,8 @@ externalSecrets:
           property: django-secret
         - name: email-host
           property: email-host
+        - name: msca-host
+          property: msca-host
         - name: itbill-host
           property: itbill-host
         - name: itbill-basic-auth
@@ -169,6 +171,10 @@ environmentVariablesSecrets:
     name: EMAIL_HOST
     secretName: provision.uw.edu-secrets
     secretKey: email-host
+  MSCAHost:
+    name: MSCA_HOST
+    secretName: provision.uw.edu-secrets
+    secretKey: msca-host
   ITBillHost:
     name: ITBILL_HOST
     secretName: provision.uw.edu-secrets
