@@ -112,7 +112,8 @@ class Access(RESTDispatch):
             action = self._validate_param(request.data, 'action', True)
             mailbox = self._validate_param(request.data, 'mailbox')
             delegate = self._validate_param(request.data, 'delegate')
-            access_type = self._validate_param(request.data, 'access_type')
+            access_type = self._validate_param(
+                request.data, 'access_type', action == 'renew')
             previous_access_type = self._validate_param(
                 request.data, 'previous_access_type', True)
         except DelegateParameterException as ex:
