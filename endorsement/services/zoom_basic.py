@@ -47,14 +47,6 @@ class EndorsementService(EndorsementServiceBase):
         return ("https://itconnect.uw.edu/connect/phones"
                 "/conferencing/zoom-video-conferencing/")
 
-    def valid_legacy_shared_netid(self, resource, endorser):
-        try:
-            endorsee = Endorsee.objects.get(netid=resource.name)
-            self.get_endorsement(endorser, endorsee)
-            return True
-        except (Endorsee.DoesNotExist, NoEndorsementException):
-            return False
-
     def is_permitted(self, endorser, endorsee):
         try:
             self.get_endorsement(endorser, endorsee)
