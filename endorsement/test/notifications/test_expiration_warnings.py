@@ -1,4 +1,4 @@
-# Copyright 2025 UW-IT, University of Washington
+# Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TestCase
@@ -74,6 +74,27 @@ class TestProvisioneExpirationNotices(NotificationsTestCase):
             [1, 0, 0, 0, 0]]  # grace plus a day
 
         self.message_timing(expected_results)
+
+    def test_excluded_expiration_email(self):
+        # mock legacy shared endorsement
+        self.endorseex = Endorsee.objects.create(
+            netid='cpnebeng', regid='ssssssssssssssssssssssssssssssss',
+            display_name='Shared', is_person=False)
+
+        er = EndorsementRecord.objects.create(
+            endorser=self.endorser1, endorsee=self.endorseex,
+            category_code=get_endorsement_service('google').category_code,
+            reason="Just Because",
+            datetime_endorsed=self.days_ago(self.policy.lifetime))
+
+        self.assertIsNone(er.datetime_notice_1_emailed)
+
+        endorser_lifecycle_warning(1)
+
+        self.assertEqual(len(mail.outbox), 2)
+
+        er.refresh_from_db()
+        self.assertIsNotNone(er.datetime_notice_1_emailed)
 
     def test_expiration_and_notice_email(self):
         endorser_lifecycle_warning(1)
