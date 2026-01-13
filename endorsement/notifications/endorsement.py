@@ -293,6 +293,26 @@ def endorser_lifecycle_warning(notice_level):
     policy = EndorsementPolicy()
     endorsements = policy.records_to_warn(notice_level)
 
+    # snip out notifications associated with endorsements that are no
+    # longer valid (such as legacy endorsements) since no useful
+    # action is available in response to the notification
+    suppressed_pks = []
+    for er in endorsements:
+        service = get_endorsement_service(er.category_code)
+        if not service.valid_endorsee(er.endorsee, er.endorser):
+            logger.info(f"Suppress notification for "
+                        f"{er.get_category_code_display()} "
+                        f"by {er.endorser.netid} for {er.endorsee.netid}")
+            suppressed_pks.append(er.id)
+
+    if len(suppressed_pks):
+        # implicitly mark suppressed notification with date to advance lifecycle
+        _update_sent_date(notice_level, EndorsementRecord.objects.filter(
+            pk__in=suppressed_pks))
+
+        # snip suppressed notifications from those being sent
+        endorsements = endorsements.exclude(pk__in=suppressed_pks)
+
     if endorsements.count():
         endorsers = {}
         for e in endorsements:
@@ -301,7 +321,6 @@ def endorser_lifecycle_warning(notice_level):
         for endorser in endorsers.keys():
             endorsed = endorsements.filter(endorser=endorser)
 
-            sent_date = timezone.now()
             email = uw_email_address(endorsed[0].endorser.netid)
 
             try:
@@ -312,13 +331,16 @@ def endorser_lifecycle_warning(notice_level):
                 send_notification(
                     [email], subject, text_body, html_body, "Invalid endorser")
 
-                sent_date = {
-                    'datetime_notice_{}_emailed'.format(
-                        notice_level): timezone.now()
-                }
-                endorsed.update(**sent_date)
+                _update_sent_date(notice_level, endorsed)
             except EmailFailureException as ex:
                 pass
+
+
+def _update_sent_date(notice_level, endorsement):
+    sent_date = {
+        'datetime_notice_{}_emailed'.format(notice_level): timezone.now()
+    }
+    endorsement.update(**sent_date)
 
 
 def warn_new_shared_netid_owner(new_owner, endorsements):
