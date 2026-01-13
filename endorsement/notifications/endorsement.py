@@ -306,7 +306,8 @@ def endorser_lifecycle_warning(notice_level):
             suppressed_pks.append(er.id)
 
     if len(suppressed_pks):
-        # implicitly mark suppressed notification with date to advance lifecycle
+        # implicitly mark suppressed notification with date to
+        # advance lifecycle
         _update_sent_date(notice_level, EndorsementRecord.objects.filter(
             pk__in=suppressed_pks))
 
