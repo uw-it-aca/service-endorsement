@@ -284,9 +284,19 @@ def load_or_update_subscription(sdr: SharedDriveRecord):
     """
     # Do we already have an ITBillSubscription on file?
     if sdr.subscription is not None:
-        load_itbill_subscription(sdr)
-        sdr.subscription.save()
-        return sdr.subscription
+        try:
+            load_itbill_subscription(sdr)
+            sdr.subscription.save()
+            return sdr.subscription
+        except ITBillSubscriptionNotFound as ex:
+            sub = sdr.subscription
+            if sub.state == ITBillSubscription.SUBSCRIPTION_DEPLOYED:
+                logger.error(f"Remote key not found in itbill: {ex} "
+                             "for drive in deployed state")
+            else:
+                logger.info("Remote key not found in itbill for drive "
+                            f"{ex} in {sub.get_state_display} state.")
+            return None
 
     # Does an ITBill subscription exist remotely and we just have to get it?
     key_remote = sdr.get_itbill_key_remote()
