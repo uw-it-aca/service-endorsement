@@ -123,6 +123,12 @@ def load_itbill_subscription(record):
     """
     Update the subscription record with the latest ITBill data
     """
-    record.update_subscription(
-        get_subscription_by_key_remote(record.subscription.key_remote)
-    )
+    try:
+        record.update_subscription(
+            get_subscription_by_key_remote(record.subscription.key_remote)
+        )
+    except DataFailureException as ex:
+        if ex.status == 404:
+            raise ITBillSubscriptionNotFound(record.subscription.key_remote)
+
+        raise ex
