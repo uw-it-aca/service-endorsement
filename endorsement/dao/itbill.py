@@ -129,6 +129,6 @@ def load_itbill_subscription(record):
         )
     except DataFailureException as ex:
         if ex.status == 404:
-            raise ITBillSubscriptionNotFound(key_remote)
+            raise ITBillSubscriptionNotFound(record.subscription.key_remote)
 
         raise ex
