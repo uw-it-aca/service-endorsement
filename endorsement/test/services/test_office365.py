@@ -40,14 +40,14 @@ class TestOffice365Service(ServicesApiTest):
         self.set_user('jstaff')
         url = reverse('shared_api')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
 
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
         endorsible, endorsed = self.get_shared(data)
-        self.assertEquals(len(endorsible), 3)
-        self.assertEquals(len(endorsed), 1)
+        self.assertEqual(len(endorsible), 3)
+        self.assertEqual(len(endorsed), 1)
         self.assertFalse('cpnebeng' in endorsible)
         self.assertTrue('wadm_jstaff' in endorsed)
 

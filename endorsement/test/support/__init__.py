@@ -14,7 +14,7 @@ class SupportApiTest(EndorsementApiTest):
         self.set_user('jstaff')
         url = reverse(self.reverse_id)
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def _test_invalid_user(self):
         self.set_user('jstudent')
@@ -28,4 +28,4 @@ class SupportApiTest(EndorsementApiTest):
         self.request.session.save()
         url = reverse(self.reverse_id)
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)

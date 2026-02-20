@@ -1,7 +1,6 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from unittest2 import skipIf
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -10,6 +9,7 @@ from django.test import Client
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
+from unittest import skipIf
 from userservice.user import UserServiceMiddleware
 
 
@@ -49,18 +49,14 @@ view_test_override = override_settings(
     AUTHENTICATION_BACKENDS=(AUTH_BACKEND,),
     AUTHZ_GROUP_BACKEND=AUTH_GROUP,
     USERSERVICE_ADMIN_GROUP="x",
-    MIDDLEWARE_CLASSES=(
-        'django.middleware.security.SecurityMiddleware',
+    MIDDLEWARE=(
         'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.locale.LocaleMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.auth.middleware.PersistentRemoteUserMiddleware',
-        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'django_mobileesp.middleware.UserAgentDetectionMiddleware',
         'userservice.user.UserServiceMiddleware',
         ),
 )
@@ -81,7 +77,7 @@ class TestViewApi(TestCase):
         self._set_user(netid)
         request = RequestFactory().get(url)
         request.user = get_user(netid)
-        SessionMiddleware().process_request(request)
+        SessionMiddleware(self.get_response).process_request(request)
         request.session = self.client.session
         request.session['samlUserdata'] = settings.MOCK_SAML_ATTRIBUTES if (
             netid == 'jstaff') else {

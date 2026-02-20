@@ -23,7 +23,7 @@ class TestSharedDrivesAPI(EndorsementApiTest):
         self.set_user('jstaff')
         url = reverse('shared_drive_api')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(len(data['drives']), 7)
 
@@ -31,6 +31,6 @@ class TestSharedDrivesAPI(EndorsementApiTest):
         self.set_user('jinter')
         url = reverse('shared_drive_api')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(len(data['drives']), 0)

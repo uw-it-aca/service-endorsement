@@ -13,7 +13,7 @@ class TestEndorsementEndorseeAPI(EndorsementApiTest):
         self.set_user('jstaff')
         url = reverse('endorsee_api', kwargs={'endorsee': 'endorsee7'})
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(len(data['endorsements']), 0)
 
@@ -29,7 +29,7 @@ class TestEndorsementEndorseeAPI(EndorsementApiTest):
         self.set_user('jstaff')
         url = reverse('endorsee_api', kwargs={'endorsee': 'endorsee7'})
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(len(data['endorsements']), endorsement_count)
         endorsements = {e['category_code']: e for e in data['endorsements']}
@@ -52,4 +52,4 @@ class TestEndorsementEndorseeAPI(EndorsementApiTest):
         self.request.session.save()
         url = reverse('endorsee_api', kwargs={'endorsee': 'endorsee7'})
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
