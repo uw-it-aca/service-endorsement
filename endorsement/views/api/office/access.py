@@ -206,7 +206,7 @@ class Access(RESTDispatch):
             f"response: {ex.msg} ({ex.status})")
 
         message = ex.msg
-        if type(message) == bytes:
+        if type(message) is bytes:
             try:
                 json_content = json.loads(message.decode('utf-8'))
                 message = json_content.get('msg', 'Server Error')
