@@ -96,6 +96,7 @@ jobs:
           python -m pip install --upgrade pip coverage coveralls==2.2.0
           coverage combine
           coveralls
+        continue-on-error: true
 
       - name: Push Image to GCR
         if: github.event_name == 'push'
