@@ -35,14 +35,14 @@ MockSAMLAttributes = {
 }
 standard_test_override = override_settings(
     DEBUG=True,
-    MIDDLEWARE_CLASSES=(Session,
-                        Common,
-                        CsrfView,
-                        Auth,
-                        RemoteUser,
-                        Message,
-                        XFrame,
-                        UserService,),
+    MIDDLEWARE=(Session,
+                Common,
+                CsrfView,
+                Auth,
+                RemoteUser,
+                Message,
+                XFrame,
+                UserService,),
     AUTHENTICATION_BACKENDS=(AUTH_BACKEND,))
 
 
@@ -81,5 +81,5 @@ class EndorsementApiTest(TransactionTestCase):
 
             resp = self.client.post(reverse("userservice_override"),
                                     {"override_as": username})
-            self.assertEquals(resp.status_code, 200)
+            self.assertEqual(resp.status_code, 200)
             self.process_request()

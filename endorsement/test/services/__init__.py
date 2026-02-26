@@ -22,13 +22,13 @@ class ServicesApiTest(EndorsementApiTest):
         self.set_user('jstaff')
         url = reverse('endorsed_api')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
 
         endorsible, endorsing, endorsed, errored = self.get_endorsed(data)
-        self.assertEquals(len(endorsible), 2)
-        self.assertEquals(len(endorsing), 1)
-        self.assertEquals(len(endorsed), 1)
+        self.assertEqual(len(endorsible), 2)
+        self.assertEqual(len(endorsing), 1)
+        self.assertEqual(len(endorsed), 1)
         self.assertTrue(endorsee1.netid in endorsing)
         self.assertTrue(endorsee2.netid in endorsed)
 
@@ -38,11 +38,11 @@ class ServicesApiTest(EndorsementApiTest):
 
         response = self.client.post(
             url, json.dumps(endorse_data), content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
 
         self.assertTrue(data['endorser']['is_valid'])
-        self.assertEquals(data['endorser']['netid'], 'jstaff')
+        self.assertEqual(data['endorser']['netid'], 'jstaff')
 
         return self.get_endorsed(data)
 

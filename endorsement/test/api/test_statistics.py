@@ -20,29 +20,29 @@ class TestStatisticsAPI(EndorsementApiTest):
         self.set_user('jstaff')
         url = reverse('statistics_api', args=['service'])
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         url = reverse('statistics_api', args=['shared'])
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         url = reverse('statistics_api', args=['endorsers'])
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         url = reverse('statistics_api', args=['reasons'])
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         url = reverse('statistics_api', args=['rate/90'])
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_bogus_statistics_url(self):
         self.set_user('jstaff')
         url = reverse('statistics_api', args=['other'])
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 543)
+        self.assertEqual(response.status_code, 543)
 
     def test_bogus_user_statistics_api(self):
         self.set_user('jstudent')
@@ -56,4 +56,4 @@ class TestStatisticsAPI(EndorsementApiTest):
         self.request.session.save()
         url = reverse('statistics_api', args=['service'])
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 403)
+        self.assertEqual(response.status_code, 403)

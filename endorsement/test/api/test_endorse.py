@@ -26,7 +26,7 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
 
         response = self.client.post(
             url, json.dumps(endorse_data), content_type='application/json')
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
     def test_invalid_endorsee(self):
         self.set_user('jstaff')
@@ -47,7 +47,7 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
 
         response = self.client.post(
             url, json.dumps(endorse_data), content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertTrue('error' in data['endorsed']['endorsee99'])
 
@@ -70,7 +70,7 @@ class TestEndorsementEndorseAPI(EndorsementApiTest):
 
         response = self.client.post(
             url, json.dumps(endorse_data), content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertFalse('mumble' in data['endorsed']['endorsee2'])
 
@@ -96,7 +96,7 @@ class TestEndorsementAdminEndorseAPI(EndorsementApiTest):
 
         response = self.client.post(
             url, json.dumps(endorse_data), content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
 
 class TestEndorsementSupportEndorseAPI(EndorsementApiTest):
@@ -124,4 +124,4 @@ class TestEndorsementSupportEndorseAPI(EndorsementApiTest):
 
         response = self.client.post(
             url, json.dumps(endorse_data), content_type='application/json')
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)

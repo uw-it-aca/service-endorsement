@@ -22,7 +22,7 @@ class TestNotificationAPI(EndorsementApiTest):
         response = self.client.post(
             url, json.dumps(notification_data),
             content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         keys = data.keys()
         self.assertTrue('subject' in keys)

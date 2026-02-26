@@ -33,7 +33,7 @@ class TestEndorsementValidateAPI(EndorsementApiTest):
         })
 
         response = self.client.post(url, data, content_type='application/json')
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         data = json.loads(response.content)
 

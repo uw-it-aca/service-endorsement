@@ -147,7 +147,7 @@ class EndorsementServiceBase(ABC):
         try:
             roles = self.shared_params['roles']
             return (roles == '*' or (
-                type(roles) == list and resource.role in roles))
+                type(roles) is list and resource.role in roles))
         except KeyError:
             return False
 
@@ -163,7 +163,7 @@ class EndorsementServiceBase(ABC):
         try:
             types = self.shared_params['types']
             return (types == '*' or (
-                type(types) == list
+                type(types) is list
                 and resource.netid_type
                 and resource.netid_type in types
                 and len(resource.netid_type) <= max_length))
@@ -176,7 +176,7 @@ class EndorsementServiceBase(ABC):
         # shared clinical netids are uniformly disallowed by policy
         try:
             types = self.shared_params['types']
-            if ((types == '*' or (type(types) == list and 'shared' in types))
+            if ((types == '*' or (type(types) is list and 'shared' in types))
                     and supported.netid_type == 'shared'):
                 categories += [Category.ALTID_SHARED_CLINICAL_1]
         except KeyError:

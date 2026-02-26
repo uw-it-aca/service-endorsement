@@ -39,7 +39,7 @@ class TestAccept(TestViewApi):
         self.assertEqual(get_original_user(request), 'endorsee7')
 
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_invalid_viewer(self):
         request = self.get_request('/', 'endorsee6')
@@ -48,7 +48,7 @@ class TestAccept(TestViewApi):
         url = reverse('accept_view',
                       kwargs={"accept_id": self.accept_id})
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
     def test_invalid_request(self):
         request = self.get_request('/', 'endorsee6')
@@ -59,4 +59,4 @@ class TestAccept(TestViewApi):
                           "accept_id": 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
                       })
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
