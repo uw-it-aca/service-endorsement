@@ -25,7 +25,7 @@ class TestSharedDrivesAPI(EndorsementApiTest):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEqual(len(data['drives']), 7)
+        self.assertEqual(len(data['drives']), 8)
 
     def test_no_shared_drives(self):
         self.set_user('jinter')
