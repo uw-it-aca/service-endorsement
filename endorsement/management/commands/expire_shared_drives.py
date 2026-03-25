@@ -23,7 +23,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='actually_mark_for_deletion',
             default=False,
-            help='Commit marking shared drive for deletion (default: log only)',
+            help='Commit shared drive for deletion (default: log only)',
         )
         parser.add_argument(
             '-d',
@@ -40,7 +40,8 @@ class Command(BaseCommand):
 
         if dump_drive_csv:
             self.drive_writer = csv.writer(self.stdout)
-            self.drive_writer.writerow(["Drive ID", "Drive Name", "Manager NetIDs"])
+            self.drive_writer.writerow(
+                ["Drive ID", "Drive Name", "Manager NetIDs"])
 
         for record in SharedDrivePolicy().records_to_expire():
             if dump_drive_csv:

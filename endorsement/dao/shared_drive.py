@@ -628,14 +628,16 @@ class Reconciler:
                 sdr = SharedDriveRecord.objects.get_record_by_drive_id(
                     drive_id)
 
-                # drive reported in pending delete org unit, store deleted date if
-                # not present to help signal state in the ui
-                if (shared_drive.drive_quota.org_unit_name != drive_state.org_unit_name
-                        and drive_state.org_unit_name.lower() == PENDING_DELETE_ORG_UNIT
+                # drive reported in pending delete org unit, store deleted
+                # date if not present to help signal state in the ui
+                shared_drive_ou = shared_drive.drive_quota.org_unit_name
+                drive_state_ou = drive_state.org_unit_name
+                if (shared_drive_ou != drive_state_ou
+                        and drive_state_ou.lower() == PENDING_DELETE_ORG_UNIT
                         and sdr.datetime_deleted is None):
-                    logger.info(f"drive quota org unit change: drive {drive_id} "
-                                f"org unit {shared_drive.drive_quota.org_unit_name} "
-                                f"to {drive_state.org_unit_name}")
+                    logger.info("drive quota org unit change: drive "
+                                f"{drive_id} org unit {shared_drive_ou} "
+                                f"to {drive_state_ou}")
                     sdr.datetime_deleted = timezone.now()
                     sdr.save()
 
