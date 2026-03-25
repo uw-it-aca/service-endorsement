@@ -6,11 +6,15 @@ import datetime as dt
 import re
 import logging
 
+from django.utils import timezone
+
 # methods are imported to populate namespace and be used elsewhere
 from uw_msca.shared_drive import (  # noqa: F401
     get_default_quota,
     get_google_drive_states,
     set_drive_quota,
+    mark_drive_for_deletion,
+    rescue_drive_from_deletion,
 )
 from uw_msca.models import GoogleDriveState
 
@@ -52,6 +56,7 @@ netid_regex = re.compile(
 )
 MISSING_DRIVE_THRESHOLD = 500
 MISSING_DRIVE_NOTIFICATION = 150
+PENDING_DELETE_ORG_UNIT = "deleteprt"
 
 
 def sync_quota_from_subscription(drive_id):
@@ -87,7 +92,7 @@ def expire_shared_drives(gracetime, lifetime):
         shared_drive_lifecycle_expired(drive)
 
 
-def shared_drive_lifecycle_expired(drive_record):
+def shared_drive_lifecycle_expired(shared_drive):
     """
     Set lifecycle to expired for shared drive
 
@@ -96,8 +101,20 @@ def shared_drive_lifecycle_expired(drive_record):
        - set subscription end_date to today using:
             - expire_subscription(drive_record)
     """
-    logger.error(
-        f"Shared drive {drive_record} lifecycle expired: not implemented")
+    logger.info(f"Shared drive {shared_drive.drive_id} marked for deletion")
+    mark_drive_for_deletion(shared_drive.drive_id)
+
+
+def rescue_shared_drive_from_deletion(shared_drive):
+    """
+    Restore OrgUnit for shared drive previously marked for deletion
+
+    Actions:
+       - set call msca rescue method with original drive quota
+    """
+    logger.info(f"Rescue shared drive {shared_drive} from deletion")
+    rescue_drive_from_deletion(
+        shared_drive.drive_quota.quota_limit, shared_drive.drive_id)
 
 
 def load_shared_drives(google_drive_states):
@@ -608,9 +625,21 @@ class Reconciler:
                         f"existing drive ({drive_id}) "
                         f"usage ({drive_state.drive_name}) update: {ex}")
 
-                # confirm drive and subscription match
                 sdr = SharedDriveRecord.objects.get_record_by_drive_id(
                     drive_id)
+
+                # drive reported in pending delete org unit, store deleted date if
+                # not present to help signal state in the ui
+                if (shared_drive.drive_quota.org_unit_name != drive_state.org_unit_name
+                        and drive_state.org_unit_name.lower() == PENDING_DELETE_ORG_UNIT
+                        and sdr.datetime_deleted is None):
+                    logger.info(f"drive quota org unit change: drive {drive_id} "
+                                f"org unit {shared_drive.drive_quota.org_unit_name} "
+                                f"to {drive_state.org_unit_name}")
+                    sdr.datetime_deleted = timezone.now()
+                    sdr.save()
+
+                # confirm drive and subscription match
                 reconcile_drive_quota(
                     sdr,
                     no_subscription_quota=subsidized_quota,

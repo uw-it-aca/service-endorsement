@@ -75,5 +75,16 @@
       "drive_quota": 1,
       "members": [1, 4, 5, 7, 10, 11]
     }
+  },
+  {
+    "model": "endorsement.shareddrive",
+    "pk": 8,
+    "fields": {
+      "drive_id": "ABC_0123-DF56AA1234",
+      "drive_name": "PRT_DELETE_ON_XX_Subsidized quota",
+      "drive_usage": 63,
+      "drive_quota": 1,
+      "members": [1, 4, 5]
+    }
   }
 ]

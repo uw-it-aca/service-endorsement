@@ -124,5 +124,23 @@
       "datetime_deleted": null,
       "is_deleted": null
     }
+  },
+  {
+    "model": "endorsement.shareddriverecord",
+    "pk": 8,
+    "fields": {
+      "shared_drive": 8,
+      "subscription": null,
+      "datetime_created": "2024-02-12T17:41:28+00:00",
+      "datetime_emailed": null,
+      "datetime_notice_1_emailed": null,
+      "datetime_notice_2_emailed": null,
+      "datetime_notice_3_emailed": null,
+      "datetime_notice_4_emailed": null,
+      "datetime_accepted": "2024-02-12T17:41:28+00:00",
+      "datetime_expired": "2026-02-12T17:41:28+00:00",
+      "datetime_deleted": "2026-02-12T17:41:28+00:00",
+      "is_deleted": null
+    }
   }
 ]

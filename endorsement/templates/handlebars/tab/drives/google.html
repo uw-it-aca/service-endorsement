@@ -39,10 +39,18 @@
       <td scope="row" class="shared-drive-name"><span class="significant"><a href="https://drive.google.com/drive/u/0/folders/{{drive.drive_id}}" target="_blank" title="Go to {{ drive.drive_name }} (opens in a new window)">{{ drive.drive_name }} &nbsp;<i class="fas fa-external-link-alt"></i><a></span></td>
       <td class="shared-drive-status-icon">
         {{#if requires_subscription }}
-        <i class="fa fa-exclamation-circle text-danger"></i>
+          <i class="fa fa-exclamation-circle text-danger"></i>
         {{else}}
-          {{#if (lte expiration_days 90)}}<i class="fa {{#if (lte expiration_days 7)}}fa-exclamation-circle text-danger{{else}}fa-exclamation-triangle text-warning{{/if}}"></i>{{/if}}
-          {{#if notable_status}}<i class="fa fa-check text-success"></i>{{/if}}
+          {{#if (or deletion_date (lte expiration_days 7))}}
+            <i class="fa fa-exclamation-circle text-danger">
+          {{else}}
+            {{#if (lte expiration_days 90)}}
+              <i class="fa fa-exclamation-triangle text-warning"></i>
+            {{/if}}
+          {{/if}}
+          {{#if notable_status}}
+            <i class="fa fa-check text-success"></i>
+          {{/if}}
         {{/if}}
       </td>
       <td class="shared-drive-status">
@@ -50,14 +58,22 @@
         {{#if (and requires_subscription (not valid_subscription)) }}
           Quota selection required
         {{else}}
-          {{#if (lte expiration_days 90)}}Expiring{{else}}Active{{/if}}
+          {{#if deletion_date}}
+           Pending Deletion
+          {{else}}
+            {{#if (lte expiration_days 90)}}Expiring{{else}}Active{{/if}}
+          {{/if}}
         {{/if}}
         </span>
         <p>
         {{#if requires_subscription }}
           Select quota by {{subscription_deadline_date}}<br />({{subscription_deadline_from_now}})
         {{else}}
+          {{#if deletion_date}}
+          Renew by date in Shared Drive Name
+          {{else}}
           Renew by {{expiration_date}}{{#if (lte expiration_days 90)}}<br />({{expiration_from_now}}){{/if}}
+          {{/if}}
         {{/if}}
         </p>
       </td>
@@ -109,15 +125,18 @@ view&nbsp;all</span>
         </ul>
      </td>
      <td class="shared-drive-action" data-drive-id="{{drive.drive_id}}" data-drive-name="{{drive.drive_name}}">
+         {{#if (not deletion_date)}}
          <a
              id="shared_drive_quota"
              aria-label="{{#if drive.drive_quota.is_subsidized}}Increase{{else}}{{#if subscription}}Update{{else}}Select{{/if}}{{/if}} quota for {{ drive.drive_name }} (opens in new window)"
              href="/drives">
+
            {{#if drive.drive_quota.is_subsidized}}Increase{{else}}{{#if subscription}}Update{{else}}Select{{/if}}{{/if}} quota
          </a>
-         {{#unless requires_subscription}}
+         {{/if}}
+         {{#if (or (not requires_subscription) deletion_date)}}
          <a id="shared_drive_accept" aria-label="Renew {{ drive.drive_name }}" href="/drives">Renew</a>
-         {{/unless}}
+         {{/if}}
        <!-- drive revoke/remove is not currently supported in the MSCA API
        <div>
          <a id="shared_drive_revoke" aria-label="Remove {{ drive.drive_name }}" href="/drives">Remove</a>
