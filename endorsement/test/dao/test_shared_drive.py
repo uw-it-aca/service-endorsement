@@ -130,7 +130,7 @@ class BaseReconcilerTest(TestDao):
         for val in self.mock_contexts.values():
             val.__exit__(None, None, None)
 
-    def get_instance(self):
+    def get_instance(self, no_move_drive=False, reconcile_member_netid=None):
         """
         Return a Reconciler instance with wraped methods.
 
@@ -141,7 +141,8 @@ class BaseReconcilerTest(TestDao):
         In addition one can specify the methods to do something else. See
         https://docs.python.org/3/library/unittest.mock.html#order-of-precedence-of-side-effect-return-value-and-wraps
         """
-        instance = Reconciler(no_move_drive=False)
+        instance = Reconciler(no_move_drive=no_move_drive,
+                              reconcile_member_netid=reconcile_member_netid)
 
         # wrap all methods
         to_wrap = inspect.getmembers(instance, predicate=inspect.ismethod)
@@ -602,3 +603,128 @@ class TestReconciler_reconcile_existing_drives(BaseReconcilerTest):
             set(sd.members.values_list("member__netid", flat=True)),
             {"pam", "sam"},
         )
+
+
+class TestReconciler_reconcile_member(BaseReconcilerTest):
+    """
+    Test reconciling drives for specific member netid.
+
+    """
+    def setUp(self):
+        super().setUp()
+        sdr = load_shared_drives(
+            [
+                GDS(
+                    drive_id="A",
+                    member="Ann",
+                    drive_name="ann's drive",
+                    org_unit_name="100GB",
+                ),
+                GDS(
+                    drive_id="B",
+                    member="bob",
+                    drive_name="bob's first drive",
+                    org_unit_name="300GB",
+                ),
+                GDS(
+                    drive_id="C",
+                    member="cam",
+                    drive_name="cam's drive",
+                    org_unit_name="100GB",
+                ),
+                GDS(
+                    drive_id="D",
+                    member="bob",
+                    drive_name="bob's second drive",
+                    org_unit_name="100GB",
+                ),
+                GDS(
+                    drive_id="E",
+                    member="bob",
+                    drive_name="bob's third drive",
+                    org_unit_name="100GB",
+                )
+            ]
+        )
+        self.mocks["get_subscription_by_key_remote"].return_value = SubMod(
+            quantity="2",  # AKA 300 GB quota
+        )
+        load_or_update_subscription(sdr)
+
+        # IMPORTANT - mutate this (or assign a new return_value) for tests
+        self.new_drive_state = GDS(drive_id="B", member="bob")
+
+        self.mocks["get_google_drive_states"].return_value = [
+            self.new_drive_state,
+        ]
+
+        self.mocks["get_google_drive_states"].return_value = [
+            # bob added as member
+            GDS(drive_id="A", member="bob"),
+            GDS(drive_id="A", member="ann"),
+            # member addition to bob's drive
+            GDS(drive_id="B", member="bob"),
+            GDS(drive_id="B", member="ted"),
+            # non bob drive membeship change
+            GDS(drive_id="C", member="cam"),
+            GDS(drive_id="C", member="ann"),
+            # change of membership
+            GDS(drive_id="D", member="ted"),
+            # new drive for bob
+            GDS(drive_id="F", member="bob"),
+        ]
+
+    def test_google_drive_filter(self):
+        """
+        Test SharedDrive members are updated.
+        """
+
+        instance = self.get_instance(reconcile_member_netid="bob")
+        state_by_drive = instance.GoogleDriveState_by_drive_id()
+
+        self.assertEqual(len(state_by_drive), 3)
+        self.assertIn("A", state_by_drive)
+        self.assertEqual(len(state_by_drive["A"]), 2)
+        self.assertIn("B", state_by_drive)
+        self.assertEqual(len(state_by_drive["B"]), 2)
+
+    def test_shared_drive_record_filter(self):
+        """
+        Test SharedDrive members are updated.
+        """
+
+        instance = self.get_instance(reconcile_member_netid="bob", no_move_drive=True)
+        prt_drive_ids = instance.get_prt_drive_ids()
+
+        self.assertEqual(len(prt_drive_ids), 3)
+        self.assertIn("B", prt_drive_ids)
+
+    def test_reconcile_member(self):
+        """
+        Test SharedDrive members are updated.
+        """
+
+        instance = self.get_instance(reconcile_member_netid="bob")
+        instance.reconcile()
+
+        self.assertEqual(SharedDriveRecord.objects.filter(
+            is_deleted__isnull=True).count(), 6)
+
+        sd_a = SharedDrive.objects.get(drive_id="A")
+        self.assertEqual(
+            set(sd_a.members.values_list("member__netid", flat=True)),
+            {"ann", "bob"},
+        )
+
+        sd_b = SharedDrive.objects.get(drive_id="B")
+        self.assertEqual(
+            set(sd_b.members.values_list("member__netid", flat=True)),
+            {"bob", "ted"},
+        )
+
+        sd_c = SharedDrive.objects.get(drive_id="C")
+        self.assertEqual(
+            set(sd_c.members.values_list("member__netid", flat=True)),
+            {"cam"},
+        )
+

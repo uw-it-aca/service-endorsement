@@ -28,10 +28,17 @@ class Command(BaseCommand):
             default=500,
             help="Skip missing drive deletion if missing drive count greater.",
         )
+        parser.add_argument(
+            '--reconcile-member-netid',
+            type=str,
+            default=None,
+            help="Reconcile only specified member's drives.",
+        )
 
     def handle(self, *args, **options):
         logger.setLevel(logging.INFO)
         params = {
+            'reconcile_member_netid': options['reconcile_member_netid'],
             'no_move_drive': options['no_move_drive'],
             'missing_drive_threshold': options['missing_drive_threshold'],
         }
