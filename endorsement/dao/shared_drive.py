@@ -473,7 +473,10 @@ class Reconciler:
         # for a reconcile manager, we cannot assume the missing drive
         # is deleted.  preserve it for the next full reconcile process
         # to clean up.
-        if not self.reconcile_member:
+        if self.reconcile_member:
+            logger.info(f"skip drive delete reconciling user "
+                        f"{self.reconcile_member.netid}")
+        else:
             self.handle_missing_drives(missing, default_quota)
 
         self.reconcile_existing_drives(
@@ -687,6 +690,8 @@ class Reconciler:
         # reconcile for particular member, so only filter on shared
         # drives for which member is a manager
         if self.reconcile_member:
+            logger.info(f"filter prt drives for reconcile_member "
+                        f"{self.reconcile_member.netid}")
             filter_params["members__member"] = self.reconcile_member
 
         objs = SharedDrive.objects.filter(**filter_params)
@@ -718,6 +723,8 @@ class Reconciler:
         # common membership changes are reflected.
         member_drive_ids = None
         if self.reconcile_member:
+            logger.info(f"filter google drives for reconcile_member "
+                        f"{self.reconcile_member.netid}")
             member_drive_ids = []
             for gds in google_drive_states:
                 if self.reconcile_member.netid == gds.member:
