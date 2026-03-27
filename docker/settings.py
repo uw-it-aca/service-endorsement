@@ -80,11 +80,14 @@ if os.getenv("ENV") == "localdev":
 else:
     RESTCLIENTS_PRT_HOST = 'https://depts.washington.edu'
     RESTCLIENTS_PRT_DAO_CLASS = 'Live'
-    RESTCLIENTS_MSCA_HOST = os.getenv("MSCA_HOST", '')
     RESTCLIENTS_MSCA_DAO_CLASS = 'Live'
     RESTCLIENTS_MSCA_TIMEOUT = os.getenv(
         "MSCA_TIMEOUT", RESTCLIENTS_DEFAULT_TIMEOUT)
     RESTCLIENTS_MSCA_SUBSCRIPTION_KEY = os.getenv('MSCA_SUBSCRIPTION_KEY', '')
+    if os.getenv('MSCA_ENV') == 'PROD':
+        RESTCLIENTS_MSCA_HOST = 'https://pplat-main-apim.azure-api.net'
+    else:
+        RESTCLIENTS_MSCA_HOST = 'https://pplat-apimgmt.azure-api.net'
 
     RESTCLIENTS_ITBILL_DAO_CLASS = 'Live'
     RESTCLIENTS_ITBILL_HOST=os.getenv('ITBILL_HOST')

@@ -21,3 +21,6 @@ class SharedDrivePolicy(PolicyBase):
     @property
     def datetime_provisioned_key(self):
         return "datetime_accepted"
+
+    def additional_warning_terms(self):
+        return {"datetime_deleted__isnull": True}

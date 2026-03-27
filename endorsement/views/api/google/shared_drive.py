@@ -5,7 +5,9 @@ from endorsement.models import SharedDriveRecord
 from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.itbill import update_itbill_subscription
 from endorsement.dao.shared_drive import (
-    sync_quota_from_subscription, shared_drive_lifecycle_expired)
+    sync_quota_from_subscription,
+    shared_drive_lifecycle_expired,
+    rescue_shared_drive_from_deletion)
 from endorsement.dao.pws import get_person
 from endorsement.util.auth import is_support_user
 from endorsement.views.rest_dispatch import (
@@ -61,15 +63,20 @@ class SharedDrive(RESTDispatch):
             drive_id = self.kwargs['drive_id']
             drive = SharedDriveRecord.objects.get_member_drives(
                 netid, drive_id).get()
-
             accept = request.data.get('accept')
-            if isinstance(accept, bool):
-                drive.set_acceptance(netid, accept, acted_as)
-                if not accept:
-                    shared_drive_lifecycle_expired(self)
-            else:
+            if not isinstance(accept, bool):
                 return bad_request(logger)
 
+            if accept:
+                if drive.datetime_deleted:
+                    rescue_shared_drive_from_deletion(drive.shared_drive)
+            else:
+                shared_drive_lifecycle_expired(drive.shared_drive)
+
+            drive.set_acceptance(netid, accept, acted_as)
+
+        except DataFailureException as ex:
+            return data_error(logger, ex)
         except SharedDriveRecord.DoesNotExist:
             return data_not_found(logger)
         except KeyError:

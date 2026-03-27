@@ -6,11 +6,15 @@ import datetime as dt
 import re
 import logging
 
+from django.utils import timezone
+
 # methods are imported to populate namespace and be used elsewhere
 from uw_msca.shared_drive import (  # noqa: F401
     get_default_quota,
     get_google_drive_states,
     set_drive_quota,
+    mark_drive_for_deletion,
+    rescue_drive_from_deletion,
 )
 from uw_msca.models import GoogleDriveState
 
@@ -52,6 +56,7 @@ netid_regex = re.compile(
 )
 MISSING_DRIVE_THRESHOLD = 500
 MISSING_DRIVE_NOTIFICATION = 150
+PENDING_DELETE_ORG_UNIT = "deleteprt"
 
 
 def sync_quota_from_subscription(drive_id):
@@ -87,7 +92,7 @@ def expire_shared_drives(gracetime, lifetime):
         shared_drive_lifecycle_expired(drive)
 
 
-def shared_drive_lifecycle_expired(drive_record):
+def shared_drive_lifecycle_expired(shared_drive):
     """
     Set lifecycle to expired for shared drive
 
@@ -96,8 +101,20 @@ def shared_drive_lifecycle_expired(drive_record):
        - set subscription end_date to today using:
             - expire_subscription(drive_record)
     """
-    logger.error(
-        f"Shared drive {drive_record} lifecycle expired: not implemented")
+    logger.info(f"Shared drive {shared_drive.drive_id} marked for deletion")
+    mark_drive_for_deletion(shared_drive.drive_id)
+
+
+def rescue_shared_drive_from_deletion(shared_drive):
+    """
+    Restore OrgUnit for shared drive previously marked for deletion
+
+    Actions:
+       - set call msca rescue method with original drive quota
+    """
+    logger.info(f"Rescue shared drive {shared_drive} from deletion")
+    rescue_drive_from_deletion(
+        shared_drive.drive_quota.quota_limit, shared_drive.drive_id)
 
 
 def load_shared_drives(google_drive_states):
@@ -430,6 +447,11 @@ class Reconciler:
             'missing_drive_notification',
             MISSING_DRIVE_NOTIFICATION)
 
+        reconcile_member_netid = kwargs.get('reconcile_member_netid')
+        self.reconcile_member = Member.objects.get_member(
+            netid=reconcile_member_netid) if (
+                reconcile_member_netid) else None
+
     def reconcile(self):
         id_GoogleDriveState = self.GoogleDriveState_by_drive_id()
         default_quota = get_default_quota()
@@ -446,7 +468,14 @@ class Reconciler:
             id_GoogleDriveState,
             default_quota,
         )
-        self.handle_missing_drives(missing, default_quota)
+
+        # since the google drive state is incomplete when filtered
+        # for a reconcile manager, we cannot assume the missing drive
+        # is deleted.  preserve it for the next full reconcile process
+        # to clean up.
+        if not self.reconcile_member:
+            self.handle_missing_drives(missing, default_quota)
+
         self.reconcile_existing_drives(
             existing, id_GoogleDriveState, subsidized_quota=default_quota
         )
@@ -608,9 +637,23 @@ class Reconciler:
                         f"existing drive ({drive_id}) "
                         f"usage ({drive_state.drive_name}) update: {ex}")
 
-                # confirm drive and subscription match
                 sdr = SharedDriveRecord.objects.get_record_by_drive_id(
                     drive_id)
+
+                # drive reported in pending delete org unit, store deleted
+                # date if not present to help signal state in the ui
+                shared_drive_ou = shared_drive.drive_quota.org_unit_name
+                drive_state_ou = drive_state.org_unit_name
+                if (shared_drive_ou != drive_state_ou
+                        and drive_state_ou.lower() == PENDING_DELETE_ORG_UNIT
+                        and sdr.datetime_deleted is None):
+                    logger.info("drive quota org unit change: drive "
+                                f"{drive_id} org unit {shared_drive_ou} "
+                                f"to {drive_state_ou}")
+                    sdr.datetime_deleted = timezone.now()
+                    sdr.save()
+
+                # confirm drive and subscription match
                 reconcile_drive_quota(
                     sdr,
                     no_subscription_quota=subsidized_quota,
@@ -637,7 +680,16 @@ class Reconciler:
         This includes all drives not explicited deleted.
         """
         # ids = SharedDrive.objects.values_list("drive_id")
-        objs = SharedDrive.objects.filter(is_deleted__isnull=True)
+        filter_params = {
+            "is_deleted__isnull": True,
+        }
+
+        # reconcile for particular member, so only filter on shared
+        # drives for which member is a manager
+        if self.reconcile_member:
+            filter_params["members__member"] = self.reconcile_member
+
+        objs = SharedDrive.objects.filter(**filter_params)
         ids = objs.values_list("drive_id", flat=True)
         return set(ids)
 
@@ -655,11 +707,29 @@ class Reconciler:
         key: drive_id
         value: list of GoogleDriveState objects referring to that drive_id.
         """
+
         # TODO: FIX THIS! Use a build that validates e.g.,
         # consistent drive_name on a per-append basis...
+        google_drive_states = get_google_drive_states()
+
+        # if only reconciling for a particular member (e.g., for testing)
+        # then collect a list of drive ids for which netid is managing member
+        # and only reconcile those drives, multiple loops are necessary so
+        # common membership changes are reflected.
+        member_drive_ids = None
+        if self.reconcile_member:
+            member_drive_ids = []
+            for gds in google_drive_states:
+                if self.reconcile_member.netid == gds.member:
+                    member_drive_ids.append(gds.drive_id)
+
         result = collections.defaultdict(list)
 
-        for gds in get_google_drive_states():
+        for gds in google_drive_states:
+            if (member_drive_ids is not None
+                    and gds.drive_id not in member_drive_ids):
+                continue
+
             result[gds.drive_id].append(gds)
 
         return result
