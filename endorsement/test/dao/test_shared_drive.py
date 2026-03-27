@@ -693,7 +693,7 @@ class TestReconciler_reconcile_member(BaseReconcilerTest):
         Test SharedDrive members are updated.
         """
 
-        instance = self.get_instance(reconcile_member_netid="bob", no_move_drive=True)
+        instance = self.get_instance(reconcile_member_netid="bob")
         prt_drive_ids = instance.get_prt_drive_ids()
 
         self.assertEqual(len(prt_drive_ids), 3)
@@ -727,4 +727,3 @@ class TestReconciler_reconcile_member(BaseReconcilerTest):
             set(sd_c.members.values_list("member__netid", flat=True)),
             {"cam"},
         )
-
