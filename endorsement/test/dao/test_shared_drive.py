@@ -616,31 +616,31 @@ class TestReconciler_reconcile_member(BaseReconcilerTest):
             [
                 GDS(
                     drive_id="A",
-                    member="Ann",
+                    member="ann@uw.edu",
                     drive_name="ann's drive",
                     org_unit_name="100GB",
                 ),
                 GDS(
                     drive_id="B",
-                    member="bob",
+                    member="bob@uw.edu",
                     drive_name="bob's first drive",
                     org_unit_name="300GB",
                 ),
                 GDS(
                     drive_id="C",
-                    member="cam",
+                    member="cam@uw.edu",
                     drive_name="cam's drive",
                     org_unit_name="100GB",
                 ),
                 GDS(
                     drive_id="D",
-                    member="bob",
+                    member="bob@uw.edu",
                     drive_name="bob's second drive",
                     org_unit_name="100GB",
                 ),
                 GDS(
                     drive_id="E",
-                    member="bob",
+                    member="bob@washington.edu",
                     drive_name="bob's third drive",
                     org_unit_name="100GB",
                 )
