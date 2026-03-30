@@ -727,7 +727,12 @@ class Reconciler:
                         f"{self.reconcile_member.netid}")
             member_drive_ids = []
             for gds in google_drive_states:
-                if self.reconcile_member.netid == gds.member:
+                netid_match = netid_regex.match(gds.member)
+                if not netid_match:
+                    continue
+
+                gds_netid = netid_match.group("netid")
+                if self.reconcile_member.netid == gds_netid:
                     member_drive_ids.append(gds.drive_id)
 
         result = collections.defaultdict(list)
