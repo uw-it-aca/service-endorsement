@@ -86,12 +86,11 @@ def sync_quota_from_subscription(drive_id):
 
 def expire_shared_drive(shared_drive_record):
     """
-        Set lifecycle expired shared drive record
+        Mark lifecycle expired shared drive record to deleted
 
         Actions:
+            - mark expired drive for deletion in MSCA
             - set shared_drive_record datetime_deleted to now
-            - set lifecycle to expired for shared drive using:
-                - shared_drive_lifecycle_expired(shared_drive_record.shared_drive)
         """
     try:
         logger.info(
