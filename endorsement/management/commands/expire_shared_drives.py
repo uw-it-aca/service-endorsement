@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 from restclients_core.exceptions import DataFailureException
 from endorsement.policy.shared_drive import SharedDrivePolicy
-from endorsement.dao.shared_drive import shared_drive_lifecycle_expired
+from endorsement.dao.shared_drive import (
+    shared_drive_lifecycle_expired, expire_shared_drive)
 import csv
 import logging
 
@@ -52,16 +52,7 @@ class Command(BaseCommand):
                         f'"{record.shared_drive.drive_name}"')
 
             if actually_mark_for_deletion:
-                self.expire_drive(record)
-
-    def expire_drive(self, record):
-        try:
-            shared_drive_lifecycle_expired(record.shared_drive)
-            record.datetime_deleted = timezone.now()
-            record.save()
-        except DataFailureException as ex:
-            logger.error(
-                "Cannot expire drive {record.shared_drive.drive_id} : {ex}")
+                expire_shared_drive(record)
 
     def _record_csv(self, record):
         self.drive_writer.writerow([

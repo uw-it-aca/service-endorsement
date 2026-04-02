@@ -84,12 +84,15 @@ def sync_quota_from_subscription(drive_id):
         raise SharedDriveRecordNotFound(drive_id)
 
 
-def expire_shared_drives(gracetime, lifetime):
-    """
-    Expire shared drives that have exceeded their lifetime.
-    """
-    for drive in shared_drives_to_expire(gracetime, lifetime):
-        shared_drive_lifecycle_expired(drive)
+def expire_shared_drive(shared_drive_record):
+    try:
+        shared_drive_lifecycle_expired(shared_drive_record.shared_drive)
+        shared_drive_record.datetime_deleted = timezone.now()
+        shared_drive_record.save()
+    except DataFailureException as ex:
+        logger.error(
+            "Cannot expire drive "
+            f"{shared_drive_record.shared_drive.drive_id} : {ex}")
 
 
 def shared_drive_lifecycle_expired(shared_drive):
