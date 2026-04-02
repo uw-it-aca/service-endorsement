@@ -85,27 +85,28 @@ def sync_quota_from_subscription(drive_id):
 
 
 def expire_shared_drive(shared_drive_record):
+    """
+        Set lifecycle expired shared drive record
+
+        Actions:
+            - set shared_drive_record datetime_deleted to now
+            - set lifecycle to expired for shared drive using:
+                - shared_drive_lifecycle_expired(shared_drive_record.shared_drive)
+        """
     try:
-        shared_drive_lifecycle_expired(shared_drive_record.shared_drive)
+        logger.info(
+            "Expire shared drive "
+            f"{shared_drive_record.shared_drive.drive_id}, "
+            "mark for deletion")
+
+        mark_drive_for_deletion(shared_drive_record.shared_drive.drive_id)
+
         shared_drive_record.datetime_deleted = timezone.now()
         shared_drive_record.save()
     except DataFailureException as ex:
         logger.error(
-            "Cannot expire drive "
-            f"{shared_drive_record.shared_drive.drive_id} : {ex}")
-
-
-def shared_drive_lifecycle_expired(shared_drive):
-    """
-    Set lifecycle to expired for shared drive
-
-    Actions:
-       - set shared_drive quota to 0 (org_unit_name "None"? pending delete?)
-       - set subscription end_date to today using:
-            - expire_subscription(drive_record)
-    """
-    logger.info(f"Shared drive {shared_drive.drive_id} marked for deletion")
-    mark_drive_for_deletion(shared_drive.drive_id)
+            f"Expire {shared_drive_record.shared_drive.drive_id} "
+            f"failure: {ex}")
 
 
 def rescue_shared_drive_from_deletion(shared_drive):

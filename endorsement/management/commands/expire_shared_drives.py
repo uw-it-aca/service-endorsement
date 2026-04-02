@@ -4,8 +4,7 @@
 from django.core.management.base import BaseCommand
 from restclients_core.exceptions import DataFailureException
 from endorsement.policy.shared_drive import SharedDrivePolicy
-from endorsement.dao.shared_drive import (
-    shared_drive_lifecycle_expired, expire_shared_drive)
+from endorsement.dao.shared_drive import expire_shared_drive
 import csv
 import logging
 

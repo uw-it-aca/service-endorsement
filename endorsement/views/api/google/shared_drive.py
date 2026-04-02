@@ -6,7 +6,7 @@ from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.itbill import update_itbill_subscription
 from endorsement.dao.shared_drive import (
     sync_quota_from_subscription,
-    shared_drive_lifecycle_expired,
+    expire_shared_drive,
     rescue_shared_drive_from_deletion)
 from endorsement.dao.pws import get_person
 from endorsement.util.auth import is_support_user
@@ -71,7 +71,7 @@ class SharedDrive(RESTDispatch):
                 if drive.datetime_deleted:
                     rescue_shared_drive_from_deletion(drive.shared_drive)
             else:
-                shared_drive_lifecycle_expired(drive.shared_drive)
+                expire_shared_drive(drive.shared_drive)
 
             drive.set_acceptance(netid, accept, acted_as)
 
