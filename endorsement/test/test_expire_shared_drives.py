@@ -41,11 +41,17 @@ class TestExpireSharedDrives(TestCase):
 
     @patch('endorsement.management.commands.expire_shared_drives.logger')
     def test_expire_shared_drives(self, mock_logger):
+        expire_record = self.get_expire_record()
+        original_drive_name = expire_record.shared_drive.drive_name
+
         output = self.call_command("--commit")
         mock_logger.info.assert_called_with(
             f'Expiring: {self.DRIVE_ID} "{self.DRIVE_NAME}"')
+
         expire_record = self.get_expire_record()
         self.assertIsNotNone(expire_record.datetime_deleted)
+        self.assertTrue(
+            original_drive_name != expire_record.shared_drive.drive_name)
 
     def test_expire_shared_drives_csv(self):
         output = self.call_command("--dump_drive_csv")
