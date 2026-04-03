@@ -98,26 +98,55 @@ def expire_shared_drive(shared_drive_record):
             f"{shared_drive_record.shared_drive.drive_id}, "
             "mark for deletion")
 
-        mark_drive_for_deletion(shared_drive_record.shared_drive.drive_id)
+        response = mark_drive_for_deletion(
+            shared_drive_record.shared_drive.drive_id)
 
+        # update record to reflect deleted date
         shared_drive_record.datetime_deleted = timezone.now()
         shared_drive_record.save()
+
+        # update record's shared drive name
+        delete_drive_name = response.get('deleteDriveName')
+        if delete_drive_name:
+            shared_drive_record.shared_drive.drive_name = delete_drive_name
+            shared_drive_record.shared_drive.save()
     except DataFailureException as ex:
         logger.error(
             f"Expire {shared_drive_record.shared_drive.drive_id} "
             f"failure: {ex}")
 
 
-def rescue_shared_drive_from_deletion(shared_drive):
+def rescue_shared_drive_from_deletion(shared_drive_record):
     """
     Restore OrgUnit for shared drive previously marked for deletion
 
     Actions:
        - set call msca rescue method with original drive quota
     """
-    logger.info(f"Rescue shared drive {shared_drive} from deletion")
-    rescue_drive_from_deletion(
-        shared_drive.drive_quota.quota_limit, shared_drive.drive_id)
+    logger.info("Rescue shared drive "
+                f"{shared_drive_record.shared_drive.drive_name} "
+                f"({shared_drive_record.shared_drive.drive_id}) "
+                "from deletion")
+    response = rescue_drive_from_deletion(
+        shared_drive_record.shared_drive.drive_quota.quota_limit,
+        shared_drive_record.shared_drive.drive_id)
+
+    # update record to clear deleted date
+    shared_drive_record.datetime_deleted = timezone.now()
+    shared_drive_record.save()
+
+    # update record's shared drive name and org_unit
+    drive_name = response.get('postRescueDriveName')
+    org_unit_name = response.get('orgUnit')
+    if drive_name and org_unit_name:
+        shared_drive_record.shared_drive.drive_name = drive_name
+        try:
+            quota = SharedDriveQuota.objects.get(org_unit_name=org_unit_name)
+            shared_drive_record.shared_drive.save()
+        except SharedDriveQuota.DoesNotExist:
+            pass
+
+        shared_drive_record.shared_drive.drive_quota = quota
 
 
 def load_shared_drives(google_drive_states):

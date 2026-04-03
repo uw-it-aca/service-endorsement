@@ -1,1 +1,7 @@
-{"message": "Drive 'ABC_0123-DF56AA1234' successfully moved 100GB OU"}
+{
+  "msg": "Drive successfully rescued",
+  "driveId": "ABC_0123-DF56AA1234",
+  "preRescueDriveName": "PRT_DELETE_on_05-02-26-testdrive-AA1234",
+  "postRescueDriveName": "testdrive-AA1234",
+  "orgUnit": "100GB"
+}

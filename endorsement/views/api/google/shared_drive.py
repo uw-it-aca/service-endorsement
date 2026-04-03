@@ -69,7 +69,7 @@ class SharedDrive(RESTDispatch):
 
             if accept:
                 if drive.datetime_deleted:
-                    rescue_shared_drive_from_deletion(drive.shared_drive)
+                    rescue_shared_drive_from_deletion(drive)
             else:
                 expire_shared_drive(drive.shared_drive)
 
