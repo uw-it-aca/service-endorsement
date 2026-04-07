@@ -200,6 +200,7 @@ var ManageSharedDrives = (function () {
             drive.expiration_from_now = expiration.from(now);
 
             drive.deletion_date = deletion ? deletion.format('M/D/YYYY') : null;
+            drive.deletion_date_future = deletion ? deletion.diff(now) > 0 : false;
 
             drive.subscription_deadline_date = deadline.format('M/D/YYYY');
             drive.subscription_deadline_from_now = deadline.from(now);

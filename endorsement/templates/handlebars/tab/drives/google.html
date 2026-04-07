@@ -70,7 +70,7 @@
           Select quota by {{subscription_deadline_date}}<br />({{subscription_deadline_from_now}})
         {{else}}
           {{#if deletion_date}}
-          Renew by date in Shared Drive Name
+          Renew by {{#if deletion_date_future }}{{deletion_date}}{{else}}date in Shared Drive Name{{/if}}
           {{else}}
           Renew by {{expiration_date}}{{#if (lte expiration_days 90)}}<br />({{expiration_from_now}}){{/if}}
           {{/if}}
