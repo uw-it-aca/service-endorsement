@@ -5,6 +5,7 @@ import collections
 import datetime as dt
 import re
 import logging
+import datetime
 
 from django.utils import timezone
 
@@ -102,7 +103,15 @@ def expire_shared_drive(shared_drive_record):
             shared_drive_record.shared_drive.drive_id)
 
         # update record to reflect deleted date
-        shared_drive_record.datetime_deleted = timezone.now()
+        delete_drive_time = response.get('deleteDate')
+        if delete_drive_time:
+            local_dt = timezone.make_aware(
+                datetime.datetime.strptime(delete_drive_time, "%m/%d/%Y"))
+            utc_dt = local_dt.astimezone(datetime.timezone.utc)
+            shared_drive_record.datetime_deleted = utc_dt
+        else:
+            shared_drive_record.datetime_deleted = timezone.now()
+
         shared_drive_record.save()
 
         # update record's shared drive name
