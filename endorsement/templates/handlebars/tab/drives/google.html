@@ -48,7 +48,7 @@
               <i class="fa fa-exclamation-triangle text-warning"></i>
             {{/if}}
           {{/if}}
-          {{#if notable_status}}
+          {{#if (and notable_status (not (or deletion_date or (lte expiration_days 90))))}}
             <i class="fa fa-check text-success"></i>
           {{/if}}
         {{/if}}
