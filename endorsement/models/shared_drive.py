@@ -93,6 +93,8 @@ class SharedDriveQuota(
     Quota limit is represnted as an integer number of Gigabytes
     """
 
+    PENDING_DELETE_ORG_UNIT_NAME = "deleteprt"
+
     org_unit_id = models.CharField(max_length=32)
     org_unit_name = models.CharField(max_length=64)
     quota_limit = models.IntegerField(default=0)
@@ -100,6 +102,10 @@ class SharedDriveQuota(
     @property
     def is_subsidized(self):
         return self.quota_limit <= shared_drive_subsidized_quota()
+
+    @property
+    def is_pending_delete(self):
+        return self.org_unit_name.lower() == self.PENDING_DELETE_ORG_UNIT_NAME
 
     def json_data(self):
         return {

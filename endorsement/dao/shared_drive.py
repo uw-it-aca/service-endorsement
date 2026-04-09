@@ -5,7 +5,6 @@ import collections
 import datetime as dt
 import re
 import logging
-import datetime
 
 from django.utils import timezone
 
@@ -57,7 +56,6 @@ netid_regex = re.compile(
 )
 MISSING_DRIVE_THRESHOLD = 500
 MISSING_DRIVE_NOTIFICATION = 150
-PENDING_DELETE_ORG_UNIT = "deleteprt"
 
 
 def sync_quota_from_subscription(drive_id):
@@ -106,8 +104,8 @@ def expire_shared_drive(shared_drive_record):
         delete_drive_time = response.get('deleteDate')
         if delete_drive_time:
             local_dt = timezone.make_aware(
-                datetime.datetime.strptime(delete_drive_time, "%m/%d/%Y"))
-            utc_dt = local_dt.astimezone(datetime.timezone.utc)
+                dt.datetime.strptime(delete_drive_time, "%m/%d/%Y"))
+            utc_dt = local_dt.astimezone(dt.timezone.utc)
             shared_drive_record.datetime_deleted = utc_dt
         else:
             shared_drive_record.datetime_deleted = timezone.now()
@@ -686,15 +684,20 @@ class Reconciler:
 
                 # drive reported in pending delete org unit, store deleted
                 # date if not present to help signal state in the ui
-                shared_drive_ou = shared_drive.drive_quota.org_unit_name
-                drive_state_ou = drive_state.org_unit_name
-                if (shared_drive_ou != drive_state_ou
-                        and drive_state_ou.lower() == PENDING_DELETE_ORG_UNIT
+                # else if drive not in pending delete org unit,
+                # clear deleted date if present
+                drive_state_quota = get_drive_quota(drive_state)
+                if (sdr.shared_drive.drive_quota != drive_state_quota
+                        and drive_state_quota.is_pending_delete
                         and sdr.datetime_deleted is None):
                     logger.info("drive quota org unit change: drive "
                                 f"{drive_id} org unit {shared_drive_ou} "
                                 f"to {drive_state_ou}")
                     sdr.datetime_deleted = timezone.now()
+                    sdr.save()
+                elif (sdr.datetime_deleted
+                      and not drive_state_quota.is_pending_delete):
+                    sdr.datetime_deleted = None
                     sdr.save()
 
                 # confirm drive and subscription match
