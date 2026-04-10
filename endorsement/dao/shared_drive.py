@@ -33,6 +33,7 @@ from endorsement.util.itbill.shared_drive import (
 )
 from endorsement.exceptions import (
     ITBillSubscriptionNotFound,
+    ITBillAuthenticationFailure,
     SharedDriveNonPrivilegedMember,
     SharedDriveRecordNotFound,
     UnrecognizedUWNetid,
@@ -551,7 +552,6 @@ class Reconciler:
                 #   SharedDriveRecord is not created
 
                 # In these cases PRT has no administrator to alert
-                # TODO: confirm with dsnorton this should be silently ignored
                 continue
 
             reconcile_drive_quota(
@@ -719,6 +719,8 @@ class Reconciler:
             except SharedDriveRecord.DoesNotExist:
                 logger.error(f"existing drive ({drive_id}): "
                              f"SharedDriveRecord not found")
+            except ITBillAuthenticationFailure as ex:
+                logger.error(f"ITBill authentication failure: {ex}")
 
     def get_prt_drive_ids(self):
         """

@@ -8,7 +8,8 @@ from endorsement.util.itbill.shared_drive import (
     subscription_name,
     product_sys_id,
 )
-from endorsement.exceptions import ITBillSubscriptionNotFound
+from endorsement.exceptions import (
+    ITBillSubscriptionNotFound, ITBillAuthenticationFailure)
 from restclients_core.exceptions import DataFailureException
 from uw_itbill.subscription import Subscription
 import json
@@ -130,5 +131,7 @@ def load_itbill_subscription(record):
     except DataFailureException as ex:
         if ex.status == 404:
             raise ITBillSubscriptionNotFound(record.subscription.key_remote)
+        elif ex.status == 401:
+            raise ITBillAuthenticationFailure(str(ex))
 
         raise ex

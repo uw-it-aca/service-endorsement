@@ -59,6 +59,10 @@ class ITBillSubscriptionNotFound(Exception):
     pass
 
 
+class ITBillAuthenticationFailure(Exception):
+    pass
+
+
 class NoAccessRecordException(Exception):
     pass
 
