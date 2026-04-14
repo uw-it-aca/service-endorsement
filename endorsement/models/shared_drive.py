@@ -3,6 +3,7 @@
 
 import json
 import hashlib
+import datetime as dt
 
 from django.db import models
 from django.utils import timezone
@@ -12,6 +13,8 @@ from endorsement.models.base import RecordManagerBase
 from endorsement.models.itbill import ITBillSubscription
 from endorsement.util.date import datetime_to_str
 from endorsement.policy import DEFAULT_LIFETIME
+from endorsement.dao.shared_drive_deletion import (
+    mark_drive_for_deletion, rescue_drive_from_deletion)
 from endorsement.util.itbill.shared_drive import (
     itbill_form_url, shared_drive_subsidized_quota,
     shared_drive_subscription_deadline)
@@ -296,6 +299,65 @@ class SharedDriveRecord(
         self.save()
         self.shared_drive.is_deleted = True
         self.shared_drive.save()
+
+    def expire(self):
+        """
+        Mark expired shared drive record deleted, update model
+        """
+        deleted_drive = mark_drive_for_deletion(self.shared_drive.drive_id)
+
+        if not deleted_drive:
+            return None
+
+        # update record to reflect deleted date
+        delete_drive_time = deleted_drive.get('deleteDate')
+        if delete_drive_time:
+            local_dt = timezone.make_aware(
+                dt.datetime.strptime(delete_drive_time, "%m/%d/%Y"))
+            utc_dt = local_dt.astimezone(dt.timezone.utc)
+            self.datetime_deleted = utc_dt
+        else:
+            self.datetime_deleted = timezone.now()
+
+        self.save()
+
+        # update record's shared drive's name
+        delete_drive_name = deleted_drive.get('deleteDriveName')
+        if delete_drive_name:
+            self.shared_drive.drive_name = delete_drive_name
+            self.shared_drive.save()
+
+        return self
+
+    def rescue_from_deletion(self):
+        """
+        Rescue previously deleted shared drive, update model
+        """
+        rescued_drive = rescue_drive_from_deletion(self.shared_drive)
+
+        if not rescued_drive:
+            return None
+
+        # update record to clear deleted date
+        self.datetime_deleted = None
+        self.save()
+
+        # update record's shared drive name and org_unit
+        drive_name = rescued_drive.get('postRescueDriveName')
+        org_unit_name = rescued_drive.get('orgUnit')
+        if drive_name and org_unit_name:
+            self.shared_drive.drive_name = drive_name
+            try:
+                quota = SharedDriveQuota.objects.get(
+                    org_unit_name=org_unit_name)
+                self.shared_drive.drive_quota = quota
+            except SharedDriveQuota.DoesNotExist:
+                # let reconcile process sort out missing quota model
+                pass
+
+            self.shared_drive.save()
+
+        return self
 
     def resurrect(self):
         self.is_deleted = None
