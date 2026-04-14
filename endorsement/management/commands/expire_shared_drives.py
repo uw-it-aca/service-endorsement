@@ -32,17 +32,30 @@ class Command(BaseCommand):
             default=False,
             help='Dump CSV of shared drives that would be marked for deletion',
         )
+        parser.add_argument(
+            '-l',
+            '--limit-expiration-count',
+            type=int,
+            default=None,
+            help=('Limit expiration to this many '
+                  'shared drives (default: no limit)'),
+        )
 
     def handle(self, *args, **options):
         actually_mark_for_deletion = options['actually_mark_for_deletion']
         dump_drive_csv = options['dump_drive_csv']
+        limit_expiration_count = options['limit_expiration_count']
 
         if dump_drive_csv:
             self.drive_writer = csv.writer(self.stdout)
             self.drive_writer.writerow(
                 ["Drive ID", "Drive Name", "Manager NetIDs"])
 
-        for record in SharedDrivePolicy().records_to_expire():
+        records = SharedDrivePolicy().records_to_expire()
+        if limit_expiration_count:
+            records = records[:limit_expiration_count]
+
+        for record in records:
             if dump_drive_csv:
                 self._record_csv(record)
                 continue

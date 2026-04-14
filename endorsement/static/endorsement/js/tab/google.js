@@ -60,8 +60,14 @@ var ManageSharedDrives = (function () {
             }).delegate('#confirm_itbill_form_finished', 'click', function (e) {
                 _modalHide();
             }).delegate('#confirm_shared_drive_acceptance', 'click', function (e) {
+                $('#confirm_shared_drive_acceptance').closest('.modal-content')
+                    .find('input, button').attr('disabled', 'disabled');
+
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), true);
             }).delegate('#confirm_shared_drive_revoke', 'click', function (e) {
+                $('#confirm_shared_drive_revoke').closest('.modal-content')
+                    .find('input, button').attr('disabled', 'disabled');
+
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), false);
             }).delegate('#refresh_drive', 'click', function (e) {
                 e.preventDefault();
