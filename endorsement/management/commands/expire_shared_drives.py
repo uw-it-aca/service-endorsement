@@ -4,7 +4,6 @@
 from django.core.management.base import BaseCommand
 from restclients_core.exceptions import DataFailureException
 from endorsement.policy.shared_drive import SharedDrivePolicy
-from endorsement.dao.shared_drive import expire_shared_drive
 import csv
 import logging
 
@@ -64,7 +63,7 @@ class Command(BaseCommand):
                         f'"{record.shared_drive.drive_name}"')
 
             if actually_mark_for_deletion:
-                expire_shared_drive(record)
+                record.expire()
 
     def _record_csv(self, record):
         self.drive_writer.writerow([
