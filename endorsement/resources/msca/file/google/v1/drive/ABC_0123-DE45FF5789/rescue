@@ -1,0 +1,7 @@
+{
+  "msg": "Drive successfully rescued",
+  "driveId": "ABC_0123-DE45FF5789",
+  "preRescueDriveName": "PRT_DELETE_on_05-02-26-testdrive-FF5789",
+  "postRescueDriveName": "testdrive-FF5789",
+  "orgUnit": "100GB"
+}
