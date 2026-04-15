@@ -51,6 +51,10 @@ class RecordManagerBase(models.Manager):
         return self.filter(Q(**params))
 
     def get_records_to_expire(self, now, policy):
+        """
+        Gather records that have been sent all lifecycle warnings,
+        but have not yet been deleted
+        """
         params = {
             'datetime_notice_4_emailed__lte': policy.expiration_date(now),
             'datetime_notice_3_emailed__isnull': False,
