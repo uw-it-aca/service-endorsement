@@ -121,6 +121,7 @@ class SharedDriveOverview(RESTDispatch):
                 "driveName": sdr.shared_drive.drive_name,
                 "is_deleted": sdr.is_deleted is not None,
                 "is_pending_delete": sdr.datetime_deleted is not None,
+                "renew_by_date": datetime_to_str(sdr.datetime_deleted),
                 "expired_notification_sent": datetime_to_str(
                     sdr.datetime_notice_4_emailed),
             }
