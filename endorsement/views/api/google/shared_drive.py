@@ -114,13 +114,15 @@ class SharedDriveOverview(RESTDispatch):
         """
         drive_id = self.kwargs.get('drive_id')
         try:
-            sdr = SharedDriveRecord.objects.get(shared_drive__drive_id=drive_id)
+            sdr = SharedDriveRecord.objects.get(
+                shared_drive__drive_id=drive_id)
             overview = {
                 "driveId": sdr.shared_drive.drive_id,
                 "driveName": sdr.shared_drive.drive_name,
-                "is_deleted": sdr.is_deleted != None,
+                "is_deleted": sdr.is_deleted is not None,
                 "is_pending_delete": sdr.datetime_deleted is not None,
-                "expired_notification_sent": datetime_to_str(sdr.datetime_notice_4_emailed),
+                "expired_notification_sent": datetime_to_str(
+                    sdr.datetime_notice_4_emailed),
             }
 
             return self.json_response(overview)
