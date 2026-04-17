@@ -52,7 +52,9 @@ class Command(BaseCommand):
 
         records = SharedDrivePolicy().records_to_expire()
         if limit_expiration_count:
-            records = records[:limit_expiration_count]
+            # if chunking by limit count, get the oldest records first
+            records = records.order_by(
+                'datetime_notice_4_emailed')[:limit_expiration_count]
 
         for record in records:
             if dump_drive_csv:
