@@ -29,7 +29,8 @@ from endorsement.views.api.office.access import (
     Access as OfficeAccess, AccessRights as OfficeAccessRights)
 from endorsement.views.api.office.resolve import ResolveRightsConflict
 from endorsement.views.api.office.validate import Validate as OfficeValidate
-from endorsement.views.api.google.shared_drive import SharedDrive
+from endorsement.views.api.google.shared_drive import (
+    SharedDrive, SharedDriveOverview)
 from endorsement.views.api.google.itbill import SharedDriveITBillURL
 from endorsement.views.api.notification import Notification
 
@@ -69,6 +70,8 @@ urlpatterns = [
             SharedOwner.as_view(), name='shared_owner_api'),
     re_path(r'^api/v1/shared_proxy/?$',
             SharedProxyEndorse.as_view(), name='shared_proxy_endorse_api'),
+    re_path(r'^api/v1/shared_drive/(?P<drive_id>[\w-]+)/?',
+            SharedDriveOverview.as_view(), name='shared_drive_overview_api'),
     re_path(r'^api/v1/shared', Shared.as_view(), name='shared_api'),
     re_path(r'^api/v1/accept', Accept.as_view(), name='accept_api'),
     re_path(r'^api/v1/member/(?P<member>.+)$',
