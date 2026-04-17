@@ -123,7 +123,7 @@ jobs:
         if: >-
           contains(fromJSON('["main", "develop"]'),
             needs.context.outputs.git_repo_branch)
-        uses: uw-it-aca/actions/cicd-deploy@task/flux-branch-merge-retry
+        uses: uw-it-aca/actions/cicd-deploy@775ff93410514bdc42e12fa8ef52e946c61e0df5
         with:
           release_name: ${{ env.RELEASE_NAME }}
           gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
