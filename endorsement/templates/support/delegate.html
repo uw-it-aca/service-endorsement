@@ -1,0 +1,45 @@
+{% extends wrapper_template %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+<style>
+.current_message { background-color: #fbfbe3; }
+h4 {font-weight: 900;}
+</style>
+<div class="container" style="max-width: 100%;">
+<h2>Outlook Mailbox Delegate Search</h2>
+<h5 style="margin-bottom: 28px;">
+Use this page to query current Outlook mailbox delegations for a given NetID.
+</h5>
+
+<form>
+  {% csrf_token %}
+  <div class="form-inline">
+    <label for="mailbox">Mailbox NetID:</label>
+    <input type="text" class="form-control" id="mailbox" size="20" value="{{ netid }}">
+    <button type="button" name="SearchMailbox" id="search_mailbox" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search</button>
+  </div>
+</form>
+
+<div id="delegates">
+<div class="delegate-notice"></div>
+<table id="delegate-table" class="delegate-table table table-striped">
+  <thead>
+    <tr>
+      <th>Mailbox</th>
+      <th>Delegate</th>
+      <th>Access Right</th>
+    </tr>
+  </thead>
+  <tbody class="scrollable">
+  </tbody>
+</table>
+</div>
+
+{% include "handlebars/support/delegate.html" %}
+{% endblock %}
+
+{% block extra_js%}
+{% render_bundle 'delegate' 'js' %}
+
+{% endblock %}

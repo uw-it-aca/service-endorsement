@@ -3,7 +3,8 @@
 
 import logging
 from django.utils import timezone
-from uw_msca.delegate import set_delegate, update_delegate, remove_delegate
+from uw_msca.delegate import (
+    get_delegates, set_delegate, update_delegate, remove_delegate)
 from endorsement.models import Accessee, Accessor, AccessRight, AccessRecord
 from endorsement.dao.pws import get_endorsee_data
 from endorsement.exceptions import NoEndorsementException
@@ -145,3 +146,7 @@ def _revoke_access_model(accessee, accessor, right_id, acted_as=None):
     ar.revoke()
 
     return ar
+
+
+def get_delegates_for_netid(netid):
+    return get_delegates(netid)
