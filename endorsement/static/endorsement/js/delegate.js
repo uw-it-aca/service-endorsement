@@ -36,7 +36,11 @@ var displayDelegates = function(data) {
     $table.empty();
 
     $.each(data.delegates, function () {
-        $table.append('<tr><td>' + data.mailbox + '</td><td>' + this.delegate + '</td><td>' + this.access_right + '</td><td></tr>');
+        $table.append('<tr><td>' + data.mailbox +
+                      '</td><td>' + this.delegate +
+                      '</td><td>' + this.access_right +
+                      '</td><td>' + ((this.delta) ? this.delta : '') +
+                      '</td></tr>');
     });
 };
 
