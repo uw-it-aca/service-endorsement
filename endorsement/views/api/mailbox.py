@@ -40,7 +40,6 @@ class Mailbox(RESTDispatch):
                 'delegates': delegations
             })
         except Exception as ex:
-            logger.error(f"Error retrieving delegations for netid {netid}: {ex}", exc_info=True)
             log_data_error_response(logger, f"{ex}")
             return RESTDispatch().error_response(
                 543, f"Data not available due to an error: {ex}")
