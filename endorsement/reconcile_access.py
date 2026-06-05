@@ -190,7 +190,7 @@ def new_access_record(accessee, delegate, right):
 
         logger.info(
             f"CREATED RECORD: mailbox {accessee.netid} "
-            f"delegate {delegate} ({right.name})")
+            f"delegate {delegate} ({right})")
     except (UnrecognizedUWNetid, UnrecognizedGroupID):
         logger.error(
             "CREATE RECORD: Unknown netid or group: {}".format(delegate))

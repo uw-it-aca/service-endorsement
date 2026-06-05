@@ -15,7 +15,12 @@ $(window.document).ready(function() {
 var registerEvents = function() {
     $('button#search_mailbox').on('click', function (e) {
         $(this).button('loading');
-        searchMailbox($('input#mailbox').val());
+        getMailboxDelegations($('input#mailbox').val());
+    });
+
+    $('button#sync_delegations').on('click', function (e) {
+        $(this).button('loading');
+        getMailboxDelegations($('input#mailbox').val(), true);
     });
 
     $(document).on('endorse:UWNetIDsDelegateResult', function (e, delegates) {
@@ -23,7 +28,7 @@ var registerEvents = function() {
     }).on('keypress', '[id="mailbox"]', function (e) {
         if (e.which == 13) {
             $('button#search_mailbox').button('loading');
-            searchMailbox($('input#mailbox').val());
+            getMailboxMailboxDelegates($('input#mailbox').val());
             e.stopPropagation();
             e.preventDefault();
         }
@@ -39,8 +44,15 @@ var displayDelegates = function(data) {
         $table.append('<tr><td>' + data.mailbox +
                       '</td><td>' + this.delegate +
                       '</td><td>' + this.access_right +
-                      '</td><td>' + ((this.delta) ? this.delta : '') +
+                      '</td><td>' + (this.is_missing_record ? 'Missing Record' :
+                                     this.is_stale_record ? 'Missing Delegation' :
+                                     this.is_deleted_record ? 'Deleted Record' :
+                                     this.is_right_mismatch ? 'Right Mismatch' : '') +
                       '</td></tr>');
+
+        if (this.is_missing_record || this.is_stale_record || this.is_deleted_record || this.is_right_mismatch) {
+            $('button#sync_delegations').prop('disabled', false);
+        }
     });
 };
 
@@ -58,11 +70,14 @@ var displayDelegatesError = function(json_data) {
 };
 
 
-var searchMailbox = function (search_string) {
+var getMailboxDelegations = function (netid, sync = false) {
     var csrf_token = $("input[name=csrfmiddlewaretoken]")[0].value;
 
+    // disable sync delegations button until results are returned
+    $('button#sync_delegations').prop('disabled', true);
+
     $.ajax({
-        url: "/api/v1/mailbox/" + search_string,
+        url: "/api/v1/mailbox/" + netid + (sync ? "?sync=true" : ""),
         dataType: "JSON",
         type: "GET",
         accepts: {html: "application/json"},
@@ -71,7 +86,7 @@ var searchMailbox = function (search_string) {
         },
         success: function(results) {
             $(document).trigger('endorse:UWNetIDsDelegateResult', [{
-                mailbox: search_string,
+                mailbox: netid,
                 delegates: results.delegates
             }]);
         },
@@ -80,6 +95,7 @@ var searchMailbox = function (search_string) {
         },
         complete: function () {
             $('button#search_mailbox').button('reset');
+            $('button#sync_delegations').button('reset');
         }
     });
 };

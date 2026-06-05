@@ -9,7 +9,7 @@ h4 {font-weight: 900;}
 <div class="container" style="max-width: 100%;">
 <h2>Outlook Mailbox Delegate Search</h2>
 <h5 style="margin-bottom: 28px;">
-Use this page to query current Outlook mailbox delegations for a given NetID.
+Look up current Outlook mailbox delegations by netid and show the delta between current Outlook delegations and the provisioner's delegation records.<br />The Sync Delegations button will update the provisioner's delegation records.
 </h5>
 
 <form>
@@ -18,6 +18,7 @@ Use this page to query current Outlook mailbox delegations for a given NetID.
     <label for="mailbox">Mailbox NetID:</label>
     <input type="text" class="form-control" id="mailbox" size="20" value="{{ netid }}">
     <button type="button" name="SearchMailbox" id="search_mailbox" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Searching">Search</button>
+    <button type="button" name="SyncDelegations" id="sync_delegations" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Syncing" disabled>Sync Delegations</button>
   </div>
 </form>
 
