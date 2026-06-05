@@ -28,7 +28,7 @@ var registerEvents = function() {
     }).on('keypress', '[id="mailbox"]', function (e) {
         if (e.which == 13) {
             $('button#search_mailbox').button('loading');
-            getMailboxMailboxDelegates($('input#mailbox').val());
+            getMailboxDelegations($('input#mailbox').val());
             e.stopPropagation();
             e.preventDefault();
         }
@@ -75,6 +75,7 @@ var getMailboxDelegations = function (netid, sync = false) {
 
     // disable sync delegations button until results are returned
     $('button#sync_delegations').prop('disabled', true);
+    $('#delegates .delegate-notice').text('');
 
     $.ajax({
         url: "/api/v1/mailbox/" + netid + (sync ? "?sync=true" : ""),
