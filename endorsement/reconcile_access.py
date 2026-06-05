@@ -211,7 +211,7 @@ def undelete_access_record(record):
 def assign_access_right(record, right):
     logger.info(f"UPDATE CHANGE: mailbox {record.accessee.netid} "
                 f"delegate {record.accessor.name} "
-                f"({record.access_right.name}) : {name}")
+                f"({record.access_right.name}) : {right}")
     right_record = get_access_right(right)
     record.access_right = right_record
     record.save()
