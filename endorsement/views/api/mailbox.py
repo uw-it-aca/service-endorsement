@@ -129,8 +129,10 @@ class Mailbox(RESTDispatch):
         for delegate in delegates:
             delegate_name = self._delegate(delegate.json_data())
             try:
+                access_right = get_access_right(delegate.access_right)
                 record = access_records.get(
-                    accessee__netid=netid, accessor__name=delegate_name)
+                    accessee__netid=netid, accessor__name=delegate_name,
+                    access_right=access_right)
                 record_ids.remove(record.pk)
             except AccessRecord.DoesNotExist:
                 record = None
