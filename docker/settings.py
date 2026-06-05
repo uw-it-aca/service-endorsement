@@ -87,7 +87,7 @@ else:
     if os.getenv('MSCA_ENV') == 'PROD':
         RESTCLIENTS_MSCA_HOST = 'https://pplat-main-apim.azure-api.net'
     else:
-        RESTCLIENTS_MSCA_HOST = 'https://pplat-apimgmt.azure-api.net'
+        RESTCLIENTS_MSCA_HOST = 'https://pplat-test-apim.azure-api.net'
 
     RESTCLIENTS_ITBILL_DAO_CLASS = 'Live'
     RESTCLIENTS_ITBILL_HOST=os.getenv('ITBILL_HOST')
