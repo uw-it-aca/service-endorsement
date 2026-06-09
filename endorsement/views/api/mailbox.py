@@ -87,6 +87,9 @@ class Mailbox(RESTDispatch):
     def _undelete_access_record(self, delegation):
         record = self._get_record_from_delegation(delegation)
         undelete_access_record(record)
+        if record.access_right != delegation['access_right']:
+            assign_access_right(record, delegation['access_right'])
+
         return delegation
 
     def _update_access_record_right(self, delegation):
@@ -124,7 +127,9 @@ class Mailbox(RESTDispatch):
                 raise ex
 
         delegations = []
-        access_records = AccessRecord.objects.filter(accessee__netid=netid)
+
+        accessee = get_accessee_model(netid)
+        access_records = AccessRecord.objects.get_access_for_accessee(accessee)
         record_ids = set([record.pk for record in access_records])
         for delegate in delegates:
             delegate_name = self._delegate(delegate.json_data())
