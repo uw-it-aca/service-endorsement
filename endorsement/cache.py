@@ -45,3 +45,8 @@ class RestClientsCache(RestclientPymemcacheClient):
 
             if google_default_ou.match(url):
                 return ONE_DAY
+
+            if re.match(r"^/prtmbx/v\d/"
+                        r"[a-z][a-z0-9\-\_\.]{,127}"
+                        r"/getdelegates", url):
+                return 6 * ONE_HOUR
