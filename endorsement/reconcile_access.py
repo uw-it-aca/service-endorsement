@@ -242,7 +242,7 @@ def new_access_record(accessee, delegate, right):
 
         logger.info(
             f"CREATED RECORD: mailbox {accessee.netid} "
-            f"delegate {delegate} ({right})")
+            f"delegate {accessor.name} right {right}")
         return record
     except (UnrecognizedUWNetid, UnrecognizedGroupID):
         logger.error(
@@ -267,6 +267,7 @@ def assign_access_right(record, right):
     logger.info(f"UPDATE CHANGE: mailbox {record.accessee.netid} "
                 f"delegate {record.accessor.name} "
                 f"({record.access_right.name}) : {right}")
+
     right_record = get_access_right(right)
     record.access_right = right_record
     record.save()
