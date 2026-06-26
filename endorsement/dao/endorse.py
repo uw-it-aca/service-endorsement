@@ -46,10 +46,10 @@ def initiate_endorsement(endorser, endorsee, reason, category_code):
             datetime_endorsed=None,
             datetime_renewed=None,
             datetime_expired=None,
-            datetime_notice_1_emailed = None,
-            datetime_notice_2_emailed = None,
-            datetime_notice_3_emailed = None,
-            datetime_notice_4_emailed = None,
+            datetime_notice_1_emailed=None,
+            datetime_notice_2_emailed=None,
+            datetime_notice_3_emailed=None,
+            datetime_notice_4_emailed=None,
             is_deleted=None)
 
     return en
