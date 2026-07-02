@@ -71,7 +71,8 @@ def store_endorsement(endorser, endorsee, category_code,
         endorser, endorsee, acted_as, reason, category_code)
 
 
-def store_endorsement_record(endorser, endorsee, acted_as, reason, category_code):
+def store_endorsement_record(
+        endorser, endorsee, acted_as, reason, category_code):
     now = timezone.now()
     try:
         en = EndorsementRecord.objects.get(
