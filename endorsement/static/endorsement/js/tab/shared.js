@@ -49,6 +49,8 @@ var ManageSharedNetids = (function () {
         }).on('click', '#check_all', function(e) {
             $('tr:not(".visually-hidden") input[id^="aggregate_"]', $panel).prop('checked', $(this).prop('checked'));
             _enableSharedEndorsability();
+        }).on('change', 'input.aggregate_action', function(e) {
+            _enableSharedEndorsability();
         }).on('endorse:PanelToggleExposed', function (e, $div) {
             $('.aggregate_action', $panel).removeClass('visually-hidden');
             $('input[id^="aggregate_"]', $panel).prop('checked', false);

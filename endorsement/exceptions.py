@@ -95,3 +95,7 @@ class DelegateRightMismatchException(AccessRecordException):
 
 class DelegateParameterException(Exception):
     pass
+
+
+class NoLiveDelegationException(Exception):
+    pass

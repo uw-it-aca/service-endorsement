@@ -27,6 +27,10 @@ def initiate_endorsement(endorser, endorsee, reason, category_code):
         en.datetime_endorsed = None
         en.datetime_renewed = now if en.is_deleted else None
         en.datetime_expired = None
+        en.datetime_notice_1_emailed = None
+        en.datetime_notice_2_emailed = None
+        en.datetime_notice_3_emailed = None
+        en.datetime_notice_4_emailed = None
         en.is_deleted = None
         en.accept_id = None
         en.accept_salt = None
@@ -42,6 +46,10 @@ def initiate_endorsement(endorser, endorsee, reason, category_code):
             datetime_endorsed=None,
             datetime_renewed=None,
             datetime_expired=None,
+            datetime_notice_1_emailed=None,
+            datetime_notice_2_emailed=None,
+            datetime_notice_3_emailed=None,
+            datetime_notice_4_emailed=None,
             is_deleted=None)
 
     return en

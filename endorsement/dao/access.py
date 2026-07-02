@@ -84,7 +84,8 @@ def store_access_record(
         ar.datetime_notice_4_emailed = None
         ar.datetime_renewed = now if ar.is_deleted else None
         ar.datetime_expired = None
-        is_reconcile = None
+        ar.is_reconcile = is_reconcile
+        ar.is_manual_sync = None
         ar.is_deleted = None
         ar.save()
     except AccessRecord.DoesNotExist:
@@ -102,6 +103,7 @@ def store_access_record(
             datetime_renewed=None,
             datetime_expired=None,
             is_reconcile=is_reconcile,
+            is_manual_sync=None,
             is_deleted=None)
 
     return ar

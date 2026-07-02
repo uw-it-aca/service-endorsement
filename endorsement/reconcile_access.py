@@ -3,14 +3,15 @@
 
 from endorsement.models import AccessRecord, AccessRight, AccessRecordConflict
 from endorsement.dao.access import (
-    get_accessee_model, store_access_record, set_delegate)
+    get_accessee_model, store_access_record, set_delegate,
+    get_delegates_for_netid)
 from endorsement.dao.office import get_office_accessor
 from endorsement.exceptions import (
     UnrecognizedUWNetid, UnrecognizedGroupID, NoAccessRecordException,
     NullDelegateException, AccessRecordException, DeletedAccessRecordException,
     TooManyRightsException, EmptyDelegateRightsException,
-    DelegateRightMismatchException)
-from uw_msca.delegate import get_delegates, get_all_delegates
+    DelegateRightMismatchException, NoLiveDelegationException)
+from uw_msca.delegate import get_all_delegates
 from django.utils import timezone
 from datetime import timedelta
 import json
@@ -82,6 +83,20 @@ def reconcile_access(commit_changes=False):
                     f"DELETED ACCESS RECORD: mailbox {netid} "
                     f"delegate {delegate} right: {right}")
 
+                if record.is_manual_sync:
+                    try:
+                        live = get_live_delegation(netid, delegate)
+                        logger.info(
+                            f"MANUAL SYNC UNDELETE {live.user},"
+                            f"{live.delegate},"
+                            f"{live.access_right} MATCHED REPORT")
+                        clear_manual_sync(record)
+                    except NoLiveDelegationException:
+                        logger.info(
+                            f"MANUAL SYNC UNDELETE {netid},{delegate},"
+                            f"{right} PRESEVED")
+                        continue
+
                 # reactivate deleted record
                 if commit_changes:
                     if record.access_right.name != right:
@@ -122,6 +137,25 @@ def reconcile_access(commit_changes=False):
                 logger.info(
                     f"DELEGATION CHANGE: mailbox {netid} delegate {delegate} "
                     f"({record.access_right.name}) to {right}")
+
+                if record.is_manual_sync:
+                    try:
+                        live = get_live_delegation(netid, delegate)
+                        if live.access_right != record.access_right.name:
+                            logger.info(
+                                f"MANUAL SYNC RIGHT MISMATCH {netid},"
+                                f"{delegate},{right} UPDATE RECORD")
+                            clear_manual_sync(record)
+                        else:
+                            logger.info(
+                                f"MANUAL SYNC RIGHT MISMATCH {netid},"
+                                f"{delegate},{right} PRESERVED")
+                            continue
+                    except NoLiveDelegationException:
+                        logger.error(
+                            f"MANUAL SYNC {netid},{delegate},{right}"
+                            ": UNKNOWN MISMATCH DELEGATION")
+                        continue
 
                 if commit_changes:
                     assign_access_right(record, right)
@@ -174,7 +208,25 @@ def reconcile_delegation(accessee, delegate, right):
     if record.access_right.name != right:
         raise DelegateRightMismatchException(record=record)
 
+    # records now match so clear previously set manual sync flag
+    clear_manual_sync(record)
+
     return record
+
+
+def get_live_delegation(netid, delegate):
+    for delegation in get_delegates_for_netid(netid):
+        if delegation.delegate == delegate:
+            return delegation
+
+    raise NoLiveDelegationException(
+        f"No delegations for netid {netid} and delegate {delegate}")
+
+
+def clear_manual_sync(record):
+    if record.is_manual_sync is not None:
+        record.is_manual_sync = None
+        record.save()
 
 
 def get_access_right(right):
@@ -185,15 +237,18 @@ def get_access_right(right):
 def new_access_record(accessee, delegate, right):
     try:
         accessor = get_office_accessor(delegate)
-        store_access_record(
+        record = store_access_record(
             accessee, accessor, right, is_reconcile=True)
 
         logger.info(
             f"CREATED RECORD: mailbox {accessee.netid} "
-            f"delegate {delegate} ({right})")
+            f"delegate {accessor.name} right {right}")
+        return record
     except (UnrecognizedUWNetid, UnrecognizedGroupID):
         logger.error(
             "CREATE RECORD: Unknown netid or group: {}".format(delegate))
+
+    return None
 
 
 def revoke_record(record):
@@ -212,6 +267,7 @@ def assign_access_right(record, right):
     logger.info(f"UPDATE CHANGE: mailbox {record.accessee.netid} "
                 f"delegate {record.accessor.name} "
                 f"({record.access_right.name}) : {right}")
+
     right_record = get_access_right(right)
     record.access_right = right_record
     record.save()

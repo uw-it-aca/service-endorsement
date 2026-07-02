@@ -80,8 +80,12 @@ class Mailbox(RESTDispatch):
 
     def _create_access_record(self, delegation):
         accessee = get_accessee_model(delegation['user'])
-        new_access_record(
+        record = new_access_record(
             accessee, self._delegate(delegation), delegation['access_right'])
+        if record:
+            record.is_manual_sync = True
+            record.save()
+
         return delegation
 
     def _undelete_access_record(self, delegation):
@@ -90,16 +94,24 @@ class Mailbox(RESTDispatch):
         if record.access_right != delegation['access_right']:
             assign_access_right(record, delegation['access_right'])
 
+        record.manual_sync = True
+        record.save()
+
         return delegation
 
     def _update_access_record_right(self, delegation):
         record = self._get_record_from_delegation(delegation)
         assign_access_right(record, delegation['access_right'])
+
+        record.is_manual_sync = True
+        record.save()
+
         return delegation
 
     def _remove_stale_access_record(self, delegation):
         record = self._get_record_from_delegation(delegation)
         if record:
+            record.is_manual_sync = True
             record.is_deleted = True
             record.datetime_expired = None
             record.save()
