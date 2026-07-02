@@ -15,8 +15,8 @@ from django.conf import settings
 from endorsement.models import EndorsementRecord as ER
 from endorsement.dao.gws import is_group_member
 from endorsement.dao.endorse import (
-    get_endorsement, initiate_endorsement,
-    store_endorsement, clear_endorsement)
+    get_endorsement, initiate_endorsement, store_endorsement,
+    store_endorsement_record, clear_endorsement)
 from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.uwnetid_categories import shared_netid_has_category
 from endorsement.dao.uwnetid_subscriptions import (
@@ -214,9 +214,17 @@ class EndorsementServiceBase(ABC):
             endorser, endorsee, reason, self.category_code)
 
     def store_endorsement(self, endorser, endorsee, acted_as, reason):
-        return store_endorsement(
-            endorser, endorsee, self.category_code,
-            self.subscription_codes, acted_as, reason)
+        try:
+            # if existing active endorsement, save nws round trip
+            # and simply renew by updating endorsement record
+            self.get_endorsement(endorser, endorsee)
+            return store_endorsement_record(
+                endorser, endorsee, acted_as, reason, self.category_code)
+        except NoEndorsementException:
+            # reach out to nws and create new endorsement record
+            return store_endorsement(
+                endorser, endorsee, self.category_code,
+                self.subscription_codes, acted_as, reason)
 
     def clear_endorsement(self, endorser, endorsee):
         return clear_endorsement(self.get_endorsement(endorser, endorsee))

@@ -67,11 +67,11 @@ def store_endorsement(endorser, endorsee, category_code,
     set_active_category(endorsee.netid, category_code)
     activate_subscriptions(
         endorsee.netid, endorser.netid, subscription_codes)
-    return _store_endorsement(
+    return store_endorsement_record(
         endorser, endorsee, acted_as, reason, category_code)
 
 
-def _store_endorsement(endorser, endorsee, acted_as, reason, category_code):
+def store_endorsement_record(endorser, endorsee, acted_as, reason, category_code):
     now = timezone.now()
     try:
         en = EndorsementRecord.objects.get(
