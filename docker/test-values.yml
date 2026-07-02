@@ -104,6 +104,8 @@ environmentVariables:
     value: PROD
   - name: UWNETID_ENV
     value: EVAL
+  - name: RESTCLIENTS_UWNETID_TIMEOUT
+    value: "90"
   - name: MSCA_ENV
     value: EVAL
   - name: MSCA_TIMEOUT
