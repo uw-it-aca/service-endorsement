@@ -616,7 +616,8 @@ class Reconciler:
                         and drive_state_quota.is_pending_delete
                         and sdr.datetime_deleted is None):
                     logger.info("drive quota org unit change: drive "
-                                f"{drive_id} org unit {shared_drive_ou} "
+                                f"{drive_id} org unit "
+                                f"{sdr.shared_drive.drive_quota} "
                                 f"to {drive_state_ou}")
                     sdr.datetime_deleted = timezone.now()
                     sdr.save()

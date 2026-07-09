@@ -49,4 +49,4 @@ class RestClientsCache(RestclientPymemcacheClient):
             if re.match(r"^/prtmbx/v\d/"
                         r"[a-z][a-z0-9\-\_\.]{,127}"
                         r"/getdelegates", url):
-                return 6 * ONE_HOUR
+                return 2 * ONE_MINUTE
