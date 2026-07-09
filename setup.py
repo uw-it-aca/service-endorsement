@@ -34,7 +34,7 @@ setup(
         'django-userservice~=3.2',
         'urllib3~=1.26',
         'psycopg2~=2.9',
-        'lxml==5.3.1',
+        'lxml==6.1.0',
         'xmlsec==1.3.14',
         'uw-memcached-clients~=1.1',
         'UW-RestClients-Core~=1.4',
