@@ -1,0 +1,7 @@
+{
+  "msg": "Drive successfully marked for deletion",
+  "driveId": "ABC_0123-DE45FF5789",
+  "originalDriveName": "testdrive-FF5789",
+  "deleteDate": "5/2/2026",
+  "deleteDriveName": "PRT_DELETE_on_05-02-26-testdrive-FF5789"
+}

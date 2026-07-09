@@ -3,7 +3,8 @@
 
 import logging
 from django.utils import timezone
-from uw_msca.delegate import set_delegate, update_delegate, remove_delegate
+from uw_msca.delegate import (
+    get_delegates, set_delegate, update_delegate, remove_delegate)
 from endorsement.models import Accessee, Accessor, AccessRight, AccessRecord
 from endorsement.dao.pws import get_endorsee_data
 from endorsement.exceptions import NoEndorsementException
@@ -83,7 +84,8 @@ def store_access_record(
         ar.datetime_notice_4_emailed = None
         ar.datetime_renewed = now if ar.is_deleted else None
         ar.datetime_expired = None
-        is_reconcile = None
+        ar.is_reconcile = is_reconcile
+        ar.is_manual_sync = None
         ar.is_deleted = None
         ar.save()
     except AccessRecord.DoesNotExist:
@@ -101,6 +103,7 @@ def store_access_record(
             datetime_renewed=None,
             datetime_expired=None,
             is_reconcile=is_reconcile,
+            is_manual_sync=None,
             is_deleted=None)
 
     return ar
@@ -145,3 +148,7 @@ def _revoke_access_model(accessee, accessor, right_id, acted_as=None):
     ar.revoke()
 
     return ar
+
+
+def get_delegates_for_netid(netid):
+    return get_delegates(netid)

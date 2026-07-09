@@ -152,6 +152,7 @@ class AccessRecord(ExportModelOperationsMixin('access_record'), models.Model):
     datetime_renewed = models.DateTimeField(null=True)
     datetime_expired = models.DateTimeField(null=True)
     is_reconcile = models.BooleanField(null=True)
+    is_manual_sync = models.BooleanField(null=True)
     is_deleted = models.BooleanField(null=True)
 
     objects = AccessRecordManager()

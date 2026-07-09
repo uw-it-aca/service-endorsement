@@ -59,6 +59,10 @@ class ITBillSubscriptionNotFound(Exception):
     pass
 
 
+class ITBillAuthenticationFailure(Exception):
+    pass
+
+
 class NoAccessRecordException(Exception):
     pass
 
@@ -90,4 +94,8 @@ class DelegateRightMismatchException(AccessRecordException):
 
 
 class DelegateParameterException(Exception):
+    pass
+
+
+class NoLiveDelegationException(Exception):
     pass

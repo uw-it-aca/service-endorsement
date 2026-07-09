@@ -4,6 +4,7 @@
 import json
 from django.urls import reverse
 from endorsement.test.api import EndorsementApiTest
+from endorsement.models import SharedDriveRecord
 
 
 class TestSharedDrivesAPI(EndorsementApiTest):
@@ -23,14 +24,33 @@ class TestSharedDrivesAPI(EndorsementApiTest):
         self.set_user('jstaff')
         url = reverse('shared_drive_api')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEqual(len(data['drives']), 7)
+        self.assertEqual(len(data['drives']), 8)
 
     def test_no_shared_drives(self):
         self.set_user('jinter')
         url = reverse('shared_drive_api')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(len(data['drives']), 0)
+
+    def test_shared_drive_deletion_rescue(self):
+        drive_id = 'ABC_0123-DF56AA1234'
+        record = SharedDriveRecord.objects.get(
+            shared_drive__drive_id=drive_id)
+        drive_name = record.shared_drive.drive_name
+
+        self.set_user('jstaff')
+        url = reverse('shared_drive_api', kwargs={
+            'drive_id': drive_id})
+        data = json.dumps({"accept": True})
+        response = self.client.put(
+            url, data=data, content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+
+        record = SharedDriveRecord.objects.get(
+            shared_drive__drive_id=drive_id)
+        self.assertTrue(drive_name != record.shared_drive.drive_name)

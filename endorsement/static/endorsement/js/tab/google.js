@@ -60,8 +60,14 @@ var ManageSharedDrives = (function () {
             }).delegate('#confirm_itbill_form_finished', 'click', function (e) {
                 _modalHide();
             }).delegate('#confirm_shared_drive_acceptance', 'click', function (e) {
+                $('#confirm_shared_drive_acceptance').closest('.modal-content')
+                    .find('input, button').attr('disabled', 'disabled');
+
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), true);
             }).delegate('#confirm_shared_drive_revoke', 'click', function (e) {
+                $('#confirm_shared_drive_revoke').closest('.modal-content')
+                    .find('input, button').attr('disabled', 'disabled');
+
                 _setSharedDriveResponsibility($(this).attr('data-drive-id'), false);
             }).delegate('#refresh_drive', 'click', function (e) {
                 e.preventDefault();
@@ -83,7 +89,8 @@ var ManageSharedDrives = (function () {
                 _updateSharedDrivesDisplay(drive);
                 Notify.success('Shared drive "' + drive.drive.drive_name + '" provision renewed.', 10000);
             }).on('endorse:SharedDriveResponsibilityAcceptedError', function (e, error) {
-                Notify.error('Sorry, but we cannot accept responsibility at this time: ' + error);
+                _modalHide();
+                Notify.error('Sorry, but we cannot Renew shared drive at this time: ' + error);
             }).on('change', '#shared_drive_modal input', function () {
                 var $modal = $(this).closest('#shared_drive_modal'),
                     $accept_button = $('button.accept-button', $modal),
@@ -188,6 +195,7 @@ var ManageSharedDrives = (function () {
         },
         _prepSharedDriveContext = function (drive) {
             var expiration = moment(drive.datetime_expiration),
+                deletion = drive.datetime_deleted ? moment(drive.datetime_deleted) : null,
                 deadline = moment(drive.datetime_subscription_deadline),
                 now = moment.utc(),
                 billing_period_start = moment(((now.month() == 11) ? now.year() : now.year() - 1) + '-12-01'),
@@ -196,6 +204,9 @@ var ManageSharedDrives = (function () {
             drive.expiration_date = expiration.format('M/D/YYYY');
             drive.expiration_days = expiration.diff(now, 'days');
             drive.expiration_from_now = expiration.from(now);
+
+            drive.deletion_date = deletion ? deletion.format('M/D/YYYY') : null;
+            drive.deletion_date_future = deletion ? deletion.diff(now) > 0 : false;
 
             drive.subscription_deadline_date = deadline.format('M/D/YYYY');
             drive.subscription_deadline_from_now = deadline.from(now);

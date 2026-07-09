@@ -18,6 +18,7 @@ module.exports = {
         endorsee: ['./endorsement/static/endorsement/js/endorsee.js'],
         endorser: ['./endorsement/static/endorsement/js/endorser.js'],
         member: ['./endorsement/static/endorsement/js/member.js'],
+        delegate: ['./endorsement/static/endorsement/js/delegate.js'],
         notifications: ['./endorsement/static/endorsement/js/notifications.js'],
         statistics: ['./endorsement/static/endorsement/js/statistics.js'],
         shared_proxy: ['./endorsement/static/endorsement/js/shared_proxy.js']
@@ -46,7 +47,8 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new BundleTracker({
-            filename: './endorsement/static/webpack-stats.json'
+            path: './endorsement/static/',
+            filename: 'webpack-stats.json'
         }),
         new MiniCssExtractPlugin({
             filename: "[name]-[fullhash].css",

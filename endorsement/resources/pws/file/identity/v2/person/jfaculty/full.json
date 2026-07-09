@@ -23,16 +23,24 @@
     "EmployeePersonAffiliation":{
         "EmployeeID":"100000002",
         "EmployeeWhitePages":{
-            "Addresses":["237 Denny, C-3175, 4333 Brooklyn Ave NE, Seattle, WA 98195"],
-            "Departments": ["University Computing Services"],
-            "EmailAddresses": ["jfaculty@uw.edu"],
-            "Faxes": ["+1 206 123-4321"],
-            "Name":"JAMES FACULTY",
-            "Phones": ["+1 206 123-1234", "+1 206 543-1234"],
-            "PublishInDirectory":false,
-            "Positions": ["Systems Engineer"],
-            "TouchDials":[],
-            "VoiceMails":[]},
+          "Name": "Faculty, James",
+          "Positions": [
+            {"EWPDept":"Family Medicine",
+             "EWPTitle":"Associate Professor",
+             "Primary":true},
+            {"EWPDept":"Family Medicine",
+             "EWPTitle":"Associate Professor - Non Salaried",
+             "Primary":false}],
+          "VoiceMails": ["+1 425 222-2222"],
+          "EmailAddresses": ["jfaculty@uw.edu"],
+          "PublishInDirectory": true,
+          "Pagers": [],
+          "Faxes": ["+1 425 111-1111"],
+          "Addresses": ["Seattle, WA 98105"],
+          "Phones": ["+1 206 333-3333",
+                     "+1 425 555-1236"],
+          "Mobiles": ["+1 425 666-6666"]
+        },
         "HomeDepartment":"CSE",
         "MailStop":"359540"}
     }

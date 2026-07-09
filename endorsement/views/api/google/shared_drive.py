@@ -4,14 +4,15 @@
 from endorsement.models import SharedDriveRecord
 from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.itbill import update_itbill_subscription
-from endorsement.dao.shared_drive import (
-    sync_quota_from_subscription, shared_drive_lifecycle_expired)
+from endorsement.dao.shared_drive import sync_quota_from_subscription
 from endorsement.dao.pws import get_person
 from endorsement.util.auth import is_support_user
+from endorsement.util.date import datetime_to_str
 from endorsement.views.rest_dispatch import (
     RESTDispatch, invalid_session, data_not_found,
     invalid_endorser, bad_request, data_error)
 from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
+from rest_framework.authentication import TokenAuthentication
 from restclients_core.exceptions import DataFailureException
 import logging
 
@@ -61,15 +62,20 @@ class SharedDrive(RESTDispatch):
             drive_id = self.kwargs['drive_id']
             drive = SharedDriveRecord.objects.get_member_drives(
                 netid, drive_id).get()
-
             accept = request.data.get('accept')
-            if isinstance(accept, bool):
-                drive.set_acceptance(netid, accept, acted_as)
-                if not accept:
-                    shared_drive_lifecycle_expired(self)
-            else:
+            if not isinstance(accept, bool):
                 return bad_request(logger)
 
+            if accept:
+                if drive.datetime_deleted:
+                    drive.rescue_from_deletion()
+            else:
+                drive.expire()
+
+            drive.set_acceptance(netid, accept, acted_as)
+
+        except DataFailureException as ex:
+            return data_error(logger, ex)
         except SharedDriveRecord.DoesNotExist:
             return data_not_found(logger)
         except KeyError:
@@ -93,3 +99,33 @@ class SharedDrive(RESTDispatch):
             'drives': json_data,
             'messages': get_persistent_messages()
         }
+
+
+class SharedDriveOverview(RESTDispatch):
+    """
+    Expose shared drive overview for provided drive_id
+    """
+
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        """
+        Return SharedDriveRecord overview
+        """
+        drive_id = self.kwargs.get('drive_id')
+        try:
+            sdr = SharedDriveRecord.objects.get(
+                shared_drive__drive_id=drive_id)
+            overview = {
+                "driveId": sdr.shared_drive.drive_id,
+                "driveName": sdr.shared_drive.drive_name,
+                "is_deleted": sdr.is_deleted is not None,
+                "is_pending_delete": sdr.datetime_deleted is not None,
+                "renew_by_date": datetime_to_str(sdr.datetime_deleted),
+                "expired_notification_sent": datetime_to_str(
+                    sdr.datetime_notice_4_emailed),
+            }
+
+            return self.json_response(overview)
+        except SharedDriveRecord.DoesNotExist:
+            return data_not_found(logger)

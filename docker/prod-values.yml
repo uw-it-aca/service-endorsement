@@ -94,7 +94,7 @@ cronjob:
     - name: reconcile-mailbox-access
       schedule: "5 10 * * *"
       command: ["/scripts/management_command.sh"]
-      args: ["reconcile_access"]
+      args: ["reconcile_access", "--commit"]
 certs:
   mounted: true
   certPath: /certs/provision.uw.edu.cert
@@ -108,6 +108,8 @@ environmentVariables:
   - name: PWS_ENV
     value: PROD
   - name: UWNETID_ENV
+    value: PROD
+  - name: MSCA_ENV
     value: PROD
   - name: MSCA_TIMEOUT
     value: "60"

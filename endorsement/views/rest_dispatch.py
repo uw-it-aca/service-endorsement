@@ -8,8 +8,8 @@ from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
 from endorsement.util.auth import is_admin_user
 import json
 import sys
-from restclients_core.exceptions import DataFailureException,\
-    InvalidNetID, InvalidRegID
+from restclients_core.exceptions import (
+    DataFailureException, InvalidNetID, InvalidRegID)
 from endorsement.util.log import (
     log_exception, log_data_not_found_response, log_data_error_response,
     log_invalid_netid_response, log_invalid_endorser_response,

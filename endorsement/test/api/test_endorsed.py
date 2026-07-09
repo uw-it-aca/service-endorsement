@@ -11,6 +11,6 @@ class TestEndorsementEndorsedAPI(EndorsementApiTest):
         self.set_user('jfaculty')
         url = reverse('endorsed_api')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(len(data['endorsed']), 0)

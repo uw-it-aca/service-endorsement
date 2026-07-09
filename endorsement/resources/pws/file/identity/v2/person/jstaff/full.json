@@ -14,16 +14,21 @@
         "EmployeePersonAffiliation": {
             "EmployeeID": "100000001",
             "EmployeeWhitePages": {
+                "Name": "Staff, James",
+                "Positions": [
+                    {"EWPDept":"University Computing Services",
+                     "EWPTitle":"Systems Engineer",
+                     "Primary":true}],
+                "EmailAddresses": ["jstaff@washington.edu"],
+                "VoiceMails": ["+1 425 222-2222"],
                 "Addresses": ["237 Denny, C-3175, 4333 Brooklyn Ave NE, Seattle, WA 98195"],
-                "Departments": ["University Computing Services"],
-                "EmailAddresses": ["jstaff@uw.edu"],
-                "Faxes": ["+1 206 123-4321"],
-                "Name": "JAMES STAFF",
-                "Phones": ["+1 206 123-1234", "+1 206 543-1234"],
-                "PublishInDirectory": false,
-                "Positions": ["Systems Engineer"],
-                "TouchDials": [],
-                "VoiceMails": []
+                "PublishInDirectory": true,
+                "Pagers": [],
+                "Faxes": ["+1 425 111-1111"],
+                "Addresses": ["Seattle, WA 98105"],
+                "Phones": ["+1 206 333-3333",
+                           "+1 425 555-1236"],
+                "Mobiles": ["+1 425 666-6666"]
             },
             "HomeDepartment": "OVP OF UW IT",
             "MailStop": "359540"

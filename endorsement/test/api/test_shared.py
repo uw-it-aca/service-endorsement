@@ -10,4 +10,4 @@ class TestEndorsementSharedNetidsAPI(EndorsementApiTest):
         self.set_user('endorsee7')
         url = reverse('shared_api')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
