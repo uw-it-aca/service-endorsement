@@ -618,7 +618,7 @@ class Reconciler:
                     logger.info("drive quota org unit change: drive "
                                 f"{drive_id} org unit "
                                 f"{sdr.shared_drive.drive_quota} "
-                                f"to {drive_state_ou}")
+                                f"to {drive_state_quota}")
                     sdr.datetime_deleted = timezone.now()
                     sdr.save()
                 elif (sdr.datetime_deleted
