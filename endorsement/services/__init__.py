@@ -217,14 +217,17 @@ class EndorsementServiceBase(ABC):
         try:
             # if existing active endorsement, save nws round trip
             # and simply renew by updating endorsement record
-            self.get_endorsement(endorser, endorsee)
-            return store_endorsement_record(
-                endorser, endorsee, acted_as, reason, self.category_code)
+            endorsement = self.get_endorsement(endorser, endorsee)
+            if endorsement.datetime_endorsed is not None:
+                return store_endorsement_record(
+                    endorser, endorsee, acted_as, reason, self.category_code)
         except NoEndorsementException:
-            # reach out to nws and create new endorsement record
-            return store_endorsement(
-                endorser, endorsee, self.category_code,
-                self.subscription_codes, acted_as, reason)
+            pass
+
+        # reach out to nws and create new endorsement record
+        return store_endorsement(
+            endorser, endorsee, self.category_code,
+            self.subscription_codes, acted_as, reason)
 
     def clear_endorsement(self, endorser, endorsee):
         return clear_endorsement(self.get_endorsement(endorser, endorsee))
