@@ -2,13 +2,18 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+
 from django.utils import timezone
 from uw_msca.delegate import (
-    get_delegates, set_delegate, update_delegate, remove_delegate)
-from endorsement.models import Accessee, Accessor, AccessRight, AccessRecord
+    get_delegates,
+    remove_delegate,
+    set_delegate,
+    update_delegate,
+)
+
 from endorsement.dao.pws import get_endorsee_data
 from endorsement.exceptions import NoEndorsementException
-
+from endorsement.models import Accessee, Accessor, AccessRecord, AccessRight
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +26,7 @@ def get_accessee_model(netid):
     try:
         accessee = Accessee.objects.get(netid=netid)
     except Accessee.DoesNotExist:
-        uwregid, display_name, email, is_person = get_endorsee_data(netid)
+        uwregid, display_name, _email, _is_person = get_endorsee_data(netid)
         accessee, created = Accessee.objects.update_or_create(
             regid=uwregid,
             defaults={'netid': netid, 'display_name': display_name})
@@ -51,7 +56,7 @@ def get_accessor_model(name, validator):
             logger.info("{} accessee: {}".format(
                 'Created' if created else "Updated", name))
         except Exception as ex:
-            logger.error("accessor model: {}: {}".format(name, ex))
+            logger.error(f"accessor model: {name}: {ex}")
             raise
 
     return accessor
@@ -70,7 +75,7 @@ def update_access(accessee, accessor, old_right_id, right_id, acted_as=None):
 def store_access_record(
         accessee, accessor, right_id, acted_as=None, is_reconcile=None):
     now = timezone.now()
-    access_right, created = AccessRight.objects.get_or_create(name=right_id)
+    access_right, _ = AccessRight.objects.get_or_create(name=right_id)
 
     try:
         ar = AccessRecord.objects.get(accessee=accessee, accessor=accessor)
@@ -122,7 +127,7 @@ def renew_access(accessee, accessor, acted_as=None):
     ar.datetime_notice_4_emailed = None
     ar.datetime_renewed = now if ar.is_deleted else None
     ar.datetime_expired = None
-    is_reconcile = None
+    ar.is_reconcile = None
     ar.is_deleted = None
     ar.save()
 
@@ -142,9 +147,7 @@ def _revoke_access_model(accessee, accessor, right_id, acted_as=None):
     except (AccessRecord.DoesNotExist):
         raise NoEndorsementException()
 
-    logger.info("Revoking {} access to {} for {}".format(
-        ar.access_right.name, ar.accessee.netid, ar.accessor.name,
-        " (by {})".format(acted_as) if acted_as else ""))
+    logger.info(f"Revoking {ar.access_right.name} access to {ar.accessee.netid} for {ar.accessor.name}")
     ar.revoke()
 
     return ar

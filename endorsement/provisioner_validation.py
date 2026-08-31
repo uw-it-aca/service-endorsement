@@ -1,14 +1,16 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.conf import settings
-from endorsement.models import EndorsementRecord as ER
-from endorsement.services import get_endorsement_service
-from endorsement.notifications.endorsement import notify_invalid_endorser
-from uw_saml.utils import is_member_of_group
-from importlib import import_module
 import logging
+from importlib import import_module
 
+from django.conf import settings
+from uw_saml.utils import is_member_of_group
+
+from endorsement.models import EndorsementRecord as ER
+from endorsement.notifications.endorsement import notify_invalid_endorser
+from endorsement.services import get_endorsement_service
+from endorsement.util.list import distinct
 
 logger = logging.getLogger(__name__)
 
@@ -28,15 +30,13 @@ def can_view_endorsements(request):
             try:
                 mod = import_module(module)
             except ImportError as ex:
-                logger.error("Cannot import {}: {}".format(
-                    PROVISIONER_ACCESS_TEST, ex))
+                logger.error(f"Cannot import {PROVISIONER_ACCESS_TEST}: {ex}")
                 return False
 
             try:
                 _endorser_access = getattr(mod, validator)
             except AttributeError:
-                logger.error("Module {} missing {}".format(
-                    PROVISIONER_ACCESS_TEST, validator))
+                logger.error(f"Module {PROVISIONER_ACCESS_TEST} missing {validator}")
                 return False
         except AttributeError:
             _endorser_access = allowed_prod_endorsers
@@ -60,7 +60,7 @@ def validate_endorsers():
         endorsee__is_person=True,
         endorser__datetime_emailed__isnull=True)
 
-    for endorser_id in list(set([e.endorser.id for e in endorsements])):
+    for endorser_id in distinct([e.endorser.id for e in endorsements]):
         invalid_endorsements = []
         for endorsement in endorsements.filter(
                 endorser__id=endorser_id, endorsee__is_person=True):
@@ -69,8 +69,7 @@ def validate_endorsers():
                 if not service.valid_endorser(endorsement.endorser.netid):
                     invalid_endorsements.append(endorsement)
             except Exception as ex:
-                logger.error('Validation of {} failed: {}'.format(
-                    endorsement.endorser.netid, ex))
+                logger.error(f'Validation of {endorsement.endorser.netid} failed: {ex}')
 
         if len(invalid_endorsements) > 0:
             notify_invalid_endorser(invalid_endorsements)

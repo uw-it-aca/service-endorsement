@@ -2,11 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+
 from django.urls import reverse
+
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
 from endorsement.models import EndorsementRecord
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.test.services import ServicesApiTest
 from endorsement.services import get_endorsement_service
+from endorsement.test.services import ServicesApiTest
 
 
 class TestOffice365Service(ServicesApiTest):
@@ -22,7 +24,7 @@ class TestOffice365Service(ServicesApiTest):
         self.assertFalse(self.service.valid_endorser("nomockid"))
 
         # test exception
-        self.assertRaises(Exception, self.service.valid_endorser, None)
+        self.assertRaises(Exception, self.service.valid_endorser, None)  # noqa: B017
 
     def test_endorsed(self):
         endorser = get_endorser_model('jstaff')
@@ -37,7 +39,7 @@ class TestOffice365Service(ServicesApiTest):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
 
-        endorsible, endorsing, endorsed, errored = self.get_endorsed(data)
+        endorsible, endorsing, endorsed, _errored = self.get_endorsed(data)
         self.assertEqual(len(endorsible), 0)
         self.assertEqual(len(endorsing), 0)
         self.assertEqual(len(endorsed), 0)
@@ -46,7 +48,6 @@ class TestOffice365Service(ServicesApiTest):
 
     def test_shared(self):
         endorser = get_endorser_model('jstaff')
-        bad_endorsee = get_endorsee_model('wadm_jstaff')
         good_endorsee = get_endorsee_model('emailinf')
 
         self.assertEqual(len(

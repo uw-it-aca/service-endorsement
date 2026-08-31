@@ -1,24 +1,25 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import logging
+
+from django.template import loader
+from django.utils import timezone
+
+from endorsement.dao.access import get_accessee_model
+from endorsement.dao.accessors import get_accessor_email
+from endorsement.dao.notification import send_notification
+from endorsement.dao.uwnetid_admin import get_owner_for_shared_netid
+from endorsement.exceptions import EmailFailureException
 from endorsement.models import AccessRecord
 from endorsement.policy.access import AccessPolicy
 from endorsement.util.email import uw_email_address
-from endorsement.dao.notification import send_notification
-from endorsement.dao.accessors import get_accessor_email
-from endorsement.dao.uwnetid_admin import get_owner_for_shared_netid
-from endorsement.dao.access import get_accessee_model
-from endorsement.exceptions import EmailFailureException
-from django.template import loader, Template, Context
-from django.utils import timezone
-import logging
-
 
 logger = logging.getLogger(__name__)
 
 
 def _email_template(template_name):
-    return "email/access/{}".format(template_name)
+    return f"email/access/{template_name}"
 
 
 def notify_accessors():
@@ -27,8 +28,7 @@ def notify_accessors():
             emails = get_accessor_email(ar)
 
             if not emails:
-                logger.error("No email address found for accessor: {}".format(
-                    ar.accessor))
+                logger.error(f"No email address found for accessor: {ar.accessor}")
                 return
 
             (subject, text_body, html_body) = _create_accessor_message(
@@ -43,10 +43,10 @@ def notify_accessors():
 
             ar.emailed()
         except EmailFailureException as ex:
-            logger.error("Accessor notification failed: {}".format(ex))
+            logger.error(f"Accessor notification failed: {ex}")
         except Exception as ex:
-            logger.error("Notify get email failed: {0}, netid: {1}"
-                         .format(ex, ar.accessor))
+            logger.error(f"Notify get email failed: {ex}, netid: {ar.accessor}"
+                         )
 
 
 def _create_accessor_message(access_record, emails):
@@ -120,8 +120,8 @@ def accessee_lifecycle_warning(notice_level):
                 email, subject, text_body, html_body,
                 "Mailbox Access Warning")
 
-            setattr(drive, 'datetime_notice_{}_emailed'.format(notice_level),
+            setattr(drive, f'datetime_notice_{notice_level}_emailed',
                     timezone.now())
             drive.save()
-        except EmailFailureException as ex:
+        except EmailFailureException:
             pass

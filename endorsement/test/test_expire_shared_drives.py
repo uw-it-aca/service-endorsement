@@ -1,11 +1,13 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.test import TestCase
-from django.core.management import call_command
-from unittest.mock import patch
-from endorsement.models import SharedDriveRecord
 from io import StringIO
+from unittest.mock import patch
+
+from django.core.management import call_command
+from django.test import TestCase
+
+from endorsement.models import SharedDriveRecord
 
 
 class TestExpireSharedDrives(TestCase):
@@ -33,7 +35,7 @@ class TestExpireSharedDrives(TestCase):
 
     @patch('endorsement.management.commands.expire_shared_drives.logger')
     def test_expire_shared_drives_logging(self, mock_logger):
-        output = self.call_command()
+        self.call_command()
         mock_logger.info.assert_called_with(
             f'Expiring: {self.DRIVE_ID} "{self.DRIVE_NAME}"')
         expire_record = self.get_expire_record()
@@ -44,7 +46,7 @@ class TestExpireSharedDrives(TestCase):
         expire_record = self.get_expire_record()
         original_drive_name = expire_record.shared_drive.drive_name
 
-        output = self.call_command("--commit")
+        self.call_command("--commit")
         mock_logger.info.assert_called_with(
             f'Expiring: {self.DRIVE_ID} "{self.DRIVE_NAME}"')
 

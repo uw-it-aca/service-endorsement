@@ -1,15 +1,15 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from unittest import skipIf
+
 from django.conf import settings
-from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import Client
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
-from unittest import skipIf
+from django.urls import reverse
 from userservice.user import UserServiceMiddleware
 
 
@@ -17,7 +17,7 @@ def _missing_url(name, kwargs=None):
     try:
         reverse(name, kwargs=kwargs)
     except Exception as ex:
-        print("Ex: {0}".format(ex))
+        print(f"Ex: {ex}")
         return True
 
     return False
@@ -31,7 +31,7 @@ def get_user(netid):
     try:
         user = User.objects.get(username=netid)
         return user
-    except Exception as ex:
+    except Exception:
         user = User.objects.create_user(
             netid, password=get_user_pass(netid))
         return user

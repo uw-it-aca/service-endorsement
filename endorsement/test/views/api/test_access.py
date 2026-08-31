@@ -3,12 +3,12 @@
 
 
 from django.urls import reverse
-from django.test import Client
-from userservice.user import get_original_user
+
 from endorsement.models import (
-    Accessee, Accessor, AccessRight, AccessRecord, AccessRecordConflict)
-from endorsement.test.views import require_url
+    AccessRecord,
+)
 from endorsement.test.api import EndorsementApiTest
+from endorsement.test.views import require_url
 
 
 @require_url('access_api', 'access url not configured')

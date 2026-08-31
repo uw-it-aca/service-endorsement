@@ -5,9 +5,9 @@
 Provisioned service lifecycle policy base class
 """
 from abc import ABC, abstractmethod
-from django.utils import timezone
 from datetime import timedelta
 
+from django.utils import timezone
 
 # Default lifecycle day counts
 DEFAULT_LIFETIME = 365
@@ -23,13 +23,11 @@ class PolicyBase(ABC):
     @abstractmethod
     def record_model(self):
         """Provision Record subect to policy"""
-        pass
 
     @property
     @abstractmethod
     def datetime_provisioned_key(self):
         """Model Field storing datetime the service was provisioned"""
-        pass
 
     @property
     def lifetime(self):
@@ -69,7 +67,7 @@ class PolicyBase(ABC):
         elif level == 4:
             return self.warning_4
 
-        raise Exception('bad warning level {}'.format(level))
+        raise Exception(f'bad warning level {level}')
 
     def expiration_warning_date(self, now, level):
         days_prior = self.days_till_expiration(level)

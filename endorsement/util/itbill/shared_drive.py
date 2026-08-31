@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import datetime as dt
+
 from django.conf import settings
-from datetime import datetime
 
 
 def subscription_name(shared_drive_record):
@@ -12,19 +13,19 @@ def subscription_name(shared_drive_record):
 
 
 def product_sys_id():
-    return getattr(settings, "ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID")
+    return settings.ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID
 
 
 def itbill_form_url_base():
-    return getattr(settings, "ITBILL_FORM_URL_BASE")
+    return settings.ITBILL_FORM_URL_BASE
 
 
 def itbill_form_url_base_id():
-    return getattr(settings, "ITBILL_FORM_URL_BASE_ID")
+    return settings.ITBILL_FORM_URL_BASE_ID
 
 
 def itbill_form_sys_id():
-    return getattr(settings, "ITBILL_FORM_URL_SYS_ID")
+    return settings.ITBILL_FORM_URL_SYS_ID
 
 
 def itbill_form_url(key_remote, drive_name):
@@ -36,9 +37,10 @@ def itbill_form_url(key_remote, drive_name):
 
 
 def shared_drive_subsidized_quota():
-    return getattr(settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA")
+    return settings.ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA
 
 
 def shared_drive_subscription_deadline():
-    deadline = getattr(settings, "ITBILL_SUBSCRIPTION_DEADLINE")
-    return datetime.strptime(deadline, "%m/%d/%Y") if deadline else None
+    deadline = settings.ITBILL_SUBSCRIPTION_DEADLINE
+    return dt.datetime.strptime(deadline, "%m/%d/%Y").astimezone(dt.UTC) if (
+        deadline) else None

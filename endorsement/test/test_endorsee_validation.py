@@ -1,13 +1,15 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.test import TestCase
-from django.utils import timezone
-from endorsement.models import Endorser, Endorsee, EndorsementRecord
-from endorsement.endorsee_validation import validate_endorsees
-from endorsement.services import endorsement_services
 import binascii
 import os
+
+from django.test import TestCase
+from django.utils import timezone
+
+from endorsement.endorsee_validation import validate_endorsees
+from endorsement.models import Endorsee, EndorsementRecord, Endorser
+from endorsement.services import endorsement_services
 
 
 class TestProvisionerValidation(TestCase):
@@ -25,17 +27,16 @@ class TestProvisionerValidation(TestCase):
         endorsees = []
         for i in range(service_count):
             endorsees.append(Endorsee.objects.create(
-                netid='endorsee{}'.format(i+1),
+                netid=f'endorsee{i+1}',
                 regid=binascii.b2a_hex(os.urandom(16)),
-                display_name='Endorsee {}'.format(i+1),
+                display_name=f'Endorsee {i+1}',
                 is_person=True))
 
         now = timezone.now()
-        delete = 0
         # per endorsee: skip one service, delete one, the rest valid
-        for service in services:
+        for service_index, service in enumerate(services):
             for i in range(service_count):
-                if i != ((delete + 1) % service_count):
+                if i != ((service_index + 1) % service_count):
                     er = {
                         'endorser': endorser,
                         'endorsee': endorsees[i],
@@ -44,12 +45,10 @@ class TestProvisionerValidation(TestCase):
                         'datetime_endorsed': now
                     }
 
-                    if delete == i:
+                    if service_index == i:
                         er['is_deleted'] = True
 
                     EndorsementRecord.objects.create(**er)
-
-            delete += 1
 
         # confirm proper setup
         self.assertEqual(

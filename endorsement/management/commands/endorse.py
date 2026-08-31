@@ -1,14 +1,14 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.core.management.base import BaseCommand, CommandError
-from endorsement.models import EndorsementRecord
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.services import get_endorsement_service
-from endorsement.exceptions import NoEndorsementException
 import getpass
 import logging
 
+from django.core.management.base import BaseCommand, CommandError
+
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
+from endorsement.models import EndorsementRecord
+from endorsement.services import get_endorsement_service
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +25,7 @@ class Command(BaseCommand):
                             help="Reason for the endorsement")
         parser.add_argument('--actas',
                             default=None,
-                            help="Netid for act_as netid (default {})".format(
-                                getpass.getuser()))
+                            help=f"Netid for act_as netid (default {getpass.getuser()})")
         parser.add_argument(
             '--commit',
             action='store_true',
@@ -45,7 +44,7 @@ class Command(BaseCommand):
         service = get_endorsement_service(options['service'])
 
         if not service.valid_endorser(endorser_netid):
-            raise CommandError("Invalid Endorser: {}".format(endorser_netid))
+            raise CommandError(f"Invalid Endorser: {endorser_netid}")
 
         endorser = get_endorser_model(endorser_netid)
 
@@ -60,10 +59,8 @@ class Command(BaseCommand):
                     endorser=endorser, endorsee=endorsee,
                     category_code=service.category_code)
                 if not er.is_deleted and er.datetime_endorsed:
-                    print(("Currently endorsed {} "
-                           "by {} for {} created on {}").format(
-                               service.service_name, endorser.netid,
-                               endorsee.netid, er.datetime_endorsed))
+                    print(f"Currently endorsed {service.service_name} "
+                           f"by {endorser.netid} for {endorsee.netid} created on {er.datetime_endorsed}")
                     continue
 
                 print("{}Endorse {} (act_as {}) for {} with reason: {}".format(
@@ -92,5 +89,4 @@ class Command(BaseCommand):
                             endorser, endorsee, act_as,
                             reason if reason else "Restored Service")
                 else:
-                    print("Skip create {} endoresement for {}".format(
-                        service.service_name, endorsee.netid))
+                    print(f"Skip create {service.service_name} endoresement for {endorsee.netid}")

@@ -14,9 +14,10 @@ the category: Category.ALTID_SHARED_CLINICAL_1 which are implicitly
 permitted to Office 365
 """
 
-from endorsement.services import EndorsementServiceBase
+from uw_uwnetid.models import Category, Subscription
+
 from endorsement.models import EndorsementRecord
-from uw_uwnetid.models import Subscription, Category
+from endorsement.services import EndorsementServiceBase
 
 
 class EndorsementService(EndorsementServiceBase):

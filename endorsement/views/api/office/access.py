@@ -1,24 +1,35 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from userservice.user import UserService
-from endorsement.models import AccessRecord, AccessRecordConflict, AccessRight
-from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
-from endorsement.dao.persistent_messages import get_persistent_messages
-from endorsement.dao.access import (
-    get_accessee_model, store_access, update_access,
-    revoke_access, renew_access)
-from endorsement.dao.office import is_office_permitted, get_office_accessor
-from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session, invalid_endorser, data_error)
-from endorsement.exceptions import (
-    UnrecognizedUWNetid, InvalidNetID, DelegateParameterException)
-from endorsement.util.auth import is_support_user
-from uw_msca.access_rights import get_access_rights
-from restclients_core.exceptions import DataFailureException
 import json
 import logging
 
+from restclients_core.exceptions import DataFailureException, InvalidNetID
+from userservice.user import UserService
+from uw_msca.access_rights import get_access_rights
+
+from endorsement.dao.access import (
+    get_accessee_model,
+    renew_access,
+    revoke_access,
+    store_access,
+    update_access,
+)
+from endorsement.dao.office import get_office_accessor, is_office_permitted
+from endorsement.dao.persistent_messages import get_persistent_messages
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
+from endorsement.exceptions import (
+    DelegateParameterException,
+    UnrecognizedUWNetid,
+)
+from endorsement.models import AccessRecord, AccessRecordConflict, AccessRight
+from endorsement.util.auth import is_support_user
+from endorsement.views.rest_dispatch import (
+    RESTDispatch,
+    data_error,
+    invalid_endorser,
+    invalid_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +40,7 @@ class Access(RESTDispatch):
     """
     def get(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(
+            netid, _ = self._validate_user(
                 request, valid_act_as=is_support_user, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
@@ -64,7 +75,7 @@ class Access(RESTDispatch):
 
     def post(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request, logger=logger)
+            _, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -102,7 +113,7 @@ class Access(RESTDispatch):
 
     def patch(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request, logger=logger)
+            _, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -149,7 +160,7 @@ class Access(RESTDispatch):
 
     def delete(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request, logger=logger)
+            _, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -176,12 +187,12 @@ class Access(RESTDispatch):
                 raise DelegateParameterException(f"Empty {field} field")
 
             return value
-        except AttributeError as ex:
+        except AttributeError:
             if nullable:
                 return None
 
             raise DelegateParameterException(f"Null {field} field")
-        except KeyError as ex:
+        except KeyError:
             if nullable:
                 return None
 
@@ -210,7 +221,7 @@ class Access(RESTDispatch):
             try:
                 json_content = json.loads(message.decode('utf-8'))
                 message = json_content.get('msg', 'Server Error')
-            except Exception as e:
+            except Exception:  # noqa: S110
                 pass
 
         return self.error_response(ex.status, message)
@@ -229,10 +240,10 @@ class AccessRights(RESTDispatch):
             access_rights = []
 
             for t in get_access_rights():
-                r, created = AccessRight.objects.update_or_create(
+                AccessRight.objects.update_or_create(
                     name=t.right_id, defaults={'display_name': t.displayname})
                 access_rights.append(t.json_data())
 
             return self.json_response(access_rights)
         except Exception as ex:
-            return data_error(logger, "{}".format(ex))
+            return data_error(logger, f"{ex}")

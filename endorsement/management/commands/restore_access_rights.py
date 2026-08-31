@@ -1,18 +1,18 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.core.management.base import BaseCommand
-from endorsement.models import AccessRecord, AccessRight, AccessRecordConflict
-from endorsement.dao.access import (
-    get_accessee_model, store_access_record, set_delegate)
-from endorsement.dao.office import get_office_accessor
-from endorsement.exceptions import UnrecognizedUWNetid, UnrecognizedGroupID
-from uw_msca.delegate import get_all_delegates, _msca_get_delegate_url
-from uw_msca import get_resource
-import json
 import csv
+import json
 import logging
 
+from django.core.management.base import BaseCommand
+from uw_msca import get_resource
+from uw_msca.delegate import _msca_get_delegate_url
+
+from endorsement.dao.access import get_accessee_model
+from endorsement.dao.office import get_office_accessor
+from endorsement.exceptions import UnrecognizedUWNetid
+from endorsement.models import AccessRecord, AccessRight
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -47,7 +47,7 @@ class Command(BaseCommand):
             elif csv_file:
                 self.restore_csv_access(csv_file)
         except Exception as ex:
-            logger.error("restore_access_rights: Exception: {}".format(ex))
+            logger.error(f"restore_access_rights: Exception: {ex}")
 
     def restore_netid_access(self, netid):
         accessee = get_accessee_model(netid)
@@ -91,7 +91,7 @@ class Command(BaseCommand):
                     elif isinstance(rights, str):
                         delegates[user] = rights
                     else:
-                        raise Exception(f"unknown right type for {user}")
+                        raise TypeError(f"unknown right type for {user}")
         return delegates
 
     def fix_access_record(self, accessee, delegate, right):
@@ -104,8 +104,8 @@ class Command(BaseCommand):
             ar = AccessRecord.objects.get(
                 accessee=accessee, accessor=accessor)
         except AccessRecord.DoesNotExist:
-            raise Exception(f"ERROR: no record: mailbox {netid} "
-                            f"delegate {delegate}")
+            raise Exception(f"ERROR: no record: mailbox {accessee.netid} "
+                            f"delegate {accessor.name}")
         try:
             rr = AccessRight.objects.get(name=right)
         except AccessRight.DoesNotExist:
@@ -165,7 +165,7 @@ class Command(BaseCommand):
 
                 for delegate, right in delegations[netid].items():
                     try:
-                        fix_access_record(accessee, delegate, right)
+                        self.fix_access_record(accessee, delegate, right)
                     except Exception as ex:
                         logger.info(f"ERROR: assign delegate {delegate}: {ex}")
                         continue

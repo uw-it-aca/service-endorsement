@@ -14,9 +14,8 @@ class RecordManagerBase(models.Manager):
         The expiration clock starts on the date of the first warning notice
         """
         if level < 1 or level > 4:
-            raise Exception('bad warning level {}'.format(level))
+            raise Exception(f'bad warning level {level}')
 
-        days_prior = policy.days_till_expiration(level)
         params = {
             'is_deleted__isnull': True
         }

@@ -1,19 +1,23 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from userservice.user import UserService
-from endorsement.models import AccessRecordConflict
-from endorsement.dao.access import (
-    get_accessee_model, store_access_record, revoke_access)
-from endorsement.dao.office import is_office_permitted, get_office_accessor
-from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session, invalid_endorser)
-from endorsement.exceptions import (
-    UnrecognizedUWNetid, InvalidNetID, NoEndorsementException)
-from endorsement.util.auth import is_support_user
-from restclients_core.exceptions import DataFailureException
 import logging
 
+from restclients_core.exceptions import DataFailureException, InvalidNetID
+
+from endorsement.dao.access import (
+    get_accessee_model,
+    revoke_access,
+    store_access_record,
+)
+from endorsement.dao.office import get_office_accessor, is_office_permitted
+from endorsement.exceptions import NoEndorsementException, UnrecognizedUWNetid
+from endorsement.models import AccessRecordConflict
+from endorsement.views.rest_dispatch import (
+    RESTDispatch,
+    invalid_endorser,
+    invalid_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +29,7 @@ class ResolveRightsConflict(RESTDispatch):
     """
     def post(self, request, *args, **kwargs):
         try:
-            netid, acted_as = self._validate_user(request, logger=logger)
+            _netid, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -63,7 +67,7 @@ class ResolveRightsConflict(RESTDispatch):
                     except DataFailureException as ex:
                         return self.error_response(
                             ex.status,
-                            message="Revoke access: {}".format(ex.status))
+                            message=f"Revoke access: {ex.status}")
 
             conflict.delete()
 

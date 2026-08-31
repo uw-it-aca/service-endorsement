@@ -1,14 +1,17 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.core.management.base import BaseCommand
-from endorsement.models import EndorsementRecord
-from uw_uwnetid.category import get_netid_categories
-from endorsement.dao.uwnetid_categories import (
-    shared_netid_has_category, set_active_category, set_former_category)
-from uw_uwnetid.models import Category
 import logging
 
+from django.core.management.base import BaseCommand
+from uw_uwnetid.category import get_netid_categories
+from uw_uwnetid.models import Category
+
+from endorsement.dao.uwnetid_categories import (
+    set_active_category,
+    set_former_category,
+)
+from endorsement.models import EndorsementRecord
 
 OFFICE_365_STUDENT_ENDORSEE = Category.OFFICE_365_STUDENT_ENDORSEE
 
@@ -28,7 +31,7 @@ class Command(BaseCommand):
         print("-----------,------------")
         for e in endorsements:
             if not self.is_admin_netid(e.endorsee.netid):
-                print("{},{}".format(e.endorser.netid, e.endorsee.netid))
+                print(f"{e.endorser.netid},{e.endorsee.netid}")
 
                 # former Category.OFFICE_365_ENDORSEE
                 set_former_category(

@@ -1,28 +1,33 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.dao.notification import send_notification
-from endorsement.models import EndorsementRecord
-from endorsement.services import (
-    endorsement_services, get_endorsement_service, service_names)
-from endorsement.dao.user import get_endorsee_email_model
+import logging
+import re
+
+from django.template import Context, Template, loader
+from django.utils import timezone
+
 from endorsement.dao import display_datetime
 from endorsement.dao.endorse import clear_endorsement
-from endorsement.policy.endorsement import EndorsementPolicy
-from endorsement.util.email import uw_email_address
-from endorsement.util.string import listed_list
+from endorsement.dao.notification import send_notification
+from endorsement.dao.user import get_endorsee_email_model
 from endorsement.exceptions import EmailFailureException
-from django.template import loader, Template, Context
-from django.utils import timezone
-import re
-import logging
-
+from endorsement.models import EndorsementRecord
+from endorsement.policy.endorsement import EndorsementPolicy
+from endorsement.services import (
+    endorsement_services,
+    get_endorsement_service,
+    service_names,
+)
+from endorsement.util.email import uw_email_address
+from endorsement.util.list import distinct
+from endorsement.util.string import listed_list
 
 logger = logging.getLogger(__name__)
 
 
 def _email_template(template_name):
-    return "email/endorsement/{}".format(template_name)
+    return f"email/endorsement/{template_name}"
 
 
 def _create_endorsee_message(endorser):
@@ -41,8 +46,7 @@ def _create_endorsee_message(endorser):
             if k == service.service_name:
                 v['service_link'] = service.service_link
 
-    subject = "Action Required: Your new access to {0}".format(
-        listed_list(names))
+    subject = f"Action Required: Your new access to {listed_list(names)}"
 
     text_template = _email_template("endorsee.txt")
     html_template = _email_template("endorsee.html")
@@ -58,8 +62,8 @@ def get_unendorsed_unnotified():
         try:
             email = get_endorsee_email_model(er.endorsee, er.endorser).email
         except Exception as ex:
-            logger.error("Notify get email failed: {0}, netid: {1}"
-                         .format(ex, er.endorsee))
+            logger.error(f"Notify get email failed: {ex}, netid: {er.endorsee}"
+                         )
             continue
 
         if email not in endorsements:
@@ -92,15 +96,15 @@ def notify_endorsees():
     endorsements = get_unendorsed_unnotified()
 
     for email, endorsers in endorsements.items():
-        for endorser_netid, endorsers in endorsers['endorsers'].items():
+        for endorser_list in endorsers['endorsers'].values():
             (subject, text_body, html_body) = _create_endorsee_message(
-                endorsers)
+                endorser_list)
             try:
                 send_notification(
                     [email], subject, text_body, html_body, "Endorsee")
-                for service, data in endorsers['services'].items():
+                for data in endorser_list['services'].values():
                     EndorsementRecord.objects.emailed(data['id'])
-            except EmailFailureException as ex:
+            except EmailFailureException:
                 pass
 
 
@@ -134,7 +138,7 @@ def _create_endorser_message(endorsed):
             if v['svc'] == service.service_name:
                 v['service_link'] = service.service_link
 
-    subject = "Shared NetID access to {}".format(listed_list(services))
+    subject = f"Shared NetID access to {listed_list(services)}"
     text_template = _email_template("endorser.txt")
     html_template = _email_template("endorser.html")
 
@@ -186,7 +190,7 @@ def notify_endorsers():
                 if svc in endorsed:
                     for id in [x['id'] for x in endorsed[svc]]:
                         EndorsementRecord.objects.emailed(id)
-        except EmailFailureException as ex:
+        except EmailFailureException:
             pass
 
 
@@ -236,23 +240,23 @@ def notify_invalid_endorser(invalid_endorsements):
         invalid_endorsements[0].endorser.save()
         for endorsement in invalid_endorsements:
             clear_endorsement(endorsement)
-    except EmailFailureException as ex:
+    except EmailFailureException:
         pass
 
 
 def _create_expire_notice_message(notice_level, endorsed, policy):
-    category_codes = list(set([e.category_code for e in endorsed]))
+    category_codes = distinct([e.category_code for e in endorsed])
     services = [get_endorsement_service(c) for c in category_codes]
     context = {
         'endorser': endorsed[0].endorser,
         'lifetime': policy.lifetime,
         'notice_time': policy.days_till_expiration(notice_level),
         'expiring': endorsed,
-        'expiring_count': len(set(e.endorsee.netid for e in endorsed)),
+        'expiring_count': len({e.endorsee.netid for e in endorsed}),
         'impacts': []
     }
 
-    for impact in list(set([s.service_renewal_statement for s in services])):
+    for impact in distinct([s.service_renewal_statement for s in services]):
         m = re.match(
             r'.*{{[\s]*(service_names((_([0-9a-z]+))+))[\s]*}}.*', impact)
         if m:
@@ -319,7 +323,7 @@ def endorser_lifecycle_warning(notice_level):
         for e in endorsements:
             endorsers[e.endorser.id] = 1
 
-        for endorser in endorsers.keys():
+        for endorser in endorsers:
             endorsed = endorsements.filter(endorser=endorser)
 
             email = uw_email_address(endorsed[0].endorser.netid)
@@ -333,13 +337,13 @@ def endorser_lifecycle_warning(notice_level):
                     [email], subject, text_body, html_body, "Invalid endorser")
 
                 _update_sent_date(notice_level, endorsed)
-            except EmailFailureException as ex:
+            except EmailFailureException:
                 pass
 
 
 def _update_sent_date(notice_level, endorsement):
     sent_date = {
-        'datetime_notice_{}_emailed'.format(notice_level): timezone.now()
+        f'datetime_notice_{notice_level}_emailed': timezone.now()
     }
     endorsement.update(**sent_date)
 
@@ -364,7 +368,6 @@ def warn_new_shared_netid_owner(new_owner, endorsements):
 
 
 def _create_warn_shared_owner_message(owner_netid, endorsements, policy):
-    service = get_endorsement_service(endorsements[0].category_code)
     context = {
         'endorser': owner_netid,
         'lifetime': policy.lifetime,
@@ -373,9 +376,8 @@ def _create_warn_shared_owner_message(owner_netid, endorsements, policy):
         'expiring_count': len(endorsements)
     }
 
-    subject = "{0}{1}".format(
-        "Action Required: UW-IT services provisioned for Shared ",
-        "UW NetIDs you own have expired")
+    subject = ("Action Required: UW-IT services provisioned for Shared "
+               "UW NetIDs you own have expired")
     text_template = _email_template("notice_new_shared_warning.txt")
     html_template = _email_template("notice_new_shared_warning.html")
 

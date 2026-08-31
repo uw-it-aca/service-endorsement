@@ -8,11 +8,12 @@ provides Person information of the current user
 
 import logging
 import traceback
-from uw_pws import PWS
+
 from restclients_core.exceptions import DataFailureException, InvalidNetID
+from uw_pws import PWS
+
 from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.util.log import log_exception
-
 
 logger = logging.getLogger(__name__)
 pws = PWS()
@@ -29,7 +30,7 @@ def get_entity(uwnetid):
             raise UnrecognizedUWNetid(uwnetid)
 
         log_exception(logger,
-                      '{0} get_entity '.format(uwnetid),
+                      f'{uwnetid} get_entity ',
                       traceback.format_exc())
 
         raise
@@ -91,6 +92,6 @@ def is_renamed_uwnetid(uwnetid):
         return False
     except DataFailureException as ex:
         log_exception(logger,
-                      '{0} get_entity '.format(uwnetid),
+                      f'{uwnetid} get_entity ',
                       traceback.format_exc())
         return ex.status == 301

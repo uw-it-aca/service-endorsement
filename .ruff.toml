@@ -1,0 +1,12 @@
+[format]
+indent-style="space"
+[lint]
+ignore = [
+    "BLE001",
+    "PLW0602",
+    "RUF012",
+    "SIM102",
+    "TRY002"]
+exclude = [
+    "*/migrations/*"
+]

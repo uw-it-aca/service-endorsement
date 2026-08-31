@@ -1,17 +1,19 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.urls import reverse
-from django.test import TransactionTestCase, Client
+from django.test import Client, TransactionTestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
+from django.urls import reverse
 from userservice.user import UserServiceMiddleware
-from endorsement.test import (
-    get_user, get_user_pass,
-    fdao_gws_override, fdao_pws_override, fdao_uwnetid_override)
-import json
 
+from endorsement.test import (
+    fdao_gws_override,  # noqa: F401
+    fdao_pws_override,  # noqa: F401
+    fdao_uwnetid_override,  # noqa: F401
+    get_user,
+    get_user_pass,
+)
 
 VALIDATE = "endorsement.userservice_validation.validate"
 OVERRIDE = "endorsement.userservice_validation.can_override_user"

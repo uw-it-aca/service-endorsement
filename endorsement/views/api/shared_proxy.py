@@ -2,19 +2,20 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+
 from django.conf import settings
-from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from uw_saml.decorators import group_required
+from django.utils.decorators import method_decorator
+from restclients_core.exceptions import InvalidNetID
 from userservice.user import UserService
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
+from uw_saml.decorators import group_required
+
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
+from endorsement.exceptions import (
+    UnrecognizedUWNetid,
+)
 from endorsement.services import get_endorsement_service, is_valid_endorser
 from endorsement.views.rest_dispatch import RESTDispatch, invalid_endorser
-from endorsement.exceptions import (
-    InvalidNetID, UnrecognizedUWNetid, NoEndorsementException,
-    CategoryFailureException, SubscriptionFailureException,
-    MissingReasonException)
-
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +42,8 @@ class SharedProxyEndorse(RESTDispatch):
             endorser = get_endorser_model(endorser_netid)
         except UnrecognizedUWNetid:
             return self.error_response(
-                401, ('Shared netid owner "{}" is'
-                      ' not a valid endorser').format(endorser_netid))
+                401, (f'Shared netid owner "{endorser_netid}" is'
+                      ' not a valid endorser'))
 
         try:
             endorsee = get_endorsee_model(endorsee_netid)

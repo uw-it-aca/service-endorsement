@@ -2,17 +2,26 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from userservice.user import UserService
-from endorsement.services import (
-    get_endorsement_service, service_contexts, is_valid_endorser)
-from endorsement.exceptions import UnrecognizedUWNetid
-from endorsement.dao.user import get_endorser_model, get_endorsee_email_model
-from endorsement.dao.endorse import (
-    get_endorsements_by_endorser, get_endorsements_for_endorsee)
-from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session, invalid_endorser)
-from endorsement.dao.persistent_messages import get_persistent_messages
 
+from userservice.user import UserService
+
+from endorsement.dao.endorse import (
+    get_endorsements_by_endorser,
+    get_endorsements_for_endorsee,
+)
+from endorsement.dao.persistent_messages import get_persistent_messages
+from endorsement.dao.user import get_endorsee_email_model, get_endorser_model
+from endorsement.exceptions import UnrecognizedUWNetid
+from endorsement.services import (
+    get_endorsement_service,
+    is_valid_endorser,
+    service_contexts,
+)
+from endorsement.views.rest_dispatch import (
+    RESTDispatch,
+    invalid_endorser,
+    invalid_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +58,7 @@ class Endorsed(RESTDispatch):
                         'endorsements': service_contexts(er.endorsee)
                     }
             except UnrecognizedUWNetid as err:
-                logger.error('UnrecognizedUWNetid: {}'.format(err))
+                logger.error(f'UnrecognizedUWNetid: {err}')
                 continue
 
             endorsed[er.endorsee.netid]['endorsements'][

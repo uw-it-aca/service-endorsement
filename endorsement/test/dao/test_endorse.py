@@ -1,16 +1,19 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import random
+
 from django.test import TransactionTestCase
 from django.test.utils import override_settings
+
+from endorsement.dao.endorse import (
+    get_all_endorsements_by_endorser,
+    get_endorsements_by_endorser,
+)
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
+from endorsement.dao.uwnetid_categories import is_endorsed
 from endorsement.models import EndorsementRecord
 from endorsement.services import endorsement_services, get_endorsement_service
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
-import random
-from endorsement.dao.endorse import (
-    get_endorsements_by_endorser, get_all_endorsements_by_endorser)
-from endorsement.dao.uwnetid_categories import is_endorsed
-
 
 standard_test_override = override_settings(DEBUG=True)
 

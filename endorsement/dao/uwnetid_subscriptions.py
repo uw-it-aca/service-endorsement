@@ -1,14 +1,14 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from uw_uwnetid.models import Subscription
-from uw_uwnetid.subscription import (
-    get_netid_subscriptions, update_subscription)
-from restclients_core.exceptions import DataFailureException
-from endorsement.exceptions import SubscriptionFailureException
-import re
 import logging
+import re
 
+from restclients_core.exceptions import DataFailureException
+from uw_uwnetid.models import Subscription
+from uw_uwnetid.subscription import get_netid_subscriptions, update_subscription
+
+from endorsement.exceptions import SubscriptionFailureException
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +40,8 @@ def activate_subscriptions(endorsee_netid, endorser_netid, subscriptions):
         if len(subscriptions) > 0:
             for response in response_list:
                 if response.result.lower() != 'success':
-                    msg = 'subscription error: {0}: {1} - {2}'.format(
-                        response.query['subscriptionCode'],
-                        response.result, response.more_info)
+                    msg = (f"subscription error: {response.query['subscriptionCode']}: "
+                           f"{response.result} - {response.more_info}")
                     logger.error(msg)
 
                     if response.query['subscriptionCode'] in subscriptions:
@@ -59,7 +58,7 @@ def _error_message(ex):
         '.*<b>ERROR: </b></font>UW NetID <b>([^<]+)</b> '
         'not present in NETID Active Directory\\..*')
 
-    logger.error("Subscription Error: {}".format(ex))
+    logger.error(f"Subscription Error: {ex}")
 
     if ex.status == 400 and inactive_netid_re.match(str(ex.msg), re.DOTALL):
         return "INACTIVE_NETID"

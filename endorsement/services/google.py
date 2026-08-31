@@ -14,9 +14,10 @@ the category: Category.ALTID_SHARED_CLINICAL_1 which are implicitly
 permitted to the appropriate collaboration service
 """
 
+from uw_uwnetid.models import Category, Subscription
+
+from endorsement.models import EndorsementRecord
 from endorsement.services import EndorsementServiceBase
-from endorsement.models import EndorsementRecord, Endorsee
-from uw_uwnetid.models import Subscription, Category
 
 
 class EndorsementService(EndorsementServiceBase):

@@ -1,9 +1,9 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from memcached_clients import RestclientPymemcacheClient
 import re
 
+from memcached_clients import RestclientPymemcacheClient
 
 ONE_MINUTE = 60
 HALF_HOUR = 60 * 30
@@ -29,8 +29,8 @@ class RestClientsCache(RestclientPymemcacheClient):
             re_nws_base = (r"^/nws/v\d(-eval)?/uwnetid/"
                            r"[a-z][a-z0-9\-\_\.]{,127}")
             nws_supported = re.compile(
-                r"{}/supported.json".format(re_nws_base))
-            nws_category = re.compile(r"{}/category".format(re_nws_base))
+                rf"{re_nws_base}/supported.json")
+            nws_category = re.compile(rf"{re_nws_base}/category")
 
             if nws_supported.match(url):
                 return ONE_HOUR
@@ -41,7 +41,7 @@ class RestClientsCache(RestclientPymemcacheClient):
         if "msca" == service:
             re_google_base = (r"^/google/v\d/drive/")
             google_default_ou = re.compile(
-                r"{}/defaultou".format(re_google_base))
+                rf"{re_google_base}/defaultou")
 
             if google_default_ou.match(url):
                 return ONE_DAY

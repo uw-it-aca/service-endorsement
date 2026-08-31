@@ -1,16 +1,19 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import logging
+import sys
+
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from endorsement.models import SharedDriveRecord
-from endorsement.dao.notification import send_notification
-from endorsement.util.email import uw_email_address
-from endorsement.exceptions import EmailFailureException
-from endorsement.notifications.shared_drive import (
-    _create_notification_over_quota_non_subsidized)
-import logging
 
+from endorsement.dao.notification import send_notification
+from endorsement.exceptions import EmailFailureException
+from endorsement.models import SharedDriveRecord
+from endorsement.notifications.shared_drive import (
+    _create_notification_over_quota_non_subsidized,
+)
+from endorsement.util.email import uw_email_address
 
 logger = logging.getLogger(__name__)
 
@@ -56,8 +59,7 @@ class Command(BaseCommand):
                         members, subject, text_body, html_body,
                         "OverSubsidizedQuota")
 
-                    setattr(
-                        drive, 'datetime_over_quota_emailed', timezone.now())
+                    drive.datetime_over_quota_emailed = timezone.now()
                     drive.save()
             except EmailFailureException as ex:
                 sys.exit(f"Email failure: {ex}")

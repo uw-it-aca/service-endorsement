@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.core.management.base import BaseCommand, CommandError
+
 from endorsement.notifications.endorsement import notify_endorsers
 
 
@@ -12,4 +13,4 @@ class Command(BaseCommand):
         try:
             notify_endorsers()
         except Exception as ex:
-            raise CommandError('notify endorser: {0}'.format(ex))
+            raise CommandError(f'notify endorser: {ex}')

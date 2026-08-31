@@ -2,11 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from uw_uwnetid.models import Category
-from uw_uwnetid.category import get_netid_categories, update_catagory
-from restclients_core.exceptions import DataFailureException
-from endorsement.exceptions import CategoryFailureException
 
+from restclients_core.exceptions import DataFailureException
+from uw_uwnetid.category import get_netid_categories, update_catagory
+from uw_uwnetid.models import Category
+
+from endorsement.exceptions import CategoryFailureException
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +43,9 @@ def _update_category(netid, category_code, status):
     try:
         response = update_catagory(netid, category_code, status)
         if response['responseList'][0]['result'].lower() != "success":
-            raise CategoryFailureException(
-                '{0}'.format(response['responseList'][0]['result']))
+            raise CategoryFailureException(f"{response['responseList'][0]['result']}")
     except (KeyError, DataFailureException) as ex:
-        raise CategoryFailureException('{0}'.format(ex))
+        raise CategoryFailureException(f'{ex}')
 
 
 def get_shared_categories_for_netid(netid):
