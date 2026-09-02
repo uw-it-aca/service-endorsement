@@ -40,7 +40,7 @@ class Access(RESTDispatch):
     """
     def get(self, request, *args, **kwargs):
         try:
-            netid, _ = self._validate_user(
+            netid, _acted_as = self._validate_user(
                 request, valid_act_as=is_support_user, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
@@ -75,7 +75,7 @@ class Access(RESTDispatch):
 
     def post(self, request, *args, **kwargs):
         try:
-            _, acted_as = self._validate_user(request, logger=logger)
+            _netid, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -113,7 +113,7 @@ class Access(RESTDispatch):
 
     def patch(self, request, *args, **kwargs):
         try:
-            _, acted_as = self._validate_user(request, logger=logger)
+            _netid, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -160,7 +160,7 @@ class Access(RESTDispatch):
 
     def delete(self, request, *args, **kwargs):
         try:
-            _, acted_as = self._validate_user(request, logger=logger)
+            _netid, acted_as = self._validate_user(request, logger=logger)
         except UnrecognizedUWNetid:
             return invalid_session(logger)
         except InvalidNetID:
@@ -240,7 +240,7 @@ class AccessRights(RESTDispatch):
             access_rights = []
 
             for t in get_access_rights():
-                AccessRight.objects.update_or_create(
+                _r, _ = AccessRight.objects.update_or_create(
                     name=t.right_id, defaults={'display_name': t.displayname})
                 access_rights.append(t.json_data())
 

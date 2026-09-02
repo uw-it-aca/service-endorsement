@@ -11,13 +11,13 @@ from endorsement.util.log import log_exception
 
 def handel_err(logger, message, stacktrace):
     log_exception(logger, message, stacktrace)
-    exc_type, exc_value, _exc_traceback = sys.exc_info()
+    exc_type, exc_value, exc_traceback = sys.exc_info()
     if isinstance(exc_value, InvalidNetID):
         return False
     if isinstance(exc_value, DataFailureException) and\
             exc_value.status in [404, 409]:
         return False
-    raise exc_type(exc_value).with_traceback(_exc_traceback)
+    raise exc_type(exc_value).with_traceback(exc_traceback)
 
 
 def display_datetime(dt):

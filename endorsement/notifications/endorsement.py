@@ -62,8 +62,7 @@ def get_unendorsed_unnotified():
         try:
             email = get_endorsee_email_model(er.endorsee, er.endorser).email
         except Exception as ex:
-            logger.error(f"Notify get email failed: {ex}, netid: {er.endorsee}"
-                         )
+            logger.error(f"Notify get email failed: {ex}, netid: {er.endorsee}")
             continue
 
         if email not in endorsements:

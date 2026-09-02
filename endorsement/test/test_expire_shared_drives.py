@@ -14,7 +14,7 @@ class TestExpireSharedDrives(TestCase):
     DRIVE_ID = 'ABC_0123-DE45FF5789'
 
     def setUp(self):
-        call_command('initialize_db')
+        _output = call_command('initialize_db')
         expire_record = self.get_expire_record()
         self.DRIVE_NAME = expire_record.shared_drive.drive_name
         expire_record.datetime_notice_1_emailed = "2024-01-01T00:00:00Z"
@@ -29,13 +29,13 @@ class TestExpireSharedDrives(TestCase):
 
     def call_command(self, *args, **kwargs):
         out = StringIO()
-        call_command('expire_shared_drives',
-                     *args, stdout=out, stderr=StringIO(), **kwargs)
+        _output = call_command('expire_shared_drives',
+                               *args, stdout=out, stderr=StringIO(), **kwargs)
         return out.getvalue()
 
     @patch('endorsement.management.commands.expire_shared_drives.logger')
     def test_expire_shared_drives_logging(self, mock_logger):
-        self.call_command()
+        _output = self.call_command()
         mock_logger.info.assert_called_with(
             f'Expiring: {self.DRIVE_ID} "{self.DRIVE_NAME}"')
         expire_record = self.get_expire_record()
@@ -46,7 +46,7 @@ class TestExpireSharedDrives(TestCase):
         expire_record = self.get_expire_record()
         original_drive_name = expire_record.shared_drive.drive_name
 
-        self.call_command("--commit")
+        _output = self.call_command("--commit")
         mock_logger.info.assert_called_with(
             f'Expiring: {self.DRIVE_ID} "{self.DRIVE_NAME}"')
 

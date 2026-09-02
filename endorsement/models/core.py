@@ -127,31 +127,27 @@ class EndorsementRecordManager(RecordManagerBase):
         if 'endorser' in params and 'endorsee' in params:
             return super().get(**params)
 
-        return super().get_queryset().filter(
-            **params)
+        return super().get_queryset().filter(**params)
 
     def get_endorsements_for_endorser(self, endorser, category_code=None):
         return self.get_endorsement(endorser, None, category_code)
 
     def get_all_endorsements_for_endorser(self, endorser, category_code=None):
-        return super().get_queryset().filter(
-            endorser=endorser)
+        return super().get_queryset().filter(endorser=endorser)
 
     def get_endorsements_for_endorsee(self, endorsee, category_code=None):
         return self.get_endorsement(None, endorsee, category_code)
 
     def get_endorsements_for_endorsee_re(self, endorsee_regex):
         endorsees = Endorsee.objects.filter(
-            netid__regex=rf'^{endorsee_regex}$').values_list(
-                'id', flat=True)
+            netid__regex=rf'^{endorsee_regex}$').values_list('id', flat=True)
 
         return super().get_queryset().filter(
             endorsee_id__in=endorsees, is_deleted__isnull=True)
 
     def get_all_endorsements_for_endorsee_re(self, endorsee_regex):
         endorsees = Endorsee.objects.filter(
-            netid__regex=rf'^{endorsee_regex}$').values_list(
-                'id', flat=True)
+            netid__regex=rf'^{endorsee_regex}$').values_list('id', flat=True)
 
         return super().get_queryset().filter(
             endorsee_id__in=endorsees)
@@ -159,8 +155,7 @@ class EndorsementRecordManager(RecordManagerBase):
     def emailed(self, id):
         datetime_emailed = timezone.now()
         super().get_queryset().filter(
-            pk=id, is_deleted__isnull=True).update(
-                datetime_emailed=datetime_emailed)
+            pk=id, is_deleted__isnull=True).update(datetime_emailed=datetime_emailed)
 
     def get_accept_endorsement(self, accept_id, endorsed=None):
         params = {
@@ -171,8 +166,7 @@ class EndorsementRecordManager(RecordManagerBase):
         if endorsed is not None:
             params['datetime_endorsed__isnull'] = endorsed is not True
 
-        return super().get_queryset().filter(
-            **params)
+        return super().get_queryset().filter(**params)
 
     def get_unendorsed_unnotified(self):
         return super().get_queryset().filter(
@@ -207,17 +201,13 @@ class EndorsementRecord(
         (HUSKY_ONNET_EXT_PROVISIONEE, "Husky OnNet for Affiliates"),
     )
 
-    endorser = models.ForeignKey(Endorser,
-                                 on_delete=models.PROTECT)
-    endorsee = models.ForeignKey(Endorsee,
-                                 on_delete=models.PROTECT)
-    category_code = models.SmallIntegerField(
-        choices=CATEGORY_CODE_CHOICES)
+    endorser = models.ForeignKey(Endorser, on_delete=models.PROTECT)
+    endorsee = models.ForeignKey(Endorsee, on_delete=models.PROTECT)
+    category_code = models.SmallIntegerField(choices=CATEGORY_CODE_CHOICES)
     reason = models.CharField(max_length=64, null=True)
     acted_as = models.SlugField(max_length=32, null=True)
     accept_salt = models.CharField(max_length=32)
-    accept_id = models.CharField(max_length=32, null=True,
-                                 unique=True)
+    accept_id = models.CharField(max_length=32, null=True, unique=True)
     datetime_created = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
     datetime_notice_1_emailed = models.DateTimeField(null=True)
@@ -246,8 +236,7 @@ class EndorsementRecord(
     def save(self, *args, **kwargs):
         if not self.accept_salt:
             self.accept_salt = "".join(
-                ["0123456789abcdef"[
-                    random.randint(0, 0xF)] for _ in range(32)])
+                ["0123456789abcdef"[random.randint(0, 0xF)] for _ in range(32)])
 
         if not self.accept_id:
             self.accept_id = self.get_accept_id(self.endorsee.netid)
