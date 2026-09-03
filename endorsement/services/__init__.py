@@ -11,25 +11,29 @@ ENDORSEMENT_SERVICES setting, where endorsement classes are either
 listed individually or all grouped together by "['*']".
 """
 
-from django.conf import settings
-from endorsement.models import EndorsementRecord as ER
-from endorsement.dao.gws import is_group_member
-from endorsement.dao.endorse import (
-    get_endorsement, initiate_endorsement, store_endorsement,
-    store_endorsement_record, clear_endorsement)
-from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
-from endorsement.dao.uwnetid_categories import shared_netid_has_category
-from endorsement.dao.uwnetid_subscriptions import (
-    active_subscriptions_for_netid)
-from endorsement.exceptions import NoEndorsementException
-from endorsement.util.string import listed_list
-from uw_uwnetid.models import Category
-from restclients_core.exceptions import DataFailureException
-
+import re
 from abc import ABC, abstractmethod
 from importlib import import_module
 from os import listdir
-import re
+
+from django.conf import settings
+from restclients_core.exceptions import DataFailureException
+from uw_uwnetid.models import Category
+
+from endorsement.dao.endorse import (
+    clear_endorsement,
+    get_endorsement,
+    initiate_endorsement,
+    store_endorsement,
+    store_endorsement_record,
+)
+from endorsement.dao.gws import is_group_member
+from endorsement.dao.uwnetid_categories import shared_netid_has_category
+from endorsement.dao.uwnetid_subscriptions import active_subscriptions_for_netid
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
+from endorsement.exceptions import NoEndorsementException
+from endorsement.models import EndorsementRecord as ER
+from endorsement.util.string import listed_list
 
 # default group containing valid endorsers
 ENDORSER_GROUP = getattr(settings, "VALID_ENDORSER_GROUP", "uw_employee")
@@ -48,31 +52,26 @@ class EndorsementServiceBase(ABC):
     @abstractmethod
     def service_name(self):
         """Service name slug"""
-        pass
 
     @property
     @abstractmethod
     def category_code(self):
         """Endorsed service's UW-IAM Category"""
-        pass
 
     @property
     @abstractmethod
     def subscription_codes(self):
         """Endorsed services UW-IAM Subscription code list"""
-        pass
 
     @property
     @abstractmethod
     def service_renewal_statement(self):
         """Statement to include with renewal notification"""
-        pass
 
     @property
     @abstractmethod
     def service_link(self):
         """URL to end-user information about the endorsed service"""
-        pass
 
     @property
     def shared_params(self):
@@ -241,7 +240,7 @@ def is_valid_endorser(uwnetid):
         try:
             if service.valid_endorser(uwnetid):
                 return True
-        except Exception:
+        except Exception: # noqa: S110
             pass
 
     return False
@@ -272,13 +271,12 @@ def _load_endorsement_services():
     for module_name in module_names:
         try:
             module = import_module(
-                "endorsement.services.{}".format(module_name))
+                f"endorsement.services.{module_name}")
         except Exception as ex:
             raise Exception(
-                "Cannot load module {}: {}".format(module_name, ex))
+                f"Cannot load module {module_name}: {ex}")
 
-        endorsement_services.append(getattr(
-            module, 'EndorsementService')())
+        endorsement_services.append(module.EndorsementService())
 
     endorsement_services.sort(key=lambda s: s.category_name)
     return endorsement_services

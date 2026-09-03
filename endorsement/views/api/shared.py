@@ -2,18 +2,25 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from endorsement.models import EndorsementRecord
+
+from restclients_core.exceptions import InvalidNetID
 from userservice.user import UserService
-from endorsement.services import endorsement_services, is_valid_endorser
-from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
+
 from endorsement.dao.endorse import get_endorsements_for_endorsee
 from endorsement.dao.persistent_messages import get_persistent_messages
-from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session, invalid_endorser)
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.exceptions import (
-    NoEndorsementException, UnrecognizedUWNetid, InvalidNetID)
-
+    NoEndorsementException,
+    UnrecognizedUWNetid,
+)
+from endorsement.models import EndorsementRecord
+from endorsement.services import endorsement_services, is_valid_endorser
+from endorsement.views.rest_dispatch import (
+    RESTDispatch,
+    invalid_endorser,
+    invalid_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -68,14 +75,12 @@ class Shared(RESTDispatch):
                 try:
                     endorsee = get_endorsee_model(supported.name)
                     if not endorsee.kerberos_active_permitted:
-                        logger.info(("Skip shared netid {}: "
-                                     "inactive kerberos permit").format(
-                                         supported.name))
+                        logger.info(f"Skip shared netid {supported.name}: "
+                                     "inactive kerberos permit")
                         continue
                 except (UnrecognizedUWNetid, InvalidNetID):
-                    logger.info(("Skip shared netid {}: "
-                                 "Unrecognized or invalid netid").format(
-                                     supported.name))
+                    logger.info(f"Skip shared netid {supported.name}: "
+                                 "Unrecognized or invalid netid")
                     return None
 
                 endorsements = {

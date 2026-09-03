@@ -8,7 +8,6 @@ from django.core.management.base import BaseCommand
 
 from endorsement.dao.shared_drive import Reconciler
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -45,8 +44,6 @@ class Command(BaseCommand):
 
         try:
             Reconciler(**params).reconcile()
-        except Exception as ex:
-            logger.error(
-                "Reconcile shared drives failed: {}".format(ex),
-                exc_info=True, stack_info=True)
+        except Exception:
+            logger.exception("Reconcile shared drives failed", stack_info=True)
             sys.exit(1)

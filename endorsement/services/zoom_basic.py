@@ -15,11 +15,12 @@ Shared netids are not allowed.
 """
 
 from django.conf import settings
-from endorsement.services import EndorsementServiceBase
-from endorsement.models import EndorsementRecord, Endorsee
+from uw_uwnetid.models import Subscription
+
 from endorsement.dao.gws import is_group_member
 from endorsement.exceptions import NoEndorsementException
-from uw_uwnetid.models import Subscription
+from endorsement.models import EndorsementRecord
+from endorsement.services import EndorsementServiceBase
 
 ZOOM_BASIC_ACCESS_GROUP = getattr(settings, "ZOOM_BASIC_ACCESS_GROUP",
                                   "u_acadev_zoom_basic_login-users")

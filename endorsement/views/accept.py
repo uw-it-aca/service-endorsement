@@ -1,17 +1,18 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import json
+import logging
+import traceback
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from userservice.user import UserService
-from endorsement.services import service_name_list
-from endorsement.models import EndorsementRecord
-from endorsement.dao.user import get_endorsee_model
-from endorsement.views.rest_dispatch import invalid_session, handle_exception
-import traceback
-import logging
-import json
 
+from endorsement.dao.user import get_endorsee_model
+from endorsement.models import EndorsementRecord
+from endorsement.services import service_name_list
+from endorsement.views.rest_dispatch import handle_exception, invalid_session
 
 logger = logging.getLogger(__name__)
 
@@ -53,4 +54,4 @@ def accept(request, accept_id):
         return render(request, "accept.html", context)
 
     except Exception as ex:
-        handle_exception(logger, "{}".format(ex), traceback)
+        handle_exception(logger, f"{ex}", traceback)

@@ -2,10 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+
 from django.urls import reverse
-from endorsement.test.api import EndorsementApiTest
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
+
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
 from endorsement.services import endorsement_services
+from endorsement.test.api import EndorsementApiTest
 
 
 class TestEndorsementEndorseeAPI(EndorsementApiTest):

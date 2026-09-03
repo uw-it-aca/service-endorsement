@@ -1,20 +1,23 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.utils import timezone
-from userservice.user import UserService
-from endorsement.models import SharedDriveRecord, ITBillSubscription
-from endorsement.util.itbill.shared_drive import (
-    subscription_name,
-    product_sys_id,
-)
-from endorsement.exceptions import (
-    ITBillSubscriptionNotFound, ITBillAuthenticationFailure)
-from restclients_core.exceptions import DataFailureException
-from uw_itbill.subscription import Subscription
 import json
 import logging
 
+from django.utils import timezone
+from restclients_core.exceptions import DataFailureException
+from userservice.user import UserService
+from uw_itbill.subscription import Subscription
+
+from endorsement.exceptions import (
+    ITBillAuthenticationFailure,
+    ITBillSubscriptionNotFound,
+)
+from endorsement.models import ITBillSubscription, SharedDriveRecord
+from endorsement.util.itbill.shared_drive import (
+    product_sys_id,
+    subscription_name,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,21 +55,19 @@ def initiate_subscription(shared_drive_record):
                 logger.error(
                     "ITBill Subscription creation for {} failed: {}".format(
                         data.get('key_remote'), ex))
-                raise ex
+                raise
             # else subscription already exists
 
         itbill_subscription.save()
         shared_drive_record.subscription = itbill_subscription
         shared_drive_record.save()
         logger.info(
-            "Created subscription: key_remote = {}".format(
-                shared_drive_record.subscription.key_remote))
-    except Exception as ex:
-        logger.error("initiate_subscription: {}".format(ex),
-                     stack_info=True, exc_info=True)
-        raise ex
+            f"Created subscription: key_remote = {shared_drive_record.subscription.key_remote}")
+    except Exception:
+        logger.exception("initiate_subscription", stack_info=True)
+        raise
 
-    return None
+    return
 
 
 def expire_subscription(shared_drive_record):
@@ -86,20 +87,17 @@ def expire_subscription(shared_drive_record):
                 itbill_subscription.key_remote, json.dumps(data))
         except DataFailureException as ex:
             logger.error(
-                "Subscription expiration for {} failed: {}".format(
-                    itbill_subscription.key_remote, ex))
+                f"Subscription expiration for {itbill_subscription.key_remote} failed: {ex}")
             raise
 
         # mark subscription inactive
         itbill_subscription.state = ITBillSubscription.SUBSCRIPTION_CANCELLED
         itbill_subscription.queue_priority = ITBillSubscription.PRIORITY_NONE
         itbill_subscription.save()
-        logger.info("Expired subscription: key_remote = {}".format(
-            itbill_subscription.key_remote))
-    except Exception as ex:
-        logger.error("expire_subscription: {}".format(ex),
-                     stack_info=True, exc_info=True)
-        raise ex
+        logger.info(f"Expired subscription: key_remote = {itbill_subscription.key_remote}")
+    except Exception:
+        logger.exception("expire_subscription", stack_info=True)
+        raise
 
 
 def update_itbill_subscription(member_netid, drive_id):
@@ -117,7 +115,7 @@ def get_subscription_by_key_remote(key_remote):
         if ex.status == 404:
             raise ITBillSubscriptionNotFound(key_remote)
 
-        raise ex
+        raise
 
 
 def load_itbill_subscription(record):
@@ -134,4 +132,4 @@ def load_itbill_subscription(record):
         elif ex.status == 401:
             raise ITBillAuthenticationFailure(str(ex))
 
-        raise ex
+        raise

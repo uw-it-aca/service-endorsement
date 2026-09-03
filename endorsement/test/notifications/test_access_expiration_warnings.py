@@ -1,15 +1,16 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.test import TestCase
+from datetime import timedelta
+
 from django.core import mail
 from django.db.models import F
 from django.utils import timezone
-from endorsement.test.notifications import NotificationsTestCase
-from endorsement.models import AccessRecord, Accessee, Accessor
-from endorsement.policy.access import AccessPolicy
+
+from endorsement.models import Accessee, Accessor, AccessRecord
 from endorsement.notifications.access import accessee_lifecycle_warning
-from datetime import timedelta
+from endorsement.policy.access import AccessPolicy
+from endorsement.test.notifications import NotificationsTestCase
 
 
 class TestSharedDriveExpirationNotices(NotificationsTestCase):

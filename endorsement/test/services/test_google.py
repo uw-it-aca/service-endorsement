@@ -2,11 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+
 from django.urls import reverse
+
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
 from endorsement.models import EndorsementRecord
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.test.services import ServicesApiTest
 from endorsement.services import get_endorsement_service
+from endorsement.test.services import ServicesApiTest
 
 
 class TestGoogleService(ServicesApiTest):
@@ -22,7 +24,7 @@ class TestGoogleService(ServicesApiTest):
         self.assertFalse(self.service.valid_endorser("nomockid"))
 
         # test exception
-        self.assertRaises(Exception, self.service.valid_endorser, None)
+        self.assertRaises(Exception, self.service.valid_endorser, None)  # noqa: B017
 
     def test_endorsed(self):
         self._test_endorsed()
@@ -49,7 +51,7 @@ class TestGoogleService(ServicesApiTest):
 
         self.assertTrue(data['endorser']['netid'] == 'jstaff')
 
-        endorsible, endorsed = self.get_shared(data)
+        endorsible, _endorsed = self.get_shared(data)
         self.assertEqual(len(endorsible), 3)
 
         self.assertTrue('cpnebeng' not in endorsible)

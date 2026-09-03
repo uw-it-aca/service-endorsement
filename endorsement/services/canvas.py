@@ -19,11 +19,12 @@ are allowed.
 """
 
 from django.conf import settings
-from endorsement.services import EndorsementServiceBase
-from endorsement.models import EndorsementRecord
+from uw_uwnetid.models import Subscription
+
 from endorsement.dao.gws import is_group_member
 from endorsement.exceptions import NoEndorsementException
-from uw_uwnetid.models import Subscription
+from endorsement.models import EndorsementRecord
+from endorsement.services import EndorsementServiceBase
 
 CANVAS_ACCESS_GROUP = getattr(settings, "CANVAS_ACCESS_GROUP",
                               "u_acadev_canvas_login-users")

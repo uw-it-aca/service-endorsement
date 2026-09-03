@@ -1,9 +1,9 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.services import endorsement_services
-from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
 from endorsement.dao.user import get_endorser_model
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
+from endorsement.services import endorsement_services
 from endorsement.test.dao import TestDao
 
 

@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import sys
-from restclients_core.exceptions import (
-    DataFailureException, InvalidNetID)
+
+from django.utils.timezone import get_default_timezone, is_naive, localtime, make_aware
+from restclients_core.exceptions import DataFailureException, InvalidNetID
+
 from endorsement.util.log import log_exception
-from django.utils.timezone import (
-    get_default_timezone, localtime, is_naive, make_aware)
 
 
 def handel_err(logger, message, stacktrace):
@@ -17,7 +17,7 @@ def handel_err(logger, message, stacktrace):
     if isinstance(exc_value, DataFailureException) and\
             exc_value.status in [404, 409]:
         return False
-    raise
+    raise exc_type(exc_value).with_traceback(exc_traceback)
 
 
 def display_datetime(dt):

@@ -1,12 +1,13 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.test import TestCase
 from django.core import mail
-from endorsement.test.notifications import NotificationsTestCase
+
 from endorsement.notifications.shared_drive import (
     notify_admin_missing_drive_count_exceeded,
-    notify_admin_over_quota_missing_subscription)
+    notify_admin_over_quota_missing_subscription,
+)
+from endorsement.test.notifications import NotificationsTestCase
 
 
 class TestSharedDriveAdminNotices(NotificationsTestCase):

@@ -1,23 +1,27 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-import json
-import hashlib
 import datetime as dt
+import hashlib
+import json
 
 from django.db import models
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 
+from endorsement.dao.shared_drive_deletion import (
+    mark_drive_for_deletion,
+    rescue_drive_from_deletion,
+)
 from endorsement.models.base import RecordManagerBase
 from endorsement.models.itbill import ITBillSubscription
-from endorsement.util.date import datetime_to_str
 from endorsement.policy import DEFAULT_LIFETIME
-from endorsement.dao.shared_drive_deletion import (
-    mark_drive_for_deletion, rescue_drive_from_deletion)
+from endorsement.util.date import datetime_to_str
 from endorsement.util.itbill.shared_drive import (
-    itbill_form_url, shared_drive_subsidized_quota,
-    shared_drive_subscription_deadline)
+    itbill_form_url,
+    shared_drive_subscription_deadline,
+    shared_drive_subsidized_quota,
+)
 
 
 class MemberManager(models.Manager):
@@ -313,7 +317,7 @@ class SharedDriveRecord(
         delete_drive_time = deleted_drive.get('deleteDate')
         if delete_drive_time:
             local_dt = timezone.make_aware(
-                dt.datetime.strptime(delete_drive_time, "%m/%d/%Y"))
+                dt.datetime.strptime(delete_drive_time, "%m/%d/%Y")) # noqa: DTZ007
             utc_dt = local_dt.astimezone(dt.timezone.utc)
             self.datetime_deleted = utc_dt
         else:

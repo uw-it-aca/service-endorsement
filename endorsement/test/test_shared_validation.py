@@ -1,9 +1,10 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from django.core import mail
 from django.test import TestCase
 from django.utils import timezone
-from django.core import mail
+
 from endorsement.dao.user import get_endorser_model
 from endorsement.models import Endorsee, EndorsementRecord
 from endorsement.shared_validation import validate_shared_endorsers

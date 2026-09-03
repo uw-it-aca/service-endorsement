@@ -2,11 +2,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TransactionTestCase
-from endorsement.exceptions import UnrecognizedUWNetid
-from endorsement.models import Endorser, Endorsee
+
 from endorsement.dao.user import (
-    get_endorser_model, get_endorsee_model,
-    get_endorsee_email_model, is_shared_netid)
+    get_endorsee_email_model,
+    get_endorsee_model,
+    get_endorser_model,
+    is_shared_netid,
+)
+from endorsement.exceptions import UnrecognizedUWNetid
+from endorsement.models import Endorsee, Endorser
 
 
 class TestUserDao(TransactionTestCase):

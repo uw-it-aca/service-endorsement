@@ -1,12 +1,14 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import argparse
+import logging
+import sys
+
 from django.core.management.base import BaseCommand
+
 from endorsement.dao.endorse import clear_endorsement
 from endorsement.models import EndorsementRecord
-import logging
-import argparse
-
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +53,9 @@ class Command(BaseCommand):
 
         if list_category_codes or not category_code:
             for c in EndorsementRecord.CATEGORY_CODE_CHOICES:
-                print("{}: {}".format(c[0], c[1]))
-            exit(0)
+                print(f"{c[0]}: {c[1]}")
+
+            sys.exit(0)
 
         choices = dict(EndorsementRecord.CATEGORY_CODE_CHOICES)
         for netid in netids if netids else netid_file:
@@ -68,5 +71,5 @@ class Command(BaseCommand):
                     choices[er.category_code])
                 print(msg)
                 if actually_remove_category:
-                    logger.info("Manually {}".format(msg))
+                    logger.info(f"Manually {msg}")
                     clear_endorsement(er)

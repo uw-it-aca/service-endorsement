@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+
 from endorsement.dao.endorse import get_all_endorsements_by_endorser
 from endorsement.dao.user import get_endorser_model
+from endorsement.exceptions import UnrecognizedUWNetid
+from endorsement.util.auth import SupportGroupAuthentication
 from endorsement.util.log import log_data_error_response
 from endorsement.views.rest_dispatch import RESTDispatch
-from endorsement.util.auth import SupportGroupAuthentication
-from endorsement.exceptions import UnrecognizedUWNetid
-
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +31,10 @@ class Endorser(RESTDispatch):
                 endorsees['endorsements'].append(er.json_data())
         except UnrecognizedUWNetid:
             return RESTDispatch().error_response(
-                404, "Netid {} appears to be invalid.".format(endorser_netid))
+                404, f"Netid {endorser_netid} appears to be invalid.")
         except Exception as ex:
-            log_data_error_response(logger, "{}".format(ex))
+            log_data_error_response(logger, f"{ex}")
             return RESTDispatch().error_response(
-                543, "Error: {}".format(ex))
+                543, f"Error: {ex}")
 
         return self.json_response(endorsees)

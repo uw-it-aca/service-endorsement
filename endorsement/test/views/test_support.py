@@ -1,9 +1,10 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.test import override_settings
-from endorsement.test.views import TestViewApi
+from django.test.utils import override_settings
 from django.urls import reverse
+
+from endorsement.test.views import TestViewApi
 from endorsement.userservice_validation import can_override_user
 from endorsement.views.support.endorsee_search import EndorseeSearch
 from endorsement.views.support.endorser_search import EndorserSearch

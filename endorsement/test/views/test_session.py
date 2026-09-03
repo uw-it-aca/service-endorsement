@@ -1,7 +1,7 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.test.views import require_url, TestViewApi
+from endorsement.test.views import TestViewApi, require_url
 from endorsement.views.session import log_session_key
 
 

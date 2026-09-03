@@ -1,21 +1,20 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.utils import timezone
-from endorsement.dao.uwnetid_categories import (
-    set_active_category, set_former_category)
-from endorsement.dao.uwnetid_subscriptions import activate_subscriptions
-from endorsement.models import EndorsementRecord
-from endorsement.exceptions import NoEndorsementException
 import logging
 
+from django.utils import timezone
+
+from endorsement.dao.uwnetid_categories import set_active_category, set_former_category
+from endorsement.dao.uwnetid_subscriptions import activate_subscriptions
+from endorsement.exceptions import NoEndorsementException
+from endorsement.models import EndorsementRecord
 
 logger = logging.getLogger(__name__)
 
 
 def initiate_endorsement(endorser, endorsee, reason, category_code):
-    logger.info('initiate category {0} for {1} because {2} by {3}'.format(
-        category_code, endorsee.netid, reason, endorser.netid))
+    logger.info(f'initiate category {category_code} for {endorsee.netid} because {reason} by {endorser.netid}')
     now = timezone.now()
     try:
         en = EndorsementRecord.objects.get(
@@ -59,11 +58,9 @@ def store_endorsement(endorser, endorsee, category_code,
                       subscription_codes, acted_as, reason):
     """Return with endorsee category active and subscribed
     """
-    logger.info('activate category {0} for {1}{2} because {3} by {4}'.format(
-        category_code, endorsee.netid,
-        " (by {0})".format(acted_as if acted_as else ""),
-        reason, endorser.netid))
-
+    logger.info(f"activate category {category_code} for "
+                f"{endorsee.netid}{f' (by {acted_as})' if acted_as else ''}"
+                f" because {reason} by {endorser.netid}")
     set_active_category(endorsee.netid, category_code)
     activate_subscriptions(
         endorsee.netid, endorser.netid, subscription_codes)
@@ -119,15 +116,9 @@ def clear_endorsement(endorsement):
         set_former_category(
             endorsement.endorsee.netid, endorsement.category_code)
 
-        logger.info('former category {0} for {1} by {2}'.format(
-            endorsement.category_code,
-            endorsement.endorsee.netid,
-            endorsement.endorser.netid))
+        logger.info(f'former category {endorsement.category_code} for {endorsement.endorsee.netid} by {endorsement.endorser.netid}')
 
-    logger.info('clearing record {0} for {1} by {2}'.format(
-        endorsement.category_code,
-        endorsement.endorsee.netid,
-        endorsement.endorser.netid))
+    logger.info(f'clearing record {endorsement.category_code} for {endorsement.endorsee.netid} by {endorsement.endorser.netid}')
     endorsement.revoke()
     return endorsement
 

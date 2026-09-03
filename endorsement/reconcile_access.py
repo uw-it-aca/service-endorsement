@@ -1,23 +1,32 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.models import AccessRecord, AccessRight, AccessRecordConflict
+import csv
+import json
+import logging
+from datetime import timedelta
+
+from django.utils import timezone
+from uw_msca.delegate import get_all_delegates
+
 from endorsement.dao.access import (
-    get_accessee_model, store_access_record, set_delegate,
-    get_delegates_for_netid)
+    get_accessee_model,
+    get_delegates_for_netid,
+    store_access_record,
+)
 from endorsement.dao.office import get_office_accessor
 from endorsement.exceptions import (
-    UnrecognizedUWNetid, UnrecognizedGroupID, NoAccessRecordException,
-    NullDelegateException, AccessRecordException, DeletedAccessRecordException,
-    TooManyRightsException, EmptyDelegateRightsException,
-    DelegateRightMismatchException, NoLiveDelegationException)
-from uw_msca.delegate import get_all_delegates
-from django.utils import timezone
-from datetime import timedelta
-import json
-import csv
-import logging
-
+    DelegateRightMismatchException,
+    DeletedAccessRecordException,
+    EmptyDelegateRightsException,
+    NoAccessRecordException,
+    NoLiveDelegationException,
+    NullDelegateException,
+    TooManyRightsException,
+    UnrecognizedGroupID,
+    UnrecognizedUWNetid,
+)
+from endorsement.models import AccessRecord, AccessRecordConflict, AccessRight
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -35,7 +44,7 @@ def reconcile_access(commit_changes=False):
     # cause all delegations to be deleted
     if delegate_count < MISSING_DELEGATES_THRESHOLD:
         logger.error(
-            "Possible malformed delegates response: {}".format(delegates))
+            f"Possible malformed delegates response: {delegates}")
         return
 
     # all active record ids
@@ -200,7 +209,7 @@ def reconcile_delegation(accessee, delegate, right):
     elif isinstance(right, list):
         if len(right) == 0:
             raise EmptyDelegateRightsException(record=record)
-        elif len(rights) > 1:
+        elif len(right) > 1:
             raise TooManyRightsException(record=record)
 
         right = right[0]
@@ -230,7 +239,7 @@ def clear_manual_sync(record):
 
 
 def get_access_right(right):
-    ar, c = AccessRight.objects.get_or_create(name=right)
+    ar, _ = AccessRight.objects.get_or_create(name=right)
     return ar
 
 
@@ -246,7 +255,7 @@ def new_access_record(accessee, delegate, right):
         return record
     except (UnrecognizedUWNetid, UnrecognizedGroupID):
         logger.error(
-            "CREATE RECORD: Unknown netid or group: {}".format(delegate))
+            f"CREATE RECORD: Unknown netid or group: {delegate}")
 
     return None
 
@@ -274,12 +283,13 @@ def assign_access_right(record, right):
 
 
 def save_conflict_record(accessee, record, delegate, rights):
+    accessor = record.accessor if (
+        record) else get_office_accessor(delegate)
+
     logger.info(f"CONFLICT RECORD: mailbox {accessee.netid} "
                 f"delegate {accessor.name}: {rights}")
 
-    accessor = record.accessor if (
-        record) else get_office_accessor(delegate)
-    conflict, c = AccessRecordConflict.objects.get_or_create(
+    conflict, _ = AccessRecordConflict.objects.get_or_create(
         accessee=accessee, accessor=accessor)
     for right in rights:
         conflict.rights.add(get_access_right(right))

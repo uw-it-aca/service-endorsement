@@ -1,17 +1,19 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.db import models
+import hashlib
+import json
+import random
+
 from django.conf import settings
+from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 from uw_uwnetid.models import Category
+
 from endorsement.models.base import RecordManagerBase
 from endorsement.util.date import datetime_to_str
-import hashlib
-import random
-import json
 
 
 class Endorser(ExportModelOperationsMixin('endorser'), models.Model):
@@ -123,42 +125,37 @@ class EndorsementRecordManager(RecordManagerBase):
             params['category_code'] = category_code
 
         if 'endorser' in params and 'endorsee' in params:
-            return super(EndorsementRecordManager, self).get(**params)
+            return super().get(**params)
 
-        return super(EndorsementRecordManager, self).get_queryset().filter(
-            **params)
+        return super().get_queryset().filter(**params)
 
     def get_endorsements_for_endorser(self, endorser, category_code=None):
         return self.get_endorsement(endorser, None, category_code)
 
     def get_all_endorsements_for_endorser(self, endorser, category_code=None):
-        return super(EndorsementRecordManager, self).get_queryset().filter(
-            endorser=endorser)
+        return super().get_queryset().filter(endorser=endorser)
 
     def get_endorsements_for_endorsee(self, endorsee, category_code=None):
         return self.get_endorsement(None, endorsee, category_code)
 
     def get_endorsements_for_endorsee_re(self, endorsee_regex):
         endorsees = Endorsee.objects.filter(
-            netid__regex=r'^{0}$'.format(endorsee_regex)).values_list(
-                'id', flat=True)
+            netid__regex=rf'^{endorsee_regex}$').values_list('id', flat=True)
 
-        return super(EndorsementRecordManager, self).get_queryset().filter(
+        return super().get_queryset().filter(
             endorsee_id__in=endorsees, is_deleted__isnull=True)
 
     def get_all_endorsements_for_endorsee_re(self, endorsee_regex):
         endorsees = Endorsee.objects.filter(
-            netid__regex=r'^{0}$'.format(endorsee_regex)).values_list(
-                'id', flat=True)
+            netid__regex=rf'^{endorsee_regex}$').values_list('id', flat=True)
 
-        return super(EndorsementRecordManager, self).get_queryset().filter(
+        return super().get_queryset().filter(
             endorsee_id__in=endorsees)
 
     def emailed(self, id):
         datetime_emailed = timezone.now()
-        super(EndorsementRecordManager, self).get_queryset().filter(
-            pk=id, is_deleted__isnull=True).update(
-                datetime_emailed=datetime_emailed)
+        super().get_queryset().filter(
+            pk=id, is_deleted__isnull=True).update(datetime_emailed=datetime_emailed)
 
     def get_accept_endorsement(self, accept_id, endorsed=None):
         params = {
@@ -167,20 +164,18 @@ class EndorsementRecordManager(RecordManagerBase):
         }
 
         if endorsed is not None:
-            params['datetime_endorsed__isnull'] = False if (
-                endorsed is True) else True
+            params['datetime_endorsed__isnull'] = endorsed is not True
 
-        return super(EndorsementRecordManager, self).get_queryset().filter(
-            **params)
+        return super().get_queryset().filter(**params)
 
     def get_unendorsed_unnotified(self):
-        return super(EndorsementRecordManager, self).get_queryset().filter(
+        return super().get_queryset().filter(
             datetime_emailed__isnull=True,
             datetime_endorsed__isnull=True,
             is_deleted__isnull=True)
 
     def get_endorsed_unnotified(self):
-        return super(EndorsementRecordManager, self).get_queryset().filter(
+        return super().get_queryset().filter(
             datetime_emailed__isnull=True,
             datetime_endorsed__isnull=False,
             is_deleted__isnull=True)
@@ -206,17 +201,13 @@ class EndorsementRecord(
         (HUSKY_ONNET_EXT_PROVISIONEE, "Husky OnNet for Affiliates"),
     )
 
-    endorser = models.ForeignKey(Endorser,
-                                 on_delete=models.PROTECT)
-    endorsee = models.ForeignKey(Endorsee,
-                                 on_delete=models.PROTECT)
-    category_code = models.SmallIntegerField(
-        choices=CATEGORY_CODE_CHOICES)
+    endorser = models.ForeignKey(Endorser, on_delete=models.PROTECT)
+    endorsee = models.ForeignKey(Endorsee, on_delete=models.PROTECT)
+    category_code = models.SmallIntegerField(choices=CATEGORY_CODE_CHOICES)
     reason = models.CharField(max_length=64, null=True)
     acted_as = models.SlugField(max_length=32, null=True)
     accept_salt = models.CharField(max_length=32)
-    accept_id = models.CharField(max_length=32, null=True,
-                                 unique=True)
+    accept_id = models.CharField(max_length=32, null=True, unique=True)
     datetime_created = models.DateTimeField(null=True)
     datetime_emailed = models.DateTimeField(null=True)
     datetime_notice_1_emailed = models.DateTimeField(null=True)
@@ -238,28 +229,24 @@ class EndorsementRecord(
 
     def __hash__(self):
         if self.pk is None:
-            return int("{}{}{}".format(
-                self.endoser.pk, self.endorsee.pk, self.category_code))
+            return int(f"{self.endoser.pk}{self.endorsee.pk}{self.category_code}")
 
         return super().__hash__()
 
     def save(self, *args, **kwargs):
         if not self.accept_salt:
             self.accept_salt = "".join(
-                ["0123456789abcdef"[
-                    random.randint(0, 0xF)] for _ in range(32)])
+                ["0123456789abcdef"[random.randint(0, 0xF)] for _ in range(32)])
 
         if not self.accept_id:
             self.accept_id = self.get_accept_id(self.endorsee.netid)
-        super(EndorsementRecord, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def valid_endorsee(self, endorsee_netid):
         return self.accept_id == self.get_accept_id(endorsee_netid)
 
     def get_accept_id(self, endorsee_netid):
-        val = "{0}{1}{2}{3}".format(
-            self.endorser.netid, endorsee_netid,
-            self.category_code, self.accept_salt)
+        val = f"{self.endorser.netid}{endorsee_netid}{self.category_code}{self.accept_salt}"
         return hashlib.md5(val.encode()).hexdigest()
 
     def revoke(self):
@@ -293,11 +280,11 @@ class EndorsementRecord(
         }
 
     def accept_url(self):
-        return None if (self.datetime_endorsed) else "{0}{1}".format(
-            getattr(settings, "APP_SERVER_BASE",
-                    "http://test.provision.uw.edu"),
-            reverse('accept_view',
-                    kwargs={'accept_id': self.accept_id}))
+        return None if (self.datetime_endorsed) else (
+            f"{getattr(settings, "APP_SERVER_BASE",
+                    "http://test.provision.uw.edu")}"
+            f"{reverse('accept_view',
+                    kwargs={'accept_id': self.accept_id})}")
 
     def __str__(self):
         return json.dumps(self.json_data())
