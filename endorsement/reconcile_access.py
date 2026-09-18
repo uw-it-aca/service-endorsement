@@ -179,6 +179,31 @@ def reconcile_access(commit_changes=False):
                     f"on {record.datetime_granted} not "
                     "assigned in Outlook")
 
+        # preserve manual sync records actually present in Outlook
+        if record.is_manual_sync:
+            try:
+                live = get_live_delegation(
+                    record.accessee.netid, record.accessor.name)
+                logger.info(
+                    f"UNREPORTED DELEGATAION LIVE QUERY {live.user}, "
+                    f"{live.delegate}, {live.access_right} MATCHED REPORT")
+
+                if live.access_right != record.access_right.name:
+                    logger.info(
+                        "UNREPORTED DELEGATION LIVE QUERY "
+                        f"{record.accessee.netid},"
+                        f"{record.accessor.name},{record.access_right.name} "
+                        f"UPDATE RECORD TO {live.access_right}")
+                    assign_access_right(record, live.access_right)
+
+                # do not clear is_manual_sync to account for continued outlook report latency
+                continue
+            except NoLiveDelegationException:
+                logger.info(
+                    "UNREPORTED DELEGATION LIVE QUERY "
+                    f"{record.accessee.netid}, {record.accessor.name}"
+                    f"{record.access_right.name} NOT IN OUTLOOK, CLEAR RECORD")
+
         if commit_changes:
             revoke_record(record)
 
@@ -261,8 +286,9 @@ def new_access_record(accessee, delegate, right):
 
 
 def revoke_record(record):
-    logger.info("REVOKING mailbox {record.accessee.netid} "
-                f"delegation {record.accessor.name} ({record.access_right})")
+    logger.info(f"ACCESS RECORD mailbox {record.accessee.netid} "
+                f"delegation {record.accessor.name} ({record.access_right}) "
+                "marked deleted")
     record.revoke()
 
 
