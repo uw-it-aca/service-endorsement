@@ -281,10 +281,8 @@ class EndorsementRecord(
 
     def accept_url(self):
         return None if (self.datetime_endorsed) else (
-            f"{getattr(settings, "APP_SERVER_BASE",
-                    "http://test.provision.uw.edu")}"
-            f"{reverse('accept_view',
-                    kwargs={'accept_id': self.accept_id})}")
+            f"{getattr(settings, 'APP_SERVER_BASE', 'http://test.provision.uw.edu')}"
+            f"{reverse('accept_view', kwargs={'accept_id': self.accept_id})}")
 
     def __str__(self):
         return json.dumps(self.json_data())
