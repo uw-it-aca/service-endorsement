@@ -120,8 +120,7 @@ class Command(BaseCommand):
                 f"{'' if self.commit_changes else 'WOULD '}ASSIGN: "
                 f"mailbox {ar.accessee.netid} "
                 f"delegate {ar.accessor.name} "
-                f"right '{ar.access_right.display_name if (
-                     self.commit_changes) else rr.display_name}'")
+                f"right '{ar.access_right.display_name if (self.commit_changes) else rr.display_name}'")
 
     def reconcile_csv_access(self, csv_file):
         delegations = {}

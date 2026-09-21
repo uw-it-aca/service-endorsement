@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev 
 USER acait
 
 ADD --chown=acait:acait endorsement/VERSION /app/endorsement/
-ADD --chown=acait:acait setup.py /app/
+ADD --chown=acait:acait pyproject.toml /app/
 ADD --chown=acait:acait requirements.txt /app/
 
 RUN . /app/bin/activate && pip install -r requirements.txt
