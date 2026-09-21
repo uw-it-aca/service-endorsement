@@ -90,16 +90,16 @@ def reconcile_access(commit_changes=False):
                             f"MANUAL SYNC DELETED {netid},{delegate},"
                             f"{right} LIVE DELEGATION FOUND")
                         sync_live_record(live, record)
+                        # leave is_manual_sync True until cleared by
+                        # accurate delegation report
                     except NoLiveDelegationException:
+                        clear_manual_sync(record)
                         logger.info(
                             f"MANUAL SYNC DELETED {netid},{delegate},"
                             f"{right} NO LIVE DELEGATION FOUND")
 
-                    clear_manual_sync(record)
                     continue
 
-                # validate with "live" delegate
-                # query after grace period timeout
                 if record.datetime_expired > expiration_threshold:
                     logger.info(
                         f"SKIP DELETED ACCESS RECORD IN GRACE "

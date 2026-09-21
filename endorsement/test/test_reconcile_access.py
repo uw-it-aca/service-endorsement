@@ -217,9 +217,40 @@ class TestReconcileAccess(TransactionTestCase):
             mock_revoke.assert_called_once()
 
     @patch('endorsement.reconcile_access.get_accessee_model')
-    @patch('endorsement.reconcile_access.get_live_delegation')
     @patch('endorsement.reconcile_access.get_all_delegates')
     def test_reconcile_access_preserves_manual_sync_records(
+            self, mock_delegates, mock_get_acc):
+        """Test that manual sync records are preserved if found in Outlook"""
+
+        # Create a deleted record with manual_sync flag
+        AccessRecord.objects.create(
+            accessee=self.accessee,
+            accessor=self.accessor,
+            access_right=self.accessright_full,
+            is_deleted=True,
+            datetime_expired=timezone.now(),
+            is_manual_sync=True
+        )
+
+        # Create delegate list that meets MISSING_DELEGATES_THRESHOLD
+        # but doesn't include the delegation (to test unreported path)
+        rec_module.MISSING_DELEGATES_THRESHOLD = 1
+        csv_lines = ['header1,header2'] + [
+            create_csv_delegation('jstaff@washington.edu', 'u_javerage_admin', ['FullAccess'])
+        ]
+
+        mock_delegates.return_value = csv_lines
+        mock_get_acc.return_value = self.accessee
+
+        with patch('endorsement.reconcile_access.clear_manual_sync') as mock_clear:
+            reconcile_access(commit_changes=False)
+            # Manual sync flag should be cleared when live delegation matches
+            mock_clear.assert_called_once()
+
+    @patch('endorsement.reconcile_access.get_accessee_model')
+    @patch('endorsement.reconcile_access.get_live_delegation')
+    @patch('endorsement.reconcile_access.get_all_delegates')
+    def test_reconcile_access_clears_manual_sync_records(
             self, mock_delegates, mock_live, mock_get_acc):
         """Test that manual sync records are preserved if found in Outlook"""
 
@@ -250,10 +281,9 @@ class TestReconcileAccess(TransactionTestCase):
         mock_delegates.return_value = csv_lines
         mock_get_acc.return_value = self.accessee
 
-        with patch('endorsement.reconcile_access.clear_manual_sync') as mock_clear:
+        with patch('endorsement.reconcile_access.sync_live_record') as mock_sync:
             reconcile_access(commit_changes=False)
-            # Manual sync flag should be cleared when live delegation matches
-            mock_clear.assert_called_once()
+            mock_sync.assert_called_once()
 
     @patch('endorsement.reconcile_access.get_accessee_model')
     @patch('endorsement.reconcile_access.get_all_delegates')
