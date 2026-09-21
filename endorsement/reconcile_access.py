@@ -79,16 +79,20 @@ def reconcile_access(commit_changes=False):
             except DeletedAccessRecordException as ex:
                 record = ex.record
 
+                logger.info(
+                    f"DELETED ACCESS RECORD: mailbox {netid} "
+                    f"delegate {delegate} right: {right}")
+
                 if record.is_manual_sync:
                     try:
                         live = get_live_delegation(netid, delegate)
                         logger.info(
-                            f"MANUAL SYNC DELETE {netid},{delegate},"
+                            f"MANUAL SYNC DELETED {netid},{delegate},"
                             f"{right} LIVE DELEGATION FOUND")
                         sync_live_record(live, record)
                     except NoLiveDelegationException:
                         logger.info(
-                            f"MANUAL SYNC DELETE {netid},{delegate},"
+                            f"MANUAL SYNC DELETED {netid},{delegate},"
                             f"{right} NO LIVE DELEGATION FOUND")
 
                     clear_manual_sync(record)
@@ -102,10 +106,6 @@ def reconcile_access(commit_changes=False):
                         f"({DELETED_SYNC_GRACE_PERIOD} days): mailbox {netid} "
                         f"delegate {delegate} right: {right}")
                     continue
-
-                logger.info(
-                    f"DELETED ACCESS RECORD: mailbox {netid} "
-                    f"delegate {delegate} right: {right}")
 
                 # reactivate deleted record
                 if commit_changes:
