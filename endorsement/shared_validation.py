@@ -1,14 +1,14 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.models import Endorser, EndorsementRecord
-from endorsement.dao.endorse import clear_endorsement
-from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
-from endorsement.dao.user import get_endorser_model
-from endorsement.dao.uwnetid_admin import get_owner_for_shared_netid
-from endorsement.notifications.endorsement import warn_new_shared_netid_owner
 import logging
 
+from endorsement.dao.endorse import clear_endorsement
+from endorsement.dao.user import get_endorser_model
+from endorsement.dao.uwnetid_admin import get_owner_for_shared_netid
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
+from endorsement.models import EndorsementRecord, Endorser
+from endorsement.notifications.endorsement import warn_new_shared_netid_owner
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +40,7 @@ def validate_shared_endorsers():
         if owner is None:
             # let expiration proceed naturally
             logger.error(
-                "Share netid {} owned by {} no longer exists".format(
-                    orphan.endorsee.netid, orphan.endorser.netid))
+                f"Share netid {orphan.endorsee.netid} owned by {orphan.endorser.netid} no longer exists")
             continue
 
         # quietly sweep away record if new owner already endorsed
@@ -52,9 +51,7 @@ def validate_shared_endorsers():
                 endorsee=orphan.endorsee,
                 category_code=orphan.category_code)
             logger.info(
-                "shared: old owner {} of {} ({}) revoked for {}".format(
-                    orphan.endorser.netid, orphan.endorsee.netid,
-                    orphan.category_code, noe.endorser.netid))
+                f"shared: old owner {orphan.endorser.netid} of {orphan.endorsee.netid} ({orphan.category_code}) revoked for {noe.endorser.netid}")
             clear_endorsement(orphan)
             continue
         except EndorsementRecord.DoesNotExist:
@@ -65,18 +62,16 @@ def validate_shared_endorsers():
         else:
             new_owners[owner] = [orphan]
 
-    for owner in new_owners:
+    for owner, endorsements in new_owners.items():
         try:
             new_owner = get_endorser_model(owner)
-            warn_new_shared_netid_owner(new_owner, new_owners[owner])
+            warn_new_shared_netid_owner(new_owner, endorsements)
             # mail sent, clone endorsment record with new owner
-            for er in new_owners[owner]:
+            for er in endorsements:
                 # no longer endorsed by previous owner
                 er.revoke()
                 logger.info(
-                    "shared: new record for {} of {} ({}) from {}".format(
-                        new_owner.netid, er.endorsee.netid,
-                        er.category_code, er.endorser.netid))
+                    f"shared: new record for {new_owner.netid} of {er.endorsee.netid} ({er.category_code}) from {er.endorser.netid}")
                 # create record for new owner, preserving warning date
                 er.pk = None
                 er.endorser = new_owner
@@ -87,5 +82,5 @@ def validate_shared_endorsers():
                 er.datetime_notice_4_emailed = None
                 er.is_deleted = None
                 er.save()
-        except Exception:
-            None
+        except Exception:  # noqa: S110
+            pass

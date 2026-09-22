@@ -1,9 +1,11 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import datetime as dt
+
 from django.test import TestCase
-from datetime import datetime
-from endorsement.models import SharedDriveRecord, ITBillSubscription
+
+from endorsement.models import SharedDriveRecord
 
 
 class TestITBill(TestCase):
@@ -23,26 +25,26 @@ class TestITBill(TestCase):
         record = SharedDriveRecord.objects.get(
             shared_drive__drive_id='IRDXB54TWF3OY8MVC9J')
 
-        now = datetime.strptime('2023-11-30', '%Y-%m-%d').date()
+        now = dt.datetime.strptime('2023-11-30', '%Y-%m-%d').astimezone(dt.UTC)
         quota = record.subscription.get_quantity_on_date(now)
         self.assertEqual(quota, 0)
 
-        now = datetime.strptime('2024-01-01', '%Y-%m-%d').date()
+        now = dt.datetime.strptime('2024-01-01', '%Y-%m-%d').astimezone(dt.UTC)
         quota = record.subscription.get_quantity_on_date(now)
         self.assertEqual(quota, 2)
 
-        now = datetime.strptime('2024-01-02', '%Y-%m-%d').date()
+        now = dt.datetime.strptime('2024-01-02', '%Y-%m-%d').astimezone(dt.UTC)
         quota = record.subscription.get_quantity_on_date(now)
         self.assertEqual(quota, 2)
 
-        now = datetime.strptime('2024-12-28', '%Y-%m-%d').date()
+        now = dt.datetime.strptime('2024-12-28', '%Y-%m-%d').astimezone(dt.UTC)
         quota = record.subscription.get_quantity_on_date(now)
         self.assertEqual(quota, 2)
 
-        now = datetime.strptime('2024-12-29', '%Y-%m-%d').date()
+        now = dt.datetime.strptime('2024-12-29', '%Y-%m-%d').astimezone(dt.UTC)
         quota = record.subscription.get_quantity_on_date(now)
         self.assertEqual(quota, 2)
 
-        now = datetime.strptime('2025-12-01', '%Y-%m-%d').date()
+        now = dt.datetime.strptime('2025-12-01', '%Y-%m-%d').astimezone(dt.UTC)
         quota = record.subscription.get_quantity_on_date(now)
         self.assertEqual(quota, 0)

@@ -2,12 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from django.urls import reverse
-from django.test import Client
-from userservice.user import get_original_user
-from endorsement.test.views import require_url, TestViewApi
-from endorsement.models import (
-    Accessee, Accessor, AccessRight, AccessRecord, AccessRecordConflict)
+from endorsement.models import AccessRecord, AccessRecordConflict
+from endorsement.test.views import TestViewApi, require_url
 
 
 @require_url('access_right_resolve_api', 'access urls not configured')
@@ -27,7 +23,7 @@ class TestResolve(TestViewApi):
         self.assertEqual(0, AccessRecord.objects.all().count())
         self.assertEqual(1, AccessRecordConflict.objects.all().count())
 
-        request = self.get_request('/', 'jstaff')
+        self.get_request('/', 'jstaff')
         response = self.post_response('access_right_resolve_api', test_request)
 
         self.assertEqual(response.status_code, 200)

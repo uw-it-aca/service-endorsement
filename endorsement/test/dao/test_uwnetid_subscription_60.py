@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from endorsement.dao.uwnetid_subscription_60 import (
-    is_valid_endorsee, get_kerberos_subs_status)
+    get_kerberos_subs_status,
+    is_valid_endorsee,
+)
 from endorsement.test.dao import TestDao
 
 

@@ -1,13 +1,17 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from persistent_message.models import Message
-from django.db.models import Q
 import hashlib
 
+from django.db.models import Q
+from persistent_message.models import Message
 
-def get_persistent_messages(tags=None, params={}):
+
+def get_persistent_messages(tags=None, params=None):
     ret = {}
+
+    if params is None:
+        params = {}
 
     for message in _active_messages(tags=tags):
         level = message.get_level_display().lower()

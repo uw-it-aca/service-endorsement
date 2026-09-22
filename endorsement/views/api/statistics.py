@@ -2,16 +2,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+import re
+from datetime import date, datetime, time, timedelta
+
 from django.utils import timezone
-from endorsement.models import (
-    EndorsementRecord, SharedDriveRecord, Member)
-from endorsement.util.log import log_data_error_response
-from endorsement.views.rest_dispatch import RESTDispatch
-from datetime import date, time, datetime, timedelta
+
+from endorsement.models import EndorsementRecord, Member, SharedDriveRecord
 from endorsement.util.auth import SupportGroupAuthentication
 from endorsement.util.itbill.shared_drive import shared_drive_subsidized_quota
-import re
-
+from endorsement.util.log import log_data_error_response
+from endorsement.views.rest_dispatch import RESTDispatch
 
 logger = logging.getLogger(__name__)
 
@@ -181,8 +181,8 @@ class Statistics(RESTDispatch):
 
                 fields = []
                 for code in EndorsementRecord.CATEGORY_CODE_CHOICES:
-                    fields.append('Shared {}'.format(code[1]))
-                    fields.append('Personal {}'.format(code[1]))
+                    fields.append(f'Shared {code[1]}')
+                    fields.append(f'Personal {code[1]}')
 
                 stats = {
                     'fields': fields,
@@ -190,7 +190,7 @@ class Statistics(RESTDispatch):
                 }
 
         except Exception as ex:
-            log_data_error_response(logger, "{}".format(ex))
+            log_data_error_response(logger, f"{ex}")
             return RESTDispatch().error_response(
                 543, "Data not available due to an error.")
 

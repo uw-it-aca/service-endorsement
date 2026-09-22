@@ -1,24 +1,32 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from rest_framework.views import APIView
-from django.http import HttpResponse
-from userservice.user import UserService
-from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
-from endorsement.util.auth import is_admin_user
 import json
 import sys
-from restclients_core.exceptions import (
-    DataFailureException, InvalidNetID, InvalidRegID)
+
+from django.http import HttpResponse
+from rest_framework.views import APIView
+from restclients_core.exceptions import DataFailureException, InvalidNetID, InvalidRegID
+from userservice.user import UserService
+
+from endorsement.exceptions import UnrecognizedUWNetid
+from endorsement.util.auth import is_admin_user
 from endorsement.util.log import (
-    log_exception, log_data_not_found_response, log_data_error_response,
-    log_invalid_netid_response, log_invalid_endorser_response,
-    log_bad_request_response)
+    log_bad_request_response,
+    log_data_error_response,
+    log_data_not_found_response,
+    log_exception,
+    log_invalid_endorser_response,
+    log_invalid_netid_response,
+)
 
 
 class RESTDispatch(APIView):
-    def error_response(self, status, message='', content={}):
-        content['error'] = '{0}'.format(message)
+    def error_response(self, status, message='', content=None):
+        if content is None:
+            content = {}
+
+        content['error'] = f'{message}'
         return HttpResponse(json.dumps(content),
                             status=status,
                             content_type='application/json')
@@ -49,9 +57,8 @@ class RESTDispatch(APIView):
 
 def handle_exception(logger, message, stack_trace):
     log_exception(logger, message, stack_trace.format_exc())
-    exc_type, exc_value, exc_traceback = sys.exc_info()
-    if (isinstance(exc_value, InvalidNetID) or
-            isinstance(exc_value, InvalidRegID)):
+    _exc_type, exc_value, _exc_traceback = sys.exc_info()
+    if isinstance(exc_value, (InvalidNetID, InvalidRegID)):
         return invalid_session(logger)
     if (isinstance(exc_value, DataFailureException) and
             exc_value.status == 404):

@@ -6,6 +6,10 @@ targetAverageUtilization: 100
 resources:
   limits:
     cpu: "1"
+gateway:
+  enabled: true
+  hostnames:
+    - provision.uw.edu
 ingress:
   enabled: true
   type: nginx
@@ -99,7 +103,14 @@ certs:
   mounted: true
   certPath: /certs/provision.uw.edu.cert
   keyPath: /certs/provision.uw.edu.key
-  secretName: provision.uw.edu-ic-certs
+  secretName: provision.uw.edu-uwca-certs
+podVolumes:
+  openssl-config:
+    volume:
+      configMap:
+        name: openssl-conf
+    mount:
+      mountPath: /ssl
 environmentVariables:
   - name: ENV
     value: prod
@@ -113,6 +124,8 @@ environmentVariables:
     value: PROD
   - name: MSCA_TIMEOUT
     value: "60"
+  - name: OPENSSL_CONF
+    value: /ssl/openssl.cnf
   - name: AUTH
     value: SAML
   - name: SAML_ENTITY_ID
@@ -152,8 +165,8 @@ externalSecrets:
           property: sql_user
         - name: password
           property: sql_pass
-    - name: provision.uw.edu-ic-certs
-      externalKey: provision/prod/ic-certs
+    - name: provision.uw.edu-uwca-certs
+      externalKey: provision/prod/uwca-certs
       data:
         - name: provision.uw.edu.key
           property: key
@@ -201,11 +214,19 @@ environmentVariablesSecrets:
     name: MSCA_SUBSCRIPTION_KEY
     secretName: provision.uw.edu-secrets
     secretKey: msca-subscription-key
-  SAMLServiceProviderCert:
-    name: SP_CERT
-    secretName: provision.uw.edu-ic-certs
-    secretKey: provision.uw.edu.cert
   SAMLIDPCert:
     name: IDP_CERT
     secretName: idp.uw-cert
     secretKey: idp.uw-cert
+configmaps:
+  openssl-conf:
+    openssl.cnf: |
+      # Downgrade openssl security level to support UWCA certificates with Ubuntu 24.04
+      openssl_conf = default_conf
+      [ default_conf ]
+      ssl_conf = ssl_sect
+      [ssl_sect]
+      system_default = system_default_sect
+      [system_default_sect]
+      MinProtocol = TLSv1.2
+      CipherString = DEFAULT:@SECLEVEL=1

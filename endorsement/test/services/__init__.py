@@ -1,10 +1,12 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.urls import reverse
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.test.api import EndorsementApiTest
 import json
+
+from django.urls import reverse
+
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
+from endorsement.test.api import EndorsementApiTest
 
 
 class ServicesApiTest(EndorsementApiTest):
@@ -25,7 +27,7 @@ class ServicesApiTest(EndorsementApiTest):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
 
-        endorsible, endorsing, endorsed, errored = self.get_endorsed(data)
+        endorsible, endorsing, endorsed, _errored = self.get_endorsed(data)
         self.assertEqual(len(endorsible), 2)
         self.assertEqual(len(endorsing), 1)
         self.assertEqual(len(endorsed), 1)

@@ -2,17 +2,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from django.utils import timezone
-from endorsement.models import Endorser, Endorsee, EndorseeEmail
-from uw_uwnetid.models import Category
-from uw_gws import GWS
-from endorsement.services import is_valid_endorser
-from endorsement.dao.pws import get_endorser_data, get_endorsee_data
-from endorsement.dao.uwnetid_subscription_60 import is_valid_endorsee
-from endorsement.dao.uwnetid_categories import get_shared_categories_for_netid
-from endorsement.exceptions import UnrecognizedUWNetid
-import re
 
+from django.utils import timezone
+from uw_uwnetid.models import Category
+
+from endorsement.dao.pws import get_endorsee_data, get_endorser_data
+from endorsement.dao.uwnetid_categories import get_shared_categories_for_netid
+from endorsement.dao.uwnetid_subscription_60 import is_valid_endorsee
+from endorsement.exceptions import UnrecognizedUWNetid
+from endorsement.models import Endorsee, EndorseeEmail, Endorser
+from endorsement.services import is_valid_endorser
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ def get_endorser_model(uwnetid):
         regid=uwregid, defaults=updated_values)
 
     if created:
-        logger.info("Create endorser: {0}".format(user))
+        logger.info(f"Create endorser: {user}")
 
     return user
 
@@ -62,7 +61,7 @@ def get_endorsee_model(uwnetid):
                 user.save()
 
     except Endorsee.DoesNotExist:
-        uwregid, display_name, email, is_person = get_endorsee_data(uwnetid)
+        uwregid, display_name, _email, is_person = get_endorsee_data(uwnetid)
         kerberos_active_permitted = is_valid_endorsee(uwnetid)
         user, created = Endorsee.objects.update_or_create(
             regid=uwregid,
@@ -86,15 +85,15 @@ def get_endorsee_email_model(endorsee, endorser, email=None):
         endorsee_email, created = EndorseeEmail.objects.update_or_create(
             endorsee=endorsee, endorser=endorser, defaults={'email': email})
     else:
-        uwregid, display_name, pws_email, is_person = get_endorsee_data(
+        _uwregid, _display_name, pws_email, _is_person = get_endorsee_data(
             endorsee.netid)
         endorsee_email, created = EndorseeEmail.objects.get_or_create(
             endorsee=endorsee, endorser=endorser,
             defaults={'email': pws_email})
 
     if created:
-        logger.info("Create endorsee email: {0} {1} {2}"
-                    .format(endorsee.netid, endorser.netid, email))
+        logger.info(f"Create endorsee email: {endorsee.netid} {endorser.netid} {email}"
+                    )
 
     return endorsee_email
 

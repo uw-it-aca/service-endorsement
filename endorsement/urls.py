@@ -3,39 +3,37 @@
 
 from django.urls import re_path
 from userservice.views import SupportView
+
 from endorsement.views import page
 from endorsement.views.accept import accept
-from endorsement.views.support.endorser_search import EndorserSearch
-from endorsement.views.support.endorsee_search import EndorseeSearch
-from endorsement.views.support.member_search import MemberSearch
-from endorsement.views.support.delegate_search import DelegateSearch
-from endorsement.views.support.notifications import EndorseeNotifications
-from endorsement.views.support.shared_proxy import SharedProxy
-from endorsement.views.support.persistent_messages import PersistentMessages
-from endorsement.views.support.endorsement_statistics import (
-    EndorsementStatistics)
-from endorsement.views.api.validate import Validate
-from endorsement.views.api.endorse import Endorse
 from endorsement.views.api.accept import Accept
-from endorsement.views.api.endorsee import Endorsee
-from endorsement.views.api.endorser import Endorser
+from endorsement.views.api.endorse import Endorse
 from endorsement.views.api.endorsed import Endorsed
+from endorsement.views.api.endorsee import Endorsee
 from endorsement.views.api.endorsements import Endorsements
+from endorsement.views.api.endorser import Endorser
+from endorsement.views.api.google.itbill import SharedDriveITBillURL
+from endorsement.views.api.google.shared_drive import SharedDrive, SharedDriveOverview
+from endorsement.views.api.mailbox import Mailbox
+from endorsement.views.api.member import Member
+from endorsement.views.api.notification import Notification
+from endorsement.views.api.office.access import Access as OfficeAccess
+from endorsement.views.api.office.access import AccessRights as OfficeAccessRights
+from endorsement.views.api.office.resolve import ResolveRightsConflict
+from endorsement.views.api.office.validate import Validate as OfficeValidate
 from endorsement.views.api.shared import Shared
 from endorsement.views.api.shared_owner import SharedOwner
 from endorsement.views.api.shared_proxy import SharedProxyEndorse
-from endorsement.views.api.member import Member
-from endorsement.views.api.mailbox import Mailbox
 from endorsement.views.api.statistics import Statistics
-from endorsement.views.api.office.access import (
-    Access as OfficeAccess, AccessRights as OfficeAccessRights)
-from endorsement.views.api.office.resolve import ResolveRightsConflict
-from endorsement.views.api.office.validate import Validate as OfficeValidate
-from endorsement.views.api.google.shared_drive import (
-    SharedDrive, SharedDriveOverview)
-from endorsement.views.api.google.itbill import SharedDriveITBillURL
-from endorsement.views.api.notification import Notification
-
+from endorsement.views.api.validate import Validate
+from endorsement.views.support.delegate_search import DelegateSearch
+from endorsement.views.support.endorsee_search import EndorseeSearch
+from endorsement.views.support.endorsement_statistics import EndorsementStatistics
+from endorsement.views.support.endorser_search import EndorserSearch
+from endorsement.views.support.member_search import MemberSearch
+from endorsement.views.support.notifications import EndorseeNotifications
+from endorsement.views.support.persistent_messages import PersistentMessages
+from endorsement.views.support.shared_proxy import SharedProxy
 
 urlpatterns = [
     re_path(r'^logout', page.logout, name='logout'),

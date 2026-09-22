@@ -1,21 +1,22 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.conf import settings
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout as django_logout
-from userservice.user import UserService
-from endorsement.util.auth import is_support_user
-from endorsement.services import service_contexts, is_valid_endorser
-from endorsement.provisioner_validation import can_view_endorsements
-from endorsement.views.session import log_session_key
-from endorsement.views.rest_dispatch import invalid_session, handle_exception
+import json
 import logging
 import traceback
-import json
 
+from django.conf import settings
+from django.contrib.auth import logout as django_logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from userservice.user import UserService
+
+from endorsement.provisioner_validation import can_view_endorsements
+from endorsement.services import is_valid_endorser, service_contexts
+from endorsement.util.auth import is_support_user
+from endorsement.views.rest_dispatch import handle_exception, invalid_session
+from endorsement.views.session import log_session_key
 
 logger = logging.getLogger(__name__)
 LOGOUT_URL = "/user_logout"
@@ -51,9 +52,9 @@ def index(request):
         try:
             return render(request, "index.html", context)
         except Exception as ex:
-            logger.error("{0}".format(ex))
+            logger.error(f"{ex}")
     except Exception as ex:
-        handle_exception(logger, "{}".format(ex), traceback)
+        handle_exception(logger, f"{ex}", traceback)
 
 
 def logout(request):

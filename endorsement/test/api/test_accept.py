@@ -2,12 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+
 from django.urls import reverse
-from endorsement.models import EndorsementRecord
-from endorsement.test.api import EndorsementApiTest
+
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
 from endorsement.exceptions import NoEndorsementException
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
+from endorsement.models import EndorsementRecord
 from endorsement.services import get_endorsement_service
+from endorsement.test.api import EndorsementApiTest
 
 
 class TestEndorsementAcceptAPI(EndorsementApiTest):
@@ -17,7 +19,7 @@ class TestEndorsementAcceptAPI(EndorsementApiTest):
         try:
             get_endorsement_service('o365').clear_endorsement(
                 endorser, endorsee)
-        except NoEndorsementException as ex:
+        except NoEndorsementException:
             pass
 
         get_endorsement_service('o365').initiate_endorsement(

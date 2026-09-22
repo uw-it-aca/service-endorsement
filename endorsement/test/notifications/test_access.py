@@ -1,13 +1,13 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+
+from django.core import mail
 from django.test import TransactionTestCase
 from django.utils import timezone
-from django.core import mail
-from endorsement.models import Accessor, Accessee, AccessRight, AccessRecord
-from endorsement.util.string import listed_list
+
+from endorsement.models import Accessee, Accessor, AccessRecord, AccessRight
 from endorsement.notifications.access import notify_accessors
-import random
 
 
 class TestAccessNotifications(TransactionTestCase):

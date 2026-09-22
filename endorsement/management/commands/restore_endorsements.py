@@ -1,14 +1,15 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import logging
+from datetime import timedelta
+
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from endorsement.models import Endorser, EndorsementRecord
-from endorsement.dao.endorse import set_active_category, activate_subscriptions
-from endorsement.services import get_endorsement_service
-from datetime import timedelta
-import logging
 
+from endorsement.dao.endorse import activate_subscriptions, set_active_category
+from endorsement.models import EndorsementRecord, Endorser
+from endorsement.services import get_endorsement_service
 
 logger = logging.getLogger(__name__)
 
@@ -56,12 +57,11 @@ class Command(BaseCommand):
                     and er.datetime_notice_4_emailed)):
 
                 if list_endorsements:
-                    print("{} {}".format(er.category_code, er.endorsee.netid))
+                    print(f"{er.category_code} {er.endorsee.netid}")
                     continue
 
                 if not restore_all:
-                    prompt = "Restore {} for {} by {}? (y/N): ".format(
-                        er.category_code, er.endorsee.netid, er.endorser.netid)
+                    prompt = f"Restore {er.category_code} for {er.endorsee.netid} by {er.endorser.netid}? (y/N): "
                     response = input(prompt).strip().lower()
                     if response != 'y':
                         continue
@@ -69,17 +69,14 @@ class Command(BaseCommand):
                 self._restore(er, service)
 
     def _restore(self, er, service):
-        print("Activate category {} for {}".format(
-            service.category_code, er.endorsee.netid))
+        print(f"Activate category {service.category_code} for {er.endorsee.netid}")
         set_active_category(er.endorsee.netid, service.category_code)
 
-        print("Subscribe codes {} for {}".format(
-            service.subscription_codes, er.endorsee.netid))
+        print(f"Subscribe codes {service.subscription_codes} for {er.endorsee.netid}")
         activate_subscriptions(
             er.endorsee.netid, er.endorser.netid, service.subscription_codes)
 
-        print("Restore endorsement record of {} for {} by {}".format(
-            er.category_code, er.endorsee.netid, er.endorser.netid))
+        print(f"Restore endorsement record of {er.category_code} for {er.endorsee.netid} by {er.endorser.netid}")
         er.is_deleted = None
         er.datetime_expired = None
         er.save()

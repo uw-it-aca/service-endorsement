@@ -1,12 +1,12 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.core.management.base import BaseCommand
-from restclients_core.exceptions import DataFailureException
-from endorsement.policy.shared_drive import SharedDrivePolicy
 import csv
 import logging
 
+from django.core.management.base import BaseCommand
+
+from endorsement.policy.shared_drive import SharedDrivePolicy
 
 logger = logging.getLogger(__name__)
 

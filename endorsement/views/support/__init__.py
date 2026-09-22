@@ -24,7 +24,6 @@ def set_admin_wrapper_template(context):
         context['wrapper_template'] = 'support_wrapper.html'
         # This is a fine exception - there doesn't need to be an extra info
         # template
-        pass
 
 
 def can_manage_persistent_messages(request):

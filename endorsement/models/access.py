@@ -1,12 +1,14 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import json
+
 from django.db import models
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
+
 from endorsement.models.base import RecordManagerBase
 from endorsement.util.date import datetime_to_str
-import json
 
 
 class Accessor(ExportModelOperationsMixin('accessor'), models.Model):
@@ -95,16 +97,16 @@ class AccessRecordManager(RecordManagerBase):
             params['accessee'] = accessee
 
         if 'accessor' in params and 'accessee' in params:
-            return super(AccessRecordManager, self).get(**params)
+            return super().get(**params)
 
-        return super(AccessRecordManager, self).get_queryset().filter(
+        return super().get_queryset().filter(
             **params)
 
     def get_access_for_accessor(self, accessor):
         return self.get_access(accessor, None)
 
     def get_all_access_for_accessor(self, accessor):
-        return super(AccessRecordManager, self).get_queryset().filter(
+        return super().get_queryset().filter(
             accessor=accessor)
 
     def get_access_for_accessee(self, accessee):
@@ -112,22 +114,22 @@ class AccessRecordManager(RecordManagerBase):
 
     def get_access_for_accessee_re(self, accessee_regex):
         accessees = Accessee.objects.filter(
-            netid__regex=r'^{0}$'.format(accessee_regex)).values_list(
+            netid__regex=rf'^{accessee_regex}$').values_list(
                 'id', flat=True)
 
-        return super(AccessRecordManager, self).get_queryset().filter(
+        return super().get_queryset().filter(
             accessee_id__in=accessees, is_deleted__isnull=True)
 
     def get_all_endorsements_for_accessee_re(self, accessee_regex):
         accessees = Accessee.objects.filter(
-            netid__regex=r'^{0}$'.format(accessee_regex)).values_list(
+            netid__regex=rf'^{accessee_regex}$').values_list(
                 'id', flat=True)
 
-        return super(AccessRecordManager, self).get_queryset().filter(
+        return super().get_queryset().filter(
             accessee_id__in=accessees)
 
     def get_unnotified_accessors(self):
-        return super(AccessRecordManager, self).get_queryset().filter(
+        return super().get_queryset().filter(
             datetime_emailed__isnull=True,
             datetime_granted__isnull=False,
             is_reconcile__isnull=True,

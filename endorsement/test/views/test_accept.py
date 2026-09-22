@@ -3,11 +3,12 @@
 
 from django.urls import reverse
 from userservice.user import get_original_user
-from endorsement.test.views import require_url, TestViewApi
-from endorsement.models import EndorsementRecord
+
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
 from endorsement.exceptions import NoEndorsementException
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.services import endorsement_services, get_endorsement_service
+from endorsement.models import EndorsementRecord
+from endorsement.services import get_endorsement_service
+from endorsement.test.views import TestViewApi, require_url
 
 
 @require_url('accept_view', 'endorsement urls not configured',
@@ -22,7 +23,7 @@ class TestAccept(TestViewApi):
         endorsee = get_endorsee_model('endorsee7')
         try:
             service.clear_endorsement(endorser, endorsee)
-        except NoEndorsementException as ex:
+        except NoEndorsementException:
             pass
 
         service.initiate_endorsement(endorser, endorsee, 'foobar')

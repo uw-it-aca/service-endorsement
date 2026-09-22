@@ -10,14 +10,16 @@ by VALID_ENDORSER_GROUP.  Unless defined in settings, the group
 used for validation is "uw_employee"
 """
 
-from endorsement.util.log import log_exception
-from endorsement.util.email import uw_email_address
-from endorsement.exceptions import UnrecognizedGroupID
+import logging
+import traceback
+
 from restclients_core.exceptions import DataFailureException
 from uw_gws import GWS
 from uw_gws.exceptions import InvalidGroupID
-import logging
-import traceback
+
+from endorsement.exceptions import UnrecognizedGroupID
+from endorsement.util.email import uw_email_address
+from endorsement.util.log import log_exception
 
 logger = logging.getLogger(__name__)
 gws = GWS()
@@ -34,8 +36,7 @@ def is_group_member(uwnetid, group):
             return False
 
         log_exception(logger,
-                      '{0} is_effective_member of {1} group'.format(
-                          uwnetid, group),
+                      f'{uwnetid} is_effective_member of {group} group',
                       traceback.format_exc())
         raise
 
@@ -46,14 +47,14 @@ def get_group_by_id(group):
     """
     try:
         return gws.get_group_by_id(group)
-    except InvalidGroupID as ex:
+    except InvalidGroupID:
         raise UnrecognizedGroupID()
     except DataFailureException as ex:
         if ex.status == 404:
             raise UnrecognizedGroupID()
 
         log_exception(logger,
-                      'get_group_by_id {}: {}'.format(group, ex),
+                      f'get_group_by_id {group}: {ex}',
                       traceback.format_exc())
         raise
 

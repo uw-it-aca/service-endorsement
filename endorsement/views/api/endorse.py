@@ -2,21 +2,32 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+
+from restclients_core.exceptions import InvalidNetID
 from userservice.user import UserService
-from endorsement.dao.user import (
-    get_endorser_model, get_endorsee_model, get_endorsee_email_model)
-from endorsement.services import endorsement_services, is_valid_endorser
-from endorsement.dao.pws import get_person
+
 from endorsement.dao.endorse import get_endorsements_for_endorsee
 from endorsement.dao.persistent_messages import get_persistent_messages
+from endorsement.dao.pws import get_person
+from endorsement.dao.user import (
+    get_endorsee_email_model,
+    get_endorsee_model,
+    get_endorser_model,
+)
+from endorsement.exceptions import (
+    CategoryFailureException,
+    MissingReasonException,
+    NoEndorsementException,
+    SubscriptionFailureException,
+    UnrecognizedUWNetid,
+)
+from endorsement.services import endorsement_services, is_valid_endorser
 from endorsement.util.auth import is_admin_user
 from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session, invalid_endorser)
-from endorsement.exceptions import (
-    InvalidNetID, UnrecognizedUWNetid, NoEndorsementException,
-    CategoryFailureException, SubscriptionFailureException,
-    MissingReasonException)
-
+    RESTDispatch,
+    invalid_endorser,
+    invalid_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -78,24 +89,23 @@ class Endorse(RESTDispatch):
 
                             active_services.add(service.service_name)
                         else:
-                            err = 'Shared netid {} not allowed for {}'.format(
-                                endorsee.netid, service.category_name)
+                            err = f'Shared netid {endorsee.netid} not allowed for {service.category_name}'
                             endorsements['endorsements'][
                                 service.service_name] = {
                                     'endorsee': endorsee.json_data(),
                                     'error': err
                                 }
-            except InvalidNetID as ex:
+            except InvalidNetID:
                 endorsements = {
                     'endorsee': {
                         'netid': endorsee_netid
                     },
                     'name': "",
-                    'error': "Invalid NetID".format(endorsee_netid)
+                    'error': "Invalid NetID"
                 }
             except (KeyError, UnrecognizedUWNetid) as ex:
                 endorsements = {
-                    'error': '{0}'.format(ex)
+                    'error': f'{ex}'
                 }
 
                 if 'endorsee' in locals():
@@ -149,7 +159,7 @@ class Endorse(RESTDispatch):
                     else:
                         endorsements[service.service_name] = e.json_data()
 
-                except NoEndorsementException as ex:
+                except NoEndorsementException:
                     endorsements[service.service_name] = {
                         'endorser': endorser_json,
                         'endorsee': endorsee.json_data(),
@@ -172,5 +182,5 @@ class Endorse(RESTDispatch):
                 'endorser': endorser_json,
                 'endorsee': endorsee.json_data(),
                 'category_name': service.category_name,
-                'error': "{0}".format(ex)
+                'error': f"{ex}"
             }

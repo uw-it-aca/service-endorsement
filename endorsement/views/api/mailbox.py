@@ -2,22 +2,28 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from endorsement.models import AccessRecord
-from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
-from endorsement.dao.access import (
-    get_delegates_for_netid, get_accessee_model, get_accessor_model)
-from endorsement.dao.office import is_office_permitted
-from endorsement.util.log import log_data_error_response
-from endorsement.views.rest_dispatch import RESTDispatch
-from endorsement.util.auth import SupportGroupAuthentication
-from endorsement.reconcile_access import (
-    new_access_record, undelete_access_record,
-    get_access_right, assign_access_right)
-from endorsement.exceptions import UnrecognizedUWNetid
-from rest_framework.authentication import TokenAuthentication
-from restclients_core.exceptions import DataFailureException
 import re
 
+from rest_framework.authentication import TokenAuthentication
+from restclients_core.exceptions import DataFailureException, InvalidNetID
+
+from endorsement.dao.access import (
+    get_accessee_model,
+    get_delegates_for_netid,
+)
+from endorsement.dao.office import is_office_permitted
+from endorsement.dao.uwnetid_supported import get_supported_resources_for_netid
+from endorsement.exceptions import UnrecognizedUWNetid
+from endorsement.models import AccessRecord
+from endorsement.reconcile_access import (
+    assign_access_right,
+    get_access_right,
+    new_access_record,
+    undelete_access_record,
+)
+from endorsement.util.auth import SupportGroupAuthentication
+from endorsement.util.log import log_data_error_response
+from endorsement.views.rest_dispatch import RESTDispatch
 
 logger = logging.getLogger(__name__)
 
@@ -136,13 +142,13 @@ class Mailbox(RESTDispatch):
             if ex.status == 404:
                 delegates = []
             else:
-                raise ex
+                raise
 
         delegations = []
 
         accessee = get_accessee_model(netid)
         access_records = AccessRecord.objects.get_access_for_accessee(accessee)
-        record_ids = set([record.pk for record in access_records])
+        record_ids = {r for r in [record.pk for record in access_records]}
         for delegate in delegates:
             delegate_name = self._delegate(delegate.json_data())
             try:
@@ -185,9 +191,9 @@ class Mailbox(RESTDispatch):
             return get_supported_resources_for_netid(netid)
         except DataFailureException as ex:
             if ex.status == 404:
-                delegates = []
-            else:
-                raise ex
+                return []
+
+            raise
 
     def _is_valid_supported(self, supported):
         try:

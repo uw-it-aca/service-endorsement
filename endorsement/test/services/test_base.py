@@ -1,15 +1,16 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.test.utils import override_settings
 from django.test import TestCase
+from django.test.utils import override_settings
+
 from endorsement.services import _load_endorsement_services, is_valid_endorser
 
 
 class TestServiceBase(TestCase):
     @override_settings(ENDORSEMENT_SERVICES='bogus')
     def test_bogus_services_setting(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception):  # noqa: B017
             _load_endorsement_services()
 
     def test_valid_endorser(self):

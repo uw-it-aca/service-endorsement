@@ -1,9 +1,9 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.test import TestCase
-from django.utils import timezone
 from datetime import timedelta
+
+from django.test import TestCase
 
 
 class NotificationsTestCase(TestCase):
@@ -35,7 +35,6 @@ class NotificationsTestCase(TestCase):
 
     def notice_and_expire(self, offset, expected):
         test_date = self.now - timedelta(days=offset[1])
-        days = self.policy.lifetime - offset[1]
 
         models = self.policy.records_to_expire_on_date(test_date)
         self.assertEqual(

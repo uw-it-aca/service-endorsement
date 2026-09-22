@@ -1,10 +1,11 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.test import TestCase
 from django.core import mail
+from django.test import TestCase
 from django.utils import timezone
-from endorsement.models import Endorser, Endorsee, EndorsementRecord
+
+from endorsement.models import Endorsee, EndorsementRecord, Endorser
 from endorsement.provisioner_validation import validate_endorsers
 from endorsement.services import endorsement_services
 
@@ -36,11 +37,9 @@ class TestProvisionerValidation(TestCase):
                 reason="Preserved", datetime_endorsed=now)
 
             svc_endorsee = Endorsee.objects.create(
-                netid='endorsee{}'.format(service.category_code),
-                regid='ccccccccccccccccccccccccccccc{}'.format(
-                    service.category_code),
-                display_name='Endorsee {}'.format(
-                    service.category_code),
+                netid=f'endorsee{service.category_code}',
+                regid=f'ccccccccccccccccccccccccccccc{service.category_code}',
+                display_name=f'Endorsee {service.category_code}',
                 is_person=True)
 
             EndorsementRecord.objects.create(

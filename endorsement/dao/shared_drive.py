@@ -3,35 +3,27 @@
 
 import collections
 import datetime as dt
-import re
 import logging
+import re
 
 from django.utils import timezone
+from uw_msca.models import GoogleDriveState
 
 # methods are imported to populate namespace and be used elsewhere
-from uw_msca.shared_drive import (  # noqa: F401
+from uw_msca.shared_drive import (
     get_default_quota,
     get_google_drive_states,
     set_drive_quota,
 )
-from uw_msca.models import GoogleDriveState
 
 from endorsement.dao.gws import is_group_member
 from endorsement.dao.itbill import (
     get_subscription_by_key_remote,
     load_itbill_subscription,
-    expire_subscription,
-)
-from endorsement.notifications.shared_drive import (
-    notify_admin_missing_drive_count_exceeded,
-    notify_admin_over_quota_missing_subscription
-)
-from endorsement.util.itbill.shared_drive import (
-    shared_drive_subscription_deadline
 )
 from endorsement.exceptions import (
-    ITBillSubscriptionNotFound,
     ITBillAuthenticationFailure,
+    ITBillSubscriptionNotFound,
     SharedDriveNonPrivilegedMember,
     SharedDriveRecordNotFound,
     UnrecognizedUWNetid,
@@ -47,11 +39,14 @@ from endorsement.models.shared_drive import (
     SharedDriveQuota,
     SharedDriveRecord,
 )
-
+from endorsement.notifications.shared_drive import (
+    notify_admin_missing_drive_count_exceeded,
+    notify_admin_over_quota_missing_subscription,
+)
 
 logger = logging.getLogger(__name__)
 netid_regex = re.compile(
-    r"^(?P<netid>[^@]+)(@(uw|(u\.)?washington)\.edu)?$", re.I
+    r"^(?P<netid>[^@]+)(@(uw|(u\.)?washington)\.edu)?$", re.IGNORECASE
 )
 MISSING_DRIVE_THRESHOLD = 500
 MISSING_DRIVE_NOTIFICATION = 150
@@ -170,7 +165,7 @@ def get_drive_quota(a):
     try:
         defaults["quota_limit"] = a.quota_limit
     except ValueError:
-        logger.error(f"Drive has no quota set. Probably in invalid org unit.")
+        logger.error("Drive has no quota set. Probably in invalid org unit.")
 
     drive_quota, _ = SharedDriveQuota.objects.update_or_create(
         org_unit_id=a.org_unit_id,
@@ -289,12 +284,12 @@ def load_or_update_subscription(sdr: SharedDriveRecord):
         # TODO: probably run endorsement.dao.initiate_subscription
         return None
     except Exception:
-        logging.exception(
+        logger.exception(
             f"Error attempting to find ITBill subscription for {key_remote}"
         )
         return None  # just raise?
     else:
-        logging.info(f"Update subscription: key_remote = {key_remote}")
+        logger.info(f"Update subscription: key_remote = {key_remote}")
         sub = ITBillSubscription(key_remote=key_remote)
         sub.save()
         sdr.subscription = sub
@@ -501,7 +496,6 @@ class Reconciler:
         The last manager departing would happen out of band.
         """
         missing_drive_count = len(missing_drive_ids)
-        now = dt.datetime.now(dt.timezone.utc)
 
         logger.info(
             f"reconcile: {missing_drive_count} missing drives")

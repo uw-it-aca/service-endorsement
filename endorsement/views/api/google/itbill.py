@@ -1,17 +1,25 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.models import SharedDriveRecord, ITBillSubscription
-from endorsement.dao.persistent_messages import get_persistent_messages
-from endorsement.dao.itbill import initiate_subscription
-from endorsement.util.auth import is_support_user
-from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session, data_not_found,
-    invalid_endorser, bad_request, data_error)
-from endorsement.exceptions import (
-    UnrecognizedUWNetid, InvalidNetID, ITBillSubscriptionNotFound)
 import logging
 
+from restclients_core.exceptions import InvalidNetID
+
+from endorsement.dao.itbill import initiate_subscription
+from endorsement.dao.persistent_messages import get_persistent_messages
+from endorsement.exceptions import (
+    ITBillSubscriptionNotFound,
+    UnrecognizedUWNetid,
+)
+from endorsement.models import ITBillSubscription, SharedDriveRecord
+from endorsement.util.auth import is_support_user
+from endorsement.views.rest_dispatch import (
+    RESTDispatch,
+    data_error,
+    data_not_found,
+    invalid_endorser,
+    invalid_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +33,7 @@ class SharedDriveITBillURL(RESTDispatch):
         Instantiate a subscription for the provided netid
         """
         try:
-            netid, acted_as = self._validate_user(
+            netid, _acted_as = self._validate_user(
                 request, valid_act_as=is_support_user, logger=logger)
             drive_id = self.kwargs.get('drive_id')
             drive = self._get_drive(netid, drive_id)

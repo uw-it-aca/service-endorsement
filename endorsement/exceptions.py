@@ -4,7 +4,6 @@
 """
 Service Endorsement Exceptions
 """
-from restclients_core.exceptions import InvalidNetID
 
 
 class UnrecognizedUWNetid(Exception):

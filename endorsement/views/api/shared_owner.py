@@ -2,19 +2,23 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from django.conf import settings
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
-from uw_saml.decorators import group_required
-from endorsement.views.rest_dispatch import RESTDispatch
-from uw_uwnetid.admin import get_admins_for_shared_netid
-from endorsement.models import EndorsementRecord
-from endorsement.dao.user import get_endorser_model, get_endorsee_model
-from endorsement.dao.endorse import get_endorsements_for_endorsee
-from endorsement.services import endorsement_services
-from endorsement.exceptions import (
-    NoEndorsementException, UnrecognizedUWNetid, InvalidNetID)
 
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from restclients_core.exceptions import InvalidNetID
+from uw_saml.decorators import group_required
+from uw_uwnetid.admin import get_admins_for_shared_netid
+
+from endorsement.dao.endorse import get_endorsements_for_endorsee
+from endorsement.dao.user import get_endorsee_model, get_endorser_model
+from endorsement.exceptions import (
+    NoEndorsementException,
+    UnrecognizedUWNetid,
+)
+from endorsement.models import EndorsementRecord
+from endorsement.services import endorsement_services
+from endorsement.views.rest_dispatch import RESTDispatch
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +42,8 @@ class SharedOwner(RESTDispatch):
                         endorser = get_endorser_model(admin.name)
                     except UnrecognizedUWNetid:
                         return self.error_response(
-                            401, ('Shared netid owner "{}" is'
-                                  ' not a valid endorser').format(admin.name))
+                            401, (f'Shared netid owner "{admin.name}" is'
+                                  ' not a valid endorser'))
 
                     try:
                         endorsee = get_endorsee_model(shared_netid)
@@ -86,6 +90,6 @@ class SharedOwner(RESTDispatch):
 
                     return self.json_response(data)
         except Exception as ex:
-            return self.error_response(412, "{}".format(ex))
+            return self.error_response(412, f"{ex}")
 
         return self.error_response(400, 'Provided netid is not a shared netid')

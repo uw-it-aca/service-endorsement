@@ -3,8 +3,8 @@
 
 import json
 from logging import getLogger
-from userservice.user import UserService
 
+from userservice.user import UserService
 
 logger = getLogger
 
@@ -21,7 +21,7 @@ def _get_user():
 
 def add_user_info(message):
     try:
-        return "{0} - {1}".format(json.dumps(_get_user()), message)
+        return f"{json.dumps(_get_user())} - {message}"
     except Exception:
         return message
 
@@ -31,8 +31,7 @@ def log_exception(logger, message, exc_info):
     exc_info is a string containing the full stack trace,
     including the exception type and value
     """
-    logger.error("{0} => {1}".format(
-        add_user_info(message), exc_info.splitlines()))
+    logger.error(f"{add_user_info(message)} => {exc_info.splitlines()}")
 
 
 def log_invalid_netid_response(logger):
@@ -40,7 +39,7 @@ def log_invalid_netid_response(logger):
 
 
 def log_err_with_netid(logger, message):
-    logger.error("{}".format(add_user_info(message)))
+    logger.error(f"{add_user_info(message)}")
 
 
 def log_invalid_endorser_response(logger):
@@ -50,7 +49,7 @@ def log_invalid_endorser_response(logger):
 def log_data_error_response(logger, ex):
     log_err_with_netid(logger,
                        ('Data not available due to'
-                        ' a backend error "{}", abort').format(ex))
+                        f' a backend error "{ex}", abort'))
 
 
 def log_data_not_found_response(logger):

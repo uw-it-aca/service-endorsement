@@ -1,10 +1,11 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.core.management.base import BaseCommand
-from endorsement.reconcile_access import reconcile_access
 import logging
 
+from django.core.management.base import BaseCommand
+
+from endorsement.reconcile_access import reconcile_access
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,5 @@ class Command(BaseCommand):
         commit_changes = options['commit']
         try:
             reconcile_access(commit_changes=commit_changes)
-        except Exception as ex:
-            logger.exception(
-                "reconcile_access: Exception: {}".format(ex), stack_info=True)
+        except Exception:
+            logger.exception("reconcile_access", stack_info=True)

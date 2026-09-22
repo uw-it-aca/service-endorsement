@@ -1,23 +1,32 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.models import AccessRecord, AccessRight, AccessRecordConflict
+import csv
+import json
+import logging
+from datetime import timedelta
+
+from django.utils import timezone
+from uw_msca.delegate import get_all_delegates
+
 from endorsement.dao.access import (
-    get_accessee_model, store_access_record, set_delegate,
-    get_delegates_for_netid)
+    get_accessee_model,
+    get_delegates_for_netid,
+    store_access_record,
+)
 from endorsement.dao.office import get_office_accessor
 from endorsement.exceptions import (
-    UnrecognizedUWNetid, UnrecognizedGroupID, NoAccessRecordException,
-    NullDelegateException, AccessRecordException, DeletedAccessRecordException,
-    TooManyRightsException, EmptyDelegateRightsException,
-    DelegateRightMismatchException, NoLiveDelegationException)
-from uw_msca.delegate import get_all_delegates
-from django.utils import timezone
-from datetime import timedelta
-import json
-import csv
-import logging
-
+    DelegateRightMismatchException,
+    DeletedAccessRecordException,
+    EmptyDelegateRightsException,
+    NoAccessRecordException,
+    NoLiveDelegationException,
+    NullDelegateException,
+    TooManyRightsException,
+    UnrecognizedGroupID,
+    UnrecognizedUWNetid,
+)
+from endorsement.models import AccessRecord, AccessRecordConflict, AccessRight
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -35,7 +44,7 @@ def reconcile_access(commit_changes=False):
     # cause all delegations to be deleted
     if delegate_count < MISSING_DELEGATES_THRESHOLD:
         logger.error(
-            "Possible malformed delegates response: {}".format(delegates))
+            f"Possible malformed delegates response: {delegates}")
         return
 
     # all active record ids
@@ -70,15 +79,6 @@ def reconcile_access(commit_changes=False):
             except DeletedAccessRecordException as ex:
                 record = ex.record
 
-                # validate with "live" delegate
-                # query after grace period timeout
-                if record.datetime_expired > expiration_threshold:
-                    logger.info(
-                        f"SKIP DELETED ACCESS RECORD IN GRACE "
-                        f"({DELETED_SYNC_GRACE_PERIOD} days): mailbox {netid} "
-                        f"delegate {delegate} right: {right}")
-                    continue
-
                 logger.info(
                     f"DELETED ACCESS RECORD: mailbox {netid} "
                     f"delegate {delegate} right: {right}")
@@ -87,15 +87,25 @@ def reconcile_access(commit_changes=False):
                     try:
                         live = get_live_delegation(netid, delegate)
                         logger.info(
-                            f"MANUAL SYNC UNDELETE {live.user},"
-                            f"{live.delegate},"
-                            f"{live.access_right} MATCHED REPORT")
-                        clear_manual_sync(record)
+                            f"MANUAL SYNC DELETED {netid},{delegate},"
+                            f"{right} LIVE DELEGATION FOUND")
+                        sync_live_record(live, record)
+                        # leave is_manual_sync True until cleared by
+                        # accurate delegation report
                     except NoLiveDelegationException:
+                        clear_manual_sync(record)
                         logger.info(
-                            f"MANUAL SYNC UNDELETE {netid},{delegate},"
-                            f"{right} PRESEVED")
-                        continue
+                            f"MANUAL SYNC DELETED {netid},{delegate},"
+                            f"{right} NO LIVE DELEGATION FOUND")
+
+                    continue
+
+                if record.datetime_expired > expiration_threshold:
+                    logger.info(
+                        f"SKIP DELETED ACCESS RECORD IN GRACE "
+                        f"({DELETED_SYNC_GRACE_PERIOD} days): mailbox {netid} "
+                        f"delegate {delegate} right: {right}")
+                    continue
 
                 # reactivate deleted record
                 if commit_changes:
@@ -141,16 +151,18 @@ def reconcile_access(commit_changes=False):
                 if record.is_manual_sync:
                     try:
                         live = get_live_delegation(netid, delegate)
-                        if live.access_right != record.access_right.name:
+                        if live.access_right == record.access_right.name:
+                            # no more live query necessary, clear manual sync
                             logger.info(
-                                f"MANUAL SYNC RIGHT MISMATCH {netid},"
-                                f"{delegate},{right} UPDATE RECORD")
+                                f"MANUAL SYNC RIGHT {netid},"
+                                f"{delegate},{right} RIGHTS MATCH")
                             clear_manual_sync(record)
+                            continue
                         else:
                             logger.info(
                                 f"MANUAL SYNC RIGHT MISMATCH {netid},"
-                                f"{delegate},{right} PRESERVED")
-                            continue
+                                f"{delegate},{right} UPDATE RECORD")
+                            # fall thru to update record
                     except NoLiveDelegationException:
                         logger.error(
                             f"MANUAL SYNC {netid},{delegate},{right}"
@@ -169,6 +181,24 @@ def reconcile_access(commit_changes=False):
                     f"({record.access_right.name}) "
                     f"on {record.datetime_granted} not "
                     "assigned in Outlook")
+
+        # preserve manual sync records actually present in Outlook
+        if record.is_manual_sync:
+            try:
+                live = get_live_delegation(
+                    record.accessee.netid, record.accessor.name)
+                logger.info(
+                    f"UNREPORTED DELEGATAION LIVE QUERY {live.user}, "
+                    f"{live.delegate}, {live.access_right} LIVE DELEGATION FOUND, SYNC RECORD")
+                sync_live_record(live, record)
+
+                # do not clear is_manual_sync to account for continued outlook report latency
+                continue
+            except NoLiveDelegationException:
+                logger.info(
+                    "UNREPORTED DELEGATION LIVE QUERY "
+                    f"{record.accessee.netid}, {record.accessor.name}"
+                    f"{record.access_right.name} NO LIVE DELEGATION FOUND, CLEAR RECORD")
 
         if commit_changes:
             revoke_record(record)
@@ -200,7 +230,7 @@ def reconcile_delegation(accessee, delegate, right):
     elif isinstance(right, list):
         if len(right) == 0:
             raise EmptyDelegateRightsException(record=record)
-        elif len(rights) > 1:
+        elif len(right) > 1:
             raise TooManyRightsException(record=record)
 
         right = right[0]
@@ -230,7 +260,7 @@ def clear_manual_sync(record):
 
 
 def get_access_right(right):
-    ar, c = AccessRight.objects.get_or_create(name=right)
+    ar, _ = AccessRight.objects.get_or_create(name=right)
     return ar
 
 
@@ -246,14 +276,31 @@ def new_access_record(accessee, delegate, right):
         return record
     except (UnrecognizedUWNetid, UnrecognizedGroupID):
         logger.error(
-            "CREATE RECORD: Unknown netid or group: {}".format(delegate))
+            f"CREATE RECORD: Unknown netid or group: {delegate}")
 
     return None
 
 
+def sync_live_record(live, record):
+    if live.access_right != record.access_right.name:
+        logger.info(
+            f"SYNC LIVE RECORD: mailbox {record.accessee.netid} "
+            f"delegate {record.accessor.name} "
+            f"({record.access_right.name}) to {live.access_right}")
+        assign_access_right(record, live.access_right)
+
+    if record.is_deleted:
+        logger.info(
+            f"SYNC LIVE RECORD: mailbox {record.accessee.netid} "
+            f"delegate {record.accessor.name} "
+            f"({record.access_right.name}) UNDELETED")
+        undelete_access_record(record)
+
+
 def revoke_record(record):
-    logger.info("REVOKING mailbox {record.accessee.netid} "
-                f"delegation {record.accessor.name} ({record.access_right})")
+    logger.info(f"ACCESS RECORD mailbox {record.accessee.netid} "
+                f"delegation {record.accessor.name} ({record.access_right}) "
+                "marked deleted")
     record.revoke()
 
 
@@ -274,12 +321,13 @@ def assign_access_right(record, right):
 
 
 def save_conflict_record(accessee, record, delegate, rights):
+    accessor = record.accessor if (
+        record) else get_office_accessor(delegate)
+
     logger.info(f"CONFLICT RECORD: mailbox {accessee.netid} "
                 f"delegate {accessor.name}: {rights}")
 
-    accessor = record.accessor if (
-        record) else get_office_accessor(delegate)
-    conflict, c = AccessRecordConflict.objects.get_or_create(
+    conflict, _ = AccessRecordConflict.objects.get_or_create(
         accessee=accessee, accessor=accessor)
     for right in rights:
         conflict.rights.add(get_access_right(right))

@@ -11,9 +11,10 @@ To endorse Husky OnNet, the tools should:
 Shared netids are excluded from the service.
 """
 
-from endorsement.services import EndorsementServiceBase
-from endorsement.models import EndorsementRecord
 from uw_uwnetid.models import Subscription
+
+from endorsement.models import EndorsementRecord
+from endorsement.services import EndorsementServiceBase
 
 
 class EndorsementService(EndorsementServiceBase):

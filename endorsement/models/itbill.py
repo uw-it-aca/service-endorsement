@@ -1,14 +1,15 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.db import models
+import json
+from datetime import date
+
 from django.conf import settings
+from django.db import models
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
-from endorsement.util.date import datetime_to_str, date_to_str
-from endorsement.util.key_remote import key_remote
-from datetime import date
-import json
+
+from endorsement.util.date import date_to_str, datetime_to_str
 
 
 class ITBillSubscription(
@@ -77,9 +78,7 @@ class ITBillSubscription(
     def update_provisions(self, provisions):
         self.clear_provisions()
 
-        product_sys_id = getattr(
-            settings, "ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID"
-        )
+        product_sys_id = settings.ITBILL_SHARED_DRIVE_PRODUCT_SYS_ID
         for provision in provisions:
             if provision.product.sys_id == product_sys_id:
                 self.create_provision(provision)
@@ -93,9 +92,7 @@ class ITBillSubscription(
 
     @property
     def current_quota(self):
-        return (self.current_quantity * 100) + getattr(
-            settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA"
-        )
+        return (self.current_quantity * 100) + settings.ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA
 
     @property
     def current_quantity(self):
@@ -196,9 +193,7 @@ class ITBillQuantity(
 
     @property
     def quantity_gigabytes(self):
-        return (self.quantity * 100) + getattr(
-            settings, "ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA"
-        )
+        return (self.quantity * 100) + settings.ITBILL_SHARED_DRIVE_SUBSIDIZED_QUOTA
 
     def from_json(self, quantity):
         self.quantity = int(quantity.quantity)

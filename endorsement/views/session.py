@@ -4,6 +4,7 @@
 import hashlib
 import json
 import logging
+
 from userservice.user import get_original_user, get_override_user
 
 logger = logging.getLogger(__name__)

@@ -8,9 +8,11 @@ the UW NeTID Subscription code 60
 
 import logging
 import traceback
-from uw_uwnetid.supported import get_supported_resources
-from endorsement.dao import handel_err
+
 from restclients_core.exceptions import DataFailureException
+from uw_uwnetid.supported import get_supported_resources
+
+from endorsement.dao import handel_err
 
 logger = logging.getLogger(__name__)
 
@@ -28,12 +30,11 @@ def get_supported_resources_for_netid(netid):
         return supported
     except DataFailureException as ex:
         logger.error(
-            'uw_uwnetid get_supported_resources({}) returned {}'.format(
-                netid, ex.status))
+            f'uw_uwnetid get_supported_resources({netid}) returned {ex.status}')
         return None
     except Exception:
         handel_err(logger,
-                   '{0} supported resources '.format(netid),
+                   f'{netid} supported resources ',
                    traceback.format_exc())
 
     return []

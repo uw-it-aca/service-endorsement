@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from restclients_core.exceptions import InvalidNetID
-from endorsement.dao.pws import (
-    is_renamed_uwnetid, get_endorser_data, get_endorsee_data)
+
+from endorsement.dao.pws import get_endorsee_data, get_endorser_data, is_renamed_uwnetid
 from endorsement.exceptions import UnrecognizedUWNetid
 from endorsement.test.dao import TestDao
 
@@ -22,7 +22,7 @@ class TestPwsDao(TestDao):
         self.assertTrue(is_renamed_uwnetid("endorsee5"))
 
     def test_get_endorsee_data(self):
-        uwregid, display_anme, email, is_person = get_endorsee_data(
+        uwregid, display_anme, email, _is_person = get_endorsee_data(
             "endorsee2")
         self.assertEqual(uwregid, "BE43A1115A014E5595703379511536E1")
         self.assertEqual(display_anme, "SIMON ENDORSEE2")
@@ -36,10 +36,10 @@ class TestPwsDao(TestDao):
                           "nomockid")
 
     def test_get_endorser_data(self):
-        regid, display_name = get_endorser_data('jstaff')
+        regid, _display_name = get_endorser_data('jstaff')
         self.assertEqual(regid,
                          "10000000000000000000000000000001")
-        regid, display_name = get_endorser_data('jfaculty')
+        regid, _display_name = get_endorser_data('jfaculty')
         self.assertEqual(regid,
                          "10000000000000000000000000000002")
         self.assertRaises(InvalidNetID,

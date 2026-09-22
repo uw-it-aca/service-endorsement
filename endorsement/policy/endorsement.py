@@ -13,8 +13,6 @@ Basic notions:
 from endorsement.models import EndorsementRecord
 from endorsement.policy import PolicyBase
 from endorsement.services import endorsement_services
-from endorsement.dao.endorse import clear_endorsement
-
 
 DEFAULT_ENDORSEMENT_GRACEPERIOD = 90
 
@@ -37,10 +35,3 @@ class EndorsementPolicy(PolicyBase):
             'category_code__in': [
                 s.category_code for s in endorsement_services()]
         }
-
-
-def expire_endorsments(gracetime, lifetime):
-    """
-    """
-    for e in endorsements_to_expire(gracetime, lifetime):
-        clear_endorsement(e)

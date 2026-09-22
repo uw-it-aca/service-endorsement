@@ -2,20 +2,33 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+
 from django.conf import settings
+from restclients_core.exceptions import InvalidNetID
 from userservice.user import UserService
+
+from endorsement.dao.endorse import (
+    get_endorsements_by_endorser,
+    get_endorsements_for_endorsee,
+)
+from endorsement.dao.user import (
+    get_endorsee_email_model,
+    get_endorsee_model,
+    get_endorser_model,
+    is_shared_netid,
+)
+from endorsement.exceptions import (
+    SharedUWNetid,
+    TooManyUWNetids,
+    UnrecognizedUWNetid,
+)
 from endorsement.models import EndorsementRecord
 from endorsement.services import endorsement_services, is_valid_endorser
-from endorsement.dao.user import (
-    get_endorser_model, get_endorsee_model,
-    get_endorsee_email_model, is_shared_netid)
-from endorsement.dao.endorse import (
-    get_endorsements_for_endorsee, get_endorsements_by_endorser)
 from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session, invalid_endorser)
-from endorsement.exceptions import (
-    InvalidNetID, UnrecognizedUWNetid, TooManyUWNetids, SharedUWNetid)
-
+    RESTDispatch,
+    invalid_endorser,
+    invalid_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,10 +63,10 @@ class Validate(RESTDispatch):
                 if not endorsee.is_person:
                     if is_shared_netid(endorsee.netid):
                         raise SharedUWNetid(
-                            '{0} is a Shared NetID'.format(endorse_netid))
+                            f'{endorse_netid} is a Shared NetID')
                     else:
                         raise InvalidNetID(
-                            '{0} not a personal NetID'.format(endorse_netid))
+                            f'{endorse_netid} not a personal NetID')
 
                 netid_count -= 1
                 if netid_count < 0:
@@ -83,18 +96,18 @@ class Validate(RESTDispatch):
             except UnrecognizedUWNetid as ex:
                 valid = {
                     'netid': endorse_netid,
-                    'error': 'Unrecognized NetID: {0}'.format(ex),
+                    'error': f'Unrecognized NetID: {ex}',
                 }
             except SharedUWNetid as ex:
                 valid = {
                     'netid': endorse_netid,
-                    'error': 'Shared NetID: {0}'.format(ex),
+                    'error': f'Shared NetID: {ex}',
                     'is_shared': True
                 }
             except InvalidNetID as ex:
                 valid = {
                     'netid': endorse_netid,
-                    'error': '{0}'.format(ex),
+                    'error': f'{ex}',
                     'is_ineligible': True
                 }
             except TooManyUWNetids:
@@ -102,13 +115,12 @@ class Validate(RESTDispatch):
                     'netid': endorse_netid,
                     'error': 'Provision Count Exceeded',
                     'error_message':
-                        'Limit of {0} provisioned netids exceeded'.format(
-                            max_netids)
+                        f'Limit of {max_netids} provisioned netids exceeded'
                 }
             except Exception as ex:
                 valid = {
                     'netid': endorse_netid,
-                    'error': '{0}'.format(ex)
+                    'error': f'{ex}'
                 }
 
             validated['validated'].append(valid)
@@ -132,7 +144,7 @@ class Validate(RESTDispatch):
                     endorsement['endorsers'].append(e.endorser.json_data())
 
         except Exception as ex:
-            endorsement['error'] = '{0}'.format(ex)
+            endorsement['error'] = f'{ex}'
 
         return endorsement
 

@@ -2,33 +2,44 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from endorsement.views.rest_dispatch import RESTDispatch
+import random
+import re
+import traceback
+import uuid
+from datetime import datetime, timedelta, timezone
+
+from endorsement.dao.accessors import get_accessor_email
 from endorsement.models import (
-    Endorser, Endorsee, EndorsementRecord,
-    Accessor, Accessee, AccessRight, AccessRecord,
-    Member, Role, SharedDriveMember, SharedDrive,
-    SharedDriveQuota, SharedDriveRecord, SharedDriveRecord)
-from endorsement.services import endorsement_services, get_endorsement_service
-from endorsement.policy.endorsement import EndorsementPolicy
-from endorsement.policy.shared_drive import SharedDrivePolicy
-from endorsement.policy.access import AccessPolicy
-from endorsement.util.auth import SupportGroupAuthentication
-from endorsement.notifications.endorsement import (
-    _get_endorsed_unnotified, _create_expire_notice_message,
-    _create_endorsee_message, _create_endorser_message,
-    _create_warn_shared_owner_message)
+    Accessee,
+    Accessor,
+    AccessRecord,
+    AccessRight,
+    Endorsee,
+    EndorsementRecord,
+    Endorser,
+    SharedDriveRecord,
+)
 from endorsement.notifications.access import (
-    _create_accessor_message, _create_accessee_expiration_notice)
+    _create_accessee_expiration_notice,
+    _create_accessor_message,
+)
+from endorsement.notifications.endorsement import (
+    _create_endorsee_message,
+    _create_endorser_message,
+    _create_expire_notice_message,
+    _create_warn_shared_owner_message,
+    _get_endorsed_unnotified,
+)
 from endorsement.notifications.shared_drive import (
     _create_notification_expiration_notice,
-    _create_notification_over_quota_non_subsidized)
-from endorsement.dao.accessors import get_accessor_email
-from datetime import datetime, timedelta
-import re
-import uuid
-import random
-import traceback
-
+    _create_notification_over_quota_non_subsidized,
+)
+from endorsement.policy.access import AccessPolicy
+from endorsement.policy.endorsement import EndorsementPolicy
+from endorsement.policy.shared_drive import SharedDrivePolicy
+from endorsement.services import endorsement_services, get_endorsement_service
+from endorsement.util.auth import SupportGroupAuthentication
+from endorsement.views.rest_dispatch import RESTDispatch
 
 logger = logging.getLogger(__name__)
 
@@ -68,9 +79,9 @@ class Notification(RESTDispatch):
         # gather endorsments
         n = 1
         endorsed = []
-        for netid, endorsements in endorsements.items():
+        for netid, netid_endorsements in endorsements.items():
             regid = uuid.uuid4().hex
-            for endorsement in endorsements:
+            for endorsement in netid_endorsements:
                 s = get_endorsement_service(endorsement)
                 record = EndorsementRecord(
                     endorser=endorser,
@@ -85,7 +96,7 @@ class Notification(RESTDispatch):
 
                 if warning_level:
                     record.datetime_endorsed = (
-                        datetime.today() - timedelta(days=(
+                        datetime.now(tz=timezone.utc) - timedelta(days=(
                             365 if warning_level == 4 else
                             (365 - 7) if warning_level == 3 else
                             (365 - 30) if warning_level == 2 else
@@ -106,14 +117,14 @@ class Notification(RESTDispatch):
                     warning_level, endorsed, EndorsementPolicy())
             elif notification == 'endorsee':
                 unendorsed = _get_unendorsed_unnotified(endorsed)
-                for email, endorsers in unendorsed.items():
+                for endorsers in unendorsed.values():
                     for netid, endorser in endorsers['endorsers'].items():
                         subject, text, html = _create_endorsee_message(
                             endorser)
                         break
             elif notification == 'endorser':
                 endorsed_unnotified = _get_endorsed_unnotified(endorsed)
-                for email, endorsed in endorsed_unnotified.items():
+                for endorsed in endorsed_unnotified.values():
                     subject, text, html = _create_endorser_message(endorsed)
                     break
             elif notification == 'new_shared':
@@ -121,21 +132,19 @@ class Notification(RESTDispatch):
                     endorser, endorsed, EndorsementPolicy())
             else:
                 return self.error_response(
-                    405, "unknown notification: {}".format(notification))
+                    405, f"unknown notification: {notification}")
 
             return self.json_response({
                 'subject': subject,
                 'text': text,
                 'html': html
             })
-        except Exception as ex:
-            return self.error_response(500, "{}".format(
-                traceback.format_exc()))
+        except Exception:
+            return self.error_response(500, f"{traceback.format_exc()}")
 
     def _access_notification(self, request):
         notification = request.data.get('notification', None)
         right = request.data.get('right', "")
-        right_name = request.data.get('right_name', "")
         is_shared_netid = request.data.get('is_shared_netid', False)
         is_group = request.data.get('is_group', False)
 
@@ -158,7 +167,8 @@ class Notification(RESTDispatch):
 
         ar = AccessRecord(
             accessee=accessee, accessor=accessor,
-            access_right=access_right, datetime_granted=datetime.now())
+            access_right=access_right, datetime_granted=datetime.now(tz=timezone.utc))
+
 
         warnings = ['warning_1', 'warning_2', 'warning_3', 'warning_4']
 
@@ -211,7 +221,7 @@ class Notification(RESTDispatch):
 def _get_unendorsed_unnotified(unendorsed):
     endorsements = {}
     for er in unendorsed:
-        email = "{}@blackhole.uw.edu".format(er.endorsee.netid)
+        email = f"{er.endorsee.netid}@blackhole.uw.edu"
 
         if email not in endorsements:
             endorsements[email] = {

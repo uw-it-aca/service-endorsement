@@ -1,8 +1,9 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.test.views import require_url, TestViewApi
 from userservice.user import get_original_user
+
+from endorsement.test.views import TestViewApi, require_url
 
 
 @require_url('home', 'endorsement urls not configured')

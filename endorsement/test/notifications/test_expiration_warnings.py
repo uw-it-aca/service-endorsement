@@ -1,16 +1,17 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.test import TestCase
+from datetime import timedelta
+
 from django.core import mail
 from django.db.models import F
 from django.utils import timezone
-from endorsement.test.notifications import NotificationsTestCase
-from endorsement.models import Endorser, Endorsee, EndorsementRecord
+
+from endorsement.models import Endorsee, EndorsementRecord, Endorser
+from endorsement.notifications.endorsement import endorser_lifecycle_warning
 from endorsement.policy.endorsement import EndorsementPolicy
 from endorsement.services import get_endorsement_service
-from endorsement.notifications.endorsement import endorser_lifecycle_warning
-from datetime import timedelta
+from endorsement.test.notifications import NotificationsTestCase
 
 
 class TestProvisioneExpirationNotices(NotificationsTestCase):

@@ -2,12 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+
 from userservice.user import UserService
+
 from endorsement.models import EndorsementRecord
 from endorsement.services import endorsement_services
 from endorsement.util.auth import is_support_user
 from endorsement.views.rest_dispatch import RESTDispatch, invalid_session
-
 
 logger = logging.getLogger(__name__)
 

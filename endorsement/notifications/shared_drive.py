@@ -1,26 +1,23 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.dao.notification import (
-    send_notification, send_admin_notification)
+import logging
+
+from django.template import loader
+from django.utils import timezone
+
+from endorsement.dao.notification import send_admin_notification, send_notification
+from endorsement.exceptions import EmailFailureException
 from endorsement.models import SharedDriveRecord
-from endorsement.dao.user import get_endorsee_email_model
-from endorsement.dao import display_datetime
 from endorsement.policy.shared_drive import SharedDrivePolicy
 from endorsement.util.email import uw_email_address
 from endorsement.util.itbill.shared_drive import shared_drive_subsidized_quota
-from endorsement.exceptions import EmailFailureException
-from django.template import loader, Template, Context
-from django.utils import timezone
-import re
-import logging
-
 
 logger = logging.getLogger(__name__)
 
 
 def _email_template(template_name):
-    return "email/shared_drive/{}".format(template_name)
+    return f"email/shared_drive/{template_name}"
 
 
 def _create_notification_expiration_notice(notice_level, drive, policy):
@@ -63,15 +60,10 @@ def drive_member_lifecycle_warning(notice_level):
                 members, subject, text_body, html_body,
                 "Shared Drive Warning")
 
-            sent_date = {
-                'datetime_notice_{}_emailed'.format(
-                    notice_level): timezone.now()
-            }
-
-            setattr(drive, 'datetime_notice_{}_emailed'.format(notice_level),
+            setattr(drive, f'datetime_notice_{notice_level}_emailed',
                     timezone.now())
             drive.save()
-        except EmailFailureException as ex:
+        except EmailFailureException:
             pass
 
 
@@ -102,9 +94,9 @@ def notify_over_quota_non_subsidized_expired():
                 members, subject, text_body, html_body,
                 "Over Quota Shared Drive Claim Deadline")
 
-            setattr(drive, 'datetime_over_quota_emailed', timezone.now())
+            drive.datetime_over_quota_emailed = timezone.now()
             drive.save()
-        except EmailFailureException as ex:
+        except EmailFailureException:
             pass
 
 
@@ -128,5 +120,5 @@ def _admin_email(subject_template, text_template, **kwargs):
             ''.join(loader.render_to_string(
                 subject_template, kwargs).split('\n')),
             loader.render_to_string(text_template, kwargs))
-    except EmailFailureException as ex:
+    except EmailFailureException:
         pass

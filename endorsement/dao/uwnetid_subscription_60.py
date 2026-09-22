@@ -8,9 +8,10 @@ the UW NeTID Subscription code 60
 
 import logging
 import traceback
-from uw_uwnetid.subscription_60 import get_kerberos_subs
-from endorsement.dao import handel_err
 
+from uw_uwnetid.subscription_60 import get_kerberos_subs
+
+from endorsement.dao import handel_err
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,5 @@ def is_valid_endorsee(uwnetid):
 
     except Exception:
         return handel_err(logger,
-                          '{0} subs_60.has_active_kerberos_subs '.format(
-                              uwnetid),
+                          f'{uwnetid} subs_60.has_active_kerberos_subs ',
                           traceback.format_exc())

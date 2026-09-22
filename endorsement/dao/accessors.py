@@ -1,11 +1,11 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.dao.gws import get_group_admin_emails
-from endorsement.util.email import uw_email_address
-from endorsement.exceptions import UnrecognizedGroupID
 import logging
 
+from endorsement.dao.gws import get_group_admin_emails
+from endorsement.exceptions import UnrecognizedGroupID
+from endorsement.util.email import uw_email_address
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +22,7 @@ def get_accessor_email(access_record):
             return get_group_admin_emails(accessor.name)
         except UnrecognizedGroupID:
             logger.error(
-                "get_accessor_email: unrecognized group: {}".format(
-                    accessor.name))
+                f"get_accessor_email: unrecognized group: {accessor.name}")
             return []
 
     return [{

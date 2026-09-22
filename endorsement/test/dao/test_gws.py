@@ -17,6 +17,6 @@ class TestGwsDao(TestDao):
         self.assertFalse(is_group_member("nomockid", group))
 
         # test exception
-        self.assertRaises(Exception,
+        self.assertRaises(Exception,  # noqa: B017
                           is_group_member,
                           None)

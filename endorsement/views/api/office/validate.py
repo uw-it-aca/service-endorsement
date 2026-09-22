@@ -1,13 +1,14 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.dao.office import get_office_accessor
-from endorsement.views.rest_dispatch import RESTDispatch, invalid_session
-from userservice.user import UserService
-from restclients_core.exceptions import DataFailureException
-from uw_msca.validate_user import validate_user
 import logging
 
+from restclients_core.exceptions import DataFailureException
+from userservice.user import UserService
+from uw_msca.validate_user import validate_user
+
+from endorsement.dao.office import get_office_accessor
+from endorsement.views.rest_dispatch import RESTDispatch, invalid_session
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +42,8 @@ class Validate(RESTDispatch):
                     message = "{} Outlook Access{}".format(
                         "Unknown" if (ex.status == 404) else "Invalid",
                         " user" if (
-                            ex.status == 404) else ": {}".format(ex.msg))
-            except Exception as ex:
+                            ex.status == 404) else f": {ex.msg}")
+            except Exception:
                 is_valid = False
                 display_name = None
                 message = "Unrecognized NetID or Group"

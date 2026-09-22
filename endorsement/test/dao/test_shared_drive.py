@@ -7,7 +7,6 @@ import inspect
 import unittest.mock
 
 from django.test.utils import override_settings
-
 from uw_itbill.models import Subscription
 from uw_msca.models import GoogleDriveState
 
@@ -24,7 +23,6 @@ from endorsement.models import (
     SharedDriveRecord,
 )
 from endorsement.test.dao import TestDao
-
 
 # for succinctness we will always refer to this as DQ
 DEFAULT_QUOTA = DQ = 100

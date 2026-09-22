@@ -7,5 +7,4 @@ UW_EMAIL_DOMAIN = "uw.edu"
 
 
 def uw_email_address(name):
-    return name if (re.match('^[^@]+@(.+)$', name)) else "{}@{}".format(
-        name, UW_EMAIL_DOMAIN)
+    return name if (re.match('^[^@]+@(.+)$', name)) else f"{name}@{UW_EMAIL_DOMAIN}"

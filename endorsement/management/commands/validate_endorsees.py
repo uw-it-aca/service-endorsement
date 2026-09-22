@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.core.management.base import BaseCommand, CommandError
+
 from endorsement.endorsee_validation import validate_endorsees
 
 
@@ -12,4 +13,4 @@ class Command(BaseCommand):
         try:
             validate_endorsees()
         except Exception as ex:
-            raise CommandError('validate endorsees: {0}'.format(ex))
+            raise CommandError(f'validate endorsees: {ex}')

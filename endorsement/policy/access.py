@@ -10,7 +10,6 @@ Basic notions:
 """
 from endorsement.models import AccessRecord
 from endorsement.policy import PolicyBase
-from endorsement.dao.access import revoke_access
 
 
 class AccessPolicy(PolicyBase):
@@ -21,10 +20,3 @@ class AccessPolicy(PolicyBase):
     @property
     def datetime_provisioned_key(self):
         return "datetime_granted"
-
-
-def expire_office_access(gracetime, lifetime):
-    """
-    """
-    for a in access_to_expire(gracetime, lifetime):
-        revoke_access(a)

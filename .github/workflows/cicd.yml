@@ -47,6 +47,7 @@ jobs:
         with:
           app_name: ${DJANGO_APP}
           exclude_paths: 'migrations'
+          ignore: 'BLE001,PLW0602,RUF012,SIM102,TRY002'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

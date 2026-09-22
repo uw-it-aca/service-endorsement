@@ -1,21 +1,27 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from endorsement.models import SharedDriveRecord
-from endorsement.dao.persistent_messages import get_persistent_messages
+import logging
+
+from rest_framework.authentication import TokenAuthentication
+from restclients_core.exceptions import DataFailureException, InvalidNetID
+
 from endorsement.dao.itbill import update_itbill_subscription
-from endorsement.dao.shared_drive import sync_quota_from_subscription
+from endorsement.dao.persistent_messages import get_persistent_messages
 from endorsement.dao.pws import get_person
+from endorsement.dao.shared_drive import sync_quota_from_subscription
+from endorsement.exceptions import UnrecognizedUWNetid
+from endorsement.models import SharedDriveRecord
 from endorsement.util.auth import is_support_user
 from endorsement.util.date import datetime_to_str
 from endorsement.views.rest_dispatch import (
-    RESTDispatch, invalid_session, data_not_found,
-    invalid_endorser, bad_request, data_error)
-from endorsement.exceptions import UnrecognizedUWNetid, InvalidNetID
-from rest_framework.authentication import TokenAuthentication
-from restclients_core.exceptions import DataFailureException
-import logging
-
+    RESTDispatch,
+    bad_request,
+    data_error,
+    data_not_found,
+    invalid_endorser,
+    invalid_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +35,7 @@ class SharedDrive(RESTDispatch):
         Return SharedDriveRecords for provided netid, all or by drive_id
         """
         try:
-            netid, acted_as = self._validate_user(
+            netid, _acted_as = self._validate_user(
                 request, valid_act_as=is_support_user, logger=logger)
 
         except UnrecognizedUWNetid:
@@ -45,7 +51,7 @@ class SharedDrive(RESTDispatch):
                 update_itbill_subscription(netid, drive_id)
                 sync_quota_from_subscription(drive_id)
         except Exception as ex:
-            logger.exception("refresh_subscription: {}".format(ex))
+            logger.exception("refresh_subscription", stack_info=True)
             return data_error(logger, ex)
 
         return self.json_response(self._drive_list(netid, drive_id))
@@ -92,7 +98,7 @@ class SharedDrive(RESTDispatch):
             for m in drive['drive']['members']:
                 try:
                     m['display_name'] = get_person(m['netid']).display_name
-                except DataFailureException as ex:
+                except DataFailureException:
                     m['display_name'] = None
 
         return {

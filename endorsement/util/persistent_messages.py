@@ -1,8 +1,9 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from persistent_message.models import Message
 import hashlib
+
+from persistent_message.models import Message
 
 
 def get_persistent_messages(tags, params):

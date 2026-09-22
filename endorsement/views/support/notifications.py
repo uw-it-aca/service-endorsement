@@ -2,13 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.conf import settings
-from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView
 from uw_saml.decorators import group_required
-from endorsement.views.support import set_admin_wrapper_template
+
 from endorsement.policy.endorsement import EndorsementPolicy
 from endorsement.services import endorsement_services
+from endorsement.views.support import set_admin_wrapper_template
 
 
 @method_decorator(login_required, name='dispatch')
@@ -20,9 +21,9 @@ class EndorseeNotifications(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['services'] = dict([(s.service_name, {
+        context['services'] = {s.service_name: {
             'name': s.category_name
-        }) for s in endorsement_services()])
+        } for s in endorsement_services()}
         policy = EndorsementPolicy()
         context['warning_1'] = policy.days_till_expiration(1)
         context['warning_2'] = policy.days_till_expiration(2)

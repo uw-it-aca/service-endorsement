@@ -1,15 +1,17 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.http import StreamingHttpResponse
-from endorsement.models import EndorsementRecord
-from endorsement.views.rest_dispatch import RESTDispatch
-from endorsement.util.auth import SupportGroupAuthentication
-from rest_framework.authentication import TokenAuthentication
-from io import StringIO
 import csv
 import logging
+from io import StringIO
 
+from django.http import StreamingHttpResponse
+from rest_framework.authentication import TokenAuthentication
+
+from endorsement.models import EndorsementRecord
+from endorsement.util.auth import SupportGroupAuthentication
+from endorsement.util.list import distinct
+from endorsement.views.rest_dispatch import RESTDispatch
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +55,7 @@ class Endorsements(RESTDispatch):
             "Provisioner", "Provisionee", "Service",
             "Pending", "Provision Date"])
 
-        for endorser_id in list(set([e.endorser.id for e in endorsements])):
+        for endorser_id in distinct([e.endorser.id for e in endorsements]):
             for endorsement in endorsements.filter(endorser__id=endorser_id):
                 line += 1
                 self.csvwriter.writerow([
