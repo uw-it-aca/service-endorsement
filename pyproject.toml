@@ -76,3 +76,17 @@ ignore = [
 exclude = [
     "*/migrations/*",
 ]
+
+[tool.coverage.run]
+source = ["endorsement"]
+parallel = true
+omit = [
+     "*/migrations/*",
+     "*/tests/*"
+]
+
+[tool.coverage.paths]
+source = [
+    "endorsement/",
+    "/app/endorsement/",
+]
