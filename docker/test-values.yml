@@ -7,23 +7,8 @@ gateway:
   hostnames:
     - test.provision.uw.edu
   requestTimeouts:
-    frontEnd: 120s
-    backEnd: 140s
-ingress:
-  enabled: true
-  type: nginx
-  tls:
-    test-prt:
-      secretName: test.provision.uw.edu-ingress-cert
-      hosts:
-        - test.provision.uw.edu
-  hosts:
-    test-prt:
-      host: test.provision.uw.edu
-      paths:
-        - "/"
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
+    frontEnd: 140s
+    backEnd: 120s
 securityPolicy:
   enabled: true
 readiness:
