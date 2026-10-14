@@ -33,3 +33,4 @@ services:
       - ./endorsement:/devtools/service-endorsement/endorsement
     working_dir: /devtools/service-endorsement
     command: bash -c "yes yes | npm install; npx webpack --watch --mode=development"
+

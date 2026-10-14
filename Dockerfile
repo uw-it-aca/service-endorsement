@@ -1,9 +1,10 @@
-ARG DJANGO_CONTAINER_VERSION=3.0.1
+#ARG DJANGO_CONTAINER_VERSION=3.0.1
+ARG DJANGO_CONTAINER_VERSION=feature-ubuntu-chisel
 
 FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-container:${DJANGO_CONTAINER_VERSION} AS app-prewebpack-container
 
-USER root
-RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
+#USER root
+#RUN apt-get update && apt-get install mysql-client libmysqlclient-dev libpq-dev -y
 USER acait
 
 ADD --chown=acait:acait endorsement/VERSION /app/endorsement/

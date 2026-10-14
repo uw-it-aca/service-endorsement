@@ -6,6 +6,9 @@ gateway:
   enabled: true
   hostnames:
     - test.provision.uw.edu
+  requestTimeouts:
+    frontEnd: 120s
+    backEnd: 140s
 ingress:
   enabled: true
   type: nginx
