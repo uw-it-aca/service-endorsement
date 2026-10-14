@@ -317,7 +317,7 @@ class SharedDriveRecord(
         delete_drive_time = deleted_drive.get('deleteDate')
         if delete_drive_time:
             local_dt = timezone.make_aware(
-                dt.datetime.strptime(delete_drive_time, "%m/%d/%Y")) # noqa: DTZ007
+                dt.datetime.strptime(delete_drive_time, "%m/%d/%Y"))
             utc_dt = local_dt.astimezone(dt.timezone.utc)
             self.datetime_deleted = utc_dt
         else:
