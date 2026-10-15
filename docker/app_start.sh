@@ -8,9 +8,12 @@ then
 
 else
 
-  # set nginx proxy read timeout
-  sed 's/\(^[ ]*server {\)/  proxy_read_timeout 300s;\n\n\1/' /etc/nginx/nginx.conf > /tmp/nginx.tmp
-  cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
+  # adjust timeouts to account for slow downstream response
+  DOWNSTREAM_TIMEOUT=300
 
+  export GUNICORN_CMD_ARGS="--timeout $DOWNSTREAM_TIMEOUT"
+
+  sed 's/\(^[ ]*server {\)/  proxy_read_timeout '$DOWNSTREAM_TIMEOUT's;\n\n\1/' /etc/nginx/nginx.conf > /tmp/nginx.tmp
+  cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
 
 fi
