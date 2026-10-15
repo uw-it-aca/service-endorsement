@@ -2,14 +2,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import uuid
+
 from django.test import TestCase
 from django.utils import timezone
 
 from endorsement.models import (
-    Accessor,
     Accessee,
-    AccessRight,
+    Accessor,
     AccessRecord,
+    AccessRight,
 )
 
 
@@ -259,7 +260,7 @@ class TestAccessRecord(TestCase):
             access_right=self.access_right
         )
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception):  # noqa: B017
             AccessRecord.objects.create(
                 accessee=self.accessee,
                 accessor=self.accessor,
@@ -441,7 +442,7 @@ class TestAccessRecordManager(TestCase):
             accessor=self.accessor1,
             access_right=self.access_right
         )
-        record2 = AccessRecord.objects.create(
+        _record2 = AccessRecord.objects.create(
             accessee=self.accessee2,
             accessor=self.accessor2,
             access_right=self.access_right
@@ -488,7 +489,7 @@ class TestAccessRecordManager(TestCase):
             accessor=self.accessor1,
             access_right=self.access_right
         )
-        record2 = AccessRecord.objects.create(
+        _record2 = AccessRecord.objects.create(
             accessee=self.accessee2,
             accessor=self.accessor1,
             access_right=self.access_right
@@ -544,7 +545,7 @@ class TestAccessRecordManager(TestCase):
 
     def test_get_all_access_for_accessor(self):
         """Test get_all_access_for_accessor includes deleted records"""
-        record1 = AccessRecord.objects.create(
+        _record1 = AccessRecord.objects.create(
             accessee=self.accessee1,
             accessor=self.accessor1,
             access_right=self.access_right
@@ -703,7 +704,7 @@ class TestAccessRecordManager(TestCase):
         )
 
         # Create notified record
-        record2 = AccessRecord.objects.create(
+        _record2 = AccessRecord.objects.create(
             accessee=self.accessee2,
             accessor=self.accessor2,
             access_right=self.access_right,
@@ -717,9 +718,9 @@ class TestAccessRecordManager(TestCase):
 
     def test_get_unnotified_accessors_excludes_no_grant_date(self):
         """Test get_unnotified_accessors excludes records without grant date"""
-        record1 = AccessRecord.objects.create(
+        _record1 = AccessRecord.objects.create(
             accessee=self.accessee1,
-            accessor=self.accessor1,
+           accessor=self.accessor1,
             access_right=self.access_right,
             datetime_granted=None
         )
@@ -731,7 +732,7 @@ class TestAccessRecordManager(TestCase):
         """Test get_unnotified_accessors excludes reconcile records"""
         now = timezone.now()
 
-        record1 = AccessRecord.objects.create(
+        _record1 = AccessRecord.objects.create(
             accessee=self.accessee1,
             accessor=self.accessor1,
             access_right=self.access_right,

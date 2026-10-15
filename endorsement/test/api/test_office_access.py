@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 from django.urls import reverse
 from restclients_core.exceptions import InvalidNetID
@@ -43,13 +43,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -78,13 +77,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -129,13 +127,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -173,13 +170,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[access_record]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -218,13 +214,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[conflict]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[conflict]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -288,13 +283,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[access_for_user, access_for_supported]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -366,13 +360,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[conflict_for_user, conflict_for_supported]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[conflict_for_user, conflict_for_supported]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -426,13 +419,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -510,13 +502,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -572,13 +563,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -620,13 +610,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
@@ -677,13 +666,12 @@ class TestOfficeAccessGet(EndorsementApiTest):
             AccessRecord.objects,
             'get_access_for_accessee',
             return_value=[]
+        ), patch.object(
+            AccessRecordConflict.objects,
+            'filter',
+            return_value=[]
         ):
-            with patch.object(
-                AccessRecordConflict.objects,
-                'filter',
-                return_value=[]
-            ):
-                response = self.client.get(self.url)
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
