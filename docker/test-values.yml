@@ -107,6 +107,8 @@ environmentVariables:
     value: EVAL
   - name: MSCA_TIMEOUT
     value: "60"
+  - name: GUNICORN_CMD_ARGS
+    value: "--timeout 300"
   - name: OPENSSL_CONF
     value: /ssl/openssl.cnf
   - name: AUTH
