@@ -94,7 +94,10 @@ class AccessRecordManager(RecordManagerBase):
             params['accessor'] = accessor
 
         if accessee:
-            params['accessee'] = accessee
+            if isinstance(accessee, list):
+                params['accessee_id__in'] = [a.id for a in accessee]
+            else:
+                params['accessee'] = accessee
 
         if 'accessor' in params and 'accessee' in params:
             return super().get(**params)

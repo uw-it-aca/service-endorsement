@@ -48,25 +48,30 @@ class Access(RESTDispatch):
             return invalid_endorser(logger)
 
         netids = {}
+        accessees = []
 
         if is_office_permitted(netid):
             accessee = get_accessee_model(netid)
             netids[netid] = {
                 'name': accessee.display_name,
-                'access': self._load_access_for_accessee(accessee),
-                'conflict': self._load_access_conflict_for_accessee(accessee)
+                'access': self._load_access_for_accessees([accessee]),
+                'conflict': self._load_access_conflict_for_accessees([accessee])
             }
 
         for supported in get_supported_resources_for_netid(netid):
-            if self._is_valid_accessor(supported):
-                if is_office_permitted(supported.name):
-                    accessee = get_accessee_model(supported.name)
-                    netids[supported.name] = {
-                        'name': accessee.display_name,
-                        'access': self._load_access_for_accessee(accessee),
-                        'conflict': self._load_access_conflict_for_accessee(
-                            accessee)
-                    }
+            if (self._is_valid_accessor(supported)
+                    and is_office_permitted(supported.name)):
+                accessees.append(get_accessee_model(supported.name))
+
+        accessee_access = self._load_access_for_accessees(accessees)
+        accessee_conflict = self._load_access_conflict_for_accessees(accessees)
+
+        for accessee in accessees:
+            netids[accessee.netid] = {
+                'name': accessee.display_name,
+                'access': [a for a in accessee_access if a['accessee']['netid'] == accessee.netid],
+                'conflict': [c for c in accessee_conflict if c['accessee']['netid'] == accessee.netid]
+            }
 
         return self.json_response({
             'netids': netids,
@@ -198,12 +203,12 @@ class Access(RESTDispatch):
 
             raise DelegateParameterException(f"Missing {field} field")
 
-    def _load_access_for_accessee(self, accessee):
-        access = AccessRecord.objects.get_access_for_accessee(accessee)
+    def _load_access_for_accessees(self, accessees):
+        access = AccessRecord.objects.get_access_for_accessee(accessees)
         return [ar.json_data() for ar in access]
 
-    def _load_access_conflict_for_accessee(self, accessee):
-        conflict = AccessRecordConflict.objects.filter(accessee=accessee)
+    def _load_access_conflict_for_accessees(self, accessees):
+        conflict = AccessRecordConflict.objects.filter(accessee_id__in=accessees)
         return [arc.json_data() for arc in conflict]
 
     def _is_valid_accessor(self, supported):
