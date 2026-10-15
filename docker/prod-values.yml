@@ -11,8 +11,8 @@ gateway:
   hostnames:
     - provision.uw.edu
   requestTimeouts:
-    frontEnd: 140s
-    backEnd: 120s
+    frontEnd: 310s
+    backEnd: 300s
 readiness:
   enabled: true
 database:
