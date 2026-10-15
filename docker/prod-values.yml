@@ -10,21 +10,9 @@ gateway:
   enabled: true
   hostnames:
     - provision.uw.edu
-ingress:
-  enabled: true
-  type: nginx
-  tls:
-    prt-prod:
-      secretName: provision.uw.edu-ingress-cert
-      hosts:
-        - provision.uw.edu
-  hosts:
-    prt-prod:
-      host: provision.uw.edu
-      paths:
-        - "/"
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
+  requestTimeouts:
+    frontEnd: 310s
+    backEnd: 300s
 readiness:
   enabled: true
 database:

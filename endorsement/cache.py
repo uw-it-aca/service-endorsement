@@ -31,12 +31,16 @@ class RestClientsCache(RestclientPymemcacheClient):
             nws_supported = re.compile(
                 rf"{re_nws_base}/supported.json")
             nws_category = re.compile(rf"{re_nws_base}/category")
+            nws_subscription = re.compile(rf"{re_nws_base}/subscription/")
 
             if nws_supported.match(url):
                 return ONE_HOUR
 
             if nws_category.match(url):
                 return ONE_HOUR
+
+            if nws_subscription.match(url):
+                return 30 * ONE_MINUTE
 
         if "msca" == service:
             re_google_base = (r"^/google/v\d/drive/")
