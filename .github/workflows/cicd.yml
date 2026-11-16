@@ -7,9 +7,9 @@ env:
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, task/django-container-chisel]
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, task/django-container-chisel]
     types: [opened, reopened, synchronize]
 
 jobs:
@@ -137,7 +137,7 @@ jobs:
 
       - name: Deployment Pipeline
         if: >-
-          contains(fromJSON('["main", "develop"]'),
+          contains(fromJSON('["main", "develop", "task/django-container-chisel"]'),
             needs.context.outputs.git_repo_branch)
         uses: uw-it-aca/actions/cicd-deploy@main
         with:

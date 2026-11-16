@@ -2,6 +2,14 @@ autoscaling:
   enabled: true
   minReplicas: 1
   maxReplicas: 2
+proxyServer:
+  enabled: true
+  serverSettings: |-
+    proxy_read_timeout 300s;
+    charset utf-8;
+    underscores_in_headers on;
+    port_in_redirect off;
+    client_max_body_size 4G;
 gateway:
   enabled: true
   hostnames:
