@@ -2,6 +2,13 @@ autoscaling:
   enabled: true
   minReplicas: 1
   maxReplicas: 2
+gateway:
+  enabled: true
+  hostnames:
+    - test.provision.uw.edu
+  requestTimeouts:
+    frontEnd: 310s
+    backEnd: 300s
 proxyServer:
   enabled: true
   serverSettings: |-
@@ -10,13 +17,6 @@ proxyServer:
     underscores_in_headers on;
     port_in_redirect off;
     client_max_body_size 4G;
-gateway:
-  enabled: true
-  hostnames:
-    - test.provision.uw.edu
-  requestTimeouts:
-    frontEnd: 310s
-    backEnd: 300s
 securityPolicy:
   enabled: true
 readiness:
