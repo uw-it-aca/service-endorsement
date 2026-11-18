@@ -11,6 +11,8 @@ gateway:
     backEnd: 300s
 proxyServer:
   enabled: true
+  image:
+    tag: "stable-alpine-slim"
   serverSettings: |-
     proxy_read_timeout 300s;
     charset utf-8;
