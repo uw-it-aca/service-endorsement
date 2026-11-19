@@ -15,7 +15,7 @@ services:
       # ENDORSEMENT_PROVISIONING: services,mailbox_access
       # ENDORSEMENT_PROVISIONING: services
     restart: always
-    container_name: app-provision
+    container_name: app-test-container
     build:
       context: .
       target: app-test-container
