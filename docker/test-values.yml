@@ -17,9 +17,9 @@ proxyServer:
     underscores_in_headers on;
     port_in_redirect off;
     client_max_body_size 4G;
-securityPolicy:
-  enabled: true
 readiness:
+  enabled: true
+securityPolicy:
   enabled: true
 database:
   engine: postgres
