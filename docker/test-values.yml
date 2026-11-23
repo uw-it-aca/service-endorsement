@@ -9,9 +9,17 @@ gateway:
   requestTimeouts:
     frontEnd: 310s
     backEnd: 300s
-securityPolicy:
+proxyServer:
   enabled: true
+  serverSettings: |-
+    proxy_read_timeout 300s;
+    charset utf-8;
+    underscores_in_headers on;
+    port_in_redirect off;
+    client_max_body_size 4G;
 readiness:
+  enabled: true
+securityPolicy:
   enabled: true
 database:
   engine: postgres
